@@ -47,7 +47,8 @@ select = [
   "PL", "PLR1702", "PERF", "RUF", "PT", "ARG", "ERA", "TID",
 ]
 # Símbolos matemáticos (×, −, σ) são intencionais em textos e docstrings.
-ignore = ["RUF001", "RUF002", "RUF003"]
+# N818 exige sufixo "Error" em exceções; os nomes são em português (Erro*, NaoEncontrado) — D37.
+ignore = ["RUF001", "RUF002", "RUF003", "N818"]
 
 [tool.ruff.lint.mccabe]
 max-complexity = 10

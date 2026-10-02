@@ -40,3 +40,4 @@
 | D34 | 02/10/2026 | Tipos TS gerados do OpenAPI (`openapi-typescript`) | Tipos escritos à mão | Fonte única, sem duplicação | — |
 | D35 | 02/10/2026 | Frontend por feature (`app/`, `features/<etapa>/`, `shared/`), react-query, Plotly sob demanda | Por tipo de arquivo | Coesão por etapa; bundle menor | — |
 | D36 | 02/10/2026 | Fluxo Git com `main` (estável, protegida, tags) + `develop` (integração, branch padrão); tarefas saem de e voltam para `develop` por PR | Só `main` + feature branches | Exigência; `main` sempre entregável | — |
+| D37 | 02/10/2026 | Regra `N818` do ruff desligada no `pyproject.toml` | Sufixo inglês `Error` nas exceções; `noqa` por arquivo | Nomes em português (`ErroAplicacao`, `NaoEncontrado`) são regra do projeto; a regra exige sufixo em inglês | — |
