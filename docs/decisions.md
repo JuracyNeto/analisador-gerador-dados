@@ -41,3 +41,7 @@
 | D35 | 02/10/2026 | Frontend por feature (`app/`, `features/<etapa>/`, `shared/`), react-query, Plotly sob demanda | Por tipo de arquivo | Coesão por etapa; bundle menor | — |
 | D36 | 02/10/2026 | Fluxo Git com `main` (estável, protegida, tags) + `develop` (integração, branch padrão); tarefas saem de e voltam para `develop` por PR | Só `main` + feature branches | Exigência; `main` sempre entregável | — |
 | D37 | 02/10/2026 | Regra `N818` do ruff desligada no `pyproject.toml` | Sufixo inglês `Error` nas exceções; `noqa` por arquivo | Nomes em português (`ErroAplicacao`, `NaoEncontrado`) são regra do projeto; a regra exige sufixo em inglês | — |
+| D38 | 02/10/2026 | pip + venv (backend) e npm (frontend) | uv; pnpm | Funcionam em qualquer máquina do grupo sem instalação extra | — |
+| D39 | 02/10/2026 | Verificador de arquitetura próprio (pytest + ast) em vez de import-linter e script de tamanho | import-linter | Uma ferramenta testada cobre camadas, fronteiras e linhas; funciona com pacotes vazios | — |
+| D40 | 02/10/2026 | Endpoint `/api/saude` em `core/` | Em um domínio | É transversal, não pertence a nenhum domínio | — |
+| D41 | 02/10/2026 | Frontend com TypeScript `~5.9` e ESLint `^9` (o template do Vite traz TS 6 e oxlint) | TS 6 com `--legacy-peer-deps`; oxlint | `openapi-typescript` só aceita TS 5; plugins (sonarjs, jsx-a11y) ainda exigem ESLint 9; oxlint não cobre as regras type-checked e de complexidade cognitiva | — |

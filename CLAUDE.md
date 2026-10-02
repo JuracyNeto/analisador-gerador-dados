@@ -54,6 +54,9 @@ dados-exemplo/             datasets de demonstração
 docs/                      specs, adr, decisions, design
 ```
 
-## Comandos (quando o código existir)
-- Backend: `cd backend && uvicorn app.main:app --reload` · testes: `pytest` · lint: `ruff check . && complexipy app`
-- Frontend: `cd frontend && npm run dev` · build: `npm run build`
+## Comandos
+- Backend (em `backend/`, venv em `.venv`): `uvicorn app.main:app --reload` · qualidade: `ruff check . && ruff format --check . && mypy app && complexipy app --max-complexity-allowed 15 && pytest`
+- Frontend (em `frontend/`): `npm run dev` · qualidade: `npm run lint && npm run format && npm run test && npm run build`
+- Duplicação (raiz): `npx --yes jscpd@4 backend/app backend/tests frontend/src`
+- Tipos da API: `python scripts/exportar_openapi.py` (em `backend/`) → `npm run gerar:tipos` (em `frontend/`)
+- Servidores pelo preview: `.claude/launch.json` (`backend`, `frontend`)
