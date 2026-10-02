@@ -38,9 +38,16 @@ function ehCorpoErroApi(valor: unknown): valor is CorpoErroApi {
   return typeof valor === 'object' && valor !== null && 'codigo' in valor && 'mensagem' in valor;
 }
 
+/** 502/503/504 sem corpo padrão vêm do proxy do Vite quando o backend está parado. */
+const STATUS_SEM_CONEXAO = new Set([502, 503, 504]);
+
+function corpoSemFormatoPadrao(status: number): CorpoErroApi {
+  return STATUS_SEM_CONEXAO.has(status) ? SEM_CONEXAO : ERRO_DESCONHECIDO;
+}
+
 async function lerCorpoDeErro(resposta: Response): Promise<CorpoErroApi> {
   const corpo: unknown = await resposta.json().catch(() => null);
-  return ehCorpoErroApi(corpo) ? corpo : ERRO_DESCONHECIDO;
+  return ehCorpoErroApi(corpo) ? corpo : corpoSemFormatoPadrao(resposta.status);
 }
 
 /**

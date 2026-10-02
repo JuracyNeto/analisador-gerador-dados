@@ -46,11 +46,20 @@ describe('requisitar', () => {
   });
 
   it('usa mensagem amigável quando o erro não tem o formato padrão', async () => {
-    vi.stubGlobal('fetch', vi.fn().mockResolvedValue(new Response('<html>', { status: 502 })));
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue(new Response('<html>', { status: 500 })));
+
+    await expect(requisitar('/saude')).rejects.toMatchObject({
+      status: 500,
+      codigo: 'ERRO_DESCONHECIDO',
+    });
+  });
+
+  it('trata o 502 do proxy (backend parado) como sem conexão', async () => {
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue(new Response(null, { status: 502 })));
 
     await expect(requisitar('/saude')).rejects.toMatchObject({
       status: 502,
-      codigo: 'ERRO_DESCONHECIDO',
+      codigo: 'SEM_CONEXAO',
     });
   });
 });
