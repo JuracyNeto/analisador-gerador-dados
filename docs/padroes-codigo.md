@@ -6,7 +6,7 @@
 
 | Métrica | Limite | Python | TypeScript |
 |---|---|---|---|
-| Linhas por arquivo | **≤ 500** | `scripts/verificar_tamanho.py` | ESLint `max-lines: 500` |
+| Linhas por arquivo | **≤ 500** | `tests/arquitetura/verificador.py` | ESLint `max-lines: 500` |
 | Complexidade ciclomática por função | **≤ 10** | ruff `C901` (`max-complexity = 10`) | ESLint `complexity: 10` |
 | Complexidade cognitiva por função | **≤ 15** | `complexipy --max-complexity-allowed 15` | `sonarjs/cognitive-complexity: 15` |
 | Aninhamento | **≤ 3 níveis** | ruff `PLR1702` (`max-nested-blocks = 3`, preview) | ESLint `max-depth: 3` |
@@ -60,7 +60,7 @@ backend/app/
 2. Domínios conversam **só via `servico.py`** do outro domínio (fachada pública). Proibido importar `dominios.X.frequencias` de dentro de `dominios.Y`.
 3. Código de domínio é **puro e determinístico**: recebe `Series`/`DataFrame` + parâmetros, devolve dataclass. Sem IO, sem estado global, sem `print`.
 4. Algo usado por ≥ 2 domínios e sem regra de negócio → `compartilhado/`. Com regra de negócio → fica no domínio dono e é exposto pelo `servico`.
-5. Verificação automática: `import-linter` com contratos de camadas e independência entre domínios.
+5. Verificação automática: `tests/arquitetura/verificador.py` (roda no pytest) verifica camadas, fronteiras entre domínios e limite de linhas.
 
 ### Frontend (organização por feature)
 ```
