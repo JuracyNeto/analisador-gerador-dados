@@ -25,3 +25,4 @@ Thumbs.db
 # Saídas locais
 relatorios/
 *.log
+frontend/openapi.json
