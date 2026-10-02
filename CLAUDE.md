@@ -21,6 +21,7 @@ Analisador e Gerador de Dados — trabalho de Estatística. Backend **FastAPI** 
 | Visão geral, escopo, premissas | `docs/specs/00-visao-geral.md` |
 | Enunciado original do professor | `docs/requisitos-professor.md` |
 | Cronograma / marcos | `docs/roadmap.md` |
+| Plano de implementação do marco atual | `docs/plans/` (o mais recente) |
 | Leitura de arquivos (TXT/CSV/TSV/XLSX/JSON) | `docs/specs/01-leitura.md` |
 | Classificação de tipos de variável | `docs/specs/02-tipos.md` |
 | Limpeza de dados | `docs/specs/03-limpeza.md` |
