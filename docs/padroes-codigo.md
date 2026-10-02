@@ -190,7 +190,15 @@ Evitar: Singleton manual (usar `Depends` + `lru_cache`), herança profunda (máx
 
 ## 8. Git e revisão
 
-- Branch por tarefa: `feat/<dominio>-<descricao>`, `fix/...`, `docs/...`, `refactor/...`.
+### Branches
+| Branch | Papel | Recebe de | Regras |
+|---|---|---|---|
+| `main` | Versão estável/entregue (prévia, final) | `develop` (release) ou `hotfix/*` | Protegida: só via PR, sem force push; cada merge recebe tag `vX.Y.Z` |
+| `develop` | Integração (branch padrão do repositório) | `feat/*`, `fix/*`, `docs/*`, `refactor/*`, `test/*`, `chore/*` | Sempre com CI verde |
+| `feat/<dominio>-<descricao>` etc. | Uma tarefa | — | Sai de `develop`, volta para `develop` por PR |
+| `hotfix/<descricao>` | Correção urgente na versão entregue | — | Sai de `main`, volta para `main` **e** `develop` |
+
+- Release (fim de cada marco do `roadmap.md`): PR `develop → main`, atualizar `CHANGELOG.md` (mover *Não lançado* para a versão), tag `vX.Y.Z` na `main`.
 - Conventional Commits em português: `feat(analise): calcula moda de Czuber`.
 - PR pequeno (ideal < 400 linhas alteradas), com spec relacionada citada e checklist abaixo.
 - **Sem coautoria de IA** em commits, PRs ou código.

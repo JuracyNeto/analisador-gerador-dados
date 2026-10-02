@@ -39,3 +39,4 @@
 | D33 | 02/10/2026 | Endpoints FastAPI síncronos (`def`) | `async def` | Trabalho CPU-bound (pandas/scipy) roda em threadpool | — |
 | D34 | 02/10/2026 | Tipos TS gerados do OpenAPI (`openapi-typescript`) | Tipos escritos à mão | Fonte única, sem duplicação | — |
 | D35 | 02/10/2026 | Frontend por feature (`app/`, `features/<etapa>/`, `shared/`), react-query, Plotly sob demanda | Por tipo de arquivo | Coesão por etapa; bundle menor | — |
+| D36 | 02/10/2026 | Fluxo Git com `main` (estável, protegida, tags) + `develop` (integração, branch padrão); tarefas saem de e voltam para `develop` por PR | Só `main` + feature branches | Exigência; `main` sempre entregável | — |

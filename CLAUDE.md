@@ -13,7 +13,7 @@ Analisador e Gerador de Dados — trabalho de Estatística. Backend **FastAPI** 
 - Textos para o usuário seguem `docs/specs/16-ux-writing.md` (tom neutro, linguagem simples).
 - Toda decisão nova → 1 linha em `docs/decisions.md`; decisão estrutural → ADR em `docs/adr/`.
 - Toda mudança entregue → `CHANGELOG.md` (seção *Não lançado*).
-- Commits: Conventional Commits (`feat:`, `fix:`, `docs:`, `test:`, `refactor:`, `chore:`).
+- Commits: Conventional Commits (`feat:`, `fix:`, `docs:`, `test:`, `refactor:`, `chore:`). Branches saem de `develop` e voltam por PR; `main` só recebe releases (`padroes-codigo.md` §8).
 
 ## Qual arquivo ler para cada tarefa
 | Tarefa | Ler |
