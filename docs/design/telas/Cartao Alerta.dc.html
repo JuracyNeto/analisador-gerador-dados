@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet><link rel="stylesheet" href="tokens.css"></link></helmet>
+<article aria-labelledby="t" style="box-sizing:border-box;background:var(--cor-superficie);border:1px solid var(--cor-borda);border-radius:12px;box-shadow:var(--sombra-1);padding:20px 24px;display:flex;flex-direction:column;gap:14px;font-family:Inter,system-ui,sans-serif;color:var(--cor-texto)">
+  <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+    <span style="white-space:nowrap;flex:none;display:inline-flex;align-items:center;gap:6px;height:26px;padding:0 10px 0 8px;border-radius:6px;background:var(--sev-{{ a.sev }}-suave);color:var(--sev-{{ a.sev }});font-size:13px;font-weight:600">
+      <span aria-hidden="true" style="font-family:'Material Symbols Rounded';font-size:18px;line-height:1;font-variation-settings:'FILL' 1">{{ a.icone }}</span>{{ a.sevNome }}
+    </span>
+    <span style="font-size:13px;color:var(--cor-texto-2);white-space:nowrap">{{ a.regra }}</span>
+    <span style="flex:1"></span>
+    <span style="font:500 13px 'JetBrains Mono',monospace;color:var(--cor-texto-2);white-space:nowrap">{{ a.coluna }}</span>
+  </div>
+  <div style="display:flex;flex-direction:column;gap:6px">
+    <h3 id="t" style="margin:0;font-size:17px;line-height:1.35;font-weight:600;text-wrap:pretty">{{ a.titulo }}</h3>
+    <p style="margin:0;font-size:15px;line-height:1.55;color:var(--cor-texto);text-wrap:pretty;font-variant-numeric:tabular-nums">{{ a.resumo }}</p>
+  </div>
+  <sc-if value="{{ recolhido }}" hint-placeholder-val="{{ false }}">
+    <button onClick="{{ abrir }}" style="all:unset;box-sizing:border-box;align-self:flex-start;white-space:nowrap;flex:none;display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 10px;margin-left:-10px;border-radius:6px;font-size:14px;font-weight:500;color:var(--cor-primaria);cursor:pointer" style-hover="background:var(--cor-primaria-suave)">Ver explicação<span aria-hidden="true" style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1">expand_more</span></button>
+  </sc-if>
+  <sc-if value="{{ aberto }}" hint-placeholder-val="{{ true }}">
+    <div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px 28px;padding-top:2px">
+      <div style="display:flex;flex-direction:column;gap:4px">
+        <span style="font-size:12px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--cor-texto-2)">Por que chama atenção</span>
+        <p style="margin:0;font-size:14px;line-height:1.55;text-wrap:pretty">{{ a.porque }}</p>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:4px">
+        <span style="font-size:12px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--cor-texto-2)">Pode ser normal se…</span>
+        <p style="margin:0;font-size:14px;line-height:1.55;text-wrap:pretty">…{{ a.normal }}</p>
+      </div>
+    </div>
+    <div style="display:flex;align-items:center;gap:16px;padding:12px 14px;border-radius:8px;background:var(--cor-superficie-2)">
+      <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:2px">
+        <span style="font-size:12px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--cor-texto-2)">Exemplo</span>
+        <span style="font:500 13.5px/1.5 'JetBrains Mono',monospace">{{ a.exemplo }}</span>
+      </div>
+      <button onClick="{{ verTabela }}" style="all:unset;box-sizing:border-box;flex:none;white-space:nowrap;flex:none;display:inline-flex;align-items:center;gap:6px;height:36px;padding:0 14px;border-radius:8px;border:1px solid var(--cor-borda-forte);background:var(--cor-superficie);font-size:14px;font-weight:500;cursor:pointer" style-hover="background:var(--cor-superficie-2)"><span aria-hidden="true" style="font-family:'Material Symbols Rounded';font-size:18px;line-height:1">table_view</span>Ver na tabela</button>
+    </div>
+    <div style="display:flex;gap:10px;align-items:flex-start">
+      <span aria-hidden="true" style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1;color:var(--cor-primaria);margin-top:1px">arrow_forward</span>
+      <p style="margin:0;flex:1;font-size:14px;line-height:1.5"><strong style="font-weight:600">O que fazer:</strong> {{ a.fazer }}</p>
+    </div>
+    <div style="border-top:1px solid var(--cor-borda);margin:0 -24px -20px;padding:0 24px">
+      <button onClick="{{ alternarDet }}" aria-expanded="{{ detAberto }}" style="all:unset;box-sizing:border-box;display:flex;align-items:center;gap:8px;width:100%;height:44px;font-size:14px;font-weight:500;color:var(--cor-texto-2);cursor:pointer">
+        <span aria-hidden="true" style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1">{{ seta }}</span>Detalhes técnicos
+      </button>
+      <sc-if value="{{ detAberto }}" hint-placeholder-val="{{ false }}">
+        <dl style="margin:0 0 18px;display:grid;grid-template-columns:120px minmax(0,1fr);gap:8px 16px;font-size:13.5px;line-height:1.5">
+          <dt style="color:var(--cor-texto-2)">Medida</dt><dd style="margin:0">{{ a.d.medida }}</dd>
+          <dt style="color:var(--cor-texto-2)">Valor</dt><dd style="margin:0;font-family:'JetBrains Mono',monospace">{{ a.d.valor }}</dd>
+          <dt style="color:var(--cor-texto-2)">Limiar</dt><dd style="margin:0;font-family:'JetBrains Mono',monospace">{{ a.d.limiar }}</dd>
+          <dt style="color:var(--cor-texto-2)">Teste</dt><dd style="margin:0">{{ a.d.teste }}</dd>
+          <dt style="color:var(--cor-texto-2)">p-valor</dt><dd style="margin:0"><span style="font-family:'JetBrains Mono',monospace">{{ a.d.p }}</span> <span style="color:var(--cor-texto-2)">· {{ a.d.pTexto }}</span></dd>
+          <dt style="color:var(--cor-texto-2)">Fórmula</dt><dd style="margin:0;padding:8px 12px;border-radius:6px;background:var(--cor-superficie-2);font:500 14px 'JetBrains Mono',monospace">{{ a.d.formula }}</dd>
+        </dl>
+      </sc-if>
+    </div>
+  </sc-if>
+</article>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:760,&quot;height&quot;:520},&quot;alerta&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;R1&quot;,&quot;R2&quot;,&quot;R4&quot;,&quot;R9&quot;,&quot;R7&quot;],&quot;default&quot;:&quot;R4&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;modo&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;recolhido&quot;,&quot;padrao&quot;,&quot;expandido&quot;],&quot;default&quot;:&quot;padrao&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;onVerTabela&quot;:{&quot;editor&quot;:null,&quot;tsType&quot;:&quot;() =&gt; void&quot;}}">
+class Component extends DCLogic {
+  state = { modo: null, det: null };
+  static A = {
+    R1: { sev: 'alta', regra: 'R1 · Bloco alinhado', coluna: 'altura_m', titulo: 'Bloco alinhado demais em altura_m',
+      resumo: 'As linhas 181–200 têm média e desvio quase idênticos ao conjunto todo (diferença de 0,3%).',
+      porque: "Em dados reais, pedaços pequenos variam bastante; um bloco que 'bate' tudo pode ter sido colocado para alinhar as estatísticas.",
+      exemplo: 'Linhas 181–200: média 1,702 (geral 1,701) · DP 0,0881 (geral 0,0884)', normal: 'o conjunto foi ordenado ou amostrado de forma sistemática.',
+      fazer: 'Compare essas 20 linhas com a fonte original dos dados.',
+      d: { medida: 'Distância da média (dᵤ) e do desvio (dₛ) do bloco', valor: 'dᵤ = 0,003 · dₛ = 0,003', limiar: 'dᵤ e dₛ < 0,01', teste: 'Simulação com 1.000 blocos aleatórios de 20 linhas', p: 'p = 0,002', pTexto: 'chance de acontecer por acaso: cerca de 1 em 500', formula: 'dᵤ = |x̄_bloco − x̄| / s' } },
+    R2: { sev: 'alta', regra: 'R2 · Correlação por blocos', coluna: 'altura_m × peso_kg', titulo: 'Correlação puxada por um bloco',
+      resumo: 'A correlação geral entre altura_m e peso_kg é 0,78, mas a média dos blocos é só 0,41.',
+      porque: "Se poucos dados novos fazem a correlação subir muito, eles podem ter sido adicionados para 'puxar' a relação.",
+      exemplo: 'Sem as linhas 185–230, r cai de 0,78 para 0,44', normal: 'os blocos têm faixas de valores muito diferentes.',
+      fazer: 'Veja se as últimas linhas vieram de outra coleta.',
+      d: { medida: 'r geral − média dos r por bloco (5 blocos)', valor: '0,78 − 0,41 = 0,37', limiar: '> 0,30', teste: 'Comparação por blocos consecutivos', p: '—', pTexto: 'regra sem p-valor', formula: 'Δ = r − (1/5)·Σ rᵦ' } },
+    R4: { sev: 'atencao', regra: 'R4 · Valores redondos', coluna: 'peso_kg', titulo: 'Muitos valores redondos em peso_kg',
+      resumo: '46% dos valores terminam em 0 ou 5; em medições reais o esperado seria cerca de 20% (2,3× mais).',
+      porque: 'Quando números são inventados ou digitados de cabeça, as pessoas tendem a arredondar.',
+      exemplo: 'Linhas 120 a 138: 70, 75, 80, 75, 70…', normal: 'a balança só mede de 5 em 5 kg.', fazer: 'Confira a origem dessas linhas.',
+      d: { medida: 'Proporção de múltiplos de 5', valor: '104 de 227 (46%)', limiar: 'p < 0,01 e razão ≥ 1,5', teste: 'Teste binomial unilateral, p₀ = 0,20', p: 'p = 0,0003', pTexto: 'chance de acontecer por acaso: menos de 1 em 1.000', formula: 'P(X ≥ k | n, p₀)' } },
+    R9: { sev: 'atencao', regra: 'R9 · Último dígito', coluna: 'idade', titulo: 'Último dígito repetido em idade',
+      resumo: 'O último dígito de idade não está bem distribuído: o 0 aparece 24% das vezes (esperado 10%).',
+      porque: 'Medições reais têm o último dígito quase aleatório; pessoas evitam ou repetem certos dígitos.',
+      exemplo: 'Idades 20, 30, 40, 50 somam 55 das 229 linhas', normal: 'o instrumento arredonda ou a pergunta pedia a idade aproximada.', fazer: 'Verifique como a idade foi perguntada.',
+      d: { medida: 'Frequência do último dígito (0–9)', valor: 'χ² = 31,8', limiar: 'p < 0,01', teste: 'Qui-quadrado de uniformidade, gl = 9', p: 'p = 0,0002', pTexto: 'chance de acontecer por acaso: menos de 1 em 1.000', formula: 'χ² = Σ (Oᵢ − Eᵢ)² / Eᵢ' } },
+    R7: { sev: 'info', regra: 'R7 · Valores distantes', coluna: 'idade', titulo: 'Duas idades distantes das demais',
+      resumo: '2 valores de idade estão muito longe dos demais (ex.: 94); o limite usual seria 81.',
+      porque: 'Valores extremos podem ser erros de digitação ou casos especiais.',
+      exemplo: 'Linha 57: 89 · Linha 203: 94', normal: 'são casos raros, mas reais.', fazer: 'Confirme se essas idades foram digitadas corretamente.',
+      d: { medida: 'Regra do IQR (moderado)', valor: '89 e 94 > 81,0', limiar: 'Q3 + 1,5·IQR = 81,0', teste: 'Regra de Tukey', p: '—', pTexto: 'regra sem p-valor', formula: 'x > Q3 + 1,5·(Q3 − Q1)' } },
+  };
+  renderVals() {
+    const a0 = Component.A[this.props.alerta ?? 'R4'] || Component.A.R4;
+    const nomes = { info: ['Informativo', 'info'], atencao: ['Atenção', 'warning'], alta: ['Suspeita alta', 'report'] };
+    const a = { ...a0, sevNome: nomes[a0.sev][0], icone: nomes[a0.sev][1] };
+    const modo = this.state.modo ?? this.props.modo ?? 'padrao';
+    const det = this.state.det ?? (modo === 'expandido');
+    return {
+      a, recolhido: modo === 'recolhido', aberto: modo !== 'recolhido', detAberto: det, seta: det ? 'expand_more' : 'chevron_right',
+      abrir: () => this.setState({ modo: 'padrao' }),
+      alternarDet: () => this.setState({ det: !det }),
+      verTabela: () => this.props.onVerTabela && this.props.onVerTabela(),
+    };
+  }
+}
+</script>
+</body>
+</html>

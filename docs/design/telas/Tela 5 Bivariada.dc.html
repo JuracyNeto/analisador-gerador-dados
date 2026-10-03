@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet><link rel="stylesheet" href="tokens.css"></link><style>body{margin:0}a{color:var(--cor-primaria)}a:hover{color:var(--cor-primaria-hover)}</style></helmet>
+<div data-tema="{{ tema }}" data-screen-label="Tela 5 Bivariada" style="width:1440px;min-height:960px;display:grid;grid-template-columns:264px minmax(0,1fr);background:var(--cor-fundo);font-family:Inter,system-ui,sans-serif;color:var(--cor-texto)">
+  <dc-import name="Barra Lateral" atual="5" hint-size="264px,100%"></dc-import>
+  <div style="display:flex;flex-direction:column;min-width:0">
+    <dc-import name="Cabecalho" tema="{{ tema }}" hint-size="100%,64px"></dc-import>
+    <main style="padding:32px;display:flex;flex-direction:column;gap:20px;box-sizing:border-box;width:100%;max-width:1176px">
+      <div style="display:flex;align-items:flex-end;gap:24px">
+        <div style="flex:1;display:flex;flex-direction:column;gap:6px">
+          <span style="font-size:13px;font-weight:500;color:var(--cor-texto-2)">Etapa 5 de 8</span>
+          <h1 style="margin:0;font-size:28px;line-height:1.25;font-weight:700;letter-spacing:-.015em">Análise bivariada</h1>
+          <p style="margin:0;font-size:15px;line-height:1.55;color:var(--cor-texto-2)">Veja se duas colunas numéricas andam juntas e use a reta para prever uma a partir da outra.</p>
+        </div>
+        <div style="display:flex;gap:12px;align-items:flex-end">
+          <label style="display:flex;flex-direction:column;gap:6px;width:200px"><span style="font-size:13px;font-weight:500">X (explica)</span><span style="height:44px;display:flex;align-items:center;gap:8px;padding:0 10px 0 12px;border-radius:8px;border:1px solid var(--cor-borda-forte);background:var(--cor-superficie)"><span style="flex:1;font:600 15px 'JetBrains Mono',monospace">altura_m</span><span aria-hidden="true" style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1;color:var(--cor-texto-2)">expand_more</span></span></label>
+          <span aria-label="Trocar X e Y" style="width:44px;height:44px;display:grid;place-items:center;border-radius:8px;border:1px solid var(--cor-borda);font-family:'Material Symbols Rounded';font-size:20px;line-height:1;color:var(--cor-texto-2)">swap_horiz</span>
+          <label style="display:flex;flex-direction:column;gap:6px;width:200px"><span style="font-size:13px;font-weight:500">Y (é explicada)</span><span style="height:44px;display:flex;align-items:center;gap:8px;padding:0 10px 0 12px;border-radius:8px;border:1px solid var(--cor-borda-forte);background:var(--cor-superficie)"><span style="flex:1;font:600 15px 'JetBrains Mono',monospace">peso_kg</span><span aria-hidden="true" style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1;color:var(--cor-texto-2)">expand_more</span></span></label>
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px">
+        <div style="background:var(--cor-superficie);border:1px solid var(--cor-borda);border-radius:12px;box-shadow:var(--sombra-1);padding:18px 20px;display:flex;flex-direction:column;gap:6px">
+          <span style="font-size:13px;font-weight:500;color:var(--cor-texto-2)">Correlação de Pearson (r)</span>
+          <span style="font:600 34px/1.1 'JetBrains Mono',monospace;letter-spacing:-.02em">0,78</span>
+          <span style="align-self:flex-start;font-size:12.5px;font-weight:600;padding:2px 8px;border-radius:6px;background:var(--cor-primaria-suave);color:var(--cor-primaria)">Correlação positiva forte</span>
+          <span style="font-size:14px;line-height:1.5">Quem é mais alto tende a pesar mais.</span>
+          <span style="font-size:14px;font-weight:500;color:var(--cor-primaria);display:flex;align-items:center;gap:4px;margin-top:6px">Ver fórmula<span aria-hidden="true" style="font-family:'Material Symbols Rounded';font-size:18px;line-height:1">expand_more</span></span>
+        </div>
+        <div style="background:var(--cor-superficie);border:1px solid var(--cor-borda);border-radius:12px;box-shadow:var(--sombra-1);padding:18px 20px;display:flex;flex-direction:column;gap:6px">
+          <span style="font-size:13px;font-weight:500;color:var(--cor-texto-2)">Coeficiente de determinação (R²)</span>
+          <span style="font:600 34px/1.1 'JetBrains Mono',monospace;letter-spacing:-.02em">61<span style="font:500 16px Inter,sans-serif;color:var(--cor-texto-2);margin-left:4px">%</span></span>
+          <span style="font-size:14px;line-height:1.5;text-wrap:pretty">61% da variação do peso é explicada pela altura.</span>
+          <span style="font-size:14px;font-weight:500;color:var(--cor-primaria);display:flex;align-items:center;gap:4px;margin-top:6px">Ver fórmula<span aria-hidden="true" style="font-family:'Material Symbols Rounded';font-size:18px;line-height:1">expand_more</span></span>
+        </div>
+        <div style="background:var(--cor-superficie);border:1px solid var(--cor-borda);border-radius:12px;box-shadow:var(--sombra-1);padding:18px 20px;display:flex;flex-direction:column;gap:6px">
+          <span style="font-size:13px;font-weight:500;color:var(--cor-texto-2)">Reta de regressão</span>
+          <span style="font:600 26px/1.3 'JetBrains Mono',monospace;letter-spacing:-.01em">Ŷ = −98,4 + 98,1·X</span>
+          <span style="font-size:14px;line-height:1.5;text-wrap:pretty">A cada 1 cm a mais de altura, o peso previsto sobe cerca de 0,98 kg.</span>
+          <span style="font-size:14px;font-weight:500;color:var(--cor-primaria);display:flex;align-items:center;gap:4px;margin-top:6px">Ocultar fórmula<span aria-hidden="true" style="font-family:'Material Symbols Rounded';font-size:18px;line-height:1">expand_less</span></span>
+          <div style="padding:10px 12px;border-radius:8px;background:var(--cor-superficie-2);font:500 13.5px/1.6 'JetBrains Mono',monospace;text-align:center">b = Sxy / Sxx = 98,1<br></br>a = ȳ − b·x̄ = −98,4</div>
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:20px;align-items:start">
+        <div style="background:var(--cor-superficie);border:1px solid var(--cor-borda);border-radius:12px;box-shadow:var(--sombra-1);padding:20px;display:flex;flex-direction:column;gap:12px">
+          <dc-import name="Grafico" tipo="dispersao" titulo="peso_kg em função de altura_m (n = 227)" largura="620" altura="340" hint-size="100%,400px"></dc-import>
+          <p style="margin:0;font-size:13.5px;line-height:1.5;color:var(--cor-texto-2)">Os pontos sobem da esquerda para a direita e ficam perto da reta laranja.</p>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:20px">
+          <div style="background:var(--cor-superficie);border:1px solid var(--cor-borda);border-radius:12px;box-shadow:var(--sombra-1);padding:20px;display:flex;flex-direction:column;gap:14px">
+            <h2 style="margin:0;font-size:16px;font-weight:600">Prever Y para X =</h2>
+            <div style="display:flex;gap:10px;align-items:flex-end">
+              <label style="flex:1;display:flex;flex-direction:column;gap:6px"><span style="font-size:13px;font-weight:500">altura_m</span><span style="height:40px;display:flex;align-items:center;padding:0 12px;border-radius:8px;border:1px solid var(--cor-borda-forte);background:var(--cor-superficie);font:500 15px 'JetBrains Mono',monospace">2,10</span></label>
+              <span style="white-space:nowrap;flex:none;display:inline-flex;align-items:center;height:40px;padding:0 16px;border-radius:8px;background:var(--cor-primaria);color:var(--cor-sobre-primaria);font-size:14px;font-weight:600">Prever</span>
+            </div>
+            <div aria-live="polite" style="display:flex;flex-direction:column;gap:4px;padding:12px 14px;border-radius:8px;background:var(--cor-superficie-2)">
+              <span style="font-size:13px;color:var(--cor-texto-2)">peso_kg previsto</span>
+              <span style="font:600 26px 'JetBrains Mono',monospace">107,6 <span style="font:500 15px Inter,sans-serif;color:var(--cor-texto-2)">kg</span></span>
+            </div>
+            <div role="note" style="display:flex;gap:10px;padding:12px 14px;border-radius:10px;background:var(--sev-atencao-suave);border:1px solid var(--sev-atencao-borda)">
+              <span aria-hidden="true" style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1;color:var(--sev-atencao);font-variation-settings:'FILL' 1">warning</span>
+              <p style="margin:0;font-size:14px;line-height:1.5;text-wrap:pretty"><strong style="font-weight:600">Fora da faixa observada.</strong> As alturas vão de 1,48 a 1,96 m. Prever fora disso (extrapolar) pode dar resultados pouco confiáveis.</p>
+            </div>
+          </div>
+          <div style="background:var(--cor-superficie);border:1px solid var(--cor-borda);border-radius:12px;box-shadow:var(--sombra-1);padding:20px;display:flex;flex-direction:column;gap:10px">
+            <dc-import name="Grafico" tipo="heatmap" titulo="Matriz de correlação (Pearson)" largura="380" altura="230" hint-size="100%,270px"></dc-import>
+            <p style="margin:0;font-size:13.5px;line-height:1.5;color:var(--cor-texto-2)">O par mais forte é altura_m × peso_kg (0,78). idade quase não se relaciona com as outras.</p>
+          </div>
+        </div>
+      </div>
+      <div style="background:var(--cor-superficie);border:1px solid var(--cor-borda);border-radius:12px;box-shadow:var(--sombra-1);padding:20px;display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:24px;align-items:center">
+        <dc-import name="Grafico" tipo="residuos" titulo="Resíduos da regressão" largura="620" altura="220" hint-size="100%,280px"></dc-import>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <span style="font-size:15px;font-weight:600">Como ler os resíduos</span>
+          <p style="margin:0;font-size:14px;line-height:1.55;text-wrap:pretty">Resíduo é a diferença entre o peso real e o previsto. Os pontos se espalham sem formar curva em volta do zero, o que indica que a reta é um bom resumo da relação.</p>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1440,&quot;height&quot;:1300},&quot;tema&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;claro&quot;,&quot;escuro&quot;],&quot;default&quot;:&quot;claro&quot;,&quot;tsType&quot;:&quot;string&quot;}}">
+class Component extends DCLogic {
+  renderVals() { return { tema: this.props.tema ?? 'claro' }; }
+}
+</script>
+</body>
+</html>

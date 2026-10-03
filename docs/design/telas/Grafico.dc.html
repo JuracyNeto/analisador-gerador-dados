@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet><link rel="stylesheet" href="tokens.css"></link></helmet>
+<figure style="margin:0;font-family:Inter,system-ui,sans-serif;color:var(--cor-texto);background:var(--graf-fundo);display:flex;flex-direction:column;gap:8px">
+  <sc-if value="{{ temTitulo }}" hint-placeholder-val="{{ true }}">
+    <figcaption style="font-size:14px;font-weight:600;line-height:1.4">{{ titulo }}</figcaption>
+  </sc-if>
+  {{ svg }}
+</figure>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:680,&quot;height&quot;:360},&quot;tipo&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;histograma&quot;,&quot;ogiva&quot;,&quot;boxplot&quot;,&quot;barras-h&quot;,&quot;qq&quot;,&quot;dispersao&quot;,&quot;residuos&quot;,&quot;heatmap&quot;,&quot;sobreposto&quot;],&quot;default&quot;:&quot;histograma&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;titulo&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;Distribuição de peso_kg (n = 227)&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;largura&quot;:{&quot;editor&quot;:&quot;int&quot;,&quot;default&quot;:640,&quot;tsType&quot;:&quot;number&quot;},&quot;altura&quot;:{&quot;editor&quot;:&quot;int&quot;,&quot;default&quot;:300,&quot;tsType&quot;:&quot;number&quot;},&quot;curva&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;}}">
+class Component extends DCLogic {
+  renderVals() {
+    const h = React.createElement;
+    const tipo = this.props.tipo ?? 'histograma';
+    const W = Number(this.props.largura ?? 640), H = Number(this.props.altura ?? 300);
+    const fmt = (v, d = 1) => (Math.abs(v) < 1e-9 ? 0 : v).toFixed(d).replace('.', ',');
+    let seed = this.props.semente ?? 7;
+    const rnd = () => { seed |= 0; seed = seed + 0x6D2B79F5 | 0; let t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; };
+    const norm = () => Math.sqrt(-2 * Math.log(rnd() + 1e-12)) * Math.cos(2 * Math.PI * rnd());
+    const M = { l: 60, r: 16, t: 12, b: 48 };
+    let legenda = [];
+    const tx = { fontFamily: 'Inter, system-ui, sans-serif', fontSize: 12, fill: 'var(--cor-texto-2)', fontVariantNumeric: 'tabular-nums' };
+    const sc = (d0, d1, r0, r1) => v => r0 + (v - d0) / (d1 - d0) * (r1 - r0);
+    const ticks = (a, b, step) => { const o = []; for (let v = Math.ceil(a / step) * step; v <= b + 1e-9; v += step) o.push(+v.toFixed(6)); return o; };
+    const eixos = (X, Y, xt, yt, xl, yl, xd = 0, yd = 0, opts = {}) => {
+      const els = [];
+      yt.forEach(v => { els.push(h('line', { key: 'gy' + v, x1: M.l, x2: W - M.r, y1: Y(v), y2: Y(v), style: { stroke: 'var(--graf-grade)', strokeWidth: 1 } })); els.push(h('text', { key: 'ty' + v, x: M.l - 8, y: Y(v) + 4, textAnchor: 'end', style: tx }, opts.ycat ? opts.ycat(v) : fmt(v, yd))); });
+      xt.forEach(v => { if (!opts.semGradeX) els.push(h('line', { key: 'gx' + v, y1: M.t, y2: H - M.b, x1: X(v), x2: X(v), style: { stroke: 'var(--graf-grade)', strokeWidth: 1 } })); els.push(h('text', { key: 'tx' + v, x: X(v), y: H - M.b + 18, textAnchor: 'middle', style: tx }, fmt(v, xd))); });
+      els.push(h('line', { key: 'ax', x1: M.l, x2: W - M.r, y1: H - M.b, y2: H - M.b, style: { stroke: 'var(--graf-eixo)', strokeWidth: 1 } }));
+      if (xl) els.push(h('text', { key: 'xl', x: (M.l + W - M.r) / 2, y: H - 8, textAnchor: 'middle', style: { ...tx, fontSize: 13, fill: 'var(--cor-texto)' } }, xl));
+      if (yl) els.push(h('text', { key: 'yl', transform: `translate(14 ${(M.t + H - M.b) / 2}) rotate(-90)`, textAnchor: 'middle', style: { ...tx, fontSize: 13, fill: 'var(--cor-texto)' } }, yl));
+      return els;
+    };
+    const edges = Array.from({ length: 10 }, (_, i) => 43.5 + 5.5 * i);
+    const fi = [4, 9, 20, 36, 49, 47, 34, 18, 10];
+    const phi = z => Math.exp(-z * z / 2) / Math.sqrt(2 * Math.PI);
+    let corpo = [];
+
+    if (tipo === 'histograma' || tipo === 'sobreposto') {
+      const X = sc(40, 96, M.l, W - M.r);
+      const sob = tipo === 'sobreposto';
+      const gen = [3.2, 4.4, 9.6, 15.2, 21.0, 20.4, 14.6, 7.6, 4.0];
+      const vals = sob ? fi.map(v => v / 227 * 100) : fi;
+      const ymax = sob ? 25 : 55;
+      const Y = sc(0, ymax, H - M.b, M.t);
+      corpo.push(...eixos(X, Y, ticks(40, 96, 10), ticks(0, ymax, sob ? 5 : 10), 'peso_kg', sob ? 'Frequência relativa (%)' : 'Frequência (fi)', 0, 0, { semGradeX: true }));
+      vals.forEach((v, i) => corpo.push(h('rect', { key: 'b' + i, x: X(edges[i]) + 1, width: X(edges[i + 1]) - X(edges[i]) - 2, y: Y(v), height: Y(0) - Y(v), style: { fill: 'var(--graf-1)', opacity: sob ? .55 : .85 } })));
+      if (sob) {
+        gen.forEach((v, i) => corpo.push(h('rect', { key: 'g' + i, x: X(edges[i]) + 1, width: X(edges[i + 1]) - X(edges[i]) - 2, y: Y(v), height: Y(0) - Y(v), style: { fill: 'var(--graf-2)', opacity: .55 } })));
+        legenda = [{ c: 'var(--graf-1)', t: 'Original (n = 227)' }, { c: 'var(--graf-2)', t: 'Gerado (n = 500)' }];
+      } else {
+        legenda = [{ c: 'var(--graf-1)', t: 'Frequência observada' }];
+        if (this.props.curva ?? true) {
+          let d = ''; for (let x = 40; x <= 96; x += .5) { const y = 227 * 5.5 * phi((x - 70.3) / 11.2) / 11.2; d += (d ? 'L' : 'M') + X(x).toFixed(1) + ' ' + Y(y).toFixed(1); }
+          corpo.push(h('path', { key: 'c', d, style: { fill: 'none', stroke: 'var(--graf-2)', strokeWidth: 2.5 } }));
+          legenda.push({ c: 'var(--graf-2)', t: 'Curva Normal (μ = 70,3; σ = 11,2)', linha: true });
+        }
+      }
+    } else if (tipo === 'ogiva') {
+      const X = sc(40, 96, M.l, W - M.r), Y = sc(0, 100, H - M.b, M.t);
+      corpo.push(...eixos(X, Y, ticks(40, 96, 10), ticks(0, 100, 25), 'peso_kg', 'Frequência acumulada (Fr%)'));
+      let acc = 0; const pts = [[43.5, 0]]; fi.forEach((v, i) => { acc += v; pts.push([edges[i + 1], acc / 227 * 100]); });
+      corpo.push(h('path', { key: 'o', d: pts.map((p, i) => (i ? 'L' : 'M') + X(p[0]) + ' ' + Y(p[1])).join(''), style: { fill: 'none', stroke: 'var(--graf-1)', strokeWidth: 2.5 } }));
+      pts.forEach((p, i) => corpo.push(h('circle', { key: 'p' + i, cx: X(p[0]), cy: Y(p[1]), r: 4, style: { fill: 'var(--graf-1)', stroke: 'var(--graf-fundo)', strokeWidth: 1.5 } })));
+      legenda = [{ c: 'var(--graf-1)', t: 'Fr% acumulada', linha: true }];
+    } else if (tipo === 'boxplot') {
+      const X = sc(40, 96, M.l, W - M.r); const cy = (M.t + H - M.b) / 2, bh = Math.min(70, (H - M.b - M.t) * .45);
+      corpo.push(...eixos(X, v => v, ticks(40, 96, 10), [], 'peso_kg', ''));
+      const [mn, q1, md, q3, mx] = [43.8, 62.1, 69.8, 77.9, 92.9];
+      const st = { stroke: 'var(--graf-1)', strokeWidth: 2 };
+      corpo.push(h('line', { key: 'w1', x1: X(mn), x2: X(q1), y1: cy, y2: cy, style: st }), h('line', { key: 'w2', x1: X(q3), x2: X(mx), y1: cy, y2: cy, style: st }));
+      corpo.push(h('line', { key: 'c1', x1: X(mn), x2: X(mn), y1: cy - bh / 4, y2: cy + bh / 4, style: st }), h('line', { key: 'c2', x1: X(mx), x2: X(mx), y1: cy - bh / 4, y2: cy + bh / 4, style: st }));
+      corpo.push(h('rect', { key: 'bx', x: X(q1), width: X(q3) - X(q1), y: cy - bh / 2, height: bh, style: { ...st, fill: 'color-mix(in oklab, var(--graf-1) 22%, var(--graf-fundo))' } }));
+      corpo.push(h('line', { key: 'md', x1: X(md), x2: X(md), y1: cy - bh / 2, y2: cy + bh / 2, style: { ...st, strokeWidth: 3 } }));
+      corpo.push(h('line', { key: 'mu', x1: X(70.3), x2: X(70.3), y1: cy - bh / 2, y2: cy + bh / 2, style: { stroke: 'var(--graf-2)', strokeWidth: 2, strokeDasharray: '5 4' } }));
+      [[mn, 'mín 43,8'], [q1, 'Q1 62,1'], [md, 'Q2 69,8'], [q3, 'Q3 77,9'], [mx, 'máx 92,9']].forEach(([v, t], i) => corpo.push(h('text', { key: 'l' + i, x: X(v), y: cy - bh / 2 - 10, textAnchor: 'middle', style: { ...tx, fill: 'var(--cor-texto)' } }, t)));
+      legenda = [{ c: 'var(--graf-1)', t: 'Quartis e extremos' }, { c: 'var(--graf-2)', t: 'Média 70,3', linha: true }];
+    } else if (tipo === 'barras-h') {
+      const cats = [['Goiânia', 92], ['Anápolis', 41], ['Aparecida de Goiânia', 38], ['Rio Verde', 24], ['Luziânia', 15], ['Catalão', 11], ['Trindade', 7]];
+      const ML = 150; const X = sc(0, 100, ML, W - M.r - 40); const bw = (H - M.t - M.b) / cats.length;
+      ticks(0, 100, 20).forEach(v => { corpo.push(h('line', { key: 'g' + v, x1: X(v), x2: X(v), y1: M.t, y2: H - M.b, style: { stroke: 'var(--graf-grade)' } }), h('text', { key: 't' + v, x: X(v), y: H - M.b + 18, textAnchor: 'middle', style: tx }, v)); });
+      corpo.push(h('text', { key: 'xl', x: (ML + W - M.r) / 2, y: H - 8, textAnchor: 'middle', style: { ...tx, fontSize: 13, fill: 'var(--cor-texto)' } }, 'Frequência (fi)'));
+      cats.forEach(([c, v], i) => { const y = M.t + i * bw; corpo.push(h('text', { key: 'c' + i, x: ML - 10, y: y + bw / 2 + 4, textAnchor: 'end', style: { ...tx, fill: 'var(--cor-texto)' } }, c), h('rect', { key: 'r' + i, x: ML, y: y + bw * .18, width: X(v) - ML, height: bw * .64, style: { fill: 'var(--graf-1)', opacity: .85 } }), h('text', { key: 'v' + i, x: X(v) + 6, y: y + bw / 2 + 4, style: { ...tx, fill: 'var(--cor-texto)' } }, `${v} (${fmt(v / 228 * 100)}%)`)); });
+      corpo.push(h('line', { key: 'ay', x1: ML, x2: ML, y1: M.t, y2: H - M.b, style: { stroke: 'var(--graf-eixo)' } }));
+    } else if (tipo === 'qq') {
+      const X = sc(-3, 3, M.l, W - M.r), Y = sc(35, 105, H - M.b, M.t);
+      corpo.push(...eixos(X, Y, ticks(-3, 3, 1), ticks(40, 100, 20), 'Quantis teóricos (Normal)', 'Quantis observados', 0, 0));
+      const s = Array.from({ length: 227 }, () => 70.3 + 11.2 * norm()).sort((a, b) => a - b);
+      const inv = p => { const a = [-39.69683028665376, 220.9460984245205, -275.9285104469687, 138.357751867269, -30.66479806614716, 2.506628277459239], b = [-54.47609879822406, 161.5858368580409, -155.6989798598866, 66.80131188771972, -13.28068155288572], c = [-.007784894002430293, -.3223964580411365, -2.400758277161838, -2.549732539343734, 4.374664141464968, 2.938163982698783], d = [.007784695709041462, .3224671290700398, 2.445134137142996, 3.754408661907416]; if (p < .02425) { const q = Math.sqrt(-2 * Math.log(p)); return (((((c[0] * q + c[1]) * q + c[2]) * q + c[3]) * q + c[4]) * q + c[5]) / ((((d[0] * q + d[1]) * q + d[2]) * q + d[3]) * q + 1); } if (p > 1 - .02425) return -inv(1 - p); const q = p - .5, r = q * q; return (((((a[0] * r + a[1]) * r + a[2]) * r + a[3]) * r + a[4]) * r + a[5]) * q / (((((b[0] * r + b[1]) * r + b[2]) * r + b[3]) * r + b[4]) * r + 1); };
+      corpo.push(h('line', { key: 'ref', x1: X(-3), x2: X(3), y1: Y(70.3 - 33.6), y2: Y(70.3 + 33.6), style: { stroke: 'var(--graf-2)', strokeWidth: 2 } }));
+      s.forEach((v, i) => corpo.push(h('circle', { key: 'q' + i, cx: X(inv((i + .5) / 227)), cy: Y(v), r: 3, style: { fill: 'var(--graf-1)', opacity: .75 } })));
+      legenda = [{ c: 'var(--graf-1)', t: 'Valores de peso_kg' }, { c: 'var(--graf-2)', t: 'Referência Normal', linha: true }];
+    } else if (tipo === 'dispersao' || tipo === 'residuos') {
+      const pts = Array.from({ length: 227 }, () => { const x = 1.70 + .088 * norm(); return [x, -98.4 + 98.1 * x + 6.9 * norm()]; });
+      if (tipo === 'dispersao') {
+        const X = sc(1.45, 1.95, M.l, W - M.r), Y = sc(35, 105, H - M.b, M.t);
+        corpo.push(...eixos(X, Y, ticks(1.45, 1.95, .1), ticks(40, 100, 20), 'altura_m (X)', 'peso_kg (Y)', 2, 0));
+        pts.forEach((p, i) => corpo.push(h('circle', { key: 'd' + i, cx: X(p[0]), cy: Y(p[1]), r: 3.2, style: { fill: 'var(--graf-1)', opacity: .7 } })));
+        corpo.push(h('line', { key: 'rt', x1: X(1.45), x2: X(1.95), y1: Y(-98.4 + 98.1 * 1.45), y2: Y(-98.4 + 98.1 * 1.95), style: { stroke: 'var(--graf-2)', strokeWidth: 2.5 } }));
+        legenda = [{ c: 'var(--graf-1)', t: 'Pessoas (n = 227)' }, { c: 'var(--graf-2)', t: 'Ŷ = −98,4 + 98,1·X', linha: true }];
+      } else {
+        const X = sc(45, 95, M.l, W - M.r), Y = sc(-25, 25, H - M.b, M.t);
+        corpo.push(...eixos(X, Y, ticks(45, 95, 10), ticks(-20, 20, 10), 'Valor previsto (Ŷ)', 'Resíduo (Y − Ŷ)'));
+        corpo.push(h('line', { key: 'z', x1: M.l, x2: W - M.r, y1: Y(0), y2: Y(0), style: { stroke: 'var(--graf-2)', strokeWidth: 2, strokeDasharray: '6 4' } }));
+        pts.forEach((p, i) => { const f = -98.4 + 98.1 * p[0]; if (f > 45 && f < 95) corpo.push(h('circle', { key: 'r' + i, cx: X(f), cy: Y(p[1] - f), r: 3, style: { fill: 'var(--graf-1)', opacity: .7 } })); });
+        legenda = [{ c: 'var(--graf-1)', t: 'Resíduos' }, { c: 'var(--graf-2)', t: 'Resíduo zero', linha: true }];
+      }
+    } else if (tipo === 'heatmap') {
+      const lab = ['idade', 'altura_m', 'peso_kg']; const m = [[1, .12, .21], [.12, 1, .78], [.21, .78, 1]];
+      const ML = 90, size = Math.min((W - ML - 90) / 3, (H - M.t - 40) / 3);
+      m.forEach((row, i) => row.forEach((r, j) => { const x = ML + j * size, y = M.t + i * size; const cor = r >= 0 ? 'var(--graf-1)' : 'var(--graf-2)'; corpo.push(h('rect', { key: `h${i}${j}`, x: x + 1, y: y + 1, width: size - 2, height: size - 2, style: { fill: `color-mix(in oklab, ${cor} ${Math.round(Math.abs(r) * 60)}%, var(--graf-fundo))` } }), h('text', { key: `t${i}${j}`, x: x + size / 2, y: y + size / 2 + 5, textAnchor: 'middle', style: { ...tx, fontFamily: 'JetBrains Mono, monospace', fontSize: 14, fontWeight: 600, fill: 'var(--cor-texto)' } }, fmt(r, 2))); }));
+      lab.forEach((l, i) => corpo.push(h('text', { key: 'ly' + i, x: ML - 10, y: M.t + i * size + size / 2 + 4, textAnchor: 'end', style: { ...tx, fill: 'var(--cor-texto)' } }, l), h('text', { key: 'lx' + i, x: ML + i * size + size / 2, y: M.t + 3 * size + 20, textAnchor: 'middle', style: { ...tx, fill: 'var(--cor-texto)' } }, l)));
+      const gx = ML + 3 * size + 24, gh = 3 * size;
+      for (let k = 0; k < 20; k++) { const r = 1 - k / 19 * 2; const cor = r >= 0 ? 'var(--graf-1)' : 'var(--graf-2)'; corpo.push(h('rect', { key: 'g' + k, x: gx, y: M.t + k * gh / 20, width: 14, height: gh / 20 + .5, style: { fill: `color-mix(in oklab, ${cor} ${Math.round(Math.abs(r) * 60)}%, var(--graf-fundo))` } })); }
+      [[1, '1'], [0, '0'], [-1, '−1']].forEach(([v, t], i) => corpo.push(h('text', { key: 'gl' + i, x: gx + 20, y: M.t + (1 - v) / 2 * gh + 4, style: tx }, t)));
+    }
+    const leg = legenda.length ? h('g', { key: 'leg' }, legenda.map((l, i) => { const x = M.l + 8 + i * 230; return h('g', { key: i }, l.linha ? h('line', { x1: x, x2: x + 18, y1: 8, y2: 8, style: { stroke: l.c, strokeWidth: 2.5 } }) : h('rect', { x, y: 2, width: 12, height: 12, style: { fill: l.c, opacity: .85 } }), h('text', { x: x + 24, y: 12, style: { ...tx, fill: 'var(--cor-texto)' } }, l.t)); })) : null;
+    const svg = h('svg', { viewBox: `0 0 ${W} ${H + (legenda.length ? 20 : 0)}`, width: '100%', role: 'img', 'aria-label': this.props.titulo || tipo, style: { display: 'block', overflow: 'visible' } }, leg, h('g', { transform: legenda.length ? 'translate(0 20)' : undefined }, corpo));
+    return { svg, titulo: this.props.titulo, temTitulo: !!this.props.titulo };
+  }
+}
+</script>
+</body>
+</html>

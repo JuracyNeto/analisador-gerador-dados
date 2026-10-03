@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet><meta name="design_doc_mode" content="canvas"></meta><link rel="stylesheet" href="tokens.css"></link><style>body{margin:0;background:#e9ebef}a{color:#4338ca}a:hover{color:#3730a3}</style></helmet>
+<div style="padding:80px;display:flex;flex-direction:column;gap:120px;font-family:Inter,system-ui,sans-serif;color:#161a20;background:#e9ebef;width:max-content">
+  <header style="display:flex;flex-direction:column;gap:8px;max-width:900px">
+    <h1 style="margin:0;font-size:48px;font-weight:700;letter-spacing:-.02em">Analisador e Gerador de Dados · Telas</h1>
+    <p style="margin:0;font-size:20px;line-height:1.5;color:#4b5462">8 etapas no tema claro, telas 4 e 7 também no escuro, e os estados pedidos. Tokens e componentes em <a href="Design System.dc.html">Design System</a>.</p>
+  </header>
+  <section style="display:flex;flex-direction:column;gap:28px">
+    <h2 style="margin:0;font-size:32px;font-weight:700;letter-spacing:-.01em">1 · Importar</h2>
+    <div style="display:flex;gap:80px;align-items:flex-start">
+      <div id="1a" style="display:flex;flex-direction:column;gap:14px">
+        <div style="display:flex;align-items:center;gap:12px"><span style="font:600 16px 'JetBrains Mono',monospace;padding:4px 10px;border-radius:6px;background:#161a20;color:#fff">1a</span><span style="font-size:20px;font-weight:500">Arquivo lido + toast de sucesso</span></div>
+        <div style="width:1440px;border-radius:6px;overflow:hidden;box-shadow:0 8px 30px rgba(16,20,26,.14)"><dc-import name="Tela 1 Importar" estado="enviado" hint-size="1440px,1000px"></dc-import></div>
+      </div>
+      <div id="1b" style="display:flex;flex-direction:column;gap:14px">
+        <div style="display:flex;align-items:center;gap:12px"><span style="font:600 16px 'JetBrains Mono',monospace;padding:4px 10px;border-radius:6px;background:#161a20;color:#fff">1b</span><span style="font-size:20px;font-weight:500">Antes do envio</span></div>
+        <div style="width:1440px;border-radius:6px;overflow:hidden;box-shadow:0 8px 30px rgba(16,20,26,.14)"><dc-import name="Tela 1 Importar" estado="vazio" hint-size="1440px,1000px"></dc-import></div>
+      </div>
+      <div id="1c" style="display:flex;flex-direction:column;gap:14px">
+        <div style="display:flex;align-items:center;gap:12px"><span style="font:600 16px 'JetBrains Mono',monospace;padding:4px 10px;border-radius:6px;background:#161a20;color:#fff">1c</span><span style="font-size:20px;font-weight:500">Erro de leitura</span></div>
+        <div style="width:1440px;border-radius:6px;overflow:hidden;box-shadow:0 8px 30px rgba(16,20,26,.14)"><dc-import name="Tela 1 Importar" estado="erro" hint-size="1440px,1000px"></dc-import></div>
+      </div>
+    </div>
+  </section>
+  <section style="display:flex;flex-direction:column;gap:28px">
+    <h2 style="margin:0;font-size:32px;font-weight:700;letter-spacing:-.01em">2 · Variáveis</h2>
+    <div style="display:flex;gap:80px;align-items:flex-start">
+      <div id="2a" style="display:flex;flex-direction:column;gap:14px">
+        <div style="display:flex;align-items:center;gap:12px"><span style="font:600 16px 'JetBrains Mono',monospace;padding:4px 10px;border-radius:6px;background:#161a20;color:#fff">2a</span><span style="font-size:20px;font-weight:500">Tipos detectados e ordem das ordinais</span></div>
+        <div style="width:1440px;border-radius:6px;overflow:hidden;box-shadow:0 8px 30px rgba(16,20,26,.14)"><dc-import name="Tela 2 Variaveis"  hint-size="1440px,1000px"></dc-import></div>
+      </div>
+    </div>
+  </section>
+  <section style="display:flex;flex-direction:column;gap:28px">
+    <h2 style="margin:0;font-size:32px;font-weight:700;letter-spacing:-.01em">3 · Limpeza</h2>
+    <div style="display:flex;gap:80px;align-items:flex-start">
+      <div id="3a" style="display:flex;flex-direction:column;gap:14px">
+        <div style="display:flex;align-items:center;gap:12px"><span style="font:600 16px 'JetBrains Mono',monospace;padding:4px 10px;border-radius:6px;background:#161a20;color:#fff">3a</span><span style="font-size:20px;font-weight:500">Problemas, ações e log</span></div>
+        <div style="width:1440px;border-radius:6px;overflow:hidden;box-shadow:0 8px 30px rgba(16,20,26,.14)"><dc-import name="Tela 3 Limpeza"  hint-size="1440px,1000px"></dc-import></div>
+      </div>
+    </div>
+  </section>
+  <section style="display:flex;flex-direction:column;gap:28px">
+    <h2 style="margin:0;font-size:32px;font-weight:700;letter-spacing:-.01em">4 · Análise univariada</h2>
+    <div style="display:flex;gap:80px;align-items:flex-start">
+      <div id="4a" style="display:flex;flex-direction:column;gap:14px">
+        <div style="display:flex;align-items:center;gap:12px"><span style="font:600 16px 'JetBrains Mono',monospace;padding:4px 10px;border-radius:6px;background:#161a20;color:#fff">4a</span><span style="font-size:20px;font-weight:500">Separatrizes · Onde está meu valor?</span></div>
+        <div style="width:1440px;border-radius:6px;overflow:hidden;box-shadow:0 8px 30px rgba(16,20,26,.14)"><dc-import name="Tela 4 Univariada" aba="separatrizes" hint-size="1440px,1000px"></dc-import></div>
+      </div>
+      <div id="4b" style="display:flex;flex-direction:column;gap:14px">
+        <div style="display:flex;align-items:center;gap:12px"><span style="font:600 16px 'JetBrains Mono',monospace;padding:4px 10px;border-radius:6px;background:#161a20;color:#fff">4b</span><span style="font-size:20px;font-weight:500">Frequências</span></div>
+        <div style="width:1440px;border-radius:6px;overflow:hidden;box-shadow:0 8px 30px rgba(16,20,26,.14)"><dc-import name="Tela 4 Univariada" aba="frequencias" hint-size="1440px,1000px"></dc-import></div>
+      </div>
+      <div id="4c" style="display:flex;flex-direction:column;gap:14px">
+        <div style="display:flex;align-items:center;gap:12px"><span style="font:600 16px 'JetBrains Mono',monospace;padding:4px 10px;border-radius:6px;background:#161a20;color:#fff">4c</span><span style="font-size:20px;font-weight:500">Tendência central</span></div>
+        <div style="width:1440px;border-radius:6px;overflow:hidden;box-shadow:0 8px 30px rgba(16,20,26,.14)"><dc-import name="Tela 4 Univariada" aba="tendencia" hint-size="1440px,1000px"></dc-import></div>
+      </div>
+      <div id="4d" style="display:flex;flex-direction:column;gap:14px">
+        <div style="display:flex;align-items:center;gap:12px"><span style="font:600 16px 'JetBrains Mono',monospace;padding:4px 10px;border-radius:6px;background:#161a20;color:#fff">4d</span><span style="font-size:20px;font-weight:500">Dispersão</span></div>
+        <div style="width:1440px;border-radius:6px;overflow:hidden;box-shadow:0 8px 30px rgba(16,20,26,.14)"><dc-import name="Tela 4 Univariada" aba="dispersao" hint-size="1440px,1000px"></dc-import></div>
+      </div>
+      <div id="4e" style="display:flex;flex-direction:column;gap:14px">
+        <div style="display:flex;align-items:center;gap:12px"><span style="font:600 16px 'JetBrains Mono',monospace;padding:4px 10px;border-radius:6px;background:#161a20;color:#fff">4e</span><span style="font-size:20px;font-weight:500">Forma e distribuição</span></div>
+        <div style="width:1440px;border-radius:6px;overflow:hidden;box-shadow:0 8px 30px rgba(16,20,26,.14)"><dc-import name="Tela 4 Univariada" aba="forma" hint-size="1440px,1000px"></dc-import></div>
+      </div>
+      <div id="4f" style="display:flex;flex-direction:column;gap:14px">
+        <div style="display:flex;align-items:center;gap:12px"><span style="font:600 16px 'JetBrains Mono',monospace;padding:4px 10px;border-radius:6px;background:#161a20;color:#fff">4f</span><span style="font-size:20px;font-weight:500">Gráficos</span></div>
+        <div style="width:1440px;border-radius:6px;overflow:hidden;box-shadow:0 8px 30px rgba(16,20,26,.14)"><dc-import name="Tela 4 Univariada" aba="graficos" hint-size="1440px,1000px"></dc-import></div>
+      </div>
+      <div id="4g" style="display:flex;flex-direction:column;gap:14px">
+        <div style="display:flex;align-items:center;gap:12px"><span style="font:600 16px 'JetBrains Mono',monospace;padding:4px 10px;border-radius:6px;background:#161a20;color:#fff">4g</span><span style="font-size:20px;font-weight:500">Coluna nominal (cidade)</span></div>
+        <div style="width:1440px;border-radius:6px;overflow:hidden;box-shadow:0 8px 30px rgba(16,20,26,.14)"><dc-import name="Tela 4 Univariada" coluna="cidade" hint-size="1440px,1000px"></dc-import></div>
+      </div>
+      <div id="4h" style="display:flex;flex-direction:column;gap:14px">
+        <div style="display:flex;align-items:center;gap:12px"><span style="font:600 16px 'JetBrains Mono',monospace;padding:4px 10px;border-radius:6px;background:#161a20;color:#fff">4h</span><span style="font-size:20px;font-weight:500">Carregando (skeleton)</span></div>
+        <div style="width:1440px;border-radius:6px;overflow:hidden;box-shadow:0 8px 30px rgba(16,20,26,.14)"><dc-import name="Tela 4 Univariada" estado="carregando" hint-size="1440px,1000px"></dc-import></div>
+      </div>
+      <div id="4i" style="display:flex;flex-direction:column;gap:14px">
+        <div style="display:flex;align-items:center;gap:12px"><span style="font:600 16px 'JetBrains Mono',monospace;padding:4px 10px;border-radius:6px;background:#161a20;color:#fff">4i</span><span style="font-size:20px;font-weight:500">Escuro · Separatrizes</span></div>
+        <div style="width:1440px;border-radius:6px;overflow:hidden;box-shadow:0 8px 30px rgba(16,20,26,.14)"><dc-import name="Tela 4 Univariada" aba="separatrizes" tema="escuro" hint-size="1440px,1000px"></dc-import></div>
+      </div>
+      <div id="4j" style="display:flex;flex-direction:column;gap:14px">
+        <div style="display:flex;align-items:center;gap:12px"><span style="font:600 16px 'JetBrains Mono',monospace;padding:4px 10px;border-radius:6px;background:#161a20;color:#fff">4j</span><span style="font-size:20px;font-weight:500">Escuro · Forma e distribuição</span></div>
+        <div style="width:1440px;border-radius:6px;overflow:hidden;box-shadow:0 8px 30px rgba(16,20,26,.14)"><dc-import name="Tela 4 Univariada" aba="forma" tema="escuro" hint-size="1440px,1000px"></dc-import></div>
+      </div>
+    </div>
+  </section>
+  <section style="display:flex;flex-direction:column;gap:28px">
+    <h2 style="margin:0;font-size:32px;font-weight:700;letter-spacing:-.01em">5 · Bivariada</h2>
+    <div style="display:flex;gap:80px;align-items:flex-start">
+      <div id="5a" style="display:flex;flex-direction:column;gap:14px">
+        <div style="display:flex;align-items:center;gap:12px"><span style="font:600 16px 'JetBrains Mono',monospace;padding:4px 10px;border-radius:6px;background:#161a20;color:#fff">5a</span><span style="font-size:20px;font-weight:500">Correlação, regressão e previsão</span></div>
+        <div style="width:1440px;border-radius:6px;overflow:hidden;box-shadow:0 8px 30px rgba(16,20,26,.14)"><dc-import name="Tela 5 Bivariada"  hint-size="1440px,1000px"></dc-import></div>
+      </div>
+    </div>
+  </section>
+  <section style="display:flex;flex-direction:column;gap:28px">
+    <h2 style="margin:0;font-size:32px;font-weight:700;letter-spacing:-.01em">6 · Gerador</h2>
+    <div style="display:flex;gap:80px;align-items:flex-start">
+      <div id="6a" style="display:flex;flex-direction:column;gap:14px">
+        <div style="display:flex;align-items:center;gap:12px"><span style="font:600 16px 'JetBrains Mono',monospace;padding:4px 10px;border-radius:6px;background:#161a20;color:#fff">6a</span><span style="font-size:20px;font-weight:500">Univariado</span></div>
+        <div style="width:1440px;border-radius:6px;overflow:hidden;box-shadow:0 8px 30px rgba(16,20,26,.14)"><dc-import name="Tela 6 Gerador" aba="univariado" hint-size="1440px,1000px"></dc-import></div>
+      </div>
+      <div id="6b" style="display:flex;flex-direction:column;gap:14px">
+        <div style="display:flex;align-items:center;gap:12px"><span style="font:600 16px 'JetBrains Mono',monospace;padding:4px 10px;border-radius:6px;background:#161a20;color:#fff">6b</span><span style="font-size:20px;font-weight:500">Bivariado</span></div>
+        <div style="width:1440px;border-radius:6px;overflow:hidden;box-shadow:0 8px 30px rgba(16,20,26,.14)"><dc-import name="Tela 6 Gerador" aba="bivariado" hint-size="1440px,1000px"></dc-import></div>
+      </div>
+    </div>
+  </section>
+  <section style="display:flex;flex-direction:column;gap:28px">
+    <h2 style="margin:0;font-size:32px;font-weight:700;letter-spacing:-.01em">7 · Detector</h2>
+    <div style="display:flex;gap:80px;align-items:flex-start">
+      <div id="7a" style="display:flex;flex-direction:column;gap:14px">
+        <div style="display:flex;align-items:center;gap:12px"><span style="font:600 16px 'JetBrains Mono',monospace;padding:4px 10px;border-radius:6px;background:#161a20;color:#fff">7a</span><span style="font-size:20px;font-weight:500">Alertas agrupados por coluna</span></div>
+        <div style="width:1440px;border-radius:6px;overflow:hidden;box-shadow:0 8px 30px rgba(16,20,26,.14)"><dc-import name="Tela 7 Detector" regras-abertas="{{ true }}" hint-size="1440px,1000px"></dc-import></div>
+      </div>
+      <div id="7b" style="display:flex;flex-direction:column;gap:14px">
+        <div style="display:flex;align-items:center;gap:12px"><span style="font:600 16px 'JetBrains Mono',monospace;padding:4px 10px;border-radius:6px;background:#161a20;color:#fff">7b</span><span style="font-size:20px;font-weight:500">"Ver na tabela" · drawer</span></div>
+        <div style="width:1440px;border-radius:6px;overflow:hidden;box-shadow:0 8px 30px rgba(16,20,26,.14)"><dc-import name="Tela 7 Detector" drawer="{{ true }}" hint-size="1440px,1000px"></dc-import></div>
+      </div>
+      <div id="7c" style="display:flex;flex-direction:column;gap:14px">
+        <div style="display:flex;align-items:center;gap:12px"><span style="font:600 16px 'JetBrains Mono',monospace;padding:4px 10px;border-radius:6px;background:#161a20;color:#fff">7c</span><span style="font-size:20px;font-weight:500">Sem alertas</span></div>
+        <div style="width:1440px;border-radius:6px;overflow:hidden;box-shadow:0 8px 30px rgba(16,20,26,.14)"><dc-import name="Tela 7 Detector" estado="vazio" hint-size="1440px,1000px"></dc-import></div>
+      </div>
+      <div id="7d" style="display:flex;flex-direction:column;gap:14px">
+        <div style="display:flex;align-items:center;gap:12px"><span style="font:600 16px 'JetBrains Mono',monospace;padding:4px 10px;border-radius:6px;background:#161a20;color:#fff">7d</span><span style="font-size:20px;font-weight:500">Escuro</span></div>
+        <div style="width:1440px;border-radius:6px;overflow:hidden;box-shadow:0 8px 30px rgba(16,20,26,.14)"><dc-import name="Tela 7 Detector" tema="escuro" regras-abertas="{{ true }}" hint-size="1440px,1000px"></dc-import></div>
+      </div>
+    </div>
+  </section>
+  <section style="display:flex;flex-direction:column;gap:28px">
+    <h2 style="margin:0;font-size:32px;font-weight:700;letter-spacing:-.01em">8 · Relatório</h2>
+    <div style="display:flex;gap:80px;align-items:flex-start">
+      <div id="8a" style="display:flex;flex-direction:column;gap:14px">
+        <div style="display:flex;align-items:center;gap:12px"><span style="font:600 16px 'JetBrains Mono',monospace;padding:4px 10px;border-radius:6px;background:#161a20;color:#fff">8a</span><span style="font-size:20px;font-weight:500">Checklist e prévia A4</span></div>
+        <div style="width:1440px;border-radius:6px;overflow:hidden;box-shadow:0 8px 30px rgba(16,20,26,.14)"><dc-import name="Tela 8 Relatorio"  hint-size="1440px,1000px"></dc-import></div>
+      </div>
+    </div>
+  </section>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {}
+</script>
+</body>
+</html>
