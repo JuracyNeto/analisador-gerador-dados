@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet><link rel="stylesheet" href="tokens.css"></link></helmet>
+<nav aria-label="Etapas da análise" style="width:264px;height:100%;min-height:100%;box-sizing:border-box;background:var(--cor-superficie);border-right:1px solid var(--cor-borda);display:flex;flex-direction:column;font-family:Inter,system-ui,sans-serif;color:var(--cor-texto)">
+  <div style="height:64px;display:flex;align-items:center;gap:10px;padding:0 20px;border-bottom:1px solid var(--cor-borda)">
+    <div aria-hidden="true" style="width:28px;height:28px;border-radius:8px;background:var(--cor-primaria);color:var(--cor-sobre-primaria);display:grid;place-items:center;font:600 13px 'JetBrains Mono',monospace">x̄</div>
+    <div style="display:flex;flex-direction:column;line-height:1.25;white-space:nowrap">
+      <span style="font-weight:600;font-size:14px">Analisador e Gerador</span>
+      <span style="font-size:12px;color:var(--cor-texto-2)">de Dados</span>
+    </div>
+  </div>
+  <ol style="list-style:none;margin:0;padding:12px;display:flex;flex-direction:column;gap:2px;flex:1">
+    <sc-for list="{{ etapas }}" as="e" hint-placeholder-count="8">
+      <li>
+        <div aria-current="{{ e.aria }}" style="display:{{ e.dispAtual }};align-items:center;gap:12px;min-height:44px;padding:0 12px;border-radius:8px;background:var(--cor-primaria-suave);color:var(--cor-primaria);font-weight:600;font-size:14px">
+          <span style="width:26px;height:26px;border-radius:50%;background:var(--cor-primaria);color:var(--cor-sobre-primaria);display:grid;place-items:center;font:600 12px 'JetBrains Mono',monospace">{{ e.n }}</span>
+          <span style="flex:1">{{ e.nome }}</span>
+        </div>
+        <sc-if value="{{ e.concluida }}">
+          <div style="display:flex;align-items:center;gap:12px;min-height:44px;padding:0 12px;border-radius:8px;color:var(--cor-texto);font-size:14px;cursor:pointer" style-hover="background:var(--cor-superficie-2)">
+            <span style="width:26px;height:26px;border-radius:50%;background:var(--cor-sucesso-suave);color:var(--cor-sucesso);display:grid;place-items:center"><span aria-hidden="true" style="font-family:'Material Symbols Rounded';font-size:18px;line-height:1;font-weight:600">check</span></span>
+            <span style="flex:1">{{ e.nome }}</span>
+            <span style="font-size:12px;color:var(--cor-sucesso);font-weight:500">Concluída</span>
+          </div>
+        </sc-if>
+        <sc-if value="{{ e.livre }}">
+          <div style="display:flex;align-items:center;gap:12px;min-height:44px;padding:0 12px;border-radius:8px;color:var(--cor-texto);font-size:14px;cursor:pointer" style-hover="background:var(--cor-superficie-2)">
+            <span style="width:26px;height:26px;border-radius:50%;border:1.5px solid var(--cor-borda-forte);color:var(--cor-texto-2);display:grid;place-items:center;box-sizing:border-box;font:500 12px 'JetBrains Mono',monospace">{{ e.n }}</span>
+            <span style="flex:1">{{ e.nome }}</span>
+          </div>
+        </sc-if>
+        <sc-if value="{{ e.bloqueada }}">
+          <div aria-disabled="true" style="display:flex;align-items:center;gap:12px;min-height:44px;padding:0 12px;border-radius:8px;color:var(--cor-texto-desab);font-size:14px">
+            <span style="width:26px;height:26px;border-radius:50%;border:1.5px dashed var(--cor-borda);display:grid;place-items:center;box-sizing:border-box;font:500 12px 'JetBrains Mono',monospace">{{ e.n }}</span>
+            <span style="flex:1">{{ e.nome }}</span>
+            <span aria-label="Bloqueada" style="font-family:'Material Symbols Rounded';font-size:18px;line-height:1">lock</span>
+          </div>
+        </sc-if>
+      </li>
+    </sc-for>
+  </ol>
+  <sc-if value="{{ bloqueado }}" hint-placeholder-val="{{ false }}">
+    <p style="margin:0 20px 16px;font-size:12px;line-height:1.5;color:var(--cor-texto-2);text-wrap:pretty">As etapas 2 a 8 ficam disponíveis depois que você importar um arquivo.</p>
+  </sc-if>
+  <div style="border-top:1px solid var(--cor-borda);padding:12px">
+    <button style="all:unset;box-sizing:border-box;display:flex;align-items:center;gap:10px;width:100%;min-height:40px;padding:0 12px;border-radius:8px;font-size:13px;color:var(--cor-texto-2);cursor:pointer" style-hover="background:var(--cor-superficie-2)">
+      <span aria-hidden="true" style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1">left_panel_close</span>Recolher barra
+    </button>
+  </div>
+</nav>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:264,&quot;height&quot;:720},&quot;atual&quot;:{&quot;editor&quot;:&quot;int&quot;,&quot;default&quot;:4,&quot;tsType&quot;:&quot;number&quot;,&quot;min&quot;:1,&quot;max&quot;:8},&quot;bloqueado&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;}}">
+class Component extends DCLogic {
+  renderVals() {
+    const atual = Number(this.props.atual ?? 1);
+    const bloqueado = !!this.props.bloqueado;
+    const nomes = ['Importar','Variáveis','Limpeza','Análise univariada','Bivariada','Gerador','Detector','Relatório'];
+    const etapas = nomes.map((nome, i) => {
+      const n = i + 1;
+      const bloqueada = bloqueado && n > 1;
+      return { n, nome, atual: n === atual, dispAtual: n === atual ? 'flex' : 'none', aria: n === atual ? 'step' : 'false', bloqueada, concluida: !bloqueada && n < atual, livre: !bloqueada && n > atual };
+    });
+    return { etapas, bloqueado };
+  }
+}
+</script>
+</body>
+</html>

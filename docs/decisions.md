@@ -45,3 +45,9 @@
 | D39 | 02/10/2026 | Verificador de arquitetura próprio (pytest + ast) em vez de import-linter e script de tamanho | import-linter | Uma ferramenta testada cobre camadas, fronteiras e linhas; funciona com pacotes vazios | — |
 | D40 | 02/10/2026 | Endpoint `/api/saude` em `core/` | Em um domínio | É transversal, não pertence a nenhum domínio | — |
 | D41 | 02/10/2026 | Frontend com TypeScript `~5.9` e ESLint `^9` (o template do Vite traz TS 6 e oxlint) | TS 6 com `--legacy-peer-deps`; oxlint | `openapi-typescript` só aceita TS 5; plugins (sonarjs, jsx-a11y) ainda exigem ESLint 9; oxlint não cobre as regras type-checked e de complexidade cognitiva | — |
+| D42 | 02/10/2026 | Design system em variáveis CSS (`shared/ui/tokens.css`) com tema claro/escuro por `data-tema` | CSS-in-JS; Tailwind | Fonte única, troca de tema sem re-render | [0008](adr/0008-design-system-tokens-css.md) |
+| D43 | 02/10/2026 | Tipografia Inter (texto) + JetBrains Mono (números, fórmulas, nomes de coluna), servidas localmente via @fontsource | Fontes do sistema | Legibilidade e números tabulares; uso offline | — |
+| D44 | 02/10/2026 | Ícones Material Symbols Rounded; sempre com texto ou `aria-label` | Lucide; emoji | Cobertura dos ícones de severidade/tipo; acessível | — |
+| D45 | 02/10/2026 | Paleta de gráficos Okabe-Ito ajustada para ≥ 3:1 em cada tema; tema Plotly aplicado no frontend sobre a figura do backend | Paleta padrão do Plotly | Segura para daltonismo; contraste AA | [0008](adr/0008-design-system-tokens-css.md) |
+| D46 | 02/10/2026 | Itens não aplicáveis exibidos esmaecidos (borda tracejada, valor "—") com motivo; abas não aplicáveis desabilitadas com tooltip | Ocultar | Princípio 3 do design; transparência | [0005](adr/0005-textos-amigaveis.md) |
+| D47 | 02/10/2026 | Prévia e impressão do relatório sempre no tema claro | Seguir o tema da tela | Impressão legível | — |

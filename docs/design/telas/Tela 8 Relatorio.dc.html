@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet><link rel="stylesheet" href="tokens.css"></link><style>body{margin:0}a{color:var(--cor-primaria)}a:hover{color:var(--cor-primaria-hover)}</style></helmet>
+<div data-tema="{{ tema }}" data-screen-label="Tela 8 Relatório" style="width:1440px;min-height:960px;display:grid;grid-template-columns:264px minmax(0,1fr);background:var(--cor-fundo);font-family:Inter,system-ui,sans-serif;color:var(--cor-texto)">
+  <dc-import name="Barra Lateral" atual="8" hint-size="264px,100%"></dc-import>
+  <div style="display:flex;flex-direction:column;min-width:0">
+    <dc-import name="Cabecalho" tema="{{ tema }}" hint-size="100%,64px"></dc-import>
+    <main style="padding:32px;display:flex;flex-direction:column;gap:20px;box-sizing:border-box;width:100%;max-width:1176px">
+      <div style="display:flex;align-items:flex-end;gap:24px">
+        <div style="flex:1;display:flex;flex-direction:column;gap:6px">
+          <span style="font-size:13px;font-weight:500;color:var(--cor-texto-2)">Etapa 8 de 8</span>
+          <h1 style="margin:0;font-size:28px;line-height:1.25;font-weight:700;letter-spacing:-.015em">Relatório</h1>
+          <p style="margin:0;font-size:15px;line-height:1.55;color:var(--cor-texto-2)">Escolha o que entra. A prévia ao lado mostra exatamente como o relatório será impresso.</p>
+        </div>
+        <div style="display:flex;gap:12px">
+          <span style="white-space:nowrap;flex:none;display:inline-flex;align-items:center;gap:8px;height:44px;padding:0 18px;border-radius:8px;border:1px solid var(--cor-borda-forte);background:var(--cor-superficie);font-size:15px;font-weight:500;box-sizing:border-box"><span aria-hidden="true" style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1">code</span>Baixar HTML</span>
+          <span style="white-space:nowrap;flex:none;display:inline-flex;align-items:center;gap:8px;height:44px;padding:0 20px;border-radius:8px;background:var(--cor-primaria);color:var(--cor-sobre-primaria);font-size:15px;font-weight:600"><span aria-hidden="true" style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1">print</span>Imprimir / salvar PDF</span>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:300px minmax(0,1fr);gap:24px;align-items:start">
+        <div style="display:flex;flex-direction:column;gap:16px">
+          <fieldset style="margin:0;background:var(--cor-superficie);border:1px solid var(--cor-borda);border-radius:12px;padding:16px 20px;display:flex;flex-direction:column;gap:4px">
+            <legend style="padding:0;float:left;width:100%;display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px"><span style="font-size:15px;font-weight:600">Seções</span><span style="font-size:13px;color:var(--cor-texto-2)">8 de 9</span></legend>
+            <sc-for list="{{ secoes }}" as="s" hint-placeholder-count="9">
+              <label style="display:flex;align-items:center;gap:10px;min-height:36px;font-size:14px">
+                <sc-if value="{{ s.on }}"><span aria-hidden="true" style="width:20px;height:20px;border-radius:5px;background:var(--cor-primaria);color:var(--cor-sobre-primaria);display:grid;place-items:center;flex:none;font-family:'Material Symbols Rounded';font-size:16px;line-height:1">check</span></sc-if>
+                <sc-if value="{{ s.off }}"><span aria-hidden="true" style="width:20px;height:20px;border-radius:5px;border:1.5px solid var(--cor-borda-forte);box-sizing:border-box;flex:none"></span></sc-if>
+                <span style="flex:1">{{ s.n }}</span><span style="font:12px 'JetBrains Mono',monospace;color:var(--cor-texto-2)">{{ s.p }}</span>
+              </label>
+            </sc-for>
+          </fieldset>
+          <fieldset style="margin:0;background:var(--cor-superficie);border:1px solid var(--cor-borda);border-radius:12px;padding:16px 20px;display:flex;flex-direction:column;gap:4px">
+            <legend style="padding:0;float:left;width:100%;display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px"><span style="font-size:15px;font-weight:600">Colunas</span><span style="font-size:13px;color:var(--cor-texto-2)">6 de 7</span></legend>
+            <sc-for list="{{ colunas }}" as="s" hint-placeholder-count="7">
+              <label style="display:flex;align-items:center;gap:10px;min-height:36px;font-size:14px">
+                <sc-if value="{{ s.on }}"><span aria-hidden="true" style="width:20px;height:20px;border-radius:5px;background:var(--cor-primaria);color:var(--cor-sobre-primaria);display:grid;place-items:center;flex:none;font-family:'Material Symbols Rounded';font-size:16px;line-height:1">check</span></sc-if>
+                <sc-if value="{{ s.off }}"><span aria-hidden="true" style="width:20px;height:20px;border-radius:5px;border:1.5px solid var(--cor-borda-forte);box-sizing:border-box;flex:none"></span></sc-if>
+                <span style="flex:1;font-family:'JetBrains Mono',monospace;font-size:13.5px">{{ s.n }}</span>
+                <span style="white-space:nowrap;flex:none;display:inline-flex;align-items:center;gap:4px;font-size:12px;font-weight:600;color:var(--tipo-{{ s.k }})"><span aria-hidden="true" style="font-family:'Material Symbols Rounded';font-size:15px;line-height:1">{{ s.i }}</span>{{ s.t }}</span>
+              </label>
+            </sc-for>
+          </fieldset>
+        </div>
+
+        <div style="background:var(--cor-superficie-2);border:1px solid var(--cor-borda);border-radius:12px;padding:24px;display:flex;flex-direction:column;align-items:center;gap:12px">
+          <div style="display:flex;width:620px;justify-content:space-between;font-size:13px;color:var(--cor-texto-2)"><span>Prévia · A4 retrato</span><span style="font-variant-numeric:tabular-nums">Página 1 de 11</span></div>
+          <article data-tema="claro" aria-label="Prévia do relatório" style="width:620px;height:877px;box-sizing:border-box;background:#ffffff;color:#161a20;box-shadow:var(--sombra-2);padding:48px 52px;display:flex;flex-direction:column;gap:18px;font-family:Inter,system-ui,sans-serif;overflow:hidden">
+            <div style="display:flex;justify-content:space-between;align-items:baseline;border-bottom:1.5px solid #161a20;padding-bottom:10px">
+              <span style="font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase">Analisador e Gerador de Dados</span>
+              <span style="font:10px 'JetBrains Mono',monospace;color:#4b5462">02/10/2026</span>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:4px">
+              <h2 style="margin:0;font-size:22px;font-weight:700;letter-spacing:-.01em">Relatório estatístico</h2>
+              <span style="font:11.5px 'JetBrains Mono',monospace;color:#4b5462">pesquisa_saude.txt · 227 linhas após limpeza × 8 colunas</span>
+            </div>
+            <section style="display:flex;flex-direction:column;gap:6px">
+              <h3 style="margin:0;font-size:13px;font-weight:700">1. Leitura do arquivo</h3>
+              <p style="margin:0;font-size:11px;line-height:1.55">Arquivo de texto separado por ponto e vírgula, decimal com vírgula, codificação UTF-8 e cabeçalho na primeira linha. Foram lidas 230 linhas e 8 colunas.</p>
+            </section>
+            <section style="display:flex;flex-direction:column;gap:6px">
+              <h3 style="margin:0;font-size:13px;font-weight:700">2. Tipos de variável</h3>
+              <table style="width:100%;border-collapse:collapse;font-size:10.5px;font-variant-numeric:tabular-nums">
+                <thead><tr><th scope="col" style="text-align:left;padding:4px 6px;border-bottom:1px solid #161a20;font-weight:600">Coluna</th><th scope="col" style="text-align:left;padding:4px 6px;border-bottom:1px solid #161a20;font-weight:600">Tipo</th><th scope="col" style="text-align:left;padding:4px 6px;border-bottom:1px solid #161a20;font-weight:600">Motivo</th></tr></thead>
+                <tbody>
+                  <sc-for list="{{ tiposRel }}" as="t" hint-placeholder-count="5">
+                    <tr><td style="padding:3px 6px;border-bottom:1px solid #dadee4;font-family:'JetBrains Mono',monospace">{{ t.c }}</td><td style="padding:3px 6px;border-bottom:1px solid #dadee4">{{ t.t }}</td><td style="padding:3px 6px;border-bottom:1px solid #dadee4;color:#4b5462">{{ t.m }}</td></tr>
+                  </sc-for>
+                </tbody>
+              </table>
+            </section>
+            <section style="display:flex;flex-direction:column;gap:6px">
+              <h3 style="margin:0;font-size:13px;font-weight:700">3. Limpeza</h3>
+              <p style="margin:0;font-size:11px;line-height:1.55">Removemos 3 linhas duplicadas. Preenchemos 5 faltantes com a mediana da coluna. Unificamos 11 grafias de cidade.</p>
+            </section>
+            <section style="display:flex;flex-direction:column;gap:8px">
+              <h3 style="margin:0;font-size:13px;font-weight:700">4. Análise de peso_kg</h3>
+              <div style="display:grid;grid-template-columns:repeat(5,1fr);border:1px solid #dadee4">
+                <sc-for list="{{ statsRel }}" as="s" hint-placeholder-count="5">
+                  <div style="padding:6px 8px;border-right:1px solid #dadee4;display:flex;flex-direction:column;gap:1px"><span style="font-size:9px;color:#4b5462">{{ s.r }}</span><span style="font:600 13px 'JetBrains Mono',monospace">{{ s.v }}</span></div>
+                </sc-for>
+              </div>
+              <dc-import name="Grafico" tipo="histograma" titulo="Figura 1 · Distribuição de peso_kg (n = 227)" largura="516" altura="190" hint-size="100%,230px"></dc-import>
+            </section>
+            <div style="margin-top:auto;display:flex;justify-content:space-between;font:9.5px 'JetBrains Mono',monospace;color:#4b5462;border-top:1px solid #dadee4;padding-top:8px"><span>Disciplina de Estatística</span><span>1 / 11</span></div>
+          </article>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1440,&quot;height&quot;:1100},&quot;tema&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;claro&quot;,&quot;escuro&quot;],&quot;default&quot;:&quot;claro&quot;,&quot;tsType&quot;:&quot;string&quot;}}">
+class Component extends DCLogic {
+  renderVals() {
+    const secoes = [['Leitura', 'p. 1'], ['Tipos', 'p. 1'], ['Limpeza', 'p. 1'], ['Análises por coluna', 'p. 2–6'], ['Distribuições', 'p. 7'], ['Bivariada', 'p. 8'], ['Gerador', ''], ['Detector', 'p. 9–10'], ['Fórmulas', 'p. 11']].map(([n, p]) => ({ n, p, on: n !== 'Gerador', off: n === 'Gerador' }));
+    const colunas = [['sexo', 'binaria', 'toggle_on', 'Binária'], ['idade', 'discreta', 'pin', 'Discreta'], ['altura_m', 'continua', 'straighten', 'Contínua'], ['peso_kg', 'continua', 'straighten', 'Contínua'], ['escolaridade', 'ordinal', 'stairs', 'Ordinal'], ['cidade', 'nominal', 'sell', 'Nominal'], ['satisfacao', 'ordinal', 'stairs', 'Ordinal']].map(([n, k, i, t]) => ({ n, k, i, t, on: n !== 'satisfacao', off: n === 'satisfacao' }));
+    const tiposRel = [['sexo', 'Binária', 'Tem só dois valores: F e M'], ['idade', 'Quantitativa discreta', 'Números inteiros'], ['altura_m', 'Quantitativa contínua', 'Números com casas decimais'], ['peso_kg', 'Quantitativa contínua', 'Números com casas decimais'], ['cidade', 'Qualitativa nominal', 'Textos sem ordem natural']].map(([c, t, m]) => ({ c, t, m }));
+    const statsRel = [['Média', '70,3'], ['Mediana', '69,8'], ['DP', '11,2'], ['CV', '15,9%'], ['IQR', '15,8']].map(([r, v]) => ({ r, v }));
+    return { tema: this.props.tema ?? 'claro', secoes, colunas, tiposRel, statsRel };
+  }
+}
+</script>
+</body>
+</html>

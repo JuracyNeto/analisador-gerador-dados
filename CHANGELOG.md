@@ -14,3 +14,6 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e
 - Esqueleto do frontend (React + Vite + TS strict, react-query, react-router) com cliente HTTP e tipos gerados do OpenAPI.
 - Lint com limites de complexidade/aninhamento/tamanho (ruff, complexipy, ESLint + sonarjs), Prettier, jscpd.
 - CI no GitHub Actions.
+- Design system e telas (Claude Design) em `docs/design/`: tokens claro/escuro, componentes com estados, 8 telas e estados de erro, vazio, carregando e toast.
+- `frontend/src/shared/ui/tokens.css` com os tokens de design.
+- ADR 0008 (design system com variáveis CSS) e decisões D42–D47.

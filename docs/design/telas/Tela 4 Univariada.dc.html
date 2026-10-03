@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet><link rel="stylesheet" href="tokens.css"></link><style>body{margin:0}a{color:var(--cor-primaria)}a:hover{color:var(--cor-primaria-hover)}</style></helmet>
+<div data-tema="{{ tema }}" data-screen-label="Tela 4 Análise univariada" style="width:1440px;min-height:960px;display:grid;grid-template-columns:264px minmax(0,1fr);background:var(--cor-fundo);font-family:Inter,system-ui,sans-serif;color:var(--cor-texto)">
+  <dc-import name="Barra Lateral" atual="4" hint-size="264px,100%"></dc-import>
+  <div style="display:flex;flex-direction:column;min-width:0">
+    <dc-import name="Cabecalho" tema="{{ tema }}" hint-size="100%,64px"></dc-import>
+    <main style="padding:32px;display:flex;flex-direction:column;gap:20px;box-sizing:border-box;width:100%;max-width:1176px">
+      <div style="display:flex;align-items:flex-end;gap:24px">
+        <div style="flex:1;display:flex;flex-direction:column;gap:6px">
+          <span style="font-size:13px;font-weight:500;color:var(--cor-texto-2)">Etapa 4 de 8</span>
+          <h1 style="margin:0;font-size:28px;line-height:1.25;font-weight:700;letter-spacing:-.015em">Análise univariada</h1>
+          <p style="margin:0;font-size:15px;line-height:1.55;color:var(--cor-texto-2)">Uma coluna por vez: como os valores se distribuem, onde fica o centro e quanto eles variam.</p>
+        </div>
+        <label style="display:flex;flex-direction:column;gap:6px;width:320px">
+          <span style="font-size:13px;font-weight:500">Coluna</span>
+          <span style="height:44px;display:flex;align-items:center;gap:10px;padding:0 10px 0 12px;border-radius:8px;border:1px solid var(--cor-borda-forte);background:var(--cor-superficie)">
+            <span style="flex:1;font:600 15px 'JetBrains Mono',monospace">{{ c.nome }}</span>
+            <span style="white-space:nowrap;flex:none;display:inline-flex;align-items:center;gap:6px;height:26px;padding:0 10px 0 8px;border-radius:999px;background:var(--tipo-{{ c.k }}-suave);color:var(--tipo-{{ c.k }});border:1px solid color-mix(in oklab, var(--tipo-{{ c.k }}) 35%, transparent);font-size:13px;font-weight:600"><span aria-hidden="true" style="font-family:'Material Symbols Rounded';font-size:17px;line-height:1">{{ c.icone }}</span>{{ c.tipo }}</span>
+            <span aria-hidden="true" style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1;color:var(--cor-texto-2)">expand_more</span>
+          </span>
+        </label>
+      </div>
+
+      <div role="tablist" aria-label="Análises" style="display:flex;gap:4px;border-bottom:1px solid var(--cor-borda);white-space:nowrap">
+        <sc-for list="{{ abas }}" as="a" hint-placeholder-count="6">
+          <sc-if value="{{ a.ativa }}"><span role="tab" aria-selected="true" style="height:44px;display:flex;align-items:center;padding:0 14px;font-size:14px;font-weight:600;color:var(--cor-primaria);box-shadow:inset 0 -2px 0 var(--cor-primaria)">{{ a.nome }}</span></sc-if>
+          <sc-if value="{{ a.livre }}"><span role="tab" aria-selected="false" style="height:44px;display:flex;align-items:center;padding:0 14px;font-size:14px;color:var(--cor-texto-2);cursor:pointer" style-hover="color:var(--cor-texto)">{{ a.nome }}</span></sc-if>
+          <sc-if value="{{ a.desab }}"><span role="tab" aria-disabled="true" title="{{ a.motivo }}" style="height:44px;display:flex;align-items:center;gap:4px;padding:0 14px;font-size:14px;color:var(--cor-texto-desab)">{{ a.nome }}<span aria-hidden="true" style="font-family:'Material Symbols Rounded';font-size:16px;line-height:1">block</span></span></sc-if>
+        </sc-for>
+      </div>
+
+      <sc-if value="{{ carregando }}" hint-placeholder-val="{{ false }}">
+        <div aria-busy="true" aria-label="Carregando análise" style="display:flex;flex-direction:column;gap:16px">
+          <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px">
+            <sc-for list="{{ tres }}" as="x" hint-placeholder-count="3">
+              <div style="background:var(--cor-superficie);border:1px solid var(--cor-borda);border-radius:12px;padding:18px 20px;display:flex;flex-direction:column;gap:12px">
+                <span style="width:35%;height:12px;border-radius:4px;background:var(--cor-superficie-2)"></span>
+                <span style="width:55%;height:32px;border-radius:6px;background:var(--cor-superficie-2)"></span>
+                <span style="width:90%;height:12px;border-radius:4px;background:var(--cor-superficie-2)"></span>
+                <span style="width:70%;height:12px;border-radius:4px;background:var(--cor-superficie-2)"></span>
+              </div>
+            </sc-for>
+          </div>
+          <div style="background:var(--cor-superficie);border:1px solid var(--cor-borda);border-radius:12px;padding:20px;display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:24px">
+            <div style="height:320px;border-radius:8px;background:var(--cor-superficie-2);display:flex;align-items:flex-end;gap:10px;padding:20px;box-sizing:border-box">
+              <sc-for list="{{ barrasSk }}" as="b" hint-placeholder-count="9"><span style="flex:1;height:{{ b }}%;border-radius:4px 4px 0 0;background:var(--cor-borda)"></span></sc-for>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:10px"><span style="width:60%;height:14px;border-radius:4px;background:var(--cor-superficie-2)"></span><span style="width:100%;height:12px;border-radius:4px;background:var(--cor-superficie-2)"></span><span style="width:92%;height:12px;border-radius:4px;background:var(--cor-superficie-2)"></span><span style="width:80%;height:12px;border-radius:4px;background:var(--cor-superficie-2)"></span></div>
+          </div>
+          <span role="status" style="font-size:14px;color:var(--cor-texto-2)">Calculando as estatísticas de peso_kg…</span>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ vFreq }}" hint-placeholder-val="{{ false }}">
+        <div style="display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:20px;align-items:start">
+          <div style="background:var(--cor-superficie);border:1px solid var(--cor-borda);border-radius:12px;box-shadow:var(--sombra-1);overflow:hidden">
+            <div style="display:flex;align-items:center;gap:16px;padding:14px 20px;border-bottom:1px solid var(--cor-borda)">
+              <h2 style="margin:0;font-size:16px;font-weight:600;flex:1">Tabela de frequências por classe</h2>
+              <span style="font-size:13px;color:var(--cor-texto-2)">Número de classes</span>
+              <span style="display:flex;align-items:center;border:1px solid var(--cor-borda-forte);border-radius:8px;height:36px">
+                <span aria-label="Menos" style="width:32px;display:grid;place-items:center;font-family:'Material Symbols Rounded';font-size:18px;line-height:1;color:var(--cor-texto-2)">remove</span>
+                <span style="width:32px;text-align:center;font:600 14px 'JetBrains Mono',monospace">9</span>
+                <span aria-label="Mais" style="width:32px;display:grid;place-items:center;font-family:'Material Symbols Rounded';font-size:18px;line-height:1;color:var(--cor-texto-2)">add</span>
+              </span>
+              <span style="font:500 12.5px 'JetBrains Mono',monospace;color:var(--cor-texto-2)">Sturges: 9</span>
+            </div>
+            <table style="width:100%;border-collapse:collapse;font-size:14px;font-variant-numeric:tabular-nums">
+              <thead><tr style="background:var(--cor-superficie-2)">
+                <th scope="col" style="text-align:left;padding:10px 20px;font-size:12.5px;font-weight:600;color:var(--cor-texto-2);border-bottom:1px solid var(--cor-borda-forte)">Classe (kg)</th>
+                <th scope="col" style="text-align:right;padding:10px 12px;font-size:12.5px;font-weight:600;color:var(--cor-texto-2);border-bottom:1px solid var(--cor-borda-forte)">Ponto médio</th>
+                <th scope="col" style="text-align:right;padding:10px 12px;font:600 12.5px 'JetBrains Mono',monospace;color:var(--cor-texto-2);border-bottom:1px solid var(--cor-borda-forte)">fi</th>
+                <th scope="col" style="text-align:right;padding:10px 12px;font:600 12.5px 'JetBrains Mono',monospace;color:var(--cor-texto-2);border-bottom:1px solid var(--cor-borda-forte)">fr%</th>
+                <th scope="col" style="text-align:right;padding:10px 12px;font:600 12.5px 'JetBrains Mono',monospace;color:var(--cor-texto-2);border-bottom:1px solid var(--cor-borda-forte)">Fi</th>
+                <th scope="col" style="text-align:right;padding:10px 20px 10px 12px;font:600 12.5px 'JetBrains Mono',monospace;color:var(--cor-texto-2);border-bottom:1px solid var(--cor-borda-forte)">Fr%</th>
+              </tr></thead>
+              <tbody>
+                <sc-for list="{{ classes }}" as="r" hint-placeholder-count="9">
+                  <tr style="background:{{ r.bg }}">
+                    <td style="padding:8px 20px;font-family:'JetBrains Mono',monospace;font-size:13.5px;white-space:nowrap">{{ r.classe }}</td>
+                    <td style="padding:8px 12px;text-align:right">{{ r.pm }}</td>
+                    <td style="padding:8px 12px;text-align:right;font-weight:600">{{ r.fi }}</td>
+                    <td style="padding:8px 12px;text-align:right">{{ r.fr }}</td>
+                    <td style="padding:8px 12px;text-align:right">{{ r.Fi }}</td>
+                    <td style="padding:8px 20px 8px 12px;text-align:right">{{ r.Fr }}</td>
+                  </tr>
+                </sc-for>
+                <tr style="border-top:1px solid var(--cor-borda-forte)"><td style="padding:10px 20px;font-weight:600">Total</td><td></td><td style="padding:10px 12px;text-align:right;font-weight:600">227</td><td style="padding:10px 12px;text-align:right;font-weight:600">100,0</td><td></td><td></td></tr>
+              </tbody>
+            </table>
+            <p style="margin:0;padding:12px 20px 16px;font-size:13px;line-height:1.5;color:var(--cor-texto-2)">⊢ inclui o limite da esquerda e exclui o da direita. Amplitude de cada classe: h = 5,5 kg.</p>
+          </div>
+          <div style="background:var(--cor-superficie);border:1px solid var(--cor-borda);border-radius:12px;box-shadow:var(--sombra-1);padding:20px;display:flex;flex-direction:column;gap:14px">
+            <dc-import name="Grafico" tipo="histograma" curva="{{ false }}" titulo="Distribuição de peso_kg (n = 227)" largura="520" altura="280" hint-size="100%,330px"></dc-import>
+            <p style="margin:0;font-size:14px;line-height:1.55;text-wrap:pretty">A classe mais comum é <strong>65,5 ⊢ 71,0 kg</strong>, com 49 pessoas (21,6%). Metade das pessoas está abaixo de 71,0 kg.</p>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ vCards }}" hint-placeholder-val="{{ false }}">
+        <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;align-items:start">
+          <sc-for list="{{ cards }}" as="m" hint-placeholder-count="3">
+            <sc-if value="{{ m.ok }}">
+              <div style="background:var(--cor-superficie);border:1px solid var(--cor-borda);border-radius:12px;box-shadow:var(--sombra-1);padding:18px 20px;display:flex;flex-direction:column;gap:6px">
+                <span style="font-size:13px;font-weight:500;color:var(--cor-texto-2)">{{ m.rot }}</span>
+                <span style="font:600 34px/1.1 'JetBrains Mono',monospace;letter-spacing:-.02em">{{ m.val }}<span style="font:500 16px Inter,sans-serif;color:var(--cor-texto-2);margin-left:6px">{{ m.unid }}</span></span>
+                <sc-if value="{{ m.tag }}"><span style="align-self:flex-start;font-size:12.5px;font-weight:600;padding:2px 8px;border-radius:6px;background:var(--cor-primaria-suave);color:var(--cor-primaria)">{{ m.tag }}</span></sc-if>
+                <span style="font-size:14px;line-height:1.5;text-wrap:pretty">{{ m.frase }}</span>
+                <span style="font-size:14px;font-weight:500;color:var(--cor-primaria);display:flex;align-items:center;gap:4px;margin-top:6px">{{ m.linkTxt }}<span aria-hidden="true" style="font-family:'Material Symbols Rounded';font-size:18px;line-height:1">{{ m.seta }}</span></span>
+                <sc-if value="{{ m.aberto }}">
+                  <div style="padding:12px 14px;border-radius:8px;background:var(--cor-superficie-2);display:flex;flex-direction:column;gap:4px;align-items:center">
+                    <span style="font:500 16px 'JetBrains Mono',monospace">{{ m.formula }}</span>
+                    <span style="font:12.5px 'JetBrains Mono',monospace;color:var(--cor-texto-2)">{{ m.calc }}</span>
+                  </div>
+                </sc-if>
+              </div>
+            </sc-if>
+            <sc-if value="{{ m.na }}">
+              <div style="border:1px dashed var(--cor-borda-forte);border-radius:12px;padding:18px 20px;display:flex;flex-direction:column;gap:6px;background:var(--cor-superficie-2)">
+                <span style="font-size:13px;font-weight:500;color:var(--cor-texto-2);display:flex;align-items:center;gap:8px">{{ m.rot }}<span style="font-size:11.5px;font-weight:600;padding:1px 6px;border-radius:4px;border:1px solid var(--cor-borda-forte)">Não se aplica</span></span>
+                <span style="font:600 34px/1.1 'JetBrains Mono',monospace;color:var(--cor-texto-desab)">—</span>
+                <span style="font-size:14px;line-height:1.5;color:var(--cor-texto-2);text-wrap:pretty">{{ m.frase }}</span>
+              </div>
+            </sc-if>
+          </sc-for>
+        </div>
+        <sc-if value="{{ notaCards }}">
+          <div role="note" style="display:flex;gap:10px;padding:12px 16px;border-radius:10px;background:var(--sev-info-suave)">
+            <span aria-hidden="true" style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1;color:var(--sev-info);font-variation-settings:'FILL' 1">info</span>
+            <p style="margin:0;font-size:14px;line-height:1.5">{{ notaCards }}</p>
+          </div>
+        </sc-if>
+      </sc-if>
+
+      <sc-if value="{{ vSep }}" hint-placeholder-val="{{ false }}">
+        <div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.35fr);gap:20px;align-items:start">
+          <div style="background:var(--cor-superficie);border:1px solid var(--cor-borda);border-radius:12px;box-shadow:var(--sombra-1);overflow:hidden">
+            <h2 style="margin:0;padding:14px 20px;font-size:16px;font-weight:600;border-bottom:1px solid var(--cor-borda)">Separatrizes de peso_kg</h2>
+            <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr))">
+              <sc-for list="{{ seps }}" as="g" hint-placeholder-count="3">
+                <div style="border-right:1px solid var(--cor-borda)">
+                  <div style="padding:8px 16px;background:var(--cor-superficie-2);font-size:12.5px;font-weight:600;color:var(--cor-texto-2);border-bottom:1px solid var(--cor-borda-forte)">{{ g.nome }}</div>
+                  <sc-for list="{{ g.itens }}" as="s" hint-placeholder-count="5">
+                    <div style="display:flex;justify-content:space-between;padding:7px 16px;font:13.5px 'JetBrains Mono',monospace;background:{{ s.bg }}"><span style="color:var(--cor-texto-2)">{{ s.k }}</span><span style="font-weight:{{ s.w }}">{{ s.v }}</span></div>
+                  </sc-for>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+          <div style="background:var(--cor-superficie);border:1px solid var(--cor-borda);border-radius:12px;box-shadow:var(--sombra-1);padding:20px 24px;display:flex;flex-direction:column;gap:18px">
+            <h2 style="margin:0;font-size:17px;font-weight:600">Onde está meu valor?</h2>
+            <div style="display:flex;gap:16px;align-items:flex-end">
+              <label style="display:flex;flex-direction:column;gap:6px;width:160px"><span style="font-size:13px;font-weight:500">Valor de peso_kg</span><span style="height:40px;display:flex;align-items:center;padding:0 12px;border-radius:8px;border:1px solid var(--cor-foco);outline:2px solid var(--cor-foco);outline-offset:1px;background:var(--cor-superficie);font:500 15px 'JetBrains Mono',monospace">75</span></label>
+              <div role="radiogroup" aria-label="Comparar com" style="display:flex;padding:3px;border-radius:8px;background:var(--cor-superficie-2);border:1px solid var(--cor-borda);gap:2px">
+                <span role="radio" aria-checked="true" style="height:32px;display:flex;align-items:center;padding:0 14px;border-radius:6px;background:var(--cor-superficie);box-shadow:var(--sombra-1);font-size:14px;font-weight:600">Quartil</span>
+                <span role="radio" aria-checked="false" style="height:32px;display:flex;align-items:center;padding:0 14px;border-radius:6px;font-size:14px;color:var(--cor-texto-2)">Decil</span>
+                <span role="radio" aria-checked="false" style="height:32px;display:flex;align-items:center;padding:0 14px;border-radius:6px;font-size:14px;color:var(--cor-texto-2)">Percentil</span>
+              </div>
+            </div>
+            <div role="img" aria-label="Régua de 43,8 a 92,9 com Q1, Q2 e Q3; o valor 75 fica entre Q2 e Q3" style="display:flex;flex-direction:column;gap:6px;padding:4px 4px 0">
+              <div style="position:relative;height:60px">
+                <div style="position:absolute;left:0;right:0;top:30px;height:10px;border-radius:5px;background:var(--cor-superficie-2);border:1px solid var(--cor-borda-forte);box-sizing:border-box"></div>
+                <div style="position:absolute;left:52.95%;width:16.5%;top:30px;height:10px;background:color-mix(in oklab, var(--cor-primaria) 32%, var(--cor-superficie))"></div>
+                <div style="position:absolute;left:37.3%;top:24px;width:2px;height:22px;background:var(--cor-texto-2)"></div>
+                <div style="position:absolute;left:52.95%;top:24px;width:2px;height:22px;background:var(--cor-texto-2)"></div>
+                <div style="position:absolute;left:69.45%;top:24px;width:2px;height:22px;background:var(--cor-texto-2)"></div>
+                <div style="position:absolute;left:63.9%;top:0;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center"><span style="font:600 13px 'JetBrains Mono',monospace;color:var(--cor-primaria);padding:1px 6px;border-radius:4px;background:var(--cor-primaria-suave)">75</span><span style="width:16px;height:16px;margin-top:5px;border-radius:50%;background:var(--cor-primaria);border:2px solid var(--cor-superficie);box-sizing:border-box;box-shadow:0 0 0 1px var(--cor-primaria)"></span></div>
+              </div>
+              <div style="position:relative;height:34px;font:500 12.5px/1.35 'JetBrains Mono',monospace;color:var(--cor-texto-2)">
+                <span style="position:absolute;left:0">mín<br></br>43,8</span><span style="position:absolute;left:37.3%;transform:translateX(-50%);text-align:center">Q1<br></br>62,1</span><span style="position:absolute;left:52.95%;transform:translateX(-50%);text-align:center">Q2<br></br>69,8</span><span style="position:absolute;left:69.45%;transform:translateX(-50%);text-align:center">Q3<br></br>77,9</span><span style="position:absolute;right:0;text-align:right">máx<br></br>92,9</span>
+              </div>
+            </div>
+            <p aria-live="polite" style="margin:0;padding:14px 16px;border-radius:8px;background:var(--cor-primaria-suave);font-size:15px;line-height:1.55;text-wrap:pretty">O valor 75 está no 3º quartil (entre Q2 = 69,8 e Q3 = 77,9). Cerca de 66% dos dados são menores que ele.</p>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ vForma }}" hint-placeholder-val="{{ false }}">
+        <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px">
+          <div style="background:var(--cor-superficie);border:1px solid var(--cor-borda);border-radius:12px;box-shadow:var(--sombra-1);padding:20px;display:flex;flex-direction:column;gap:12px">
+            <dc-import name="Grafico" tipo="histograma" titulo="Histograma de peso_kg com curva Normal (n = 227)" largura="500" altura="270" hint-size="100%,320px"></dc-import>
+            <p style="margin:0;font-size:13.5px;line-height:1.5;color:var(--cor-texto-2)">As barras acompanham a curva, com leve cauda à direita.</p>
+          </div>
+          <div style="background:var(--cor-superficie);border:1px solid var(--cor-borda);border-radius:12px;box-shadow:var(--sombra-1);padding:20px;display:flex;flex-direction:column;gap:12px">
+            <dc-import name="Grafico" tipo="qq" titulo="QQ-plot de peso_kg contra a Normal" largura="500" altura="270" hint-size="100%,320px"></dc-import>
+            <p style="margin:0;font-size:13.5px;line-height:1.5;color:var(--cor-texto-2)">Os pontos ficam perto da reta: os dados se comportam como uma Normal.</p>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ vGraf }}" hint-placeholder-val="{{ false }}">
+        <div style="display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:20px;align-items:start">
+          <div style="background:var(--cor-superficie);border:1px solid var(--cor-borda);border-radius:12px;box-shadow:var(--sombra-1);padding:20px;display:flex;flex-direction:column;gap:16px">
+            <div role="radiogroup" aria-label="Tipo de gráfico" style="align-self:flex-start;display:flex;padding:3px;border-radius:8px;background:var(--cor-superficie-2);border:1px solid var(--cor-borda);gap:2px">
+              <span role="radio" aria-checked="true" style="height:32px;display:flex;align-items:center;gap:6px;padding:0 14px;border-radius:6px;background:var(--cor-superficie);box-shadow:var(--sombra-1);font-size:14px;font-weight:600">Histograma<span style="font-size:11px;font-weight:600;color:var(--cor-primaria)">recomendado</span></span>
+              <span role="radio" aria-checked="false" style="height:32px;display:flex;align-items:center;padding:0 14px;border-radius:6px;font-size:14px;color:var(--cor-texto-2)">Boxplot</span>
+              <span role="radio" aria-checked="false" style="height:32px;display:flex;align-items:center;padding:0 14px;border-radius:6px;font-size:14px;color:var(--cor-texto-2)">Ogiva</span>
+            </div>
+            <dc-import name="Grafico" tipo="histograma" curva="{{ false }}" titulo="Distribuição de peso_kg (n = 227)" largura="700" altura="300" hint-size="100%,360px"></dc-import>
+            <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px;border-top:1px solid var(--cor-borda);padding-top:16px">
+              <dc-import name="Grafico" tipo="boxplot" titulo="Boxplot de peso_kg" largura="380" altura="180" hint-size="100%,220px"></dc-import>
+              <dc-import name="Grafico" tipo="ogiva" titulo="Ogiva de peso_kg (Fr% acumulada)" largura="380" altura="180" hint-size="100%,220px"></dc-import>
+            </div>
+          </div>
+          <aside style="display:flex;flex-direction:column;gap:16px">
+            <div style="background:var(--cor-superficie);border:1px solid var(--cor-borda);border-radius:12px;padding:18px 20px;display:flex;flex-direction:column;gap:8px">
+              <span style="display:flex;align-items:center;gap:8px;font-size:15px;font-weight:600"><span aria-hidden="true" style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1;color:var(--cor-primaria)">lightbulb</span>Por que este gráfico?</span>
+              <p style="margin:0;font-size:14px;line-height:1.55;text-wrap:pretty">peso_kg é contínua: os valores podem ter qualquer casa decimal. O histograma agrupa em faixas e mostra a forma da distribuição. O boxplot resume os quartis e a ogiva responde "quantos estão abaixo de X".</p>
+            </div>
+            <div style="background:var(--cor-superficie);border:1px solid var(--cor-borda);border-radius:12px;padding:18px 20px;display:flex;flex-direction:column;gap:8px">
+              <span style="font-size:15px;font-weight:600">Resumo do gráfico</span>
+              <p style="margin:0;font-size:14px;line-height:1.55;text-wrap:pretty">227 pesos entre 43,8 e 92,9 kg. A maior parte fica entre 60 e 82 kg, com pico em 65,5–71,0 kg. A forma é parecida com um sino.</p>
+            </div>
+          </aside>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ vNominal }}" hint-placeholder-val="{{ false }}">
+        <div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.2fr);gap:20px;align-items:start">
+          <div style="background:var(--cor-superficie);border:1px solid var(--cor-borda);border-radius:12px;box-shadow:var(--sombra-1);overflow:hidden">
+            <h2 style="margin:0;padding:14px 20px;font-size:16px;font-weight:600;border-bottom:1px solid var(--cor-borda)">Frequências de cidade</h2>
+            <table style="width:100%;border-collapse:collapse;font-size:14px;font-variant-numeric:tabular-nums">
+              <thead><tr style="background:var(--cor-superficie-2)">
+                <th scope="col" style="text-align:left;padding:10px 20px;font-size:12.5px;font-weight:600;color:var(--cor-texto-2);border-bottom:1px solid var(--cor-borda-forte)">Cidade</th>
+                <th scope="col" style="text-align:right;padding:10px 12px;font:600 12.5px 'JetBrains Mono',monospace;color:var(--cor-texto-2);border-bottom:1px solid var(--cor-borda-forte)">fi</th>
+                <th scope="col" style="text-align:right;padding:10px 12px;font:600 12.5px 'JetBrains Mono',monospace;color:var(--cor-texto-2);border-bottom:1px solid var(--cor-borda-forte)">fr%</th>
+                <th scope="col" style="text-align:right;padding:10px 20px 10px 12px;font:600 12.5px 'JetBrains Mono',monospace;color:var(--cor-texto-desab);border-bottom:1px solid var(--cor-borda-forte)" title="Acumulada não se aplica a categorias sem ordem">Fr% acum.</th>
+              </tr></thead>
+              <tbody>
+                <sc-for list="{{ cidades }}" as="r" hint-placeholder-count="7">
+                  <tr style="background:{{ r.bg }}"><td style="padding:8px 20px">{{ r.n }}</td><td style="padding:8px 12px;text-align:right;font-weight:600">{{ r.fi }}</td><td style="padding:8px 12px;text-align:right">{{ r.fr }}</td><td style="padding:8px 20px 8px 12px;text-align:right;color:var(--cor-texto-desab)">—</td></tr>
+                </sc-for>
+              </tbody>
+            </table>
+            <p style="margin:0;padding:12px 20px 16px;font-size:13px;line-height:1.5;color:var(--cor-texto-2)">Frequência acumulada não se aplica a qualitativas nominais: as cidades não têm uma ordem natural para somar "até aqui". 2 faltantes ficaram de fora.</p>
+          </div>
+          <div style="background:var(--cor-superficie);border:1px solid var(--cor-borda);border-radius:12px;box-shadow:var(--sombra-1);padding:20px;display:flex;flex-direction:column;gap:12px">
+            <dc-import name="Grafico" tipo="barras-h" titulo="Pessoas por cidade (n = 228), da maior para a menor" largura="600" altura="300" hint-size="100%,340px"></dc-import>
+            <p style="margin:0;font-size:13.5px;line-height:1.5;color:var(--cor-texto-2)"><strong style="color:var(--cor-texto)">Por que barras?</strong> Categorias sem ordem são comparadas pelo tamanho. Ordenamos da maior para a menor para facilitar a leitura.</p>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px">
+          <sc-for list="{{ cardsNom }}" as="m" hint-placeholder-count="4">
+            <sc-if value="{{ m.ok }}">
+              <div style="background:var(--cor-superficie);border:1px solid var(--cor-borda);border-radius:12px;box-shadow:var(--sombra-1);padding:18px 20px;display:flex;flex-direction:column;gap:6px">
+                <span style="font-size:13px;font-weight:500;color:var(--cor-texto-2)">{{ m.rot }}</span>
+                <span style="font:600 26px/1.15 Inter,sans-serif;letter-spacing:-.01em">{{ m.val }}</span>
+                <span style="font-size:14px;line-height:1.5">{{ m.frase }}</span>
+              </div>
+            </sc-if>
+            <sc-if value="{{ m.na }}">
+              <div style="border:1px dashed var(--cor-borda-forte);border-radius:12px;padding:18px 20px;display:flex;flex-direction:column;gap:6px;background:var(--cor-superficie-2)">
+                <span style="font-size:13px;font-weight:500;color:var(--cor-texto-2);display:flex;align-items:center;gap:8px">{{ m.rot }}<span style="font-size:11.5px;font-weight:600;padding:1px 6px;border-radius:4px;border:1px solid var(--cor-borda-forte)">Não se aplica</span></span>
+                <span style="font:600 26px/1.15 'JetBrains Mono',monospace;color:var(--cor-texto-desab)">—</span>
+                <span style="font-size:14px;line-height:1.5;color:var(--cor-texto-2);text-wrap:pretty">{{ m.frase }}</span>
+              </div>
+            </sc-if>
+          </sc-for>
+        </div>
+      </sc-if>
+    </main>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1440,&quot;height&quot;:1000},&quot;aba&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;frequencias&quot;,&quot;tendencia&quot;,&quot;separatrizes&quot;,&quot;dispersao&quot;,&quot;forma&quot;,&quot;graficos&quot;],&quot;default&quot;:&quot;separatrizes&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;coluna&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;peso_kg&quot;,&quot;cidade&quot;],&quot;default&quot;:&quot;peso_kg&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;estado&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;pronto&quot;,&quot;carregando&quot;],&quot;default&quot;:&quot;pronto&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;tema&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;claro&quot;,&quot;escuro&quot;],&quot;default&quot;:&quot;claro&quot;,&quot;tsType&quot;:&quot;string&quot;}}">
+class Component extends DCLogic {
+  renderVals() {
+    const nominal = (this.props.coluna ?? 'peso_kg') === 'cidade';
+    const carregando = this.props.estado === 'carregando';
+    const aba = nominal ? 'frequencias' : (this.props.aba ?? 'separatrizes');
+    const nomes = [['frequencias', 'Frequências'], ['tendencia', 'Tendência central'], ['separatrizes', 'Separatrizes'], ['dispersao', 'Dispersão'], ['forma', 'Forma e distribuição'], ['graficos', 'Gráficos']];
+    const bloq = { separatrizes: 'Separatrizes não se aplicam a categorias sem ordem.', dispersao: 'Dispersão precisa de números.', forma: 'Forma e distribuição precisam de números.' };
+    const abas = nomes.map(([k, nome]) => { const desab = nominal && !!bloq[k]; const ativa = k === aba; return { nome, ativa, desab, livre: !ativa && !desab, motivo: bloq[k] }; });
+    const c = nominal ? { nome: 'cidade', k: 'nominal', icone: 'sell', tipo: 'Nominal' } : { nome: 'peso_kg', k: 'continua', icone: 'straighten', tipo: 'Contínua' };
+    const fi = [4, 9, 20, 36, 49, 47, 34, 18, 10]; let acc = 0;
+    const f = (v, d = 1) => v.toFixed(d).replace('.', ',');
+    const classes = fi.map((v, i) => { acc += v; const a = 43.5 + 5.5 * i; return { classe: `${f(a)} ⊢ ${f(a + 5.5)}`, pm: f(a + 2.75, 2), fi: v, fr: f(v / 227 * 100), Fi: acc, Fr: f(acc / 227 * 100), bg: i === 4 ? 'var(--cor-primaria-suave)' : (i % 2 ? 'var(--cor-zebra)' : 'transparent') }; });
+    const card = (rot, val, unid, frase, formula, calc, aberto, tag) => ({ ok: true, rot, val, unid, frase, formula, calc, aberto, tag, linkTxt: aberto ? 'Ocultar fórmula' : 'Ver fórmula', seta: aberto ? 'expand_less' : 'expand_more' });
+    const na = (rot, frase) => ({ na: true, rot, frase });
+    let cards = [], notaCards = '';
+    if (aba === 'tendencia') { cards = [
+      card('Média', '70,3', 'kg', 'Em média, as pessoas pesam 70,3 kg.', 'x̄ = Σxᵢ / n', '= 15.958,1 / 227 = 70,3', true),
+      card('Mediana', '69,8', 'kg', 'Metade das pessoas pesa até 69,8 kg.', 'Md = x₍₍ₙ₊₁₎/₂₎', '= x₁₁₄ = 69,8', false),
+      card('Moda', '72,0', 'kg', 'O peso que mais se repete é 72,0 kg (9 vezes).', 'Mo = valor de maior fi', '72,0 aparece 9 vezes', false) ];
+      notaCards = 'Média e mediana estão próximas (diferença de 0,5 kg): os dados são quase simétricos.'; }
+    if (aba === 'dispersao') { cards = [
+      card('Desvio padrão', '11,2', 'kg', 'Em geral, os pesos ficam a cerca de 11,2 kg da média.', 's = √[Σ(xᵢ − x̄)² / (n − 1)]', '= √(28.348,2 / 226) = 11,2', true),
+      card('Coeficiente de variação', '15,9', '%', 'O desvio é 15,9% da média.', 'CV = (s / x̄) × 100', '= (11,2 / 70,3) × 100', false, 'Variação moderada'),
+      card('Intervalo interquartil (IQR)', '15,8', 'kg', 'Os 50% centrais estão entre 62,1 e 77,9 kg.', 'IQR = Q3 − Q1', '= 77,9 − 62,1', false),
+      card('Amplitude', '49,1', 'kg', 'Do menor (43,8) ao maior (92,9) valor.', 'A = máx − mín', '= 92,9 − 43,8', false),
+      card('Variância', '125,4', 'kg²', 'Fica em kg ao quadrado; para ler, use o desvio padrão.', 's² = Σ(xᵢ − x̄)² / (n − 1)', '= 28.348,2 / 226', false) ];
+      notaCards = 'CV abaixo de 15% indica variação baixa; de 15% a 30%, moderada; acima de 30%, alta.'; }
+    if (aba === 'forma') { cards = [
+      card('Assimetria', '0,32', '', 'Aproximadamente simétrica: a cauda direita é um pouco mais longa.', 'g₁ = [Σ(xᵢ − x̄)³ / n] / s³', '|g₁| < 0,5 → aprox. simétrica', false, 'Aprox. simétrica'),
+      card('Curtose (excesso)', '−0,18', '', 'Mesocúrtica: caudas parecidas com as da Normal.', 'g₂ = [Σ(xᵢ − x̄)⁴ / n] / s⁴ − 3', '|g₂| < 0,5 → mesocúrtica', false, 'Mesocúrtica'),
+      card('Ajuste à Normal', 'p = 0,21', '', 'Compatível com a Normal: não há sinal de que os dados fujam da curva.', 'Shapiro-Wilk', 'W = 0,992 · p = 0,21 > 0,05', true, 'Compatível com a Normal'),
+      na('Ajuste Binomial', 'Binomial não se aplica a contínuas: precisa de contagens de sucessos em n tentativas.') ]; }
+    const vCards = !carregando && !nominal && ['tendencia', 'dispersao', 'forma'].includes(aba);
+    const zb = (i, d) => i === d ? 'var(--cor-primaria-suave)' : 'transparent';
+    const seps = [
+      { nome: 'Quartis', itens: [['Q1', '62,1'], ['Q2', '69,8'], ['Q3', '77,9']].map(([k, v], i) => ({ k, v, bg: zb(i, 2), w: i === 2 ? 600 : 400 })) },
+      { nome: 'Decis', itens: [['D1', '56,0'], ['D2', '60,6'], ['D3', '64,4'], ['D4', '67,3'], ['D5', '69,8'], ['D6', '72,6'], ['D7', '75,5'], ['D8', '79,7'], ['D9', '84,7']].map(([k, v], i) => ({ k, v, bg: zb(i, 6), w: i === 6 ? 600 : 400 })) },
+      { nome: 'Percentis', itens: [['P5', '52,1'], ['P10', '56,0'], ['P25', '62,1'], ['P50', '69,8'], ['P66', '75,0'], ['P75', '77,9'], ['P90', '84,7'], ['P95', '88,6']].map(([k, v], i) => ({ k, v, bg: zb(i, 4), w: i === 4 ? 600 : 400 })) },
+    ];
+    const cid = [['Goiânia', 92], ['Anápolis', 41], ['Aparecida de Goiânia', 38], ['Rio Verde', 24], ['Luziânia', 15], ['Catalão', 11], ['Trindade', 7]];
+    const cidades = cid.map(([n, v], i) => ({ n, fi: v, fr: f(v / 228 * 100), bg: i % 2 ? 'var(--cor-zebra)' : 'transparent' }));
+    const cardsNom = [
+      { ok: true, rot: 'Moda', val: 'Goiânia', frase: 'A cidade mais frequente: 92 de 228 pessoas (40,4%).' },
+      { na: true, rot: 'Média', frase: 'Média não se aplica a categorias sem número: não dá para somar cidades.' },
+      { na: true, rot: 'Mediana', frase: 'Mediana não se aplica a qualitativas nominais: as cidades não têm ordem.' },
+      { na: true, rot: 'Desvio padrão', frase: 'Desvio padrão não se aplica a qualitativas: precisa de distâncias entre números.' },
+    ];
+    return {
+      tema: this.props.tema ?? 'claro', c, abas, carregando, tres: [1, 2, 3], barrasSk: [18, 32, 55, 78, 95, 88, 64, 40, 22],
+      vFreq: !carregando && !nominal && aba === 'frequencias', vCards, cards, notaCards,
+      vSep: !carregando && !nominal && aba === 'separatrizes', vForma: !carregando && !nominal && aba === 'forma', vGraf: !carregando && !nominal && aba === 'graficos',
+      vNominal: !carregando && nominal, classes, seps, cidades, cardsNom,
+    };
+  }
+}
+</script>
+</body>
+</html>

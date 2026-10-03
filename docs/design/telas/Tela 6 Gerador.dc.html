@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet><link rel="stylesheet" href="tokens.css"></link><style>body{margin:0}a{color:var(--cor-primaria)}a:hover{color:var(--cor-primaria-hover)}</style></helmet>
+<div data-tema="{{ tema }}" data-screen-label="Tela 6 Gerador" style="width:1440px;min-height:960px;display:grid;grid-template-columns:264px minmax(0,1fr);background:var(--cor-fundo);font-family:Inter,system-ui,sans-serif;color:var(--cor-texto)">
+  <dc-import name="Barra Lateral" atual="6" hint-size="264px,100%"></dc-import>
+  <div style="display:flex;flex-direction:column;min-width:0">
+    <dc-import name="Cabecalho" tema="{{ tema }}" hint-size="100%,64px"></dc-import>
+    <main style="padding:32px;display:flex;flex-direction:column;gap:20px;box-sizing:border-box;width:100%;max-width:1176px">
+      <div style="display:flex;flex-direction:column;gap:6px">
+        <span style="font-size:13px;font-weight:500;color:var(--cor-texto-2)">Etapa 6 de 8</span>
+        <h1 style="margin:0;font-size:28px;line-height:1.25;font-weight:700;letter-spacing:-.015em">Gerador de dados</h1>
+        <p style="margin:0;font-size:15px;line-height:1.55;color:var(--cor-texto-2)">Crie dados artificiais parecidos com os seus, ou com parâmetros que você escolher.</p>
+      </div>
+      <div role="tablist" style="display:flex;gap:4px;border-bottom:1px solid var(--cor-borda)">
+        <sc-if value="{{ uni }}" hint-placeholder-val="{{ true }}">
+          <span role="tab" aria-selected="true" style="height:44px;display:flex;align-items:center;padding:0 14px;font-size:14px;font-weight:600;color:var(--cor-primaria);box-shadow:inset 0 -2px 0 var(--cor-primaria)">Univariado</span>
+          <span role="tab" aria-selected="false" style="height:44px;display:flex;align-items:center;padding:0 14px;font-size:14px;color:var(--cor-texto-2)">Bivariado</span>
+        </sc-if>
+        <sc-if value="{{ bi }}" hint-placeholder-val="{{ false }}">
+          <span role="tab" aria-selected="false" style="height:44px;display:flex;align-items:center;padding:0 14px;font-size:14px;color:var(--cor-texto-2)">Univariado</span>
+          <span role="tab" aria-selected="true" style="height:44px;display:flex;align-items:center;padding:0 14px;font-size:14px;font-weight:600;color:var(--cor-primaria);box-shadow:inset 0 -2px 0 var(--cor-primaria)">Bivariado</span>
+        </sc-if>
+      </div>
+      <div style="display:grid;grid-template-columns:360px minmax(0,1fr);gap:20px;align-items:start">
+        <form style="background:var(--cor-superficie);border:1px solid var(--cor-borda);border-radius:12px;box-shadow:var(--sombra-1);padding:20px;display:flex;flex-direction:column;gap:18px">
+          <sc-if value="{{ uni }}" hint-placeholder-val="{{ true }}">
+            <div style="display:flex;flex-direction:column;gap:6px"><span style="font-size:13px;font-weight:500">Origem</span>
+              <div role="radiogroup" style="display:flex;padding:3px;border-radius:8px;background:var(--cor-superficie-2);border:1px solid var(--cor-borda);gap:2px">
+                <span role="radio" aria-checked="true" style="flex:1;justify-content:center;height:34px;display:flex;align-items:center;border-radius:6px;background:var(--cor-superficie);box-shadow:var(--sombra-1);font-size:13.5px;font-weight:600">Coluna do dataset</span>
+                <span role="radio" aria-checked="false" style="flex:1;justify-content:center;height:34px;display:flex;align-items:center;border-radius:6px;font-size:13.5px;color:var(--cor-texto-2)">Parâmetros manuais</span>
+              </div>
+            </div>
+            <label style="display:flex;flex-direction:column;gap:6px"><span style="font-size:13px;font-weight:500">Coluna</span><span style="height:40px;display:flex;align-items:center;gap:8px;padding:0 10px 0 12px;border-radius:8px;border:1px solid var(--cor-borda-forte)"><span style="flex:1;font:600 14px 'JetBrains Mono',monospace">peso_kg</span><span aria-hidden="true" style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1;color:var(--cor-texto-2)">expand_more</span></span></label>
+            <label style="display:flex;flex-direction:column;gap:6px"><span style="font-size:13px;font-weight:500">Quantidade de valores (X)</span><span style="height:40px;display:flex;align-items:center;padding:0 12px;border-radius:8px;border:1px solid var(--cor-borda-forte);font:500 14px 'JetBrains Mono',monospace">500</span></label>
+            <fieldset style="margin:0;padding:0;border:0;display:flex;flex-direction:column;gap:8px"><legend style="font-size:13px;font-weight:500;margin-bottom:6px">Modo</legend>
+              <div style="display:flex;gap:10px;padding:12px;border-radius:8px;border:2px solid var(--cor-primaria);background:var(--cor-primaria-suave)">
+                <span aria-hidden="true" style="width:18px;height:18px;border-radius:50%;border:5px solid var(--cor-primaria);box-sizing:border-box;background:var(--cor-superficie);flex:none;margin-top:1px"></span>
+                <span style="display:flex;flex-direction:column;gap:2px"><span style="font-size:14px;font-weight:600">Preservar estatísticas</span><span style="font-size:13px;line-height:1.45;color:var(--cor-texto-2)">Mesma média (70,3) e desvio (11,2) da coluna.</span></span>
+              </div>
+              <div style="display:flex;gap:10px;padding:12px;border-radius:8px;border:1px solid var(--cor-borda-forte)">
+                <span aria-hidden="true" style="width:18px;height:18px;border-radius:50%;border:1.5px solid var(--cor-borda-forte);box-sizing:border-box;flex:none;margin-top:1px"></span>
+                <span style="display:flex;flex-direction:column;gap:8px;flex:1"><span style="font-size:14px;font-weight:600">Novos parâmetros</span>
+                  <span style="display:flex;gap:8px"><label style="flex:1;display:flex;flex-direction:column;gap:4px"><span style="font-size:12px;color:var(--cor-texto-desab)">Média</span><span style="height:34px;display:flex;align-items:center;padding:0 10px;border-radius:6px;border:1px solid var(--cor-borda);background:var(--cor-superficie-2);font:13px 'JetBrains Mono',monospace;color:var(--cor-texto-desab)">70,3</span></label><label style="flex:1;display:flex;flex-direction:column;gap:4px"><span style="font-size:12px;color:var(--cor-texto-desab)">Desvio</span><span style="height:34px;display:flex;align-items:center;padding:0 10px;border-radius:6px;border:1px solid var(--cor-borda);background:var(--cor-superficie-2);font:13px 'JetBrains Mono',monospace;color:var(--cor-texto-desab)">11,2</span></label></span>
+                </span>
+              </div>
+            </fieldset>
+            <label style="display:flex;flex-direction:column;gap:6px"><span style="font-size:13px;font-weight:500">Semente <span style="font-weight:400;color:var(--cor-texto-2)">(repete o mesmo resultado)</span></span><span style="height:40px;display:flex;align-items:center;padding:0 12px;border-radius:8px;border:1px solid var(--cor-borda-forte);font:500 14px 'JetBrains Mono',monospace">42</span></label>
+            <label style="display:flex;gap:10px;align-items:flex-start"><span aria-hidden="true" style="width:20px;height:20px;border-radius:5px;background:var(--cor-primaria);color:var(--cor-sobre-primaria);display:grid;place-items:center;flex:none;font-family:'Material Symbols Rounded';font-size:16px;line-height:1">check</span><span style="display:flex;flex-direction:column;gap:2px"><span style="font-size:14px;font-weight:500">Limitar à faixa original</span><span style="font-size:13px;color:var(--cor-texto-2)">Nenhum valor abaixo de 43,8 ou acima de 92,9.</span></span></label>
+          </sc-if>
+          <sc-if value="{{ bi }}" hint-placeholder-val="{{ false }}">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+              <label style="display:flex;flex-direction:column;gap:6px"><span style="font-size:13px;font-weight:500">X</span><span style="height:40px;display:flex;align-items:center;padding:0 12px;border-radius:8px;border:1px solid var(--cor-borda-forte);font:600 14px 'JetBrains Mono',monospace">altura_m</span></label>
+              <label style="display:flex;flex-direction:column;gap:6px"><span style="font-size:13px;font-weight:500">Y</span><span style="height:40px;display:flex;align-items:center;padding:0 12px;border-radius:8px;border:1px solid var(--cor-borda-forte);font:600 14px 'JetBrains Mono',monospace">peso_kg</span></label>
+              <label style="display:flex;flex-direction:column;gap:6px"><span style="font-size:13px;font-weight:500">Média de X</span><span style="height:40px;display:flex;align-items:center;padding:0 12px;border-radius:8px;border:1px solid var(--cor-borda-forte);font:500 14px 'JetBrains Mono',monospace">1,70</span></label>
+              <label style="display:flex;flex-direction:column;gap:6px"><span style="font-size:13px;font-weight:500">Média de Y</span><span style="height:40px;display:flex;align-items:center;padding:0 12px;border-radius:8px;border:1px solid var(--cor-borda-forte);font:500 14px 'JetBrains Mono',monospace">70,3</span></label>
+              <label style="display:flex;flex-direction:column;gap:6px"><span style="font-size:13px;font-weight:500">Desvio de X</span><span style="height:40px;display:flex;align-items:center;padding:0 12px;border-radius:8px;border:1px solid var(--cor-borda-forte);font:500 14px 'JetBrains Mono',monospace">0,088</span></label>
+              <label style="display:flex;flex-direction:column;gap:6px"><span style="font-size:13px;font-weight:500">Desvio de Y</span><span style="height:40px;display:flex;align-items:center;padding:0 12px;border-radius:8px;border:1px solid var(--cor-borda-forte);font:500 14px 'JetBrains Mono',monospace">11,2</span></label>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:10px">
+              <div style="display:flex;justify-content:space-between;align-items:baseline"><span style="font-size:13px;font-weight:500">Correlação alvo (ρ)</span><span style="font:600 15px 'JetBrains Mono',monospace">0,78</span></div>
+              <div role="slider" aria-valuemin="-1" aria-valuemax="1" aria-valuenow="0.78" style="position:relative;height:24px">
+                <div style="position:absolute;left:0;right:0;top:10px;height:4px;border-radius:2px;background:var(--cor-borda)"></div>
+                <div style="position:absolute;left:50%;width:39%;top:10px;height:4px;background:var(--cor-primaria)"></div>
+                <div style="position:absolute;left:50%;top:6px;width:2px;height:12px;background:var(--cor-borda-forte)"></div>
+                <div style="position:absolute;left:89%;top:2px;width:20px;height:20px;margin-left:-10px;border-radius:50%;background:var(--cor-superficie);border:2px solid var(--cor-primaria);box-sizing:border-box;box-shadow:var(--sombra-1)"></div>
+              </div>
+              <div style="display:flex;justify-content:space-between;font:12px 'JetBrains Mono',monospace;color:var(--cor-texto-2)"><span>−1</span><span>0</span><span>1</span></div>
+            </div>
+            <label style="display:flex;flex-direction:column;gap:6px"><span style="font-size:13px;font-weight:500">Quantidade de pares</span><span style="height:40px;display:flex;align-items:center;padding:0 12px;border-radius:8px;border:1px solid var(--cor-borda-forte);font:500 14px 'JetBrains Mono',monospace">300</span></label>
+            <label style="display:flex;gap:10px;align-items:flex-start"><span aria-hidden="true" style="width:20px;height:20px;border-radius:5px;background:var(--cor-primaria);color:var(--cor-sobre-primaria);display:grid;place-items:center;flex:none;font-family:'Material Symbols Rounded';font-size:16px;line-height:1">check</span><span style="display:flex;flex-direction:column;gap:2px"><span style="font-size:14px;font-weight:500">Ajuste exato</span><span style="font-size:13px;line-height:1.45;color:var(--cor-texto-2)">Corrige o resultado para bater exatamente médias, desvios e ρ. Sem isso, ficam próximos, com variação natural.</span></span></label>
+          </sc-if>
+          <span style="white-space:nowrap;flex:none;display:inline-flex;align-items:center;justify-content:center;gap:8px;height:44px;border-radius:8px;background:var(--cor-primaria);color:var(--cor-sobre-primaria);font-size:15px;font-weight:600"><span aria-hidden="true" style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1">auto_awesome</span>Gerar dados</span>
+        </form>
+
+        <div style="display:flex;flex-direction:column;gap:20px">
+          <div style="background:var(--cor-superficie);border:1px solid var(--cor-borda);border-radius:12px;box-shadow:var(--sombra-1);overflow:hidden">
+            <div style="display:flex;align-items:baseline;gap:12px;padding:14px 20px;border-bottom:1px solid var(--cor-borda)"><h2 style="margin:0;font-size:16px;font-weight:600;flex:1">Original × Gerado</h2><span style="font-size:13px;color:var(--cor-texto-2)">{{ subtitulo }}</span></div>
+            <table style="width:100%;border-collapse:collapse;font-size:14px;font-variant-numeric:tabular-nums">
+              <thead><tr style="background:var(--cor-superficie-2)">
+                <th scope="col" style="text-align:left;padding:10px 20px;font-size:12.5px;font-weight:600;color:var(--cor-texto-2);border-bottom:1px solid var(--cor-borda-forte)">Medida</th>
+                <th scope="col" style="text-align:right;padding:10px 16px;font-size:12.5px;font-weight:600;color:var(--cor-texto-2);border-bottom:1px solid var(--cor-borda-forte)">Original</th>
+                <th scope="col" style="text-align:right;padding:10px 16px;font-size:12.5px;font-weight:600;color:var(--cor-texto-2);border-bottom:1px solid var(--cor-borda-forte)">Gerado</th>
+                <th scope="col" style="text-align:right;padding:10px 20px 10px 16px;font-size:12.5px;font-weight:600;color:var(--cor-texto-2);border-bottom:1px solid var(--cor-borda-forte)">Diferença</th>
+              </tr></thead>
+              <tbody>
+                <sc-for list="{{ comp }}" as="r" hint-placeholder-count="7">
+                  <tr style="background:{{ r.bg }}"><td style="padding:8px 20px">{{ r.m }}</td><td style="padding:8px 16px;text-align:right;font-family:'JetBrains Mono',monospace;font-size:13.5px">{{ r.o }}</td><td style="padding:8px 16px;text-align:right;font-family:'JetBrains Mono',monospace;font-size:13.5px;font-weight:600">{{ r.g }}</td><td style="padding:8px 20px 8px 16px;text-align:right;font-family:'JetBrains Mono',monospace;font-size:13.5px;color:var(--cor-texto-2)">{{ r.d }}</td></tr>
+                </sc-for>
+              </tbody>
+            </table>
+          </div>
+          <div style="background:var(--cor-superficie);border:1px solid var(--cor-borda);border-radius:12px;box-shadow:var(--sombra-1);padding:20px;display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:24px;align-items:start">
+            <sc-if value="{{ uni }}" hint-placeholder-val="{{ true }}"><dc-import name="Grafico" tipo="sobreposto" titulo="peso_kg: original e gerado sobrepostos" largura="480" altura="260" hint-size="100%,310px"></dc-import></sc-if>
+            <sc-if value="{{ bi }}" hint-placeholder-val="{{ false }}"><dc-import name="Grafico" tipo="dispersao" semente="21" titulo="Pares gerados: peso_kg × altura_m (n = 300)" largura="480" altura="260" hint-size="100%,310px"></dc-import></sc-if>
+            <div style="display:flex;flex-direction:column;gap:8px">
+              <span style="display:flex;align-items:center;gap:8px;font-size:15px;font-weight:600"><span aria-hidden="true" style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1;color:var(--cor-primaria)">menu_book</span>Como geramos</span>
+              <p style="margin:0;font-size:14px;line-height:1.6;text-wrap:pretty">{{ explicacao }}</p>
+            </div>
+          </div>
+          <div style="display:flex;gap:12px;justify-content:flex-end;flex-wrap:wrap">
+            <span style="white-space:nowrap;flex:none;display:inline-flex;align-items:center;gap:8px;height:44px;padding:0 18px;border-radius:8px;border:1px solid var(--cor-borda-forte);background:var(--cor-superficie);font-size:15px;font-weight:500;box-sizing:border-box"><span aria-hidden="true" style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1">download</span>Baixar CSV</span>
+            <span style="white-space:nowrap;flex:none;display:inline-flex;align-items:center;gap:8px;height:44px;padding:0 18px;border-radius:8px;border:1px solid var(--cor-borda-forte);background:var(--cor-superficie);font-size:15px;font-weight:500;box-sizing:border-box"><span aria-hidden="true" style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1">playlist_add</span>Anexar ao dataset atual</span>
+            <span style="white-space:nowrap;flex:none;display:inline-flex;align-items:center;gap:8px;height:44px;padding:0 20px;border-radius:8px;background:var(--cor-primaria);color:var(--cor-sobre-primaria);font-size:15px;font-weight:600"><span aria-hidden="true" style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1">dataset</span>Usar como novo dataset</span>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1440,&quot;height&quot;:1100},&quot;aba&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;univariado&quot;,&quot;bivariado&quot;],&quot;default&quot;:&quot;univariado&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;tema&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;claro&quot;,&quot;escuro&quot;],&quot;default&quot;:&quot;claro&quot;,&quot;tsType&quot;:&quot;string&quot;}}">
+class Component extends DCLogic {
+  renderVals() {
+    const bi = this.props.aba === 'bivariado';
+    const rows = bi ? [
+      ['n', '227', '300', '—'], ['Média de X (altura_m)', '1,70', '1,70', '0,00'], ['Média de Y (peso_kg)', '70,3', '70,3', '0,0'],
+      ['Desvio de X', '0,088', '0,088', '0,000'], ['Desvio de Y', '11,2', '11,2', '0,0'], ['Correlação r', '0,78', '0,78', '0,00'], ['Reta Ŷ = a + b·X', '−98,4 + 98,1·X', '−98,4 + 98,1·X', 'igual'],
+    ] : [
+      ['n', '227', '500', '—'], ['Média', '70,3', '70,3', '0,0'], ['Mediana', '69,8', '70,1', '+0,3'], ['Desvio padrão', '11,2', '11,2', '0,0'],
+      ['Mínimo', '43,8', '44,1', '+0,3'], ['Máximo', '92,9', '92,6', '−0,3'], ['Assimetria', '0,32', '0,05', '−0,27'],
+    ];
+    const comp = rows.map(([m, o, g, d], i) => ({ m, o, g, d, bg: i % 2 ? 'var(--cor-zebra)' : 'transparent' }));
+    const explicacao = bi
+      ? 'Sorteamos pares de uma Normal bivariada com as médias, desvios e a correlação ρ = 0,78. Com "ajuste exato", reescalamos os pares para que as estatísticas batam exatamente. Por isso o detector pode marcar esses dados como "perfeitos demais".'
+      : 'Sorteamos 500 valores de uma curva Normal com a mesma média e desvio de peso_kg, usando a semente 42. Valores fora de 43,8 a 92,9 foram sorteados de novo. A assimetria fica perto de zero porque a Normal é simétrica.';
+    return { tema: this.props.tema ?? 'claro', uni: !bi, bi, comp, explicacao, subtitulo: bi ? 'Semente 42 · ajuste exato' : 'Semente 42 · preservar estatísticas' };
+  }
+}
+</script>
+</body>
+</html>
