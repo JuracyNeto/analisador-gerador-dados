@@ -7,6 +7,8 @@ Domínio: `app/dominios/datasets/` (`classificacao.py`) · Endpoints: `GET /api/
 ## Regras (ordem importa; a primeira que casar vence)
 Considerar só valores não faltantes. Antes, tentar converter texto para número com o decimal detectado (spec 01).
 
+Coluna de texto conta como numérica se ≥ 90% dos valores válidos viram número (`LIMIAR_NUMERICO = 0,9`, D48); os demais aparecem como "tipo misto" na limpeza.
+
 | # | Condição | Tipo | Motivo (modelo) |
 |---|---|---|---|
 | 1 | Nome casa `^(id|cod|codigo|código|cpf|cnpj|cep|telefone|fone|matricula|matrícula)\b` (sem acento/caixa) **ou** (não numérico contínuo e ≥ 95% únicos com n ≥ 20) | `identificador` | "Parece um código: {pct}% dos valores são únicos." / "O nome da coluna indica um código ({nome})." |
@@ -25,7 +27,7 @@ Datas (`datetime` detectado via `pd.to_datetime` em ≥ 90% dos valores) → mar
 - discordo totalmente < discordo < neutro < concordo < concordo totalmente
 - nunca < raramente < as vezes < frequentemente < sempre
 - pp < p < m < g < gg < xg
-- fundamental incompleto < fundamental < medio incompleto < medio < superior incompleto < superior < pos-graduacao
+- fundamental incompleto < fundamental < medio incompleto < medio < superior incompleto < superior < pos-graduacao / pos (D51)
 - 1º/2º/3º… e 1°… (ordinal numérico por extenso)
 - pequeno < medio < grande
 - leve < moderado < grave
@@ -34,4 +36,4 @@ Datas (`datetime` detectado via `pd.to_datetime` em ≥ 90% dos valores) → mar
 `PATCH` com `{tipo, categorias_ordem?}`. Validações: `continua`/`discreta` exigem coluna numérica (erro `TIPO_INCOMPATIVEL`: "Esta coluna tem textos; não pode ser numérica."). Ordinal sem `categorias_ordem` usa ordem alfabética e avisa.
 
 ## Configuração
-`LIMIAR_DISCRETA = 30`, `LIMIAR_UNICOS_ID = 0.95` em `app/core/config.py`.
+`LIMIAR_DISCRETA = 30`, `LIMIAR_UNICOS_ID = 0.95`, `LIMIAR_NUMERICO = 0.9` em `app/core/config.py`.
