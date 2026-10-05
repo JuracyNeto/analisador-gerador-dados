@@ -1,5 +1,6 @@
 """Erros do domínio datasets com textos da spec 01/02/17 (formato da spec 16)."""
 
+from app.compartilhado.numeros import formatar_numero
 from app.core.erros import ArquivoGrande, EntradaInvalida, NaoEncontrado
 
 
@@ -65,4 +66,19 @@ def categorias_incompletas(faltando: list[str]) -> EntradaInvalida:
         "CATEGORIAS_INCOMPLETAS",
         f"Faltam categorias na ordem: {', '.join(faltando)}.",
         "Inclua todas as categorias da coluna na ordem.",
+    )
+
+
+def limites_invalidos(maximo: float) -> EntradaInvalida:
+    return EntradaInvalida(
+        "LIMITES_INVALIDOS",
+        f"O mínimo precisa ser menor que o máximo ({formatar_numero(maximo)}).",
+        "Ajuste um dos dois.",
+    )
+
+
+def acao_incompativel(coluna: str | None, motivo: str) -> EntradaInvalida:
+    alvo = f"a coluna {coluna}" if coluna else "este problema"
+    return EntradaInvalida(
+        "ACAO_INCOMPATIVEL", f"Esta ação não serve para {alvo}: {motivo}", "Escolha outra ação."
     )

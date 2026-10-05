@@ -5,8 +5,8 @@ Domínio: `app/dominios/datasets/` (`limpeza.py`) · Endpoints: `GET /api/datase
 | Problema | Como detecta | Por coluna/linha |
 |---|---|---|
 | Faltantes | valores nulos após leitura | contagem e % por coluna; linhas afetadas |
-| Duplicados | `df.duplicated(keep="first")` linhas inteiras | índices das cópias |
-| Fora de faixa | numéricas: fora de [Q1 − 1,5·IQR, Q3 + 1,5·IQR] **ou** fora de limites informados pelo usuário (`min`, `max`) | índices e valores |
+| Duplicados | `df.duplicated(keep="first")` nas colunas que não são identificador (D50) | índices das cópias |
+| Fora de faixa | numéricas: fora de [Q1 − 1,5·IQR, Q3 + 1,5·IQR] **ou** fora dos limites informados pelo usuário (`min` e/ou `max`; o lado vazio segue o IQR); `min ≥ max` → erro `LIMITES_INVALIDOS` | índices e valores |
 | Inconsistência de texto | mesma categoria com grafias diferentes após normalizar (caixa, acento, espaços): "SP", "sp ", "Sp" | grupos sugeridos para unificar |
 | Tipo misto | coluna numérica com alguns textos (ex.: "12", "doze") | valores não convertidos |
 
@@ -22,8 +22,10 @@ Domínio: `app/dominios/datasets/` (`limpeza.py`) · Endpoints: `GET /api/datase
 Ações são aplicadas sobre `atual` (ADR 0004) em ordem: inconsistência → tipo misto → duplicados → fora de faixa → faltantes. `original` nunca é alterado; existe "Desfazer tudo" (restaura `atual = original`).
 
 ## Log
-Cada ação gera `{acao, coluna, linhas_afetadas, antes_exemplo, depois_exemplo, quando}` e uma frase: "Removemos 12 linhas duplicadas." / "Preenchemos 5 valores faltantes de *idade* com a mediana (34)." O log vai para o relatório.
+Cada ação gera `{acao, coluna, linhas_afetadas, antes_exemplo, depois_exemplo, quando}` e uma frase: "Removemos 3 linhas duplicadas." / "Preenchemos 3 valores faltantes de peso_kg com a mediana (69,4)." O log vai para o relatório.
 
 ## Regras
 - Preencher com média só para numéricas; ordinal/nominal só moda.
 - Após limpeza, reclassificar tipos apenas das colunas cujo conteúdo mudou e que estão com `origem="auto"`.
+- Tipos `manual` são mantidos após a limpeza se continuarem válidos; só as contagens são atualizadas.
+- Se uma coluna numérica ainda tem texto (tipo misto mantido), o valor de preenchimento entra como texto no formato do arquivo.
