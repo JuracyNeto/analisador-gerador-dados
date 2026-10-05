@@ -12,15 +12,15 @@ Domínio: `app/dominios/datasets/` (`leitura.py`) · Endpoint: `POST /api/datase
 
 ## Detecção automática
 1. **Codificação:** tentar `utf-8-sig` → `utf-8` → `cp1252` → `latin-1`.
-2. **Separador:** `csv.Sniffer` nas 50 primeiras linhas entre `; , \t |` e espaço múltiplo; desempate: o que gera mais colunas com contagem constante.
-3. **Cabeçalho:** `Sniffer.has_header`; se não houver, colunas `col_1..col_n`.
-4. **Decimal:** se o separador é `;` ou se ≥ 80% dos tokens numéricos casam `^\-?\d{1,3}(\.\d{3})*(,\d+)?$|^\-?\d+,\d+$` → decimal `,` e milhar `.`.
+2. **Separador:** entre `; , \t |` e espaço múltiplo, o que aparece o mesmo número de vezes em ≥ 90% das 50 primeiras linhas e gera mais colunas (D53).
+3. **Cabeçalho:** a 1ª linha tem só textos únicos que não aparecem como valor na própria coluna; senão `col_1..col_n`.
+4. **Decimal:** entre os números com `,` ou `.`, vírgula se ≥ 80% casam o padrão `1.234,5`; sem números decimais, `;` → vírgula. Padrão: `^\-?\d{1,3}(\.\d{3})*(,\d+)?$|^\-?\d+,\d+$` → decimal `,` e milhar `.`.
 5. **Nomes de colunas:** `strip()`, espaços múltiplos → um; duplicados recebem sufixo `_2`.
 6. **Valores faltantes reconhecidos:** vazio, `NA`, `N/A`, `NaN`, `null`, `None`, `-`, `?`, `—`.
 
 ## Entrada / saída
 - Entrada: bytes do arquivo + nome + opções opcionais (`separador`, `decimal`, `codificacao`, `aba`, `tem_cabecalho`) que sobrescrevem a detecção.
-- Saída: `DataFrame` + `MetadadosLeitura {formato, codificacao, separador, decimal, tem_cabecalho, n_linhas, n_colunas, avisos[]}`.
+- Saída: `DataFrame` + `MetadadosLeitura {formato, codificacao, separador, decimal, tem_cabecalho, n_linhas, n_colunas, abas[], avisos[], motivos{}}` — `motivos` explica cada detecção (formato, codificação, separador, decimal, cabeçalho; D53).
 - A API devolve `dataset_id`, metadados e prévia das 20 primeiras linhas.
 
 ## Erros (mensagens conforme spec 16)
