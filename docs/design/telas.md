@@ -12,7 +12,7 @@ Referências: `telas/Telas.dc.html` (todas, com ids 1a…8a) e prints PNG 1440 p
 ## 2 Variáveis → `features/variaveis` (2a)
 - Topo direito: resumo por tipo ("2 contínuas · 1 discreta · 2 ordinais · 1 nominal · 1 binária"), número em mono na cor do tipo.
 - Tabela (grid `140px 200px 1fr 120px 170px 200px`): Coluna (mono 600) · Tipo detectado (ChipTipo) · Por quê (motivo da spec 02, ex.: "Números com casas decimais", "Tem só dois valores: F e M", "Os valores seguem uma escala conhecida: ruim < regular < bom < ótimo") · Válidos / faltantes (mono) · Exemplos (mono texto-2, reticências) · Corrigir tipo (Select 36 com os 6 tipos completos).
-- Para cada ordinal, card "Ordem das categorias · {coluna}" com ChipTipo, instrução "Arraste para mudar a ordem, do menor para o maior. Pelo teclado: foque um item e use ↑ e ↓." e lista: item 44 alto, `drag_indicator`, posição mono, nome, "{n} linhas", botões Subir/Descer 28. Item arrastado: borda primaria, sombra-2, anel de foco, "Movendo…". Abaixo, a escala em mono. Sugestão: `@dnd-kit/sortable` (tem suporte a teclado).
+- Para cada ordinal, card "Ordem das categorias · {coluna}" com ChipTipo, instrução "Arraste para mudar a ordem, do menor para o maior. Pelo teclado: foque um item e use ↑ e ↓." e lista: item 44 alto, `drag_indicator`, posição mono, nome, "{n} linhas", botões Subir/Descer 28. Item arrastado: borda primaria, sombra-2, anel de foco, "Movendo…". Abaixo, a escala em mono. Implementação: arrastar nativo (HTML5) + botões Subir/Descer + ↑/↓ na alça focada, com anúncio da nova posição (D62).
 - Ação: "Continuar para Limpeza".
 
 ## 3 Limpeza → `features/limpeza` (3a)
