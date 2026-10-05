@@ -17,3 +17,5 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e
 - Design system e telas (Claude Design) em `docs/design/`: tokens claro/escuro, componentes com estados, 8 telas e estados de erro, vazio, carregando e toast.
 - `frontend/src/shared/ui/tokens.css` com os tokens de design.
 - ADR 0008 (design system com variáveis CSS) e decisões D42–D47.
+- Planos de implementação do M1 em `docs/plans/` (visão geral com blocos, dependências e contratos, e um plano por bloco: M1.1 a M1.7).
+- Datasets de demonstração em `dados-exemplo/` (`pesquisa_saude.txt`, com os problemas dos mockups de limpeza, e `notas_turma.csv`) e o script que os gera com semente fixa (`backend/scripts/gerar_exemplos.py`).
