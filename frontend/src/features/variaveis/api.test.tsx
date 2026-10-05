@@ -16,6 +16,16 @@ function prepararCliente() {
   return cliente;
 }
 
+/** Monta o hook com o cache preparado e pede o novo tipo para `cidade`. */
+function alterarTipoDeCidade(tipo: 'ordinal' | 'continua') {
+  const cliente = prepararCliente();
+  const { result } = renderizarHook(() => useAlterarTipo(ID_DATASET), { cliente });
+  act(() => {
+    result.current.mutate({ coluna: 'cidade', alteracao: { tipo } });
+  });
+  return { cliente, result };
+}
+
 describe('useAlterarTipo', () => {
   it('envia o PATCH, atualiza o cache na hora e invalida o diagnóstico', async () => {
     const falso = simularApi([
@@ -26,12 +36,7 @@ describe('useAlterarTipo', () => {
       },
       { caminho: CAMINHO_COLUNAS, corpo: COLUNAS_SAUDE },
     ]);
-    const cliente = prepararCliente();
-    const { result } = renderizarHook(() => useAlterarTipo(ID_DATASET), { cliente });
-
-    act(() => {
-      result.current.mutate({ coluna: 'cidade', alteracao: { tipo: 'ordinal' } });
-    });
+    const { cliente, result } = alterarTipoDeCidade('ordinal');
 
     await waitFor(() => {
       expect(result.current.isSuccess).toBe(true);
@@ -54,12 +59,7 @@ describe('useAlterarTipo', () => {
       },
       { caminho: CAMINHO_COLUNAS, corpo: COLUNAS_SAUDE },
     ]);
-    const cliente = prepararCliente();
-    const { result } = renderizarHook(() => useAlterarTipo(ID_DATASET), { cliente });
-
-    act(() => {
-      result.current.mutate({ coluna: 'cidade', alteracao: { tipo: 'continua' } });
-    });
+    const { cliente, result } = alterarTipoDeCidade('continua');
 
     await waitFor(() => {
       expect(result.current.isError).toBe(true);
