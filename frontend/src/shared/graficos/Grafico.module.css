@@ -1,0 +1,15 @@
+.figura {
+  display: flex;
+  flex-direction: column;
+  gap: var(--esp-12);
+  min-width: 0;
+}
+.titulo {
+  font-size: 14px;
+  font-weight: 600;
+}
+.resumo {
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: var(--cor-texto-2);
+}

@@ -1,0 +1,9 @@
+/* Material Symbols local (D59) com font-display: block: enquanto a fonte carrega, o nome do ícone não aparece como texto. */
+@font-face {
+  font-family: 'Material Symbols Rounded Variable';
+  font-style: normal;
+  font-display: block;
+  font-weight: 100 700;
+  src: url('@fontsource-variable/material-symbols-rounded/files/material-symbols-rounded-latin-full-normal.woff2')
+    format('woff2-variations');
+}

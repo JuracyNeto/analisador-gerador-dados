@@ -1,0 +1,40 @@
+.pagina {
+  display: flex;
+  flex-direction: column;
+  gap: var(--esp-24);
+}
+.topo {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--esp-16) var(--esp-24);
+}
+.textos {
+  display: flex;
+  flex-direction: column;
+  gap: var(--esp-4);
+  min-width: 0;
+}
+.sobrelinha {
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.4;
+  color: var(--cor-texto-2);
+}
+.titulo {
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 1.25;
+  letter-spacing: -0.015em;
+}
+.ajuda {
+  font-size: 15px;
+  color: var(--cor-texto-2);
+}
+.acoesTopo {
+  display: flex;
+  flex: none;
+  align-items: flex-end;
+  gap: var(--esp-12);
+}

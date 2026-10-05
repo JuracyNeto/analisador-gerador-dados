@@ -2,10 +2,11 @@
 Pasta: `frontend/` · React + Vite + TypeScript · `react-plotly.js` · roteamento `react-router` · estado do servidor com `@tanstack/react-query` · design em `docs/design/`
 
 ## Layout geral
-- **Barra lateral fixa** com as 8 etapas (ícone + nome + estado: concluída ✓ / atual / bloqueada). Etapas 2–8 liberadas após importar.
+- **Barra lateral fixa** com as 8 etapas (ícone + nome + estado: concluída ✓ / atual / bloqueada). Etapas 2–8 liberadas após importar. Etapas que entram em versões futuras (5–7 no M1) ficam bloqueadas com "Disponível na versão {v}." (D60).
 - **Cabeçalho:** nome do arquivo ativo, n linhas × colunas, botão "Trocar arquivo", seletor de tema claro/escuro.
 - **Área principal** com título da etapa, uma frase de ajuda e o conteúdo.
-- Responsivo: ≥ 1280 px principal; 768–1279 px barra lateral recolhível; < 768 px leitura básica (não é foco).
+- **Sessão:** o arquivo ativo e as etapas visitadas ficam salvos no navegador; se a API avisar que a sessão expirou, o app volta para Importar com um aviso (D61).
+- Responsivo: ≥ 1280 px principal; 768–1279 px barra lateral recolhida (72 px), abre por cima do conteúdo; < 768 px leitura básica (não é foco).
 
 ## Telas
 | # | Tela | Conteúdo principal | Ações |
