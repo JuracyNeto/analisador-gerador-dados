@@ -1,0 +1,55 @@
+/* Tela 1a: detecções da leitura. */
+.titulo {
+  display: flex;
+  align-items: center;
+  gap: var(--esp-12);
+}
+
+.icone {
+  display: inline-flex;
+  color: var(--cor-sucesso);
+}
+
+.grade {
+  display: grid;
+  border-top: 1px solid var(--cor-borda);
+}
+
+.campo {
+  display: flex;
+  flex-direction: column;
+  gap: var(--esp-8);
+  padding: 18px var(--esp-24);
+  border-right: 1px solid var(--cor-borda);
+  min-width: 0;
+}
+
+.campo:last-child {
+  border-right: 0;
+}
+
+.rotulo {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--cor-texto-2);
+}
+
+.valorFixo {
+  display: flex;
+  align-items: center;
+  height: 40px;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.motivo {
+  font-size: 12.5px;
+  line-height: 1.4;
+  color: var(--cor-texto-2);
+}
+
+@media (max-width: 1279px) {
+  .grade {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+}
