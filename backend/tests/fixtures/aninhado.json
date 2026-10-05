@@ -1,0 +1,2 @@
+[{"nome": "Ana", "endereco": {"cidade": "Goiânia", "uf": "GO"}, "idade": 34},
+ {"nome": "Bruno", "endereco": {"cidade": "Anápolis", "uf": "GO"}, "idade": 27}]
