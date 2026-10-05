@@ -1,16 +1,23 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { Suspense, useState } from 'react';
+import { useState } from 'react';
 import { RouterProvider } from 'react-router';
-import { roteador } from './rotas';
+import SessaoProvider from '../shared/sessao/SessaoProvider';
+import TemaProvider from '../shared/tema/TemaProvider';
+import ToastProvider from '../shared/ui/ToastProvider';
+import { roteador } from './roteador';
 
 export default function App() {
   const [clienteConsultas] = useState(() => new QueryClient());
 
   return (
     <QueryClientProvider client={clienteConsultas}>
-      <Suspense fallback={<p role="status">Carregando…</p>}>
-        <RouterProvider router={roteador} />
-      </Suspense>
+      <TemaProvider>
+        <SessaoProvider>
+          <ToastProvider>
+            <RouterProvider router={roteador} />
+          </ToastProvider>
+        </SessaoProvider>
+      </TemaProvider>
     </QueryClientProvider>
   );
 }
