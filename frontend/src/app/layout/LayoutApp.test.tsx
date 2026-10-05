@@ -1,8 +1,10 @@
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { expect, it } from 'vitest';
+import { simularApi } from '../../testes/api';
+import { ID_DATASET, criarPagina, criarResumo } from '../../testes/fixtures/datasets';
 import { simularMatchMedia } from '../../testes/matchMedia';
-import { renderizarComRotas } from '../../testes/renderizar';
+import { DATASET_TESTE, renderizarComRotas } from '../../testes/renderizar';
 import LayoutApp from './LayoutApp';
 
 const ROTAS_TESTE = [
@@ -57,4 +59,14 @@ it('em tela média a barra começa recolhida, abre sobreposta e fecha com Esc', 
   expect(
     screen.queryByRole('button', { name: 'Fechar a barra de etapas' }),
   ).not.toBeInTheDocument();
+});
+
+it('mostra linhas atuais × colunas do dataset da sessão', async () => {
+  simularApi([
+    { caminho: `/datasets/${ID_DATASET}`, corpo: criarPagina(criarResumo({ n_linhas: 227 })) },
+  ]);
+
+  renderizarComRotas(ROTAS_TESTE, '/importar', { dataset: DATASET_TESTE });
+
+  expect(await screen.findByText('227 linhas × 8 colunas')).toBeInTheDocument();
 });
