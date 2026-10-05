@@ -27,3 +27,9 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e
 - Sessão do dataset no navegador (`localStorage`), validada na leitura.
 - Formatadores pt-BR (`shared/lib/formatar.ts`) com a mesma regra de casas do backend e tradução dos erros da API em textos de tela.
 - Testes de componentes com Vitest + jsdom + Testing Library.
+- Base visual do frontend (M1.1, parte 2): layout com barra de etapas (concluída, atual, disponível, bloqueada; recolhível), cabeçalho com arquivo atual, troca de arquivo e alternância de tema, e rotas das 8 etapas (5–7 bloqueadas até a versão em que entram); `PaginaEtapa` e páginas provisórias das etapas.
+- Sessão expirada na API leva de volta para Importar com aviso.
+- Wrapper Plotly com o tema dos tokens, carregado sob demanda.
+
+### Removido
+- Página inicial com o status da API (as telas mostram a falta de conexão no próprio estado de erro).
