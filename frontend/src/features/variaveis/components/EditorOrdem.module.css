@@ -1,0 +1,133 @@
+/* Tela 2, card de ordinais (D62). */
+.mono {
+  font-family: var(--fonte-mono);
+}
+
+.instrucao {
+  margin: 0 0 14px;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--cor-texto-2);
+}
+
+.lista {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  gap: var(--esp-12);
+  height: 44px;
+  padding: 0 var(--esp-12);
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio-md);
+  background: var(--cor-superficie);
+}
+
+.item[data-arrastando='true'] {
+  border-color: var(--cor-primaria);
+  background: var(--cor-superficie-elevada);
+  box-shadow: var(--sombra-2);
+  outline: 2px solid var(--cor-foco);
+  outline-offset: 1px;
+}
+
+.alca {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: 0;
+  border-radius: var(--raio-sm);
+  background: none;
+  color: var(--cor-texto-2);
+  cursor: grab;
+}
+
+.item[data-arrastando='true'] .alca,
+.item[data-arrastando='true'] .posicao {
+  color: var(--cor-primaria);
+}
+
+.posicao {
+  width: 18px;
+  font: 600 13px var(--fonte-mono);
+  color: var(--cor-texto-2);
+}
+
+.nome {
+  flex: 1;
+  font-size: 14px;
+}
+
+.item[data-arrastando='true'] .nome {
+  font-weight: 600;
+}
+
+.quantidade {
+  font: 12.5px var(--fonte-mono);
+  color: var(--cor-texto-2);
+}
+
+.movendo {
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--cor-primaria);
+}
+
+.botoes {
+  display: flex;
+  gap: 2px;
+}
+
+.botaoIcone {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: 0;
+  border-radius: var(--raio-sm);
+  background: none;
+  color: var(--cor-texto-2);
+  cursor: pointer;
+}
+
+.botaoIcone:hover:not(:disabled),
+.alca:hover {
+  background: var(--cor-superficie-2);
+  color: var(--cor-texto);
+}
+
+.botaoIcone:disabled {
+  color: var(--cor-texto-desab);
+  cursor: default;
+}
+
+.alca:focus-visible,
+.botaoIcone:focus-visible {
+  outline: 2px solid var(--cor-foco);
+  outline-offset: 2px;
+}
+
+.escala {
+  margin: 14px 0 0;
+  font: 500 13px var(--fonte-mono);
+  color: var(--cor-texto-2);
+}
+
+.somenteLeitor {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
