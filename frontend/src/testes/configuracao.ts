@@ -1,7 +1,10 @@
 import '@testing-library/jest-dom/vitest';
-import { cleanup } from '@testing-library/react';
+import { cleanup, configure } from '@testing-library/react';
 import { afterEach, beforeEach, vi } from 'vitest';
 import { simularMatchMedia } from './matchMedia';
+
+// Páginas com lazy() demoram mais que 1 s na primeira transformação do Vite (máquina ou CI ocupados).
+configure({ asyncUtilTimeout: 5000 });
 
 beforeEach(() => {
   simularMatchMedia();
