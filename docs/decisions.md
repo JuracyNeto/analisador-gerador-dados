@@ -71,3 +71,4 @@
 | D70 | 05/10/2026 | "Ler de novo" relê o mesmo arquivo com as correções; corrigir a leitura exige o arquivo na memória da página (após recarregar, ou no exemplo, as detecções aparecem só para leitura) | Guardar o arquivo no `localStorage` | Arquivo pode ter 50 MB; a API não guarda os bytes para reler | — |
 | D71 | 05/10/2026 | Área de envio mostra "Tamanho máximo: 50 MB" | 20 MB do print | `limite_arquivo_mb = 50` (config) e spec 01 | — |
 | D72 | 05/10/2026 | Caminhos das rotas em `shared/navegacao/caminhos.ts` | Features importarem `app/etapas.ts` | Features não dependem de `app/` | — |
+| D73 | 05/10/2026 | "Trocar arquivo" (cabeçalho) encerra a sessão antes de ir para Importar, que então mostra a área de envio | Botão "Enviar outro arquivo" na tela 1a | Com sessão, Importar mostra o arquivo atual (1a) e não havia como enviar outro; o dataset antigo fica na memória do backend até sair pelo limite de 20 | — |
