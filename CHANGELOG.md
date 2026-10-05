@@ -19,3 +19,8 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e
 - ADR 0008 (design system com variáveis CSS) e decisões D42–D47.
 - Planos de implementação do M1 em `docs/plans/` (visão geral com blocos, dependências e contratos, e um plano por bloco: M1.1 a M1.7).
 - Datasets de demonstração em `dados-exemplo/` (`pesquisa_saude.txt`, com os problemas dos mockups de limpeza, e `notas_turma.csv`) e o script que os gera com semente fixa (`backend/scripts/gerar_exemplos.py`).
+- Base visual do frontend (M1.1, parte 1): fontes e ícones locais (@fontsource), tokens de espaço, raio e fontes, `color-scheme` por tema, estilos base com foco visível e movimento reduzido; tema claro/escuro salvo no navegador e aplicado antes do primeiro render.
+- Componentes de `shared/ui`: Icone, Botao, Card, Banner, estados de carregando/vazio/erro, Toast, Tooltip, Select, CampoNumero, CaixaSelecao, Segmented, Abas, CardMetrica e Tabela.
+- Sessão do dataset no navegador (`localStorage`), validada na leitura.
+- Formatadores pt-BR (`shared/lib/formatar.ts`) com a mesma regra de casas do backend e tradução dos erros da API em textos de tela.
+- Testes de componentes com Vitest + jsdom + Testing Library.
