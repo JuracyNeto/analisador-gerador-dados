@@ -1,0 +1,20 @@
+/* Tela 2: resumo dos tipos. */
+.resumo {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: var(--esp-8);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.item {
+  font-size: 13px;
+  color: var(--cor-texto-2);
+  white-space: nowrap;
+}
+
+.numero {
+  font: 600 13px var(--fonte-mono);
+}
