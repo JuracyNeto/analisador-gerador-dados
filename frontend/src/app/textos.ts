@@ -1,9 +1,5 @@
-import { formatarInteiro } from '../shared/lib/formatar';
+import { contarColunas, contarLinhas } from '../shared/lib/pluralizar';
 import type { EtapaFutura } from './etapas';
-
-function quantidade(n: number, singular: string, plural: string): string {
-  return `${formatarInteiro(n)} ${n === 1 ? singular : plural}`;
-}
 
 export const TEXTOS_APP = {
   marcaLinha1: 'Analisador e Gerador',
@@ -20,7 +16,7 @@ export const TEXTOS_APP = {
   nenhumArquivo: 'Nenhum arquivo importado',
   trocarArquivo: 'Trocar arquivo',
   dimensoes: (linhas: number, colunas: number): string =>
-    `${quantidade(linhas, 'linha', 'linhas')} × ${quantidade(colunas, 'coluna', 'colunas')}`,
+    `${contarLinhas(linhas)} × ${contarColunas(colunas)}`,
   tema: 'Tema',
   temaClaro: 'Tema claro',
   temaEscuro: 'Tema escuro',
