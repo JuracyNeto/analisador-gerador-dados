@@ -1,0 +1,106 @@
+.estado {
+  display: flex;
+  flex-direction: column;
+  gap: var(--esp-16);
+}
+.esqueletos {
+  display: flex;
+  flex-direction: column;
+  gap: var(--esp-16);
+}
+.bloco {
+  display: block;
+  border-radius: var(--raio-sm);
+  background: var(--cor-superficie-2);
+  animation: pulsar 1.2s ease-in-out infinite alternate;
+}
+.cartoes {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--esp-16);
+}
+.cartao,
+.tabela,
+.grafico {
+  padding: var(--esp-20);
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio-lg);
+  background: var(--cor-superficie);
+}
+.cartao {
+  display: flex;
+  flex-direction: column;
+  gap: var(--esp-12);
+}
+.rotulo {
+  width: 40%;
+  height: 12px;
+}
+.valor {
+  width: 55%;
+  height: 30px;
+}
+.linha {
+  width: 85%;
+  height: 12px;
+}
+.linhaCurta {
+  width: 65%;
+  height: 12px;
+}
+.tabela {
+  display: flex;
+  flex-direction: column;
+  gap: var(--esp-8);
+}
+.linhaTabela {
+  width: 100%;
+  height: 28px;
+}
+.grafico {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+  gap: var(--esp-24);
+}
+.area {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--esp-12);
+  height: 320px;
+  padding: var(--esp-20);
+  border-radius: var(--raio-md);
+  background: var(--cor-superficie-2);
+}
+.barra {
+  flex: 1;
+  border-radius: var(--raio-xs) var(--raio-xs) 0 0;
+  background: var(--cor-borda);
+  animation: pulsar 1.2s ease-in-out infinite alternate;
+}
+.textos {
+  display: flex;
+  flex-direction: column;
+  gap: var(--esp-12);
+}
+.mensagem {
+  font-size: 14px;
+  color: var(--cor-texto-2);
+}
+
+@keyframes pulsar {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0.55;
+  }
+}
+
+@media (max-width: 1279px) {
+  .cartoes {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .grafico {
+    grid-template-columns: 1fr;
+  }
+}
