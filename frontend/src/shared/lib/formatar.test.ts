@@ -1,5 +1,11 @@
 import { describe, expect, it } from 'vitest';
-import { formatarInteiro, formatarNumero, formatarPercentual, lerNumeroPtBr } from './formatar';
+import {
+  formatarDecimal,
+  formatarInteiro,
+  formatarNumero,
+  formatarPercentual,
+  lerNumeroPtBr,
+} from './formatar';
 
 describe('formatarNumero', () => {
   it.each([
@@ -63,5 +69,16 @@ describe('lerNumeroPtBr', () => {
 
   it.each(['', '   ', 'abc', '1,2,3', '1.23.4', '12a', ',5'])('devolve null para "%s"', (texto) => {
     expect(lerNumeroPtBr(texto)).toBeNull();
+  });
+});
+
+describe('formatarDecimal', () => {
+  it.each([
+    [40.43, 1, '40,4'],
+    [100, 1, '100,0'],
+    [4, 1, '4,0'],
+    [1234.5, 2, '1.234,50'],
+  ])('formata %d com %d casa(s) fixa(s): %s', (valor, casas, esperado) => {
+    expect(formatarDecimal(valor, casas)).toBe(esperado);
   });
 });
