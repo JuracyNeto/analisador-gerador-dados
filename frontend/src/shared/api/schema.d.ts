@@ -107,6 +107,40 @@ export interface paths {
         patch: operations["alterar_tipo_api_datasets__dataset_id__colunas__coluna__patch"];
         trace?: never;
     };
+    "/api/datasets/{dataset_id}/colunas/{coluna}/analise": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Análise univariada da coluna (specs 04–07) */
+        get: operations["analisar_api_datasets__dataset_id__colunas__coluna__analise_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/datasets/{dataset_id}/colunas/{coluna}/posicao": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** "Onde está meu valor?" (spec 06) */
+        get: operations["posicao_api_datasets__dataset_id__colunas__coluna__posicao_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -116,6 +150,32 @@ export interface components {
             tipo: components["schemas"]["TipoVariavel"];
             /** Categorias Ordem */
             categorias_ordem?: string[] | null;
+        };
+        /** Analise */
+        Analise: {
+            /** Coluna */
+            coluna: string;
+            tipo: components["schemas"]["TipoVariavel"];
+            /** N */
+            n: number;
+            /** N Faltantes */
+            n_faltantes: number;
+            /** Aplicavel */
+            aplicavel: {
+                [key: string]: boolean;
+            };
+            /** Nao Aplicavel */
+            nao_aplicavel: components["schemas"]["NaoAplicavel"][];
+            frequencias: components["schemas"]["TabelaFrequencia"];
+            tendencia: components["schemas"]["Tendencia"];
+            separatrizes: components["schemas"]["Separatrizes"] | null;
+            dispersao: components["schemas"]["Dispersao"] | null;
+            /** Interpretacoes */
+            interpretacoes: string[];
+            /** Formulas */
+            formulas: components["schemas"]["Formula"][];
+            /** Figuras */
+            figuras: components["schemas"]["Figura"][];
         };
         /** Aviso */
         Aviso: {
@@ -152,6 +212,18 @@ export interface components {
             /** Colunas */
             colunas: components["schemas"]["TipoColuna"][];
         };
+        /** Dispersao */
+        Dispersao: {
+            amplitude: components["schemas"]["Medida"];
+            variancia: components["schemas"]["Medida"];
+            variancia_populacional: components["schemas"]["Medida"];
+            desvio_padrao: components["schemas"]["Medida"];
+            desvio_padrao_populacional: components["schemas"]["Medida"];
+            iqr: components["schemas"]["Medida"];
+            cv: components["schemas"]["Medida"];
+            /** Classificacao Cv */
+            classificacao_cv: ("baixa" | "media" | "alta") | null;
+        };
         /** EntradaLog */
         EntradaLog: {
             /** Problema */
@@ -174,6 +246,36 @@ export interface components {
             /** Frase */
             frase: string;
         };
+        /** Figura */
+        Figura: {
+            /** Id */
+            id: string;
+            /** Rotulo */
+            rotulo: string;
+            /** Titulo */
+            titulo: string;
+            /** Resumo */
+            resumo: string;
+            /** Porque */
+            porque: string;
+            /** Recomendado */
+            recomendado: boolean;
+            /** Dados */
+            dados: {
+                [key: string]: unknown;
+            };
+        };
+        /** Formula */
+        Formula: {
+            /** Chave */
+            chave: string;
+            /** Nome */
+            nome: string;
+            /** Latex */
+            latex: string;
+            /** Texto */
+            texto: string;
+        };
         /** HTTPValidationError */
         HTTPValidationError: {
             /** Detail */
@@ -187,6 +289,44 @@ export interface components {
             valores: {
                 [key: string]: components["schemas"]["Celula"];
             };
+        };
+        /** LinhaFrequencia */
+        LinhaFrequencia: {
+            /** Rotulo */
+            rotulo: string;
+            valor: components["schemas"]["Valor"];
+            /** Limite Inferior */
+            limite_inferior: number | null;
+            /** Limite Superior */
+            limite_superior: number | null;
+            /** Ponto Medio */
+            ponto_medio: number | null;
+            /** Fi */
+            fi: number;
+            /** Fri */
+            fri: number;
+            /** Fr Pct */
+            fr_pct: number;
+            /** F Acum */
+            f_acum: number | null;
+            /** Fr Acum */
+            fr_acum: number | null;
+            /** Fr Acum Pct */
+            fr_acum_pct: number | null;
+        };
+        /** Medida */
+        Medida: {
+            valor: components["schemas"]["Valor"];
+            /** Aplicavel */
+            aplicavel: boolean;
+            /** Motivo */
+            motivo: string | null;
+            /** Calculo */
+            calculo: string | null;
+            /** Interpretacao */
+            interpretacao: string | null;
+            /** Formula */
+            formula: string | null;
         };
         /** MetadadosLeitura */
         MetadadosLeitura: {
@@ -216,6 +356,25 @@ export interface components {
                 [key: string]: string;
             };
         };
+        /** Moda */
+        Moda: {
+            /** Valores */
+            valores: (number | string)[];
+            /**
+             * Classificacao
+             * @enum {string}
+             */
+            classificacao: "amodal" | "unimodal" | "bimodal" | "multimodal";
+            /** Interpretacao */
+            interpretacao: string;
+        };
+        /** NaoAplicavel */
+        NaoAplicavel: {
+            /** Item */
+            item: string;
+            /** Motivo */
+            motivo: string;
+        };
         /**
          * OrigemTipo
          * @description Quem definiu o tipo: a classificação automática ou o usuário.
@@ -239,6 +398,36 @@ export interface components {
             /** Linhas */
             linhas: components["schemas"]["LinhaDados"][];
         };
+        /** Posicao */
+        Posicao: {
+            /** Valor */
+            valor: number;
+            /**
+             * Tipo
+             * @enum {string}
+             */
+            tipo: "quartil" | "decil" | "percentil";
+            /** Regiao */
+            regiao: string;
+            /** Indice */
+            indice: number;
+            /** Limite Inferior */
+            limite_inferior: number | null;
+            /** Limite Superior */
+            limite_superior: number | null;
+            /** Posicao Percentil */
+            posicao_percentil: number;
+            /** Fora Da Faixa */
+            fora_da_faixa: ("abaixo" | "acima") | null;
+            /** Minimo */
+            minimo: number;
+            /** Maximo */
+            maximo: number;
+            /** Marcas */
+            marcas: components["schemas"]["ValorSeparatriz"][];
+            /** Frase */
+            frase: string;
+        };
         /** ResumoDataset */
         ResumoDataset: {
             /** Dataset Id */
@@ -261,6 +450,47 @@ export interface components {
             status: string;
             /** Versao */
             versao: string;
+        };
+        /** Separatrizes */
+        Separatrizes: {
+            /** Quartis */
+            quartis: components["schemas"]["ValorSeparatriz"][];
+            /** Decis */
+            decis: components["schemas"]["ValorSeparatriz"][];
+            /** Percentis */
+            percentis: components["schemas"]["ValorSeparatriz"][];
+            /** Destaques */
+            destaques: string[];
+        };
+        /** TabelaFrequencia */
+        TabelaFrequencia: {
+            tipo: components["schemas"]["TipoVariavel"];
+            /** Linhas */
+            linhas: components["schemas"]["LinhaFrequencia"][];
+            /** Total */
+            total: number;
+            /** K */
+            k: number | null;
+            /** K Sturges */
+            k_sturges: number | null;
+            /** H */
+            h: number | null;
+            /** Metodo Classes */
+            metodo_classes: ("sturges" | "usuario") | null;
+            /** Acumulada Aplicavel */
+            acumulada_aplicavel: boolean;
+            /** Motivo Acumulada */
+            motivo_acumulada: string | null;
+            /** Indice Modal */
+            indice_modal: number | null;
+        };
+        /** Tendencia */
+        Tendencia: {
+            media: components["schemas"]["Medida"];
+            mediana: components["schemas"]["Medida"];
+            moda: components["schemas"]["Moda"];
+            moda_czuber: components["schemas"]["Medida"];
+            proporcao: components["schemas"]["Medida"];
         };
         /** TipoColuna */
         TipoColuna: {
@@ -303,6 +533,16 @@ export interface components {
             input?: unknown;
             /** Context */
             ctx?: Record<string, never>;
+        };
+        Valor: number | string | null;
+        /** ValorSeparatriz */
+        ValorSeparatriz: {
+            /** Rotulo */
+            rotulo: string;
+            /** P */
+            p: number;
+            /** Valor */
+            valor: number | string;
         };
     };
     responses: never;
@@ -504,6 +744,77 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["TipoColuna"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    analisar_api_datasets__dataset_id__colunas__coluna__analise_get: {
+        parameters: {
+            query?: {
+                classes?: number | null;
+                /** @description Categoria de sucesso (binária) */
+                sucesso?: string | null;
+            };
+            header?: never;
+            path: {
+                dataset_id: string;
+                coluna: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Analise"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    posicao_api_datasets__dataset_id__colunas__coluna__posicao_get: {
+        parameters: {
+            query: {
+                valor: number;
+                tipo?: "quartil" | "decil" | "percentil";
+            };
+            header?: never;
+            path: {
+                dataset_id: string;
+                coluna: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Posicao"];
                 };
             };
             /** @description Validation Error */

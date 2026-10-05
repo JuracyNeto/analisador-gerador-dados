@@ -13,14 +13,14 @@ Discreta e contínua: ✔ (numéricas). Ordinal: quartis como **categoria** (pos
 
 ## "Onde está meu valor?"
 Entrada: `valor` (número) e `tipo` ∈ {quartil, decil, percentil}.
-1. Posição percentil: **PR = 100 · (nº de xᵢ < v + 0,5 · nº de xᵢ = v) / n** (`scipy.stats.percentileofscore(kind="mean")`)
+1. Posição percentil: **PR = 100 · (nº de xᵢ < v + 0,5 · nº de xᵢ = v) / n** (calculada com numpy; mesmo resultado de `scipy.stats.percentileofscore(kind="mean")`, D67)
 2. Região:
    - quartil: v ≤ Q1 → "1º quartil (até Q1)"; Q1 < v ≤ Q2 → "2º quartil (entre Q1 e Q2)"; …; v > Q3 → "4º quartil (acima de Q3)"
    - decil: entre Dₖ₋₁ e Dₖ → "k-ésimo decil"
    - percentil: ⌈PR⌉ limitado a 1..100 → "percentil k"
 3. Fora do intervalo observado: avisar "O valor está abaixo do menor dado observado ({mín})" / acima do maior.
 
-Saída: `{valor, tipo, regiao, indice, limite_inferior, limite_superior, posicao_percentil, frase}`.
+Saída: `{valor, tipo, regiao, indice, limite_inferior, limite_superior, posicao_percentil, fora_da_faixa, minimo, maximo, marcas, frase}` — `marcas` tem 3 (quartil), 9 (decil) ou os 9 destaques P1, P5, P10, P25, P50, P75, P90, P95, P99 (percentil); `fora_da_faixa` é `abaixo`, `acima` ou vazio.
 Frase exemplo: "O valor 37 está no **2º quartil** (entre Q1 = 30 e Q2 = 41). Cerca de 42% dos dados são menores que ele."
 
 ## Visual
