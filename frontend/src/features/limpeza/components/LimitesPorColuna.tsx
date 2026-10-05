@@ -43,7 +43,7 @@ function CamposLimite({
   );
 }
 
-/** Limites opcionais por coluna numérica (3a); só limites válidos entram no diagnóstico (Dnn-limites). */
+/** Limites opcionais por coluna numérica (3a); só limites válidos entram no diagnóstico (D74). */
 export default function LimitesPorColuna({
   colunas,
   textos,

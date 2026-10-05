@@ -29,3 +29,4 @@ Cada ação gera `{acao, coluna, linhas_afetadas, antes_exemplo, depois_exemplo,
 - Após limpeza, reclassificar tipos apenas das colunas cujo conteúdo mudou e que estão com `origem="auto"`.
 - Tipos `manual` são mantidos após a limpeza se continuarem válidos; só as contagens são atualizadas.
 - Se uma coluna numérica ainda tem texto (tipo misto mantido), o valor de preenchimento entra como texto no formato do arquivo.
+- A tela começa com todas as ações em "Manter" e envia só as diferentes (D75). Duplicados têm uma ação para todos os grupos. Limites por coluna refazem o diagnóstico 600 ms depois da digitação (D74).

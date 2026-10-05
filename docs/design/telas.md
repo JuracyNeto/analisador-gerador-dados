@@ -16,6 +16,7 @@ Referências: `telas/Telas.dc.html` (todas, com ids 1a…8a) e prints PNG 1440 p
 - Ação: "Continuar para Limpeza".
 
 ## 3 Limpeza → `features/limpeza` (3a)
+> Implementação do M1: ações começam em "Manter" (D75); "Corrigir para 1,72" fica fora do M1 (D76); limites refazem o diagnóstico 600 ms depois da digitação (D74); o Select de ação tem nome "Ação para {coluna} ({seção})", porque a mesma coluna aparece em mais de uma seção.
 - 4 cards de resumo (ícone + rótulo 13 texto-2, número mono 32 + unidade, frase): Faltantes 7 células · Duplicados 3 linhas · Fora de faixa 5 valores · Grafias diferentes 2 grupos.
 - Coluna esquerda (1fr): uma seção por problema (cabeçalho título + subtítulo; linhas em grid `120px 1fr 250px`: coluna/grupo mono, linhas/valores afetados, Select de ação). Ações por tipo: Faltantes "Preencher com a mediana (69,8)", "Manter como 'não informado'", "Remover a linha"; Duplicados "Remover"/"Manter"; Fora de faixa "Corrigir para 1,72", "Remover o valor", "Manter"; Grafias "Unificar 'Goiania' → 'Goiânia'".
 - Seção "Limites por coluna" (opcional): por coluna numérica, campos Mínimo/Máximo; validação "O mínimo precisa ser menor que o máximo (110). Ajuste um dos dois."

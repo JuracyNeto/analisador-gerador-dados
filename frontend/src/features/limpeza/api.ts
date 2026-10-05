@@ -5,7 +5,7 @@ import { caminhoDataset, chavesDataset } from '../../shared/api/dataset';
 import { useAvisarErro } from '../../shared/ui/useAvisarErro';
 import type { Diagnostico, PedidoLimpeza, ResultadoLimpeza } from './tipos';
 
-/** Dnn-limites: o diagnóstico com limites novos espera 600 ms sem digitação. */
+/** D74: o diagnóstico com limites novos espera 600 ms sem digitação. */
 export const ATRASO_LIMITES_MS = 600;
 
 export const chavesLimpeza = {
@@ -26,7 +26,7 @@ export function useDiagnostico(datasetId: string, limitesJson: string) {
   });
 }
 
-/** Limpeza muda linhas, tipos, log, diagnóstico e análises: invalida o prefixo do dataset (Dnn-chaves). */
+/** Limpeza muda linhas, tipos, log, diagnóstico e análises: invalida o prefixo do dataset (D68). */
 function useAoConcluirLimpeza(datasetId: string) {
   const cliente = useQueryClient();
   const avisarErro = useAvisarErro();

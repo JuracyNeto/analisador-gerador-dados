@@ -1,7 +1,7 @@
 import { useCallback, useState } from 'react';
 import type { EscolhasLimpeza, TipoAcao } from '../tipos';
 
-/** Escolha por linha de seção; ausente = "manter" (Dnn-manter). */
+/** Escolha por linha de seção; ausente = "manter" (D75). */
 export function useEscolhasLimpeza() {
   const [valores, setValores] = useState<EscolhasLimpeza>({});
   const escolher = useCallback((chave: string, acao: TipoAcao) => {

@@ -204,7 +204,7 @@ export function montarSecoes(diagnostico: Diagnostico): SecaoDiagnostico[] {
   ].filter((s) => s.linhas.length > 0);
 }
 
-/** Dnn-manter: só vão para a API as linhas cuja escolha é diferente de "manter". */
+/** D75: só vão para a API as linhas cuja escolha é diferente de "manter". */
 export function montarPedido(
   secoes: readonly SecaoDiagnostico[],
   escolhas: EscolhasLimpeza,
