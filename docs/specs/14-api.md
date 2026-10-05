@@ -5,7 +5,8 @@ Camada de apresentação: `router.py` + `schemas.py` de cada domínio; `app/main
 | Método | Rota | Corpo / query | Resposta | Spec |
 |---|---|---|---|---|
 | POST | `/datasets` | multipart `arquivo` + opções de leitura | `{dataset_id, metadados, previa[20], colunas[]}` | 01 |
-| GET | `/datasets/{id}` | `?pagina=&tamanho=&versao=original|atual` | linhas paginadas | — |
+| POST | `/datasets/exemplo` | — | igual ao `POST /datasets` (carrega `dados-exemplo/pesquisa_saude.txt`, D52) | 01 |
+| GET | `/datasets/{id}` | `?pagina=&tamanho=&versao=original|atual` | `{resumo, versao, pagina, tamanho, total_paginas, linhas}` (D55) | — |
 | DELETE | `/datasets/{id}` | — | 204 | — |
 | GET | `/datasets/{id}/colunas` | — | `TipoColuna[]` | 02 |
 | PATCH | `/datasets/{id}/colunas/{col}` | `{tipo, categorias_ordem?}` | `TipoColuna` | 02 |

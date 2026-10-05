@@ -24,3 +24,7 @@ class EntradaInvalida(ErroAplicacao):
 
 class NaoEncontrado(ErroAplicacao):
     status = HTTPStatus.NOT_FOUND
+
+
+class ArquivoGrande(ErroAplicacao):
+    status = HTTPStatus.REQUEST_ENTITY_TOO_LARGE

@@ -1,8 +1,11 @@
 """Configuração da aplicação, lida de variáveis de ambiente com prefixo AGD_."""
 
 from functools import lru_cache
+from pathlib import Path
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
+
+RAIZ_REPOSITORIO = Path(__file__).resolve().parents[3]
 
 
 class Configuracao(BaseSettings):
@@ -17,6 +20,14 @@ class Configuracao(BaseSettings):
     max_datasets: int = 20
     limiar_discreta: int = 30
     limiar_unicos_identificador: float = 0.95
+    limiar_numerico: float = 0.9
+    tamanho_previa: int = 20
+    pasta_exemplos: Path = RAIZ_REPOSITORIO / "dados-exemplo"
+    arquivo_exemplo: str = "pesquisa_saude.txt"
+
+    @property
+    def limite_arquivo_bytes(self) -> int:
+        return self.limite_arquivo_mb * 1024 * 1024
 
 
 @lru_cache

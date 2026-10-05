@@ -21,16 +21,288 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/datasets": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Importa um arquivo de dados */
+        post: operations["importar_api_datasets_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/datasets/exemplo": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Importa o arquivo de exemplo (pesquisa_saude.txt) */
+        post: operations["importar_exemplo_api_datasets_exemplo_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/datasets/{dataset_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Resumo do dataset e linhas paginadas */
+        get: operations["obter_pagina_api_datasets__dataset_id__get"];
+        put?: never;
+        post?: never;
+        /** Descarta o dataset */
+        delete: operations["remover_api_datasets__dataset_id__delete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/datasets/{dataset_id}/colunas": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Tipo de cada coluna, com o motivo */
+        get: operations["listar_colunas_api_datasets__dataset_id__colunas_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/datasets/{dataset_id}/colunas/{coluna}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Corrige o tipo de uma coluna */
+        patch: operations["alterar_tipo_api_datasets__dataset_id__colunas__coluna__patch"];
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /** AlteracaoTipo */
+        AlteracaoTipo: {
+            tipo: components["schemas"]["TipoVariavel"];
+            /** Categorias Ordem */
+            categorias_ordem?: string[] | null;
+        };
+        /** Aviso */
+        Aviso: {
+            /** Codigo */
+            codigo: string;
+            /** Mensagem */
+            mensagem: string;
+        };
+        /** Body_importar_api_datasets_post */
+        Body_importar_api_datasets_post: {
+            /** Arquivo */
+            arquivo: string;
+            /** Separador */
+            separador?: string | null;
+            /** Decimal */
+            decimal?: ("," | ".") | null;
+            /** Codificacao */
+            codificacao?: string | null;
+            /** Aba */
+            aba?: string | null;
+            /** Tem Cabecalho */
+            tem_cabecalho?: boolean | null;
+        };
+        Celula: string | number | boolean | null;
+        /** DatasetCriado */
+        DatasetCriado: {
+            /** Dataset Id */
+            dataset_id: string;
+            /** Nome Arquivo */
+            nome_arquivo: string;
+            metadados: components["schemas"]["MetadadosLeitura"];
+            /** Previa */
+            previa: components["schemas"]["LinhaDados"][];
+            /** Colunas */
+            colunas: components["schemas"]["TipoColuna"][];
+        };
+        /** EntradaLog */
+        EntradaLog: {
+            /** Problema */
+            problema: string;
+            /** Acao */
+            acao: string;
+            /** Coluna */
+            coluna: string | null;
+            /** Linhas Afetadas */
+            linhas_afetadas: number[];
+            /** Antes Exemplo */
+            antes_exemplo: string;
+            /** Depois Exemplo */
+            depois_exemplo: string;
+            /**
+             * Quando
+             * Format: date-time
+             */
+            quando: string;
+            /** Frase */
+            frase: string;
+        };
+        /** HTTPValidationError */
+        HTTPValidationError: {
+            /** Detail */
+            detail?: components["schemas"]["ValidationError"][];
+        };
+        /** LinhaDados */
+        LinhaDados: {
+            /** Linha */
+            linha: number;
+            /** Valores */
+            valores: {
+                [key: string]: components["schemas"]["Celula"];
+            };
+        };
+        /** MetadadosLeitura */
+        MetadadosLeitura: {
+            /**
+             * Formato
+             * @enum {string}
+             */
+            formato: "txt" | "csv" | "tsv" | "xlsx" | "json";
+            /** Codificacao */
+            codificacao: string | null;
+            /** Separador */
+            separador: string | null;
+            /** Decimal */
+            decimal: string | null;
+            /** Tem Cabecalho */
+            tem_cabecalho: boolean | null;
+            /** N Linhas */
+            n_linhas: number;
+            /** N Colunas */
+            n_colunas: number;
+            /** Abas */
+            abas: string[];
+            /** Avisos */
+            avisos: components["schemas"]["Aviso"][];
+            /** Motivos */
+            motivos: {
+                [key: string]: string;
+            };
+        };
+        /**
+         * OrigemTipo
+         * @description Quem definiu o tipo: a classificação automática ou o usuário.
+         * @enum {string}
+         */
+        OrigemTipo: "auto" | "manual";
+        /** PaginaDataset */
+        PaginaDataset: {
+            resumo: components["schemas"]["ResumoDataset"];
+            /**
+             * Versao
+             * @enum {string}
+             */
+            versao: "atual" | "original";
+            /** Pagina */
+            pagina: number;
+            /** Tamanho */
+            tamanho: number;
+            /** Total Paginas */
+            total_paginas: number;
+            /** Linhas */
+            linhas: components["schemas"]["LinhaDados"][];
+        };
+        /** ResumoDataset */
+        ResumoDataset: {
+            /** Dataset Id */
+            dataset_id: string;
+            /** Nome Arquivo */
+            nome_arquivo: string;
+            metadados: components["schemas"]["MetadadosLeitura"];
+            /** N Linhas */
+            n_linhas: number;
+            /** N Linhas Original */
+            n_linhas_original: number;
+            /** N Colunas */
+            n_colunas: number;
+            /** Log Limpeza */
+            log_limpeza: components["schemas"]["EntradaLog"][];
+        };
         /** Saude */
         Saude: {
             /** Status */
             status: string;
             /** Versao */
             versao: string;
+        };
+        /** TipoColuna */
+        TipoColuna: {
+            /** Coluna */
+            coluna: string;
+            tipo: components["schemas"]["TipoVariavel"];
+            /** Motivo */
+            motivo: string;
+            origem: components["schemas"]["OrigemTipo"];
+            /** N Validos */
+            n_validos: number;
+            /** N Faltantes */
+            n_faltantes: number;
+            /** N Distintos */
+            n_distintos: number;
+            /** Exemplos */
+            exemplos: string[];
+            /** Categorias Ordem */
+            categorias_ordem: string[];
+            /** Contagens */
+            contagens: {
+                [key: string]: number;
+            };
+        };
+        /**
+         * TipoVariavel
+         * @description Tipos de variável da spec 02 (identificador é auxiliar e fica fora das análises).
+         * @enum {string}
+         */
+        TipoVariavel: "nominal" | "ordinal" | "discreta" | "continua" | "binaria" | "identificador";
+        /** ValidationError */
+        ValidationError: {
+            /** Location */
+            loc: (string | number)[];
+            /** Message */
+            msg: string;
+            /** Error Type */
+            type: string;
+            /** Input */
+            input?: unknown;
+            /** Context */
+            ctx?: Record<string, never>;
         };
     };
     responses: never;
@@ -57,6 +329,190 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Saude"];
+                };
+            };
+        };
+    };
+    importar_api_datasets_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": components["schemas"]["Body_importar_api_datasets_post"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DatasetCriado"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    importar_exemplo_api_datasets_exemplo_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DatasetCriado"];
+                };
+            };
+        };
+    };
+    obter_pagina_api_datasets__dataset_id__get: {
+        parameters: {
+            query?: {
+                pagina?: number;
+                tamanho?: number;
+                versao?: "atual" | "original";
+            };
+            header?: never;
+            path: {
+                dataset_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaginaDataset"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    remover_api_datasets__dataset_id__delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                dataset_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    listar_colunas_api_datasets__dataset_id__colunas_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                dataset_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TipoColuna"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    alterar_tipo_api_datasets__dataset_id__colunas__coluna__patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                dataset_id: string;
+                coluna: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AlteracaoTipo"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TipoColuna"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
                 };
             };
         };
