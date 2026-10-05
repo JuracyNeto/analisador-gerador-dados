@@ -3,14 +3,26 @@
 from typing import Annotated, Literal
 
 from fastapi import APIRouter, Depends, Form, Query, Response, UploadFile, status
+from fastapi.exceptions import RequestValidationError
+from pydantic import ValidationError
 
+from app.dominios.datasets import schemas
 from app.dominios.datasets.schemas import (
     AlteracaoTipo,
     DatasetCriado,
+    Diagnostico,
     PaginaDataset,
+    PedidoLimpeza,
+    ResultadoLimpeza,
     TipoColuna,
 )
-from app.dominios.datasets.servico import OpcoesLeitura, ServicoDatasets, obter_servico_datasets
+from app.dominios.datasets.servico import (
+    AcaoLimpeza,
+    Limites,
+    OpcoesLeitura,
+    ServicoDatasets,
+    obter_servico_datasets,
+)
 
 router = APIRouter(prefix="/datasets", tags=["datasets"])
 
@@ -77,3 +89,45 @@ def alterar_tipo(
 ) -> TipoColuna:
     novo = servico.alterar_tipo(dataset_id, coluna, alteracao.tipo, alteracao.categorias_ordem)
     return TipoColuna.model_validate(novo)
+
+
+def _limites(limite: schemas.Limites | None) -> Limites | None:
+    return Limites(limite.min, limite.max) if limite else None
+
+
+def _acao(acao: schemas.AcaoLimpeza) -> AcaoLimpeza:
+    limites = _limites(acao.limites)
+    return AcaoLimpeza(acao.problema, acao.acao, acao.coluna, acao.valor, limites, acao.grupo)
+
+
+def _limites_por_coluna(
+    limites: Annotated[
+        str | None,
+        Query(description='Limites por coluna em JSON: {"idade": {"min": 1, "max": 110}}'),
+    ] = None,
+) -> dict[str, Limites]:
+    try:
+        lidos = schemas.LIMITES_POR_COLUNA.validate_json(limites or "{}")
+    except ValidationError as erro:
+        detalhe = {"type": "json_invalid", "loc": ("query", "limites"), "msg": "JSON inválido"}
+        raise RequestValidationError([detalhe]) from erro
+    return {coluna: Limites(faixa.min, faixa.max) for coluna, faixa in lidos.items()}
+
+
+LimitesPorColuna = Annotated[dict[str, Limites], Depends(_limites_por_coluna)]
+
+
+@router.get("/{dataset_id}/diagnostico", summary="Problemas encontrados (não altera nada)")
+def diagnosticar(servico: Servico, dataset_id: str, limites: LimitesPorColuna) -> Diagnostico:
+    return Diagnostico.model_validate(servico.diagnosticar(dataset_id, limites))
+
+
+@router.post("/{dataset_id}/limpeza", summary="Aplica ações de limpeza na versão atual")
+def limpar(servico: Servico, dataset_id: str, pedido: PedidoLimpeza) -> ResultadoLimpeza:
+    acoes = [_acao(acao) for acao in pedido.acoes]
+    return ResultadoLimpeza.model_validate(servico.limpar(dataset_id, acoes))
+
+
+@router.post("/{dataset_id}/limpeza/desfazer", summary="Desfaz toda a limpeza")
+def desfazer_limpeza(servico: Servico, dataset_id: str) -> ResultadoLimpeza:
+    return ResultadoLimpeza.model_validate(servico.desfazer_limpeza(dataset_id))

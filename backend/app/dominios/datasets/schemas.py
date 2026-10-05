@@ -3,7 +3,7 @@
 from datetime import datetime
 from typing import Literal
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, TypeAdapter
 
 from app.compartilhado.tipos import OrigemTipo, TipoVariavel
 
@@ -93,3 +93,106 @@ class PaginaDataset(Modelo):
 class AlteracaoTipo(BaseModel):
     tipo: TipoVariavel
     categorias_ordem: list[str] | None = None
+
+
+class Limites(Modelo):
+    min: float | None = None
+    max: float | None = None
+
+
+LIMITES_POR_COLUNA = TypeAdapter(dict[str, Limites])
+
+
+class ValoresSugeridos(Modelo):
+    media: float | None
+    mediana: float | None
+    moda: Celula
+
+
+class FaltantesColuna(Modelo):
+    coluna: str
+    n: int
+    linhas: list[int]
+    sugeridos: ValoresSugeridos
+
+
+class GrupoDuplicado(Modelo):
+    linha_original: int
+    copias: list[int]
+
+
+class Ocorrencia(Modelo):
+    linha: int
+    valor: Celula
+
+
+class ForaDeFaixaColuna(Modelo):
+    coluna: str
+    limite_inferior: float
+    limite_superior: float
+    origem: Literal["iqr", "usuario"]
+    ocorrencias: list[Ocorrencia]
+
+
+class Grafia(Modelo):
+    texto: str
+    n: int
+
+
+class GrupoGrafias(Modelo):
+    forma_preferida: str
+    variacoes: list[Grafia]
+
+
+class InconsistenciaColuna(Modelo):
+    coluna: str
+    grupos: list[GrupoGrafias]
+
+
+class TipoMistoColuna(Modelo):
+    coluna: str
+    ocorrencias: list[Ocorrencia]
+
+
+class Diagnostico(Modelo):
+    n_linhas: int
+    faltantes: list[FaltantesColuna]
+    duplicados: list[GrupoDuplicado]
+    fora_de_faixa: list[ForaDeFaixaColuna]
+    inconsistencias: list[InconsistenciaColuna]
+    tipo_misto: list[TipoMistoColuna]
+
+
+type Problema = Literal["faltantes", "duplicados", "fora_de_faixa", "inconsistencia", "tipo_misto"]
+type Acao = Literal[
+    "manter",
+    "remover_linhas",
+    "preencher_media",
+    "preencher_mediana",
+    "preencher_moda",
+    "preencher_valor",
+    "remover",
+    "limitar",
+    "marcar_faltante",
+    "unificar",
+]
+
+
+class AcaoLimpeza(BaseModel):
+    problema: Problema
+    acao: Acao
+    coluna: str | None = None
+    valor: Celula = None
+    limites: Limites | None = None
+    grupo: str | None = None
+
+
+class PedidoLimpeza(BaseModel):
+    acoes: list[AcaoLimpeza]
+
+
+class ResultadoLimpeza(Modelo):
+    log: list[EntradaLog]
+    n_linhas: int
+    n_linhas_original: int
+    colunas: list[TipoColuna]

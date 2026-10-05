@@ -107,10 +107,74 @@ export interface paths {
         patch: operations["alterar_tipo_api_datasets__dataset_id__colunas__coluna__patch"];
         trace?: never;
     };
+    "/api/datasets/{dataset_id}/diagnostico": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Problemas encontrados (não altera nada) */
+        get: operations["diagnosticar_api_datasets__dataset_id__diagnostico_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/datasets/{dataset_id}/limpeza": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Aplica ações de limpeza na versão atual */
+        post: operations["limpar_api_datasets__dataset_id__limpeza_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/datasets/{dataset_id}/limpeza/desfazer": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Desfaz toda a limpeza */
+        post: operations["desfazer_limpeza_api_datasets__dataset_id__limpeza_desfazer_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /** @enum {string} */
+        Acao: "manter" | "remover_linhas" | "preencher_media" | "preencher_mediana" | "preencher_moda" | "preencher_valor" | "remover" | "limitar" | "marcar_faltante" | "unificar";
+        /** AcaoLimpeza */
+        AcaoLimpeza: {
+            problema: components["schemas"]["Problema"];
+            acao: components["schemas"]["Acao"];
+            /** Coluna */
+            coluna?: string | null;
+            valor?: components["schemas"]["Celula"];
+            limites?: components["schemas"]["Limites"] | null;
+            /** Grupo */
+            grupo?: string | null;
+        };
         /** AlteracaoTipo */
         AlteracaoTipo: {
             tipo: components["schemas"]["TipoVariavel"];
@@ -152,6 +216,21 @@ export interface components {
             /** Colunas */
             colunas: components["schemas"]["TipoColuna"][];
         };
+        /** Diagnostico */
+        Diagnostico: {
+            /** N Linhas */
+            n_linhas: number;
+            /** Faltantes */
+            faltantes: components["schemas"]["FaltantesColuna"][];
+            /** Duplicados */
+            duplicados: components["schemas"]["GrupoDuplicado"][];
+            /** Fora De Faixa */
+            fora_de_faixa: components["schemas"]["ForaDeFaixaColuna"][];
+            /** Inconsistencias */
+            inconsistencias: components["schemas"]["InconsistenciaColuna"][];
+            /** Tipo Misto */
+            tipo_misto: components["schemas"]["TipoMistoColuna"][];
+        };
         /** EntradaLog */
         EntradaLog: {
             /** Problema */
@@ -174,10 +253,71 @@ export interface components {
             /** Frase */
             frase: string;
         };
+        /** FaltantesColuna */
+        FaltantesColuna: {
+            /** Coluna */
+            coluna: string;
+            /** N */
+            n: number;
+            /** Linhas */
+            linhas: number[];
+            sugeridos: components["schemas"]["ValoresSugeridos"];
+        };
+        /** ForaDeFaixaColuna */
+        ForaDeFaixaColuna: {
+            /** Coluna */
+            coluna: string;
+            /** Limite Inferior */
+            limite_inferior: number;
+            /** Limite Superior */
+            limite_superior: number;
+            /**
+             * Origem
+             * @enum {string}
+             */
+            origem: "iqr" | "usuario";
+            /** Ocorrencias */
+            ocorrencias: components["schemas"]["Ocorrencia"][];
+        };
+        /** Grafia */
+        Grafia: {
+            /** Texto */
+            texto: string;
+            /** N */
+            n: number;
+        };
+        /** GrupoDuplicado */
+        GrupoDuplicado: {
+            /** Linha Original */
+            linha_original: number;
+            /** Copias */
+            copias: number[];
+        };
+        /** GrupoGrafias */
+        GrupoGrafias: {
+            /** Forma Preferida */
+            forma_preferida: string;
+            /** Variacoes */
+            variacoes: components["schemas"]["Grafia"][];
+        };
         /** HTTPValidationError */
         HTTPValidationError: {
             /** Detail */
             detail?: components["schemas"]["ValidationError"][];
+        };
+        /** InconsistenciaColuna */
+        InconsistenciaColuna: {
+            /** Coluna */
+            coluna: string;
+            /** Grupos */
+            grupos: components["schemas"]["GrupoGrafias"][];
+        };
+        /** Limites */
+        Limites: {
+            /** Min */
+            min?: number | null;
+            /** Max */
+            max?: number | null;
         };
         /** LinhaDados */
         LinhaDados: {
@@ -216,6 +356,12 @@ export interface components {
                 [key: string]: string;
             };
         };
+        /** Ocorrencia */
+        Ocorrencia: {
+            /** Linha */
+            linha: number;
+            valor: components["schemas"]["Celula"];
+        };
         /**
          * OrigemTipo
          * @description Quem definiu o tipo: a classificação automática ou o usuário.
@@ -238,6 +384,24 @@ export interface components {
             total_paginas: number;
             /** Linhas */
             linhas: components["schemas"]["LinhaDados"][];
+        };
+        /** PedidoLimpeza */
+        PedidoLimpeza: {
+            /** Acoes */
+            acoes: components["schemas"]["AcaoLimpeza"][];
+        };
+        /** @enum {string} */
+        Problema: "faltantes" | "duplicados" | "fora_de_faixa" | "inconsistencia" | "tipo_misto";
+        /** ResultadoLimpeza */
+        ResultadoLimpeza: {
+            /** Log */
+            log: components["schemas"]["EntradaLog"][];
+            /** N Linhas */
+            n_linhas: number;
+            /** N Linhas Original */
+            n_linhas_original: number;
+            /** Colunas */
+            colunas: components["schemas"]["TipoColuna"][];
         };
         /** ResumoDataset */
         ResumoDataset: {
@@ -285,6 +449,13 @@ export interface components {
                 [key: string]: number;
             };
         };
+        /** TipoMistoColuna */
+        TipoMistoColuna: {
+            /** Coluna */
+            coluna: string;
+            /** Ocorrencias */
+            ocorrencias: components["schemas"]["Ocorrencia"][];
+        };
         /**
          * TipoVariavel
          * @description Tipos de variável da spec 02 (identificador é auxiliar e fica fora das análises).
@@ -303,6 +474,14 @@ export interface components {
             input?: unknown;
             /** Context */
             ctx?: Record<string, never>;
+        };
+        /** ValoresSugeridos */
+        ValoresSugeridos: {
+            /** Media */
+            media: number | null;
+            /** Mediana */
+            mediana: number | null;
+            moda: components["schemas"]["Celula"];
         };
     };
     responses: never;
@@ -504,6 +683,106 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["TipoColuna"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    diagnosticar_api_datasets__dataset_id__diagnostico_get: {
+        parameters: {
+            query?: {
+                /** @description Limites por coluna em JSON: {"idade": {"min": 1, "max": 110}} */
+                limites?: string | null;
+            };
+            header?: never;
+            path: {
+                dataset_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Diagnostico"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    limpar_api_datasets__dataset_id__limpeza_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                dataset_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PedidoLimpeza"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ResultadoLimpeza"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    desfazer_limpeza_api_datasets__dataset_id__limpeza_desfazer_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                dataset_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ResultadoLimpeza"];
                 };
             };
             /** @description Validation Error */

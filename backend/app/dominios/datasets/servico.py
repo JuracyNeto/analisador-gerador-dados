@@ -1,23 +1,30 @@
 """Fachada do domínio datasets: casos de uso de importação, consulta e tipos (D54)."""
 
 import uuid
+from collections.abc import Iterable, Mapping
 from dataclasses import dataclass
+from datetime import datetime
 from functools import lru_cache
 from typing import Literal
 
 import pandas as pd
 
-from app.compartilhado.tipos import TIPOS_NUMERICOS, TipoVariavel
+from app.compartilhado.tipos import TIPOS_NUMERICOS, OrigemTipo, TipoVariavel
 from app.core.config import Configuracao, obter_configuracao
+from app.core.erros import ErroAplicacao
 from app.dominios.datasets import erros
 from app.dominios.datasets.ajuste_tipo import ajustar_tipo
 from app.dominios.datasets.classificacao import (
     ColunaLida,
     Limiares,
+    classificar,
     classificar_tabela,
+    descrever,
     ler_coluna,
 )
+from app.dominios.datasets.diagnostico import Diagnostico, Limites, diagnosticar
 from app.dominios.datasets.leitura import ler_arquivo
+from app.dominios.datasets.limpeza import AcaoLimpeza, aplicar_acoes
 from app.dominios.datasets.modelos import (
     Dataset,
     EntradaLog,
@@ -30,10 +37,14 @@ from app.dominios.datasets.repositorio import RepositorioDatasets
 from app.dominios.datasets.tabela import linhas_dados, paginar
 
 __all__ = [
+    "AcaoLimpeza",
     "ColunaAnalise",
+    "Diagnostico",
     "Importacao",
+    "Limites",
     "OpcoesLeitura",
     "PaginaDataset",
+    "ResultadoLimpeza",
     "Resumo",
     "ServicoDatasets",
     "obter_servico_datasets",
@@ -81,6 +92,14 @@ class ColunaAnalise:
     numeros: pd.Series | None
     textos: pd.Series
     categorias_ordem: tuple[str, ...]
+
+
+@dataclass(frozen=True, slots=True)
+class ResultadoLimpeza:
+    log: tuple[EntradaLog, ...]
+    n_linhas: int
+    n_linhas_original: int
+    colunas: tuple[TipoColuna, ...]
 
 
 class ServicoDatasets:
@@ -179,6 +198,53 @@ class ServicoDatasets:
         tipo = dataset.tipos[coluna]
         numeros = lida.numeros if tipo.tipo in TIPOS_NUMERICOS else None
         return ColunaAnalise(coluna, tipo.tipo, numeros, lida.textos, tipo.categorias_ordem)
+
+    def diagnosticar(self, dataset_id: str, limites: Mapping[str, Limites]) -> Diagnostico:
+        """Problemas da versão atual; não altera nada (spec 03)."""
+        dataset = self.obter(dataset_id)
+        return diagnosticar(dataset.atual, dataset.tipos, dataset.metadados.decimal, limites)
+
+    def limpar(self, dataset_id: str, acoes: list[AcaoLimpeza]) -> ResultadoLimpeza:
+        """Aplica as ações sobre a versão atual; o original nunca muda."""
+        dataset = self.obter(dataset_id)
+        decimal = dataset.metadados.decimal
+        resultado = aplicar_acoes(dataset.atual, dataset.tipos, decimal, acoes, datetime.now())
+        dataset.atual = resultado.dados
+        dataset.log_limpeza.extend(resultado.log)
+        self._reclassificar(dataset, resultado.colunas_alteradas)
+        return self._resultado_limpeza(dataset)
+
+    def desfazer_limpeza(self, dataset_id: str) -> ResultadoLimpeza:
+        """ "Desfazer tudo": a versão atual volta a ser o original e o log é zerado."""
+        dataset = self.obter(dataset_id)
+        dataset.atual = dataset.original.copy()
+        dataset.log_limpeza.clear()
+        self._reclassificar(dataset, list(dataset.tipos))
+        return self._resultado_limpeza(dataset)
+
+    def _reclassificar(self, dataset: Dataset, colunas: Iterable[str]) -> None:
+        for nome in colunas:
+            lida = self._coluna_lida(dataset, nome)
+            dataset.tipos[nome] = _tipo_atualizado(lida, dataset.tipos[nome])
+
+    @staticmethod
+    def _resultado_limpeza(dataset: Dataset) -> ResultadoLimpeza:
+        return ResultadoLimpeza(
+            log=tuple(dataset.log_limpeza),
+            n_linhas=len(dataset.atual),
+            n_linhas_original=len(dataset.original),
+            colunas=tuple(dataset.tipos.values()),
+        )
+
+
+def _tipo_atualizado(lida: ColunaLida, anterior: TipoColuna) -> TipoColuna:
+    """Automáticas são reclassificadas; manuais mantêm o tipo se ainda for válido (spec 03)."""
+    if anterior.origem == OrigemTipo.MANUAL:
+        try:
+            return ajustar_tipo(lida, anterior.tipo, list(anterior.categorias_ordem) or None)
+        except ErroAplicacao:
+            pass
+    return descrever(lida, classificar(lida), OrigemTipo.AUTO)
 
 
 @lru_cache
