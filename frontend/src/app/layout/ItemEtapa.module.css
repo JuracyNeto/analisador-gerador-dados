@@ -1,0 +1,80 @@
+.linha > * {
+  display: flex;
+  width: 100%;
+}
+.item {
+  display: flex;
+  align-items: center;
+  gap: var(--esp-12);
+  width: 100%;
+  min-height: 44px;
+  padding: 0 var(--esp-12);
+  border: 0;
+  border-radius: var(--raio-md);
+  background: transparent;
+  color: var(--cor-texto);
+  font-size: 14px;
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color var(--transicao);
+}
+.item:hover {
+  background: var(--cor-superficie-2);
+}
+.atual,
+.atual:hover {
+  background: var(--cor-primaria-suave);
+  color: var(--cor-primaria);
+  font-weight: 600;
+}
+.bloqueada,
+.bloqueada:hover {
+  background: transparent;
+  color: var(--cor-texto-desab);
+  cursor: not-allowed;
+}
+.recolhida {
+  justify-content: center;
+  padding: 0;
+}
+.nome {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.concluida {
+  color: var(--cor-sucesso);
+  font-size: 12px;
+  font-weight: 500;
+}
+.cadeado {
+  color: var(--cor-texto-desab);
+}
+.marcador {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  font: 500 12px var(--fonte-mono);
+}
+.marcadorConcluida {
+  background: var(--cor-sucesso-suave);
+  color: var(--cor-sucesso);
+}
+.marcadorAtual {
+  background: var(--cor-primaria);
+  color: var(--cor-sobre-primaria);
+  font-weight: 600;
+}
+.marcadorDisponivel {
+  border: 1.5px solid var(--cor-borda-forte);
+  color: var(--cor-texto-2);
+}
+.marcadorBloqueada {
+  border: 1.5px dashed var(--cor-borda);
+}

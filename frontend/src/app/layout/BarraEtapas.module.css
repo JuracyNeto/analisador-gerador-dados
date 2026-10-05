@@ -1,0 +1,97 @@
+.barra {
+  position: sticky;
+  top: 0;
+  display: flex;
+  flex-direction: column;
+  width: var(--largura-barra);
+  height: 100vh;
+  border-right: 1px solid var(--cor-borda);
+  background: var(--cor-superficie);
+}
+.recolhida {
+  width: var(--largura-barra-recolhida);
+}
+.sobreposta {
+  position: fixed;
+  left: 0;
+  z-index: 30;
+  box-shadow: var(--sombra-3);
+}
+.marca {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: var(--altura-cabecalho);
+  padding: 0 var(--esp-20);
+  border-bottom: 1px solid var(--cor-borda);
+}
+.recolhida .marca {
+  justify-content: center;
+  padding: 0;
+}
+.simbolo {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: var(--raio-md);
+  background: var(--cor-primaria);
+  color: var(--cor-sobre-primaria);
+  font: 600 13px var(--fonte-mono);
+}
+.nomeApp {
+  display: flex;
+  flex-direction: column;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.25;
+  white-space: nowrap;
+}
+.nomeApp2 {
+  color: var(--cor-texto-2);
+  font-size: 12px;
+  font-weight: 400;
+}
+.nav {
+  flex: 1;
+}
+.lista {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: var(--esp-12);
+  list-style: none;
+}
+.aviso {
+  margin: 0 var(--esp-20) var(--esp-16);
+  color: var(--cor-texto-2);
+  font-size: 12px;
+  line-height: 1.5;
+}
+.rodape {
+  padding: var(--esp-12);
+  border-top: 1px solid var(--cor-borda);
+}
+.recolher {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  min-height: 40px;
+  padding: 0 var(--esp-12);
+  border: 0;
+  border-radius: var(--raio-md);
+  background: transparent;
+  color: var(--cor-texto-2);
+  font-size: 13px;
+  cursor: pointer;
+  transition: background-color var(--transicao);
+}
+.recolher:hover {
+  background: var(--cor-superficie-2);
+}
+.recolhida .recolher {
+  justify-content: center;
+  padding: 0;
+}
