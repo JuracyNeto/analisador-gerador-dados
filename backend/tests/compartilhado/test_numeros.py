@@ -1,6 +1,11 @@
 import pytest
 
-from app.compartilhado.numeros import formatar_inteiro, formatar_numero, formatar_percentual
+from app.compartilhado.numeros import (
+    formatar_fixo,
+    formatar_inteiro,
+    formatar_numero,
+    formatar_percentual,
+)
 
 
 @pytest.mark.parametrize(
@@ -32,3 +37,8 @@ def test_formatar_inteiro_usa_ponto_de_milhar() -> None:
 def test_formatar_percentual_usa_virgula() -> None:
     assert formatar_percentual(21.6) == "21,6%"
     assert formatar_percentual(100) == "100,0%"
+
+
+def test_formatar_fixo_mantem_as_casas() -> None:
+    assert formatar_fixo(60.0, 1) == "60,0"
+    assert formatar_fixo(1234.5, 2) == "1.234,50"
