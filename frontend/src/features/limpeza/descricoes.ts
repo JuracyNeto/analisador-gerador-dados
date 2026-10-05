@@ -16,6 +16,12 @@ export function listarComE(itens: readonly string[]): string {
   return LISTA_PT.format(itens);
 }
 
+/** "6,8; 106,4 e 712": com vírgula decimal, a vírgula não pode separar os itens. */
+export function listarValores(itens: readonly string[]): string {
+  if (itens.length <= 1) return itens.join('');
+  return `${itens.slice(0, -1).join('; ')} e ${String(itens.at(-1))}`;
+}
+
 export function primeiraMaiuscula(texto: string): string {
   return texto.charAt(0).toUpperCase() + texto.slice(1);
 }
@@ -39,7 +45,7 @@ export function descreverOcorrencias(ocorrencias: readonly Ocorrencia[]): string
     escolherForma(ocorrencias.length, T.linhas.singular, T.linhas.plural),
   );
   const linhas = listarComE(visiveis.map((o) => formatarInteiro(o.linha)));
-  const valores = listarComE(visiveis.map((o) => formatarCelula(o.valor)));
+  const valores = listarValores(visiveis.map((o) => formatarCelula(o.valor)));
   const resto = ocorrencias.length - visiveis.length;
   return `${prefixo} ${linhas}: ${valores}${resto > 0 ? T.linhas.eMais(resto) : ''}`;
 }

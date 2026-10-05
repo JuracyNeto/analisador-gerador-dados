@@ -30,6 +30,17 @@ describe('descricoes', () => {
     ).toBe('Linhas 19 e 201: 0 e 230');
   });
 
+  it('separa valores decimais com ponto e vírgula (a vírgula já é o decimal)', () => {
+    expect(
+      descreverOcorrencias([
+        { linha: 99, valor: 6.8 },
+        { linha: 106, valor: 106.4 },
+        { linha: 160, valor: 712 },
+        { linha: 161, valor: 800 },
+      ]),
+    ).toBe('Linhas 99, 106 e 160: 6,8; 106,4 e 712 e mais 1');
+  });
+
   it('detalhe do log junta linhas e antes → depois', () => {
     expect(detalheDoLog(criarEntradaLog())).toBe('linhas 45, 46, 47');
     expect(
