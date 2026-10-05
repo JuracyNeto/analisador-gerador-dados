@@ -1,0 +1,17 @@
+/* Tela 4a: separatrizes ao lado do painel "Onde está meu valor?". */
+.grade {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.35fr);
+  gap: var(--esp-20);
+  align-items: start;
+}
+
+.grade[data-com-painel='false'] {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+@media (max-width: 1279px) {
+  .grade {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

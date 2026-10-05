@@ -1,0 +1,33 @@
+/* Tela 4a: painel "Onde está meu valor?". */
+.corpo {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.controles {
+  display: flex;
+  gap: var(--esp-16);
+  align-items: flex-end;
+  flex-wrap: wrap;
+}
+
+/* Campo "Valor de …" (o CampoNumero não recebe className). */
+.controles > :first-child {
+  width: 160px;
+}
+
+.frase {
+  margin: 0;
+  padding: 14px var(--esp-16);
+  border-radius: var(--raio-md);
+  background: var(--cor-primaria-suave);
+  font-size: 15px;
+  line-height: 1.55;
+}
+
+.dica {
+  margin: 0;
+  font-size: 14px;
+  color: var(--cor-texto-2);
+}

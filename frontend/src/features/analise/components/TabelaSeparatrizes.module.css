@@ -1,0 +1,38 @@
+/* Tela 4a: quartis, decis e percentis lado a lado. */
+.grupos {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin: 0 calc(-1 * var(--esp-20));
+}
+
+.grupos > * {
+  border-right: 1px solid var(--cor-borda);
+}
+
+.grupos > :last-child {
+  border-right: 0;
+}
+
+.todos {
+  margin-top: var(--esp-16);
+  border-top: 1px solid var(--cor-borda);
+  padding-top: var(--esp-12);
+}
+
+/* 99 itens: o navegador só desenha quando aparecem. */
+.todos > section {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 600px;
+}
+
+.resumo {
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--cor-primaria);
+}
+
+.resumo:focus-visible {
+  outline: 2px solid var(--cor-foco);
+  outline-offset: 2px;
+}
