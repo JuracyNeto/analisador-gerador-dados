@@ -42,7 +42,8 @@ export const TEXTOS_LIMPEZA = {
   },
   secoes: {
     cabecalhoAcao: 'Ação',
-    rotuloAcao: (item: string) => `Ação para ${item}`,
+    // A seção entra no nome: a mesma coluna aparece em mais de uma seção (faltantes e fora de faixa).
+    rotuloAcao: (item: string, secao: string) => `Ação para ${item} (${secao})`,
     faltantes: {
       titulo: 'Faltantes',
       cabecalhos: ['Coluna', 'Linhas afetadas'],

@@ -14,12 +14,13 @@ interface PropsSecaoProblema {
 
 interface PropsLinhaProblema {
   linha: LinhaSecao;
+  secao: string;
   escolha: TipoAcao;
   aoEscolher: (chave: string, acao: TipoAcao) => void;
 }
 
 /** Uma linha da seção: rótulo (coluna ou linha do arquivo) · descrição · ação escolhida. */
-function LinhaProblema({ linha, escolha, aoEscolher }: Readonly<PropsLinhaProblema>) {
+function LinhaProblema({ linha, secao, escolha, aoEscolher }: Readonly<PropsLinhaProblema>) {
   return (
     <tr>
       <th scope="row" className={estilos.rotulo}>
@@ -31,7 +32,7 @@ function LinhaProblema({ linha, escolha, aoEscolher }: Readonly<PropsLinhaProble
       </td>
       <td>
         <Select
-          rotulo={T.secoes.rotuloAcao(linha.rotulo)}
+          rotulo={T.secoes.rotuloAcao(linha.rotulo, secao)}
           rotuloOculto
           altura={36}
           valor={escolha}
@@ -77,6 +78,7 @@ export default function SecaoProblema({
             <LinhaProblema
               key={linha.chave}
               linha={linha}
+              secao={secao.titulo}
               escolha={escolhas[linha.chave] ?? 'manter'}
               aoEscolher={aoEscolher}
             />

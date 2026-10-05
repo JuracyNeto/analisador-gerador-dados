@@ -19,7 +19,7 @@ describe('SecaoProblema', () => {
 
     const regiao = screen.getByRole('region', { name: 'Faltantes' });
     expect(within(regiao).getByText('5 células vazias')).toBeInTheDocument();
-    const select = within(regiao).getByRole('combobox', { name: 'Ação para peso_kg' });
+    const select = within(regiao).getByRole('combobox', { name: 'Ação para peso_kg (Faltantes)' });
     expect(select).toHaveValue('manter');
 
     await userEvent.selectOptions(select, 'preencher_mediana');
