@@ -1,0 +1,51 @@
+.cabecalho {
+  display: flex;
+  align-items: center;
+  gap: var(--esp-16);
+  height: var(--altura-cabecalho);
+  padding: 0 var(--esp-32);
+  border-bottom: 1px solid var(--cor-borda);
+  background: var(--cor-superficie);
+}
+.arquivo {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  gap: var(--esp-12);
+  min-width: 0;
+}
+.icone {
+  color: var(--cor-texto-2);
+}
+.textos {
+  display: flex;
+  align-items: baseline;
+  gap: var(--esp-12);
+  min-width: 0;
+}
+.nome {
+  overflow: hidden;
+  font: 600 14px var(--fonte-mono);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.dimensoes {
+  color: var(--cor-texto-2);
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.vazio {
+  flex: 1;
+  color: var(--cor-texto-2);
+  font-size: 14px;
+}
+
+@media (max-width: 767px) {
+  .cabecalho {
+    padding: 0 var(--esp-16);
+  }
+  .dimensoes {
+    display: none;
+  }
+}
