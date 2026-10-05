@@ -17,7 +17,9 @@ def test_analise_de_coluna_continua(cliente: TestClient) -> None:
     assert corpo["tendencia"]["media"]["formula"] == "media"
     assert corpo["aplicavel"]["separatrizes"] is True
     assert len(corpo["separatrizes"]["percentis"]) == 99
-    assert corpo["figuras"] == []
+    assert [f["id"] for f in corpo["figuras"]] == ["principal", "boxplot", "ogiva"]
+    assert corpo["figuras"][0]["rotulo"] == "Histograma"
+    assert corpo["figuras"][0]["recomendado"] is True
 
 
 def test_analise_de_coluna_nominal(cliente: TestClient) -> None:
