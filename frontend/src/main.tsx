@@ -11,6 +11,9 @@ import './shared/ui/base.css';
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import App from './app/App';
+import { aplicarTemaInicial } from './shared/tema/preferencia';
+
+aplicarTemaInicial();
 
 const raiz = document.getElementById('root');
 if (!raiz) throw new Error('Elemento #root não encontrado em index.html');
