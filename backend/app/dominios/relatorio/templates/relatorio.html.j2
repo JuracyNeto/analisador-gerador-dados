@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Relatório estatístico · {{ c.nome_arquivo }}</title>
+  <style>
+{% include "estilos.css" %}
+  </style>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16/dist/katex.min.js"></script>
+  {{ c.script_plotly | safe }}
+</head>
+<body>
+  <header class="cabecalho">
+    <div class="marca"><span>Analisador e Gerador de Dados</span><span>{{ c.gerado_em }}</span></div>
+    <h1>Relatório estatístico</h1>
+    <p class="subtitulo">{{ c.subtitulo }}</p>
+  </header>
+  {% set numero = namespace(secao=0, figura=0) %}
+
+  {% if c.leitura is not none %}
+  {% set numero.secao = numero.secao + 1 %}
+  <section>
+    <h2>{{ numero.secao }}. {{ titulos.leitura }}</h2>
+    <p>{{ c.leitura }}</p>
+  </section>
+  {% endif %}
+
+  {% if c.tipos is not none %}
+  {% set numero.secao = numero.secao + 1 %}
+  <section>
+    <h2>{{ numero.secao }}. {{ titulos.tipos }}</h2>
+    <table>
+      <thead><tr><th scope="col">Coluna</th><th scope="col">Tipo</th><th scope="col">Motivo</th></tr></thead>
+      <tbody>
+      {% for t in c.tipos %}
+        <tr><td class="mono">{{ t.coluna }}</td><td>{{ t.tipo }}</td><td>{{ t.motivo }}</td></tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </section>
+  {% endif %}
+
+  {% if c.limpeza is not none %}
+  {% set numero.secao = numero.secao + 1 %}
+  <section>
+    <h2>{{ numero.secao }}. {{ titulos.limpeza }}</h2>
+    <p>{{ c.limpeza | join(" ") }}</p>
+  </section>
+  {% endif %}
+
+  {% for col in c.colunas or [] %}
+  {% set numero.secao = numero.secao + 1 %}
+  <section class="coluna">
+    <h2>{{ numero.secao }}. Análise de <span class="mono">{{ col.coluna }}</span></h2>
+    <p class="nota">{{ col.tipo }} · {{ col.n }} valores válidos{% if col.n_faltantes %} · {{ col.n_faltantes }} faltantes{% endif %}</p>
+    {% if col.medidas %}
+    <dl class="medidas">
+      {% for m in col.medidas %}<div><dt>{{ m.rotulo }}</dt><dd class="mono">{{ m.valor }}</dd></div>{% endfor %}
+    </dl>
+    {% endif %}
+    {% if col.separatrizes %}<p class="mono">{{ col.separatrizes }}</p>{% endif %}
+    <table class="frequencias">
+      <thead><tr>{% for titulo in col.cabecalho_tabela %}<th scope="col">{{ titulo }}</th>{% endfor %}</tr></thead>
+      <tbody>
+      {% for linha in col.linhas_tabela %}
+        <tr>{% for celula in linha %}<td{% if not loop.first %} class="numero"{% endif %}>{{ celula }}</td>{% endfor %}</tr>
+      {% endfor %}
+      </tbody>
+    </table>
+    {% if col.figura %}
+    {% set numero.figura = numero.figura + 1 %}
+    <figure>
+      <figcaption>Figura {{ numero.figura }} · {{ col.figura.titulo }}</figcaption>
+      {{ col.figura.html | safe }}
+      <p class="nota">{{ col.figura.resumo }}</p>
+    </figure>
+    {% endif %}
+    {% for frase in col.interpretacoes %}<p>{{ frase }}</p>{% endfor %}
+    {% if col.formulas %}
+    <h3>Fórmulas usadas</h3>
+    <ul class="formulas">
+      {% for f in col.formulas %}<li>{{ f.nome }}: <span class="formula" data-latex="{{ f.latex }}">{{ f.texto }}</span></li>{% endfor %}
+    </ul>
+    {% endif %}
+  </section>
+  {% endfor %}
+
+  <footer class="rodape">Disciplina de Estatística · gerado pelo Analisador e Gerador de Dados</footer>
+  <script>
+    window.addEventListener("load", function () {
+      if (!window.katex) return;
+      document.querySelectorAll(".formula[data-latex]").forEach(function (el) {
+        try { window.katex.render(el.dataset.latex, el, { throwOnError: false }); } catch (e) { /* mantém o texto */ }
+      });
+    });
+  </script>
+</body>
+</html>
