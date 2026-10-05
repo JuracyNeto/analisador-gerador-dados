@@ -2,14 +2,18 @@ import { screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import type { ReactElement } from 'react';
 import { expect, it } from 'vitest';
-import { renderizarComRotas } from '../../testes/renderizar';
+import { DATASET_TESTE, renderizarComRotas } from '../../testes/renderizar';
 import Cabecalho from './Cabecalho';
 
-function renderizar(cabecalho: ReactElement) {
-  renderizarComRotas([
-    { path: '/', element: cabecalho },
-    { path: '/importar', element: <p>Tela de importar</p> },
-  ]);
+function renderizar(cabecalho: ReactElement, dataset: typeof DATASET_TESTE | null = null) {
+  renderizarComRotas(
+    [
+      { path: '/', element: cabecalho },
+      { path: '/importar', element: <p>Tela de importar</p> },
+    ],
+    '/',
+    { dataset },
+  );
 }
 
 it('sem arquivo mostra o aviso e não oferece troca', () => {
@@ -19,13 +23,18 @@ it('sem arquivo mostra o aviso e não oferece troca', () => {
   expect(screen.queryByRole('button', { name: 'Trocar arquivo' })).not.toBeInTheDocument();
 });
 
-it('com arquivo mostra nome e tamanho; "Trocar arquivo" leva para Importar', async () => {
-  renderizar(<Cabecalho nomeArquivo="pesquisa_saude.txt" nLinhas={230} nColunas={8} />);
+it('com arquivo mostra nome e tamanho; "Trocar arquivo" encerra a sessão e leva para Importar', async () => {
+  renderizar(
+    <Cabecalho nomeArquivo="pesquisa_saude.txt" nLinhas={230} nColunas={8} />,
+    DATASET_TESTE,
+  );
 
   expect(screen.getByText('pesquisa_saude.txt')).toBeInTheDocument();
   expect(screen.getByText('230 linhas × 8 colunas')).toBeInTheDocument();
   await userEvent.click(screen.getByRole('button', { name: 'Trocar arquivo' }));
   expect(await screen.findByText('Tela de importar')).toBeInTheDocument();
+  // Sem sessão, Importar mostra a área de envio (1b) em vez do arquivo atual (1a).
+  expect(JSON.parse(localStorage.getItem('sessao') ?? '{}')).toMatchObject({ dataset: null });
 });
 
 it('usa singular e separador de milhar', () => {

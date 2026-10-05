@@ -1,12 +1,11 @@
 import { useNavigate } from 'react-router';
+import { CAMINHOS } from '../../shared/navegacao/caminhos';
+import { useSessao } from '../../shared/sessao/useSessao';
 import Botao from '../../shared/ui/Botao';
 import Icone from '../../shared/ui/Icone';
-import { ETAPAS } from '../etapas';
 import { TEXTOS_APP } from '../textos';
 import AlternanciaTema from './AlternanciaTema';
 import estilos from './Cabecalho.module.css';
-
-const CAMINHO_IMPORTAR = ETAPAS[0].caminho;
 
 interface PropsCabecalho {
   nomeArquivo?: string | undefined;
@@ -16,6 +15,7 @@ interface PropsCabecalho {
 
 export default function Cabecalho({ nomeArquivo, nLinhas, nColunas }: Readonly<PropsCabecalho>) {
   const navegar = useNavigate();
+  const { encerrar } = useSessao();
   return (
     <header className={estilos.cabecalho}>
       {nomeArquivo === undefined ? (
@@ -29,7 +29,9 @@ export default function Cabecalho({ nomeArquivo, nLinhas, nColunas }: Readonly<P
           tamanho="sm"
           icone="swap_horiz"
           onClick={() => {
-            void navegar(CAMINHO_IMPORTAR);
+            // Encerra a sessão para Importar mostrar a área de envio (D73).
+            encerrar();
+            void navegar(CAMINHOS.importar);
           }}
         >
           {TEXTOS_APP.trocarArquivo}
