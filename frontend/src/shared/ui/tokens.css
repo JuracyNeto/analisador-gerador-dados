@@ -1,9 +1,7 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..24,400..600,0..1,0&display=block');
-
 /* Analisador e Gerador de Dados — tokens. Só variáveis; estilos ficam nos componentes. */
 :root,
 [data-tema='claro'] {
+  color-scheme: light;
   --cor-fundo: #f5f6f8;
   --cor-superficie: #ffffff;
   --cor-superficie-elevada: #ffffff;
@@ -65,6 +63,7 @@
   --sombra-3: 0 16px 40px rgba(16, 20, 26, 0.16), 0 2px 8px rgba(16, 20, 26, 0.08);
 }
 [data-tema='escuro'] {
+  color-scheme: dark;
   --cor-fundo: #0e1115;
   --cor-superficie: #161a20;
   --cor-superficie-elevada: #1d222a;
@@ -124,4 +123,34 @@
   --sombra-1: 0 1px 2px rgba(0, 0, 0, 0.4);
   --sombra-2: 0 4px 12px rgba(0, 0, 0, 0.45);
   --sombra-3: 0 16px 40px rgba(0, 0, 0, 0.6);
+}
+
+/* Tokens que não mudam com o tema. Ficam depois dos temas: o teste de tema do relatório lê o primeiro bloco. */
+:root {
+  --fonte-texto: 'Inter', system-ui, sans-serif;
+  --fonte-mono: 'JetBrains Mono', ui-monospace, monospace;
+  --fonte-icones: 'Material Symbols Rounded Variable';
+
+  --esp-4: 4px;
+  --esp-8: 8px;
+  --esp-12: 12px;
+  --esp-16: 16px;
+  --esp-20: 20px;
+  --esp-24: 24px;
+  --esp-32: 32px;
+  --esp-48: 48px;
+  --esp-64: 64px;
+
+  --raio-xs: 4px;
+  --raio-sm: 6px;
+  --raio-md: 8px;
+  --raio-lg: 12px;
+  --raio-pilula: 999px;
+
+  --transicao: 120ms ease;
+
+  --largura-barra: 264px;
+  --largura-barra-recolhida: 72px;
+  --altura-cabecalho: 64px;
+  --largura-conteudo: 1176px;
 }
