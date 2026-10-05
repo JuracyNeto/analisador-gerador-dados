@@ -33,6 +33,10 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e
 - Base visual do frontend (M1.1, parte 2): layout com barra de etapas (concluída, atual, disponível, bloqueada; recolhível), cabeçalho com arquivo atual, troca de arquivo e alternância de tema, e rotas das 8 etapas (5–7 bloqueadas até a versão em que entram); `PaginaEtapa` e páginas provisórias das etapas.
 - Sessão expirada na API leva de volta para Importar com aviso.
 - Wrapper Plotly com o tema dos tokens, carregado sob demanda.
+- Telas do M1.6, parte 1:
+  - Tela Importar: envio por arrastar/soltar ou teclado, arquivo de exemplo, detecções com motivo e correção da leitura, prévia de 20 linhas e erros da API (1a–1c).
+  - Cabeçalho com linhas × colunas do dataset; sessão expirada avisa uma só vez, mesmo com várias consultas falhando juntas.
+  - `ChipTipo`, `ConteudoConsulta`, `BarraAcoes`, `ExigeDataset`, `SemDataset` e convenção de chaves de query por dataset.
 
 ### Removido
 - Página inicial com o status da API (as telas mostram a falta de conexão no próprio estado de erro).

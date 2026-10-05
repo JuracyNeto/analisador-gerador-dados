@@ -1,18 +1,8 @@
-import { afterEach, describe, expect, it, vi } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
+import { respostaJson } from '../../testes/api';
 import { ErroApi, requisitar } from './cliente';
 
-function respostaJson(status: number, corpo: unknown): Response {
-  return new Response(JSON.stringify(corpo), {
-    status,
-    headers: { 'Content-Type': 'application/json' },
-  });
-}
-
 describe('requisitar', () => {
-  afterEach(() => {
-    vi.unstubAllGlobals();
-  });
-
   it('retorna o corpo quando a resposta é ok', async () => {
     vi.stubGlobal('fetch', vi.fn().mockResolvedValue(respostaJson(200, { status: 'ok' })));
 

@@ -1,5 +1,7 @@
+import { useQuery } from '@tanstack/react-query';
 import { Suspense } from 'react';
 import { Outlet } from 'react-router';
+import { opcoesPrimeiraPagina } from '../../shared/api/dataset';
 import { juntarClasses } from '../../shared/lib/classes';
 import { useSessao } from '../../shared/sessao/useSessao';
 import EstadoCarregando from '../../shared/ui/EstadoCarregando';
@@ -12,6 +14,10 @@ import { useSessaoExpirada } from './useSessaoExpirada';
 
 export default function LayoutApp() {
   const { dataset } = useSessao();
+  const { data: resumo } = useQuery({
+    ...opcoesPrimeiraPagina(dataset?.id ?? null),
+    select: (pagina) => pagina.resumo,
+  });
   const barra = useBarraRecolhivel();
   useSessaoExpirada();
 
@@ -40,8 +46,11 @@ export default function LayoutApp() {
         />
       ) : null}
       <div className={estilos.coluna}>
-        {/* M1.6: passar nLinhas/nColunas do resumo do dataset (react-query). */}
-        <Cabecalho nomeArquivo={dataset?.nomeArquivo} />
+        <Cabecalho
+          nomeArquivo={dataset?.nomeArquivo}
+          nLinhas={resumo?.n_linhas}
+          nColunas={resumo?.n_colunas}
+        />
         <main id="conteudo" className={estilos.principal}>
           <Suspense fallback={<EstadoCarregando mensagem={TEXTOS_APP.abrindoEtapa} />}>
             <Outlet />

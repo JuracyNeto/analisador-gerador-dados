@@ -1,9 +1,14 @@
 import { useQuery } from '@tanstack/react-query';
 import { screen, waitFor } from '@testing-library/react';
-import { Outlet } from 'react-router';
-import { expect, it } from 'vitest';
-import { ErroApi } from '../../shared/api/cliente';
-import { renderizarComRotas } from '../../testes/renderizar';
+import { Outlet, Route, Routes } from 'react-router';
+import { describe, expect, it } from 'vitest';
+import { ErroApi, requisitar } from '../../shared/api/cliente';
+import { simularApi } from '../../testes/api';
+import {
+  DATASET_TESTE,
+  renderizarComProvedores,
+  renderizarComRotas,
+} from '../../testes/renderizar';
 import { useSessaoExpirada } from './useSessaoExpirada';
 
 function PaginaQueFalha({ codigo }: Readonly<{ codigo: string }>) {
@@ -68,4 +73,50 @@ it('outros erros não mexem na sessão', async () => {
   });
   expect(screen.getByText('Análise')).toBeInTheDocument();
   expect(localStorage.getItem('sessao')).toContain('pesquisa_saude.txt');
+});
+
+const SESSAO_EXPIRADA = {
+  codigo: 'DATASET_NAO_ENCONTRADO',
+  mensagem: 'Sua sessão expirou.',
+  sugestao: 'Envie o arquivo novamente.',
+};
+
+function ComVigia() {
+  useSessaoExpirada();
+  return null;
+}
+
+function DuasConsultasQueFalham() {
+  useQuery({
+    queryKey: ['datasets', 'ds-1', 'colunas'],
+    queryFn: () => requisitar('/datasets/ds-1/colunas'),
+  });
+  useQuery({
+    queryKey: ['datasets', 'ds-1', 'primeira-pagina'],
+    queryFn: () => requisitar('/datasets/ds-1'),
+  });
+  return <p>Tela de variáveis</p>;
+}
+
+describe('useSessaoExpirada com várias consultas', () => {
+  it('encerra a sessão, avisa uma vez e volta para Importar', async () => {
+    simularApi([
+      { caminho: '/datasets/ds-1/colunas', status: 404, corpo: SESSAO_EXPIRADA },
+      { caminho: '/datasets/ds-1', status: 404, corpo: SESSAO_EXPIRADA },
+    ]);
+
+    renderizarComProvedores(
+      <>
+        <ComVigia />
+        <Routes>
+          <Route path="/variaveis" element={<DuasConsultasQueFalham />} />
+          <Route path="/importar" element={<p>Tela de importar</p>} />
+        </Routes>
+      </>,
+      { rota: '/variaveis', dataset: DATASET_TESTE },
+    );
+
+    expect(await screen.findByText('Tela de importar')).toBeInTheDocument();
+    expect(screen.getAllByText('Sua sessão expirou.')).toHaveLength(1);
+  });
 });
