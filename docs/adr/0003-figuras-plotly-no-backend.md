@@ -6,7 +6,7 @@
 A regra "melhor gráfico para cada tipo de variável" deve valer igualmente na tela e no relatório HTML.
 
 ## Decisão
-`app/dominios/graficos/fabrica.py` monta figuras com `plotly.graph_objects` e as devolve como dicionário (`fig.to_plotly_json()`). A API envia esse JSON; o React renderiza com `react-plotly.js`; o relatório embute as mesmas figuras com `plotly.io.to_html`. Tema visual (cores, fontes) definido num template Plotly único, alinhado aos tokens do design.
+`app/dominios/graficos/fabrica.py` monta figuras no formato JSON do Plotly (dicionários validados nos testes com `plotly.graph_objects`). A API envia esse JSON; o React renderiza com `react-plotly.js`; o relatório embute as mesmas figuras com `Plotly.newPlot` e o tema claro. Tema visual (cores, fontes) definido num template Plotly único, alinhado aos tokens do design.
 
 ## Consequências
 - (+) Uma única fonte da regra de gráficos; relatório idêntico à tela.
