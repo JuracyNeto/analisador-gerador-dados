@@ -37,11 +37,11 @@ Camada de apresentação: `router.py` + `schemas.py` de cada domínio; `app/main
   "dispersao": { "...": "spec 07" },
   "forma": { "...": "spec 09 (M2)" },
   "interpretacoes": ["Média e mediana próximas...", "..."],
-  "formulas": [{ "nome": "Média", "latex": "\\bar{x}=\\frac{\\sum x_i}{n}", "texto": "x̄ = Σxᵢ / n" }],
-  "figuras": { "principal": { "...": "plotly json" }, "boxplot": {}, "ogiva": {} }
+  "formulas": [{ "chave": "media", "nome": "Média", "latex": "\\bar{x}=\\frac{\\sum x_i}{n}", "texto": "x̄ = Σxᵢ / n" }],
+  "figuras": [{ "id": "principal", "rotulo": "Histograma", "titulo": "...", "resumo": "...", "porque": "...", "recomendado": true, "dados": { "...": "plotly json" } }]
 }
 ```
-O frontend renderiza só o que veio; nunca decide aplicabilidade.
+Cada medida (`Medida {valor, aplicavel, motivo, calculo, interpretacao, formula}`) traz em `formula` a `chave` da sua fórmula em `formulas[]` (D66). O frontend renderiza só o que veio; nunca decide aplicabilidade.
 
 ## Erros
 Todas as falhas → HTTP 4xx/5xx com `{codigo, mensagem, sugestao}` (spec 17). Validação Pydantic é traduzida para mensagens em português.

@@ -6,6 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.core import saude
 from app.core.config import obter_configuracao
 from app.core.handlers import registrar_handlers
+from app.dominios.analise import router as analise
 from app.dominios.datasets import router as datasets
 
 PREFIXO_API = "/api"
@@ -24,6 +25,7 @@ def create_app() -> FastAPI:
     registrar_handlers(app)
     app.include_router(saude.router, prefix=PREFIXO_API)
     app.include_router(datasets.router, prefix=PREFIXO_API)
+    app.include_router(analise.router, prefix=PREFIXO_API)
     return app
 
 
