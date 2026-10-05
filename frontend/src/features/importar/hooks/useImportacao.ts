@@ -12,7 +12,7 @@ export interface Importacao {
   opcoes: OpcoesLeitura;
   enviar: (arquivo: File) => void;
   abrirExemplo: () => void;
-  /** null quando não há arquivo na memória da página (exemplo ou página recarregada) — Dnn-reler. */
+  /** null quando não há arquivo na memória da página (exemplo ou página recarregada) — D70. */
   corrigir: ((campo: CampoDeteccao, valor: string) => void) | null;
   lerDeNovo: (() => void) | null;
 }

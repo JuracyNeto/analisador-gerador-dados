@@ -21,7 +21,7 @@ Pasta: `frontend/` · React + Vite + TypeScript · `react-plotly.js` · roteamen
 | 8 | Relatório | Checklist de seções e colunas; pré-visualização em iframe | Baixar HTML, imprimir |
 
 ## Estados obrigatórios em toda tela
-Carregando (skeleton), vazio (com orientação do próximo passo), erro (mensagem da API + ação), sucesso (toast).
+Carregando (skeleton), vazio (com orientação do próximo passo), erro (mensagem da API + ação), sucesso (toast). Sessão expirada (`DATASET_NAO_ENCONTRADO`) em qualquer consulta encerra a sessão e volta para Importar, com um aviso só (D61/D69).
 
 ## Acessibilidade
 Navegação por teclado completa; foco visível; `aria-live` para toasts e resultados; contraste AA; severidade e tipo nunca só por cor; gráficos com título e resumo textual (`aria-label`).

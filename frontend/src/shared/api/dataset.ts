@@ -1,4 +1,4 @@
-/** Consultas e chaves de um dataset compartilhadas entre features (Dnn-chaves). */
+/** Consultas e chaves de um dataset compartilhadas entre features (D68). */
 import { queryOptions, skipToken } from '@tanstack/react-query';
 import { requisitar } from './cliente';
 import type { components } from './schema';

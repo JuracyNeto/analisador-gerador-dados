@@ -8,7 +8,7 @@ import { useSessao } from '../../shared/sessao/useSessao';
 import { useToast } from '../../shared/ui/useToast';
 
 /**
- * D61/Dnn-sessao: DATASET_NAO_ENCONTRADO em qualquer consulta ou mutação encerra a sessão,
+ * D61/D69: DATASET_NAO_ENCONTRADO em qualquer consulta ou mutação encerra a sessão,
  * avisa uma vez por dataset ("Sua sessão expirou. Envie o arquivo novamente."), apaga o cache dele e volta para Importar.
  */
 export function useSessaoExpirada(): void {
