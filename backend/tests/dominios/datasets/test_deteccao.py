@@ -31,7 +31,10 @@ def test_extensao_desconhecida_e_recusada() -> None:
         detectar_formato("relatorio_final.pdf")
 
     assert erro.value.codigo == "FORMATO_NAO_SUPORTADO"
-    assert "relatorio_final.pdf" in erro.value.mensagem
+    # O nome do arquivo fica no título que a tela monta (design 1c); a mensagem é a do contrato.
+    assert erro.value.mensagem == (
+        "Este tipo de arquivo não é aceito. Use TXT, CSV, TSV, XLSX ou JSON."
+    )
 
 
 @pytest.mark.parametrize(

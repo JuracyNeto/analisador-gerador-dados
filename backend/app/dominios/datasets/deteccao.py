@@ -35,7 +35,7 @@ def detectar_formato(nome_arquivo: str) -> Deteccao[str]:
     """Formato pela extensão do arquivo."""
     formato = FORMATOS.get(PurePath(nome_arquivo).suffix.lower())
     if formato is None:
-        raise erros.formato_nao_suportado(nome_arquivo)
+        raise erros.formato_nao_suportado()
     return Deteccao(formato, "Pela extensão do arquivo.")
 
 

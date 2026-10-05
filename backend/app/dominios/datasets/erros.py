@@ -10,10 +10,9 @@ def arquivo_vazio() -> EntradaInvalida:
     )
 
 
-def formato_nao_suportado(nome_arquivo: str) -> EntradaInvalida:
+def formato_nao_suportado() -> EntradaInvalida:
     return EntradaInvalida(
         "FORMATO_NAO_SUPORTADO",
-        f"Não conseguimos ler este arquivo: {nome_arquivo}. "
         "Este tipo de arquivo não é aceito. Use TXT, CSV, TSV, XLSX ou JSON.",
         "Abra o arquivo na planilha de origem e salve como CSV ou XLSX, depois envie de novo.",
     )
