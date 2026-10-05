@@ -51,4 +51,9 @@
   .envoltorio {
     overflow-x: auto;
   }
+
+  /* As colunas fixas somam 830 px: sem largura mínima, "Por quê" ficaria espremida. */
+  .envoltorio table {
+    min-width: 1060px;
+  }
 }
