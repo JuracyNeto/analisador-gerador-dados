@@ -1,0 +1,124 @@
+.botao {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--esp-8);
+  height: 40px;
+  padding: 0 var(--esp-16);
+  border: 1px solid transparent;
+  border-radius: var(--raio-md);
+  background: transparent;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1;
+  white-space: nowrap;
+  cursor: pointer;
+  transition:
+    background-color var(--transicao),
+    border-color var(--transicao),
+    box-shadow var(--transicao),
+    color var(--transicao);
+}
+.botao:disabled {
+  cursor: not-allowed;
+}
+.botao[aria-busy='true'] {
+  cursor: progress;
+}
+
+.sm {
+  height: 36px;
+  padding: 0 14px;
+}
+.md {
+  height: 40px;
+}
+.lg {
+  height: 44px;
+  padding: 0 18px;
+  font-size: 15px;
+}
+
+.primario {
+  background: var(--cor-primaria);
+  color: var(--cor-sobre-primaria);
+  font-weight: 600;
+}
+.primario:hover:not(:disabled) {
+  background: var(--cor-primaria-hover);
+}
+.primario:active:not(:disabled) {
+  background: var(--cor-primaria-ativa);
+}
+.primario:disabled {
+  background: var(--cor-superficie-2);
+  color: var(--cor-texto-desab);
+}
+.primario[aria-busy='true'] {
+  background: var(--cor-primaria);
+  color: var(--cor-sobre-primaria);
+}
+
+.secundario {
+  border-color: var(--cor-borda-forte);
+  background: var(--cor-superficie);
+  color: var(--cor-texto);
+}
+.secundario:hover:not(:disabled) {
+  background: var(--cor-superficie-2);
+}
+.secundario:active:not(:disabled) {
+  border-color: var(--cor-texto-2);
+  background: var(--cor-borda);
+}
+.secundario:disabled {
+  border-color: var(--cor-borda);
+  color: var(--cor-texto-desab);
+}
+
+.fantasma {
+  padding: 0 var(--esp-12);
+  color: var(--cor-primaria);
+}
+.fantasma:hover:not(:disabled) {
+  background: var(--cor-primaria-suave);
+}
+.fantasma:active:not(:disabled) {
+  background: color-mix(in oklab, var(--cor-primaria) 18%, transparent);
+}
+.fantasma:disabled {
+  color: var(--cor-texto-desab);
+}
+
+.perigo {
+  border-color: var(--cor-erro);
+  background: var(--cor-superficie);
+  color: var(--cor-erro);
+  font-weight: 600;
+}
+.perigo:hover:not(:disabled) {
+  background: var(--cor-erro-suave);
+}
+.perigo:active:not(:disabled) {
+  background: var(--cor-erro);
+  color: var(--cor-superficie);
+}
+.perigo:disabled {
+  border-color: var(--cor-borda);
+  color: var(--cor-texto-desab);
+}
+
+.spinner {
+  width: 14px;
+  height: 14px;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: girar 0.8s linear infinite;
+}
+
+@keyframes girar {
+  to {
+    transform: rotate(360deg);
+  }
+}
