@@ -36,6 +36,12 @@ export default tseslint.config(
       'no-console': 'error',
     },
   },
-  { files: ['**/*.test.{ts,tsx}'], rules: { 'max-lines-per-function': 'off' } },
+  {
+    files: ['**/*.test.{ts,tsx}', 'src/testes/**'],
+    rules: {
+      'max-lines-per-function': 'off',
+      'react-refresh/only-export-components': 'off',
+    },
+  },
   prettier,
 );

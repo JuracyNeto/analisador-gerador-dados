@@ -1,0 +1,61 @@
+.moldura {
+  overflow: hidden;
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio-lg);
+  background: var(--cor-superficie);
+}
+.rolagem {
+  overflow: auto;
+}
+.tabela {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 14px;
+  font-variant-numeric: tabular-nums;
+}
+.tabela thead th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  padding: 10px var(--esp-16);
+  border-bottom: 1px solid var(--cor-borda-forte);
+  background: var(--cor-superficie-2);
+  font-size: 12.5px;
+  font-weight: 600;
+  text-align: left;
+  white-space: nowrap;
+}
+.tabela td,
+.tabela tbody th {
+  padding: var(--esp-8) var(--esp-16);
+  font-weight: 400;
+  text-align: left;
+}
+.tabela tbody tr:nth-child(even) {
+  background: var(--cor-zebra);
+}
+.tabela tbody tr[data-destacada='true'] {
+  background: var(--cor-destaque-linha);
+  font-weight: 600;
+}
+.tabela tbody tr[data-destacada='true'] > :first-child {
+  box-shadow: inset 3px 0 0 var(--sev-atencao);
+}
+.tabela .direita {
+  text-align: right;
+}
+.tabela .mono {
+  font-family: var(--fonte-mono);
+  font-size: 13.5px;
+}
+.rodape {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--esp-16);
+  padding: 10px var(--esp-16);
+  border-top: 1px solid var(--cor-borda);
+  color: var(--cor-texto-2);
+  font-size: 13px;
+}

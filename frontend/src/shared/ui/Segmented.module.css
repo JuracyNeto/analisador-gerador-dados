@@ -1,0 +1,41 @@
+.grupo {
+  display: inline-flex;
+  gap: 2px;
+  padding: 3px;
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio-md);
+  background: var(--cor-superficie-2);
+}
+.opcao {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 32px;
+  padding: 0 14px;
+  border: 0;
+  border-radius: var(--raio-sm);
+  background: transparent;
+  color: var(--cor-texto-2);
+  font-size: 14px;
+  cursor: pointer;
+  transition:
+    background-color var(--transicao),
+    color var(--transicao);
+}
+.opcao:hover {
+  color: var(--cor-texto);
+}
+.selecionada {
+  background: var(--cor-superficie);
+  box-shadow: var(--sombra-1);
+  color: var(--cor-texto);
+  font-weight: 600;
+}
+.selo {
+  padding: 1px 6px;
+  border-radius: var(--raio-xs);
+  background: var(--cor-primaria-suave);
+  color: var(--cor-primaria);
+  font-size: 11.5px;
+  font-weight: 600;
+}

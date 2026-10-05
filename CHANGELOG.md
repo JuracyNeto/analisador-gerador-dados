@@ -22,3 +22,8 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e
 - Importação de TXT, CSV, TSV, XLSX e JSON com detecção de codificação, separador, decimal e cabeçalho, e o motivo de cada detecção.
 - Classificação automática do tipo de cada coluna (nominal, ordinal, discreta, contínua, binária, identificador) com motivo, e ajuste manual do tipo e da ordem das categorias.
 - Datasets em memória (até 20) e endpoints `POST /api/datasets`, `POST /api/datasets/exemplo`, `GET/DELETE /api/datasets/{id}`, `GET /api/datasets/{id}/colunas`, `PATCH /api/datasets/{id}/colunas/{coluna}`.
+- Base visual do frontend (M1.1, parte 1): fontes e ícones locais (@fontsource), tokens de espaço, raio e fontes, `color-scheme` por tema, estilos base com foco visível e movimento reduzido; tema claro/escuro salvo no navegador e aplicado antes do primeiro render.
+- Componentes de `shared/ui`: Icone, Botao, Card, Banner, estados de carregando/vazio/erro, Toast, Tooltip, Select, CampoNumero, CaixaSelecao, Segmented, Abas, CardMetrica e Tabela.
+- Sessão do dataset no navegador (`localStorage`), validada na leitura.
+- Formatadores pt-BR (`shared/lib/formatar.ts`) com a mesma regra de casas do backend e tradução dos erros da API em textos de tela.
+- Testes de componentes com Vitest + jsdom + Testing Library.

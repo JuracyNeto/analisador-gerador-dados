@@ -1,0 +1,46 @@
+.ancora {
+  position: relative;
+  display: inline-flex;
+}
+.balao {
+  position: absolute;
+  z-index: 40;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  width: max-content;
+  max-width: 260px;
+  padding: var(--esp-8) var(--esp-12);
+  border-radius: var(--raio-sm);
+  background: var(--cor-texto);
+  color: var(--cor-superficie);
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1.45;
+  text-align: left;
+  white-space: normal;
+  pointer-events: none;
+  transform: translateX(-50%);
+}
+.balao::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  margin-left: -6px;
+  border: 6px solid transparent;
+  border-top-color: var(--cor-texto);
+}
+.direita {
+  top: 50%;
+  bottom: auto;
+  left: calc(100% + 8px);
+  transform: translateY(-50%);
+}
+.direita::after {
+  top: 50%;
+  right: 100%;
+  left: auto;
+  margin: -6px 0 0;
+  border-color: transparent;
+  border-right-color: var(--cor-texto);
+}

@@ -1,0 +1,31 @@
+.vazio {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--esp-12);
+  padding: var(--esp-48) var(--esp-24);
+  border: 1px dashed var(--cor-borda-forte);
+  border-radius: var(--raio-lg);
+  text-align: center;
+}
+.circulo {
+  display: grid;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--cor-primaria-suave);
+  color: var(--cor-primaria);
+}
+.titulo {
+  font-size: 17px;
+  font-weight: 600;
+}
+.descricao {
+  max-width: 52ch;
+  font-size: 14px;
+  color: var(--cor-texto-2);
+}
+.acao {
+  margin-top: var(--esp-4);
+}
