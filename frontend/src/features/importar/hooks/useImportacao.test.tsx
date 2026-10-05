@@ -13,16 +13,21 @@ function useTudo() {
   return { importacao: useImportacao(), sessao: useSessao() };
 }
 
+/** Monta o hook e envia o arquivo de teste. */
+function renderizarEEnviar() {
+  const renderizado = renderizarHook(useTudo);
+  act(() => {
+    renderizado.result.current.importacao.enviar(ARQUIVO);
+  });
+  return renderizado;
+}
+
 describe('useImportacao', () => {
   it('envia o arquivo, define a sessão, guarda as colunas no cache e avisa', async () => {
     const falso = simularApi([
       { metodo: 'POST', caminho: '/datasets', status: 201, corpo: DATASET_CRIADO },
     ]);
-    const { result, cliente } = renderizarHook(useTudo);
-
-    act(() => {
-      result.current.importacao.enviar(ARQUIVO);
-    });
+    const { result, cliente } = renderizarEEnviar();
 
     await waitFor(() => {
       expect(result.current.sessao.dataset).toEqual({
@@ -40,10 +45,7 @@ describe('useImportacao', () => {
     const falso = simularApi([
       { metodo: 'POST', caminho: '/datasets', status: 201, corpo: DATASET_CRIADO },
     ]);
-    const { result } = renderizarHook(useTudo);
-    act(() => {
-      result.current.importacao.enviar(ARQUIVO);
-    });
+    const { result } = renderizarEEnviar();
     await waitFor(() => {
       expect(result.current.importacao.corrigir).not.toBeNull();
     });
@@ -73,11 +75,7 @@ describe('useImportacao', () => {
         },
       },
     ]);
-    const { result } = renderizarHook(useTudo);
-
-    act(() => {
-      result.current.importacao.enviar(ARQUIVO);
-    });
+    const { result } = renderizarEEnviar();
 
     await waitFor(() => {
       expect(result.current.importacao.erro?.message).toBe('O arquivo está vazio.');

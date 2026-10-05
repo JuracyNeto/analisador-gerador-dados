@@ -19,6 +19,17 @@ function renderizarPagina(dataset: typeof DATASET_TESTE | null = null) {
   );
 }
 
+/** Simula a importação com sucesso, abre a página e envia o arquivo de teste. */
+async function enviarComSucesso() {
+  const falso = simularApi([
+    { metodo: 'POST', caminho: '/datasets', status: 201, corpo: DATASET_CRIADO },
+    { caminho: CAMINHO_PAGINA, corpo: criarPagina() },
+  ]);
+  const { usuario } = renderizarPagina();
+  await usuario.upload(screen.getByLabelText('Arquivo de dados'), ARQUIVO);
+  return { falso, usuario };
+}
+
 describe('PaginaImportar', () => {
   it('sem arquivo (1b): área de envio e link do exemplo', () => {
     renderizarPagina();
@@ -30,13 +41,7 @@ describe('PaginaImportar', () => {
   });
 
   it('envio com sucesso (1a): toast, detecções, prévia e continuar', async () => {
-    simularApi([
-      { metodo: 'POST', caminho: '/datasets', status: 201, corpo: DATASET_CRIADO },
-      { caminho: CAMINHO_PAGINA, corpo: criarPagina() },
-    ]);
-    const { usuario } = renderizarPagina();
-
-    await usuario.upload(screen.getByLabelText('Arquivo de dados'), ARQUIVO);
+    const { usuario } = await enviarComSucesso();
 
     expect(await screen.findByText('Arquivo lido: 230 linhas e 8 colunas.')).toBeInTheDocument();
     expect(await screen.findByRole('combobox', { name: 'Separador' })).toHaveValue(';');
@@ -72,12 +77,7 @@ describe('PaginaImportar', () => {
   });
 
   it('corrigir o separador relê o arquivo com a opção nova', async () => {
-    const falso = simularApi([
-      { metodo: 'POST', caminho: '/datasets', status: 201, corpo: DATASET_CRIADO },
-      { caminho: CAMINHO_PAGINA, corpo: criarPagina() },
-    ]);
-    const { usuario } = renderizarPagina();
-    await usuario.upload(screen.getByLabelText('Arquivo de dados'), ARQUIVO);
+    const { falso, usuario } = await enviarComSucesso();
 
     await usuario.selectOptions(await screen.findByRole('combobox', { name: 'Separador' }), ',');
 

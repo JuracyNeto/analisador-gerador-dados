@@ -2,48 +2,45 @@ import { act, renderHook } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { useValorAtrasado } from './useValorAtrasado';
 
+function montarComRelogioFalso() {
+  vi.useFakeTimers();
+  return renderHook(({ valor }) => useValorAtrasado(valor, 600), {
+    initialProps: { valor: 'a' },
+  });
+}
+
+function avancar(ms: number): void {
+  act(() => {
+    vi.advanceTimersByTime(ms);
+  });
+}
+
 describe('useValorAtrasado', () => {
   afterEach(() => {
     vi.useRealTimers();
   });
 
   it('só devolve o valor novo depois do atraso', () => {
-    vi.useFakeTimers();
-    const { result, rerender } = renderHook(({ valor }) => useValorAtrasado(valor, 600), {
-      initialProps: { valor: 'a' },
-    });
+    const { result, rerender } = montarComRelogioFalso();
 
     rerender({ valor: 'b' });
-    act(() => {
-      vi.advanceTimersByTime(599);
-    });
+    avancar(599);
     expect(result.current).toBe('a');
 
-    act(() => {
-      vi.advanceTimersByTime(1);
-    });
+    avancar(1);
     expect(result.current).toBe('b');
   });
 
   it('reinicia a contagem a cada mudança', () => {
-    vi.useFakeTimers();
-    const { result, rerender } = renderHook(({ valor }) => useValorAtrasado(valor, 600), {
-      initialProps: { valor: 'a' },
-    });
+    const { result, rerender } = montarComRelogioFalso();
 
     rerender({ valor: 'b' });
-    act(() => {
-      vi.advanceTimersByTime(400);
-    });
+    avancar(400);
     rerender({ valor: 'c' });
-    act(() => {
-      vi.advanceTimersByTime(400);
-    });
+    avancar(400);
     expect(result.current).toBe('a');
 
-    act(() => {
-      vi.advanceTimersByTime(200);
-    });
+    avancar(200);
     expect(result.current).toBe('c');
   });
 });
