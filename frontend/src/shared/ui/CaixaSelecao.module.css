@@ -1,0 +1,51 @@
+.caixa {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--esp-8);
+  min-height: 24px;
+  font-size: 14px;
+  cursor: pointer;
+}
+.entrada {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: 0;
+  opacity: 0;
+}
+.marca {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 18px;
+  height: 18px;
+  border: 1.5px solid var(--cor-borda-forte);
+  border-radius: var(--raio-xs);
+  background: var(--cor-superficie);
+  color: transparent;
+  transition:
+    background-color var(--transicao),
+    border-color var(--transicao);
+}
+.entrada:checked + .marca {
+  border-color: var(--cor-primaria);
+  background: var(--cor-primaria);
+  color: var(--cor-sobre-primaria);
+}
+.entrada:focus-visible + .marca {
+  outline: 2px solid var(--cor-foco);
+  outline-offset: 2px;
+}
+.desabilitada {
+  color: var(--cor-texto-desab);
+  cursor: not-allowed;
+}
+.desabilitada .marca {
+  border-color: var(--cor-borda);
+  background: var(--cor-superficie-2);
+}
+.entrada:checked:disabled + .marca {
+  border-color: var(--cor-texto-desab);
+  background: var(--cor-texto-desab);
+}
