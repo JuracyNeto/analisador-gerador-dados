@@ -15,11 +15,10 @@ import {
 } from './cartoes';
 import { TEXTOS_ANALISE } from './textos';
 import type { Analise, Dispersao, Moda } from './tipos';
+import { exigir } from '../../testes/exigir';
 
 const C = TEXTOS_ANALISE.cartoes;
-const dispersaoDaFixture = analiseContinua.dispersao;
-if (dispersaoDaFixture === null) throw new Error('fixture contínua sem dispersão');
-const dispersao: Dispersao = dispersaoDaFixture;
+const dispersao: Dispersao = exigir(analiseContinua.dispersao, 'dispersão da contínua');
 
 function comModa(
   analise: Analise,

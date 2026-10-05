@@ -1,0 +1,56 @@
+/* Tela 4b: controle "Número de classes" (− k +) e Sturges. */
+.controle {
+  display: flex;
+  align-items: center;
+  gap: var(--esp-16);
+}
+
+.rotulo {
+  font-size: 13px;
+  color: var(--cor-texto-2);
+}
+
+.passo {
+  display: flex;
+  align-items: center;
+  height: 36px;
+  border: 1px solid var(--cor-borda-forte);
+  border-radius: var(--raio-md);
+}
+
+.botao {
+  width: 32px;
+  height: 100%;
+  display: grid;
+  place-items: center;
+  border: 0;
+  background: transparent;
+  color: var(--cor-texto-2);
+  cursor: pointer;
+}
+
+.botao:hover {
+  color: var(--cor-texto);
+  background: var(--cor-superficie-2);
+}
+
+.botao:disabled {
+  color: var(--cor-texto-desab);
+  cursor: not-allowed;
+}
+
+.botao:focus-visible {
+  outline: 2px solid var(--cor-foco);
+  outline-offset: 2px;
+}
+
+.valor {
+  width: 32px;
+  text-align: center;
+  font: 600 14px var(--fonte-mono);
+}
+
+.sturges {
+  font: 500 12.5px var(--fonte-mono);
+  color: var(--cor-texto-2);
+}
