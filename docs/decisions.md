@@ -53,6 +53,7 @@
 | D47 | 02/10/2026 | Prévia e impressão do relatório sempre no tema claro | Seguir o tema da tela | Impressão legível | — |
 | D48 | 05/10/2026 | Coluna é numérica se ≥ 90% dos valores válidos viram número (`limiar_numerico`); o resto aparece como "tipo misto" na limpeza | Exigir 100%; tratar como texto | Um "doze" no meio de números não deve mudar o tipo da coluna | [0006](adr/0006-classificacao-de-tipos.md) |
 | D49 | 05/10/2026 | Índice do DataFrame = número da linha no arquivo (1…n), mantido após a limpeza | Reindexar após cada ação | "Linha 45" significa sempre a mesma linha para o usuário | [0004](adr/0004-estado-em-memoria.md) |
+| D50 | 05/10/2026 | Duplicados comparam todas as colunas menos as `identificador`; a 1ª ocorrência fica | Comparar a linha inteira | Com uma coluna id, nenhuma linha seria igual (design 3a: "igual à linha 44, exceto id") | — |
 | D51 | 05/10/2026 | "pós" é sinônimo de "pós-graduação" na escala de escolaridade | Escala separada | Abreviação comum (design 2a) | [0006](adr/0006-classificacao-de-tipos.md) |
 | D52 | 05/10/2026 | `POST /api/datasets/exemplo` carrega `dados-exemplo/pesquisa_saude.txt` | O frontend baixar o arquivo | Link "Abrir … de exemplo" da tela 1 sem servir arquivos estáticos | — |
 | D53 | 05/10/2026 | `MetadadosLeitura.motivos` explica cada detecção; separador por contagem constante e cabeçalho por regra própria (sem `csv.Sniffer`) | `csv.Sniffer` | Tela 1a mostra o porquê; o Sniffer confunde vírgula decimal com separador | — |
