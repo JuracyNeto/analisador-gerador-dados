@@ -35,3 +35,8 @@ def formatar_inteiro(valor: int) -> str:
 def formatar_percentual(valor: float, casas: int = 1) -> str:
     """Percentual já na escala 0–100: 21,6%."""
     return _trocar_separadores(f"{valor:,.{casas}f}") + "%"
+
+
+def formatar_fixo(valor: float, casas: int) -> str:
+    """Número com casas decimais fixas: 60,0 · 1.234,50 (limites de classe)."""
+    return _trocar_separadores(f"{valor:,.{casas}f}")

@@ -17,7 +17,7 @@ Itens "—" retornam `{aplicavel: false, motivo}`. Ex.: "Média não se aplica a
 - Mediana: valor central dos dados ordenados; n par → média dos dois centrais
 - Mediana ordinal: categoria que contém a posição (n+1)/2 na ordem da escala
 - Moda: valor(es) de maior frequência. Classificação: amodal (todas iguais), unimodal, bimodal, multimodal
-- Proporção (binária): **p = nº de "sucessos" / n** (sucesso = categoria escolhida pelo usuário; padrão: `1`, `sim`, `s`, `true`, ou a menos frequente)
+- Proporção (binária): **p = nº de "sucessos" / n** (sucesso = categoria escolhida pelo usuário; padrão: `1`, `sim`, `s`, `true`, ou a menos frequente; a API aceita `?sucesso=` para escolher outra)
 - Moda de Czuber (dados em classes): **Mo = Lᵢ + [Δ₁ / (Δ₁ + Δ₂)] · h**, onde Δ₁ = fᵢ − fᵢ₋₁ e Δ₂ = fᵢ − fᵢ₊₁ da classe modal
 
 ## Interpretação (texto automático)
