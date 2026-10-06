@@ -20,7 +20,7 @@ export const TEXTOS_RELATORIO = {
   carregandoColunas: 'Carregando as colunas…',
   offline: 'Funciona sem internet',
   offlineAjuda:
-    'Embute o motor dos gráficos no arquivo (cerca de 3,5 MB). Sem isso, o arquivo fica menor, mas os gráficos só aparecem com internet.',
+    'Embute o motor dos gráficos no arquivo (cerca de 5 MB). Sem isso, o arquivo fica menor, mas os gráficos só aparecem com internet.',
   previa: 'Prévia · A4 retrato',
   tituloPrevia: 'Prévia do relatório',
   montando: 'Montando a prévia do relatório…',
