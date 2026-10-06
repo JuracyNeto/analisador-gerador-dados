@@ -8,6 +8,8 @@ Domínio: `app/dominios/relatorio/` (templates Jinja2 em `templates/`) · Endpoi
 4. Limpeza: log em frases
 5. Por coluna analisada: tabela de frequência, tendência central, separatrizes, dispersão, gráfico principal, interpretações automáticas
 
+Parâmetros: `secoes` (leitura, tipos, limpeza, analises; D57), `colunas` e `offline`. Colunas identificador e vazias ficam fora.
+
 ## Relatório completo (M4) — adiciona
 6. Distribuição ajustada, assimetria e curtose
 7. Bivariada: r, equação, R², gráfico
