@@ -22,8 +22,14 @@ TOKENS_CLARO = {
     "--graf-fundo": "#ffffff",
 }
 PALETA = tuple(TOKENS_CLARO[f"--graf-{i}"] for i in range(1, 9))
-COR_PRINCIPAL = TOKENS_CLARO["--graf-1"]
-COR_REFERENCIA = TOKENS_CLARO["--graf-2"]
+# Cada traço diz só o seu papel (`meta`); a cor sai do tema de quem desenha (D83).
+PAPEL_PRINCIPAL = "principal"
+PAPEL_REFERENCIA = "referencia"
+PAPEIS = frozenset({PAPEL_PRINCIPAL, PAPEL_REFERENCIA})
+CORES_CLARAS = {
+    PAPEL_PRINCIPAL: TOKENS_CLARO["--graf-1"],
+    PAPEL_REFERENCIA: TOKENS_CLARO["--graf-2"],
+}
 FONTE = "Inter, system-ui, sans-serif"
 
 
@@ -62,3 +68,23 @@ def mesclar(base: dict[str, Any], extra: dict[str, Any]) -> dict[str, Any]:
         else:
             resultado[chave] = valor
     return resultado
+
+
+def _tem_linha(traco: dict[str, Any]) -> bool:
+    return traco.get("type") == "box" or "lines" in str(traco.get("mode", ""))
+
+
+def _pintar(traco: dict[str, Any], cores: dict[str, str]) -> dict[str, Any]:
+    cor = cores.get(str(traco.get("meta")))
+    if cor is None:
+        return traco
+    pintado = dict(traco)
+    pintado["marker"] = {**traco.get("marker", {}), "color": cor}
+    if _tem_linha(traco):
+        pintado["line"] = {**traco.get("line", {}), "color": cor}
+    return pintado
+
+
+def colorir(dados: dict[str, Any], cores: dict[str, str]) -> dict[str, Any]:
+    """Pinta cada traço com a cor do seu papel (`meta`); sem papel (pizza), fica a paleta."""
+    return {**dados, "data": [_pintar(traco, cores) for traco in dados.get("data", [])]}

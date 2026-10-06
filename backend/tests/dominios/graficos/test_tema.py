@@ -1,7 +1,7 @@
 import re
 
 from app.core.config import RAIZ_REPOSITORIO
-from app.dominios.graficos.tema import TOKENS_CLARO, layout_claro, mesclar
+from app.dominios.graficos.tema import CORES_CLARAS, TOKENS_CLARO, colorir, layout_claro, mesclar
 
 TOKENS_CSS = RAIZ_REPOSITORIO / "frontend" / "src" / "shared" / "ui" / "tokens.css"
 _DECLARACAO = re.compile(r"(--[\w-]+):\s*([^;]+);")
@@ -39,3 +39,36 @@ def test_mesclar_preserva_dicionarios_internos() -> None:
         "xaxis": {"gridcolor": "#eee", "title": {"font": {"size": 13}, "text": "peso_kg"}},
         "bargap": 0,
     }
+
+
+def test_colorir_pinta_pelo_papel_sem_mudar_a_entrada() -> None:
+    dados = {
+        "data": [
+            {"type": "bar", "meta": "principal", "marker": {"opacity": 0.85}},
+            {"type": "scatter", "mode": "lines+markers", "meta": "principal", "line": {"width": 2}},
+            {"type": "box", "meta": "principal"},
+            {"type": "scatter", "mode": "markers", "meta": "referencia"},
+            {"type": "pie", "labels": ["a", "b"], "values": [1, 2]},
+        ],
+        "layout": {},
+    }
+    cores = {"principal": "#111111", "referencia": "#222222"}
+
+    pintados = colorir(dados, cores)["data"]
+
+    assert pintados[0]["marker"] == {"opacity": 0.85, "color": "#111111"}
+    assert "line" not in pintados[0]
+    assert pintados[1]["line"] == {"width": 2, "color": "#111111"}
+    assert pintados[1]["marker"] == {"color": "#111111"}
+    assert pintados[2]["line"] == {"color": "#111111"}
+    assert pintados[3]["marker"] == {"color": "#222222"}
+    assert "line" not in pintados[3]
+    assert pintados[4] == dados["data"][4]
+    assert dados["data"][0]["marker"] == {"opacity": 0.85}
+
+
+def test_cores_claras_vem_da_paleta_do_tema_claro() -> None:
+    assert {
+        "principal": TOKENS_CLARO["--graf-1"],
+        "referencia": TOKENS_CLARO["--graf-2"],
+    } == CORES_CLARAS

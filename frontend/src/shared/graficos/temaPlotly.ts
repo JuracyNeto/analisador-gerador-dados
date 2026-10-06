@@ -108,7 +108,32 @@ export function extrairFigura(figura: Readonly<Objeto>): FiguraPlotly {
   return { data: traces, layout: ehObjetoSimples(layout) ? layout : {} };
 }
 
+/** Papel de cada traço (`meta`, vindo do backend) → índice da série do tema (D83). */
+const SERIE_DO_PAPEL: Readonly<Record<string, number>> = { principal: 0, referencia: 1 };
+
+function temLinha(traco: Objeto): boolean {
+  return traco.type === 'box' || (typeof traco.mode === 'string' && traco.mode.includes('lines'));
+}
+
+function objetoOuVazio(valor: unknown): Objeto {
+  return ehObjetoSimples(valor) ? valor : {};
+}
+
+/** Pinta o traço com a série do seu papel; sem papel (pizza), fica o `colorway`. */
+function pintarTraco(traco: unknown, series: readonly string[]): unknown {
+  if (!ehObjetoSimples(traco)) return traco;
+  const indice = SERIE_DO_PAPEL[String(traco.meta)];
+  const cor = indice === undefined ? undefined : series[indice];
+  if (cor === undefined) return traco;
+  const pintado: Objeto = { ...traco, marker: { ...objetoOuVazio(traco.marker), color: cor } };
+  if (temLinha(traco)) pintado.line = { ...objetoOuVazio(traco.line), color: cor };
+  return pintado;
+}
+
 export function montarFigura(figura: Readonly<Objeto>, tokens: TokensGrafico): FiguraPlotly {
   const { data, layout } = extrairFigura(figura);
-  return { data, layout: mesclarLayout(layout, layoutTema(tokens)) };
+  return {
+    data: data.map((traco) => pintarTraco(traco, tokens.series)),
+    layout: mesclarLayout(layout, layoutTema(tokens)),
+  };
 }

@@ -20,5 +20,6 @@ Domínio: `app/dominios/graficos/` (`fabrica.py` + `tema.py`) · ADR 0003
 - Rótulos de dados em barras com ≤ 12 categorias.
 - Formato pt-BR (vírgula decimal, `separators=",."` no layout).
 - Sem 3D, sem sombras, sem gradientes.
-- Boxplot com estatísticas pré-calculadas; discrepantes como pontos (máx. 500). Nenhuma figura envia valores brutos (ADR 0003, D56).
+- Boxplot com estatísticas pré-calculadas; discrepantes como pontos (máx. 500).
+- Cada traço traz o seu papel (`meta`: principal ou referencia), sem cor fixa: quem desenha pinta com o tema dele (relatório sempre claro; tela com o tema ativo) (D83). Nenhuma figura envia valores brutos (ADR 0003, D56).
 - n > 5.000 → enviar bins agregados em vez de pontos brutos (ADR 0003).

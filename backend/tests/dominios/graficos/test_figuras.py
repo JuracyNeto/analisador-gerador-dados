@@ -6,6 +6,7 @@ import pytest
 
 from app.dominios.graficos import figuras
 from app.dominios.graficos.entradas import Barra
+from app.dominios.graficos.tema import PAPEIS
 
 CATEGORIAS = (
     Barra("Goiânia", 87, 38.2),
@@ -94,3 +95,26 @@ def test_acumuladas_e_pizza() -> None:
     assert escada["data"][0]["line"]["shape"] == "hv"
     assert barras["data"][0]["y"] == [20.0, 70.0, 100.0]
     assert pizza["data"][0]["labels"] == ["Goiânia", "Anápolis", "Trindade"]
+
+
+def _figuras_de_exemplo() -> list[dict[str, Any]]:
+    caixa = figuras.resumo_caixa(pd.Series([1.0, 2.0, 3.0, 4.0, 5.0, 100.0]))
+    return [
+        figuras.barras_horizontais(CATEGORIAS, "cidade"),
+        figuras.barras_verticais(CATEGORIAS, "sexo"),
+        figuras.bastoes(VALORES, "filhos"),
+        figuras.histograma(CLASSES, "peso_kg"),
+        figuras.boxplot(caixa, "x"),
+        figuras.ogiva(CLASSES, "peso_kg"),
+        figuras.acumulada_categorias(VALORES, "filhos"),
+        figuras.acumulada_escada(VALORES, "filhos"),
+    ]
+
+
+@pytest.mark.parametrize("figura", _figuras_de_exemplo())
+def test_tracos_tem_papel_e_nenhuma_cor_fixa(figura: dict[str, Any]) -> None:
+    # A cor depende do tema (claro no relatório, o ativo no frontend): a figura só diz o papel.
+    for traco in _valida(figura)["data"]:
+        assert traco["meta"] in PAPEIS
+        assert "color" not in traco.get("marker", {})
+        assert "color" not in traco.get("line", {})

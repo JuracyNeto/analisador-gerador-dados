@@ -5,6 +5,7 @@ import {
   layoutTema,
   lerTokensGrafico,
   mesclarLayout,
+  montarFigura,
 } from './temaPlotly';
 
 const TOKENS: TokensGrafico = {
@@ -86,5 +87,38 @@ describe('lerTokensGrafico', () => {
     expect(tokens.fundo).toBe('valor--graf-fundo');
     expect(tokens.series).toHaveLength(8);
     expect(tokens.series[0]).toBe('valor--graf-1');
+  });
+});
+
+describe('montarFigura', () => {
+  it('pinta cada traço pelo papel (meta) com as séries do tema ativo', () => {
+    const escuro: TokensGrafico = { ...TOKENS, series: ['#56b4e9', '#f08a3c'] };
+    const figura = {
+      data: [
+        { type: 'bar', meta: 'principal', marker: { opacity: 0.85 } },
+        { type: 'scatter', mode: 'lines+markers', meta: 'principal', line: { width: 2 } },
+        { type: 'box', meta: 'principal' },
+        { type: 'scatter', mode: 'markers', meta: 'referencia' },
+        { type: 'pie', labels: ['a'], values: [1] },
+      ],
+      layout: {},
+    };
+
+    const { data } = montarFigura(figura, escuro);
+
+    expect(data).toEqual([
+      { type: 'bar', meta: 'principal', marker: { opacity: 0.85, color: '#56b4e9' } },
+      {
+        type: 'scatter',
+        mode: 'lines+markers',
+        meta: 'principal',
+        line: { width: 2, color: '#56b4e9' },
+        marker: { color: '#56b4e9' },
+      },
+      { type: 'box', meta: 'principal', marker: { color: '#56b4e9' }, line: { color: '#56b4e9' } },
+      { type: 'scatter', mode: 'markers', meta: 'referencia', marker: { color: '#f08a3c' } },
+      { type: 'pie', labels: ['a'], values: [1] },
+    ]);
+    expect(figura.data[0]).toEqual({ type: 'bar', meta: 'principal', marker: { opacity: 0.85 } });
   });
 });

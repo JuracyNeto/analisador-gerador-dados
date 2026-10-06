@@ -12,7 +12,7 @@ import pandas as pd
 
 from app.compartilhado.numeros import formatar_percentual
 from app.dominios.graficos.entradas import Barra, ResumoCaixa
-from app.dominios.graficos.tema import COR_PRINCIPAL, COR_REFERENCIA
+from app.dominios.graficos.tema import PAPEL_PRINCIPAL, PAPEL_REFERENCIA
 
 type Figura = dict[str, Any]
 
@@ -25,7 +25,7 @@ LARGURA_LINHA = 2.5
 QUARTIS = (0.25, 0.5, 0.75)
 EIXO_FREQUENCIA = "Frequência (fᵢ)"
 EIXO_ACUMULADA = "Frequência acumulada (%)"
-MARCADOR_BARRA = {"color": COR_PRINCIPAL, "opacity": OPACIDADE_BARRA}
+MARCADOR_BARRA = {"opacity": OPACIDADE_BARRA}
 
 
 def _figura(tracos: list[dict[str, Any]], eixo_x: str, eixo_y: str) -> Figura:
@@ -55,6 +55,7 @@ def barras_horizontais(barras: tuple[Barra, ...], coluna: str) -> Figura:
         "x": [b.frequencia for b in invertidas],
         "y": [b.rotulo for b in invertidas],
         "marker": MARCADOR_BARRA,
+        "meta": PAPEL_PRINCIPAL,
     }
     return _figura([_com_rotulos(traco, invertidas)], EIXO_FREQUENCIA, coluna)
 
@@ -66,6 +67,7 @@ def barras_verticais(barras: tuple[Barra, ...], coluna: str) -> Figura:
         "x": [b.rotulo for b in barras],
         "y": [b.frequencia for b in barras],
         "marker": MARCADOR_BARRA,
+        "meta": PAPEL_PRINCIPAL,
     }
     return _figura([_com_rotulos(traco, barras)], coluna, EIXO_FREQUENCIA)
 
@@ -79,14 +81,15 @@ def bastoes(barras: tuple[Barra, ...], coluna: str) -> Figura:
         "x": x,
         "y": y,
         "width": LARGURA_BASTAO,
-        "marker": {"color": COR_PRINCIPAL},
+        "meta": PAPEL_PRINCIPAL,
     }
     pontos = {
         "type": "scatter",
         "mode": "markers",
         "x": x,
         "y": y,
-        "marker": {"color": COR_PRINCIPAL, "size": 9},
+        "marker": {"size": 9},
+        "meta": PAPEL_PRINCIPAL,
     }
     return _figura([hastes, pontos], coluna, EIXO_FREQUENCIA)
 
@@ -103,6 +106,7 @@ def histograma(barras: tuple[Barra, ...], coluna: str) -> Figura:
         "customdata": [b.rotulo for b in barras],
         "hovertemplate": "%{customdata}: %{y}<extra></extra>",
         "marker": MARCADOR_BARRA,
+        "meta": PAPEL_PRINCIPAL,
     }
     figura = _figura([traco], coluna, EIXO_FREQUENCIA)
     figura["layout"]["bargap"] = 0
@@ -142,22 +146,29 @@ def boxplot(caixa: ResumoCaixa, coluna: str) -> Figura:
         "upperfence": [caixa.bigode_superior],
         "mean": [caixa.media],
         "boxmean": True,
-        "marker": {"color": COR_PRINCIPAL},
-        "line": {"color": COR_PRINCIPAL},
+        "meta": PAPEL_PRINCIPAL,
     }
     pontos = {
         "type": "scatter",
         "mode": "markers",
         "x": list(caixa.discrepantes),
         "y": [coluna] * len(caixa.discrepantes),
-        "marker": {"color": COR_REFERENCIA, "size": 7},
+        "marker": {"size": 7},
+        "meta": PAPEL_REFERENCIA,
     }
     return _figura([caixa_traco, pontos], coluna, "")
 
 
 def _linha(x: list[float | None], y: list[float | None], forma: str = "linear") -> dict[str, Any]:
-    linha = {"color": COR_PRINCIPAL, "width": LARGURA_LINHA, "shape": forma}
-    return {"type": "scatter", "mode": "lines+markers", "x": x, "y": y, "line": linha}
+    linha = {"width": LARGURA_LINHA, "shape": forma}
+    return {
+        "type": "scatter",
+        "mode": "lines+markers",
+        "x": x,
+        "y": y,
+        "line": linha,
+        "meta": PAPEL_PRINCIPAL,
+    }
 
 
 def ogiva(barras: tuple[Barra, ...], coluna: str) -> Figura:
@@ -174,6 +185,7 @@ def acumulada_categorias(barras: tuple[Barra, ...], coluna: str) -> Figura:
         "x": [b.rotulo for b in barras],
         "y": [b.acumulado_pct for b in barras],
         "marker": MARCADOR_BARRA,
+        "meta": PAPEL_PRINCIPAL,
     }
     return _figura([traco], coluna, EIXO_ACUMULADA)
 
