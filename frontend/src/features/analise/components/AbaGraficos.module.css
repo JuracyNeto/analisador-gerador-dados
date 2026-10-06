@@ -1,0 +1,54 @@
+/* Tela 4f: gráfico escolhido, os demais menores abaixo e os cards laterais. */
+.grade {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 320px;
+  gap: var(--esp-20);
+  align-items: start;
+}
+
+@media (max-width: 1279px) {
+  .grade {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.principal {
+  display: flex;
+  flex-direction: column;
+  gap: var(--esp-16);
+}
+
+.principal > :first-child {
+  align-self: flex-start;
+}
+
+.secundarias {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--esp-20);
+  padding-top: var(--esp-16);
+  border-top: 1px solid var(--cor-borda);
+}
+
+.lateral {
+  display: flex;
+  flex-direction: column;
+  gap: var(--esp-16);
+}
+
+.tituloPorque {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--esp-8);
+}
+
+.tituloPorque > span:first-child {
+  color: var(--cor-primaria);
+}
+
+.texto {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--cor-texto-2);
+}
