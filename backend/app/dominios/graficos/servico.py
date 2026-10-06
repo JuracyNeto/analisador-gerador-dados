@@ -13,7 +13,7 @@ from typing import Any
 
 from app.dominios.graficos.entradas import Barra, DadosUnivariados, FiguraPronta
 from app.dominios.graficos.fabrica import figuras_univariadas
-from app.dominios.graficos.tema import layout_claro, mesclar
+from app.dominios.graficos.tema import CORES_CLARAS, colorir, layout_claro, mesclar
 
 __all__ = [
     "Barra",
@@ -34,7 +34,7 @@ ESCAPE_FECHAMENTO = r"<\/"
 def figura_html(identificador: str, dados: Mapping[str, Any]) -> str:
     """<div> + <script> que desenha a figura com o tema claro (o plotly.js entra uma vez só)."""
     figura = {
-        "data": list(dados.get("data", [])),
+        "data": colorir(dict(dados), CORES_CLARAS)["data"],
         "layout": mesclar(layout_claro(), dict(dados.get("layout", {}))),
     }
     argumentos = ", ".join(
