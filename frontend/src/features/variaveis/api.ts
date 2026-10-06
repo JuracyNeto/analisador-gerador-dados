@@ -31,7 +31,7 @@ function alterarTipo(
   return requisitar<TipoColuna>(caminho, corpoJson('PATCH', alteracao));
 }
 
-/** Tipo e ordem das categorias mudam análises, diagnóstico e relatório (tabela de invalidação, Dnn-chaves). */
+/** Tipo e ordem das categorias mudam análises, diagnóstico e relatório (tabela de invalidação, D68). */
 function invalidarDerivados(cliente: QueryClient, id: string): Promise<unknown> {
   const chaves = [
     chavesDataset.colunas(id),

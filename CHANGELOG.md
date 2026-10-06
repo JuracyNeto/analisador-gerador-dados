@@ -38,6 +38,7 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e
 - Telas do M1.6:
   - Tela Importar: envio por arrastar/soltar ou teclado, arquivo de exemplo, detecções com motivo e correção da leitura, prévia de 20 linhas e erros da API (1a–1c).
   - Tela Variáveis: tipos com chip, motivo, válidos/faltantes e exemplos; correção do tipo; editor de ordem dos ordinais com arrastar, botões e teclado (2a).
+  - Tela Limpeza: cards de resumo, ação por problema, limites por coluna, aplicar e desfazer tudo, registro "O que fizemos" (3a).
   - Cabeçalho com linhas × colunas do dataset; sessão expirada avisa uma só vez, mesmo com várias consultas falhando juntas.
   - `ChipTipo`, `ConteudoConsulta`, `BarraAcoes`, `ExigeDataset`, `SemDataset` e convenção de chaves de query por dataset.
 
