@@ -1,6 +1,12 @@
-import EtapaEmBreve from '../../shared/ui/EtapaEmBreve';
-import { TEXTOS_LIMPEZA } from './textos';
+import ExigeDataset from '../../shared/sessao/ExigeDataset';
+import PaginaEtapa from '../../shared/ui/PaginaEtapa';
+import ConteudoLimpeza from './components/ConteudoLimpeza';
+import { TEXTOS_LIMPEZA as T } from './textos';
 
 export default function PaginaLimpeza() {
-  return <EtapaEmBreve etapa={3} titulo={TEXTOS_LIMPEZA.titulo} ajuda={TEXTOS_LIMPEZA.ajuda} />;
+  return (
+    <PaginaEtapa etapa={3} titulo={T.titulo} ajuda={T.ajuda}>
+      <ExigeDataset>{(id) => <ConteudoLimpeza datasetId={id} />}</ExigeDataset>
+    </PaginaEtapa>
+  );
 }

@@ -1,0 +1,83 @@
+/* Tela 3: uma seção do diagnóstico (as 5 usam o mesmo formato). */
+.secao {
+  background: var(--cor-superficie);
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio-lg);
+  box-shadow: var(--sombra-1);
+  overflow: hidden;
+}
+
+.cabecalho {
+  display: flex;
+  align-items: baseline;
+  gap: var(--esp-12);
+  padding: var(--esp-16) var(--esp-20);
+  border-bottom: 1px solid var(--cor-borda);
+}
+
+.titulo {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 600;
+}
+
+.subtitulo {
+  font-size: 14px;
+  color: var(--cor-texto-2);
+}
+
+.tabela {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+.colunaRotulo {
+  width: 136px;
+}
+
+.colunaAcao {
+  width: 270px;
+}
+
+.tabela thead th {
+  padding: var(--esp-8) 0 6px var(--esp-20);
+  text-align: left;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--cor-texto-2);
+}
+
+.tabela thead th:last-child,
+.tabela td:last-child {
+  padding-right: var(--esp-20);
+}
+
+.tabela tbody tr {
+  border-top: 1px solid var(--cor-borda);
+}
+
+.tabela td,
+.rotulo {
+  padding: 10px 0 10px var(--esp-20);
+  vertical-align: middle;
+}
+
+.rotulo {
+  text-align: left;
+  font: 600 13.5px var(--fonte-mono);
+  overflow-wrap: anywhere;
+}
+
+.descricao {
+  font-size: 14px;
+  line-height: 1.45;
+  font-variant-numeric: tabular-nums;
+}
+
+.detalhe {
+  display: block;
+  margin-top: 2px;
+  font-size: 12.5px;
+  color: var(--cor-texto-2);
+}
