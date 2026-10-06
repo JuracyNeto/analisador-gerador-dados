@@ -1,0 +1,6 @@
+.grade {
+  display: grid;
+  grid-template-columns: 300px minmax(0, 1fr);
+  align-items: start;
+  gap: var(--esp-24);
+}
