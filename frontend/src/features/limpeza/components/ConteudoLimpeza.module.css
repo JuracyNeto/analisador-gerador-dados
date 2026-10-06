@@ -1,0 +1,37 @@
+/* Tela 3: seções + painel do log (320 px). */
+.conteudo {
+  display: flex;
+  flex-direction: column;
+  gap: var(--esp-24);
+}
+
+.conteudo[aria-busy='true'] {
+  opacity: 0.7;
+  transition: opacity 120ms;
+}
+
+.grade {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 320px;
+  gap: var(--esp-20);
+  align-items: start;
+}
+
+.principal {
+  display: flex;
+  flex-direction: column;
+  gap: var(--esp-16);
+  min-width: 0;
+}
+
+.ajuda {
+  margin: 0 auto 0 0;
+  font-size: 13px;
+  color: var(--cor-texto-2);
+}
+
+@media (max-width: 1279px) {
+  .grade {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
