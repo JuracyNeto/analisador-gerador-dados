@@ -22,6 +22,7 @@ Parâmetros: `secoes` (leitura, tipos, limpeza, analises; D57), `colunas` e `off
 - Fórmulas renderizadas com KaTeX (CDN) e fallback em texto
 - CSS `@media print`: quebra de página por seção, gráficos com largura total, sem elementos interativos
 - O usuário escolhe colunas e seções na tela Relatório
+- A prévia da tela usa sempre `offline=true`; o arquivo baixado segue a opção "Funciona sem internet" (D84)
 - Sem seção sobre uso de IA
 
 ## Relatório final do trabalho (documento do grupo)
