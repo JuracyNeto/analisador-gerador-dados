@@ -49,8 +49,8 @@ export const TEXTOS_ANALISE = {
     media: 'Média',
     mediana: 'Mediana',
     moda: 'Moda',
-    /** Linha de apoio do card "Moda" na contínua; `calculo` vem do backend e começa com "=". */
-    apoioCzuber: (calculo: string) => `Moda de Czuber, pelas classes: Mo ${calculo}`,
+    /** Linha de apoio do card "Moda" na contínua; `calculo` vem pronto do backend ("Mo = …"). */
+    apoioCzuber: (calculo: string) => `Moda de Czuber, pelas classes: ${calculo}`,
     proporcao: 'Proporção',
     desvioPadrao: 'Desvio padrão',
     cv: 'Coeficiente de variação',

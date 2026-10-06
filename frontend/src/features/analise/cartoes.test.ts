@@ -78,8 +78,24 @@ describe('cartoesTendencia', () => {
     expect(moda.medida.valor).toBe(formatarNumero(72));
     expect(propsDoCartao(moda, analiseContinua.formulas).formula).toEqual({
       expressao: 'Mo = Lᵢ + [Δ₁ / (Δ₁ + Δ₂)] · h',
-      calculo: C.apoioCzuber(`= ${formatarNumero(68.9)}`),
+      calculo: 'Moda de Czuber, pelas classes: Mo = 68,9',
     });
+  });
+
+  it('usa o cálculo da moda de Czuber que vem do backend sem repetir "Mo"', () => {
+    const calculo = 'Mo = 6,8 + [167 / (167 + 108)] · 70,52 = 49,62';
+    const analise = {
+      ...analiseContinua,
+      tendencia: {
+        ...analiseContinua.tendencia,
+        moda_czuber: { ...analiseContinua.tendencia.moda_czuber, calculo },
+      },
+    };
+    const moda = exigir(cartoesTendencia(analise)[2], 'card da moda');
+
+    expect(propsDoCartao(moda, analise.formulas).formula?.calculo).toBe(
+      `Moda de Czuber, pelas classes: ${calculo}`,
+    );
   });
 
   it('binária: proporção no lugar da média', () => {

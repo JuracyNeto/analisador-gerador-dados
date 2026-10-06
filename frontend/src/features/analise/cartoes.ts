@@ -29,7 +29,7 @@ function acharFormula(formulas: readonly Formula[], chave: string | null): Formu
 
 function calculoDoCartao({ medida, apoio }: DefinicaoCartao): string | null {
   if (apoio === undefined) return medida.calculo;
-  return C.apoioCzuber(apoio.calculo ?? `= ${formatarValorMedida(apoio.valor)}`);
+  return C.apoioCzuber(apoio.calculo ?? `Mo = ${formatarValorMedida(apoio.valor)}`);
 }
 
 function formulaDoCartao(
