@@ -4,7 +4,7 @@ Camada de apresentação: `router.py` + `schemas.py` de cada domínio; `app/main
 ## Endpoints
 | Método | Rota | Corpo / query | Resposta | Spec |
 |---|---|---|---|---|
-| POST | `/datasets` | multipart `arquivo` + opções de leitura | `{dataset_id, metadados, previa[20], colunas[]}` | 01 |
+| POST | `/datasets` | multipart `arquivo` + opções de leitura (`separador`, `decimal`, `codificacao`, `aba`, `linha_cabecalho`) | `{dataset_id, metadados, previa[20], colunas[]}` | 01 |
 | POST | `/datasets/exemplo` | — | igual ao `POST /datasets` (carrega `dados-exemplo/pesquisa_saude.txt`, D52) | 01 |
 | GET | `/datasets/{id}` | `?pagina=&tamanho=&versao=original|atual` | `{resumo, versao, pagina, tamanho, total_paginas, linhas}` (D55) | — |
 | DELETE | `/datasets/{id}` | — | 204 | — |
