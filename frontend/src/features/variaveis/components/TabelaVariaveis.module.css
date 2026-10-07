@@ -1,0 +1,59 @@
+/* Tela 2; seletores de elemento dentro do envoltório não são renomeados pelo CSS Modules. */
+.envoltorio table {
+  table-layout: fixed;
+  width: 100%;
+}
+
+.envoltorio th:nth-child(1) {
+  width: 140px;
+}
+
+.envoltorio th:nth-child(2) {
+  width: 200px;
+}
+
+.envoltorio th:nth-child(4) {
+  width: 120px;
+}
+
+.envoltorio th:nth-child(5) {
+  width: 170px;
+}
+
+.envoltorio th:nth-child(6) {
+  width: 200px;
+}
+
+.envoltorio td {
+  vertical-align: middle;
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+.barra {
+  color: var(--cor-texto-2);
+}
+
+.faltantes[data-zero='true'] {
+  color: var(--cor-texto-2);
+}
+
+.exemplos {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--cor-texto-2);
+  font-size: 13px;
+}
+
+@media (max-width: 1279px) {
+  .envoltorio {
+    overflow-x: auto;
+  }
+
+  /* As colunas fixas somam 830 px: sem largura mínima, "Por quê" ficaria espremida. */
+  .envoltorio table {
+    min-width: 1060px;
+  }
+}

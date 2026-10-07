@@ -1,0 +1,4 @@
+nome;altura;peso
+Ana;1,62;58,2
+Bruno;1,78;1.079,6
+Carla;1,58;NA

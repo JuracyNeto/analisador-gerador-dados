@@ -1,0 +1,231 @@
+id;sexo;idade;altura_m;peso_kg;escolaridade;cidade;satisfacao
+1;F;34;1,62;58,2;médio;Goiânia;bom
+2;M;27;1,78;79,6;fundamental;Goiania;regular
+3;F;45;1,58;63,0;pós;Goiânia;ruim
+4;F;52;1,66;71,4;superior;Anápolis;ótimo
+5;M;23;1,81;84,1;médio;Luziânia;bom
+6;M;31;1,74;68,4;fundamental;Rio Verde;bom
+7;F;61;1,60;66,7;pós;Aparecida de Goiânia;regular
+8;M;29;1,69;72,0;superior;Goiânia;ruim
+9;F;38;1,57;55,9;médio;Goiania;ótimo
+10;M;44;1,83;90,3;fundamental;Goiânia;bom
+11;F;26;1,64;61,8;pós;Anápolis;bom
+12;F;57;1,71;;superior;Luziânia;regular
+13;M;33;1,59;57,4;médio;Rio Verde;ruim
+14;F;41;1,76;77,2;fundamental;Aparecida de Goiânia;ótimo
+15;M;22;1,65;62,5;pós;Goiânia;bom
+16;M;48;1,79;81,0;superior;Goiania;bom
+17;F;36;1,61;64,3;médio;Goiânia;regular
+18;F;30;1,68;69,8;fundamental;Anápolis;ruim
+19;M;0;1,72;74,6;pós;Luziânia;ótimo
+20;F;39;1,63;60,1;superior;Rio Verde;bom
+21;M;27;1,77;57,7;médio;Goiânia;ótimo
+22;M;65;1,77;74,1;médio;Catalão;ótimo
+23;F;51;1,61;64,8;superior;Anápolis;regular
+24;F;32;1,54;54,5;médio;Aparecida de Goiânia;ruim
+25;F;41;1,73;66,5;superior;Anápolis;regular
+26;M;29;1,84;92,0;pós;Anápolis;bom
+27;F;65;1,59;66,0;médio;Goiânia;bom
+28;F;30;1,71;77,2;médio;Aparecida de Goiânia;bom
+29;F;50;1,81;97,2;médio;Aparecida de Goiânia;bom
+30;M;40;1,75;72,2;médio;Goiânia;bom
+31;F;22;1,59;54,0;fundamental;Anapolis;bom
+32;M;34;1,84;76,5;superior;Catalão;ótimo
+33;M;50;1,70;91,7;fundamental;Goiânia;regular
+34;F;53;1,58;71,4;fundamental;Aparecida de Goiânia;bom
+35;M;49;1,71;72,2;pós;Goiânia;ótimo
+36;F;59;1,61;56,4;médio;Luziânia;regular
+37;M;49;1,66;68,5;superior;Anápolis;bom
+38;F;21;1,56;44,4;superior;Goiânia;bom
+39;M;35;1,76;75,5;médio;Goiânia;ruim
+40;M;47;1,59;62,9;superior;Luziânia;bom
+41;M;34;1,80;89,2;superior;Rio Verde;bom
+42;F;47;1,68;75,7;superior;Luziânia;regular
+43;F;52;1,56;43,8;médio;Aparecida de Goiânia;bom
+44;M;39;1,90;98,2;pós;Goiânia;regular
+45;M;39;1,90;98,2;pós;Goiânia;regular
+46;M;39;1,90;98,2;pós;Goiânia;regular
+47;M;39;1,90;98,2;pós;Goiânia;regular
+48;F;20;1,66;73,0;fundamental;Anápolis;regular
+49;F;35;1,56;65,8;pós;Goiânia;ótimo
+50;F;26;1,65;60,8;superior;Aparecida de Goiânia;ótimo
+51;F;69;1,59;62,3;superior;Goiânia;bom
+52;F;35;1,58;67,2;médio;Anápolis;bom
+53;F;44;1,65;68,7;médio;Goiânia;ótimo
+54;M;52;1,72;79,8;superior;Rio Verde;ruim
+55;F;29;1,64;66,5;médio;Anápolis;regular
+56;M;40;1,75;76,6;pós;Aparecida de Goiânia;regular
+57;F;40;1,66;68,4;médio;Anápolis;regular
+58;M;48;1,75;75,7;médio;Goiania;bom
+59;M;43;1,64;60,6;superior;Goiânia;bom
+60;M;59;1,70;64,1;médio;Goiânia;ruim
+61;F;44;1,71;85,5;médio;Trindade;regular
+62;F;23;1,65;85,2;superior;Goiânia;ótimo
+63;F;69;1,55;64,2;médio;Anápolis;ótimo
+64;F;52;1,68;68,2;fundamental;;bom
+65;F;20;1,67;87,9;médio;Aparecida de Goiânia;ruim
+66;M;23;1,62;69,8;superior;Goiânia;regular
+67;M;54;1,76;76,2;superior;Trindade;bom
+68;M;59;1,74;69,4;pós;Anápolis;bom
+69;M;44;1,85;84,2;médio;Aparecida de Goiânia;bom
+70;F;35;1,63;65,6;médio;Anápolis;bom
+71;M;42;1,78;70,7;superior;Anápolis;ótimo
+72;M;63;1,81;83,1;médio;Goiânia;ruim
+73;F;62;1,72;73,1;superior;Anápolis;bom
+74;F;34;1,56;57,5;superior;Goiânia;ótimo
+75;F;39;1,58;53,9;médio;Rio Verde;bom
+76;M;68;1,74;77,0;pós;Goiânia;bom
+77;F;57;17,20;58,9;médio;Goiânia;ótimo
+78;M;25;1,67;57,2;médio;Goiânia;bom
+79;M;33;1,55;55,8;médio;Aparecida de Goiânia;regular
+80;F;59;1,61;70,4;médio;Luziânia;ruim
+81;F;70;1,70;86,5;fundamental;Rio Verde;bom
+82;F;69;1,64;68,0;médio;Goiânia;bom
+83;F;19;1,64;74,8;fundamental;goiânia;regular
+84;M;31;1,70;63,1;fundamental;Rio Verde;bom
+85;F;49;1,62;62,4;superior;Goiânia;ótimo
+86;M;50;1,68;48,8;médio;Goiânia;ruim
+87;M;20;1,73;78,7;superior;Goiânia;bom
+88;M;;1,85;90,5;superior;Goiânia;ruim
+89;M;58;1,68;55,3;médio;Goiânia;bom
+90;M;50;1,78;82,4;médio;Goiânia;ruim
+91;F;67;1,61;80,3;fundamental;Goiânia;ótimo
+92;F;24;1,60;66,7;médio;Anápolis;bom
+93;F;55;1,71;80,8;médio;Goiânia;regular
+94;F;58;1,55;64,4;superior;Catalão;ruim
+95;M;28;1,78;89,6;fundamental;Luziânia;bom
+96;M;29;1,62;80,4;médio;Catalão;bom
+97;F;30;1,63;59,7;superior;Goiânia;bom
+98;M;39;1,70;61,7;superior;Goiânia;ótimo
+99;F;61;1,61;6,8;superior;Goiânia;bom
+100;F;27;1,51;54,6;pós;Goiânia;bom
+101;M;62;1,76;86,5;médio;Rio Verde;bom
+102;M;61;1,70;74,9;médio;Goiânia;regular
+103;F;64;1,63;67,8;médio;Goiânia;regular
+104;F;38;1,71;64,7;superior;Anápolis;bom
+105;F;70;1,67;72,2;pós;Anápolis;bom
+106;M;46;1,85;106,4;pós;Catalão;bom
+107;F;36;1,65;77,7;pós;Goiânia;ótimo
+108;F;56;1,81;85,9;superior;Goiânia;bom
+109;M;23;1,78;89,3;médio;Rio Verde;bom
+110;F;22;1,63;69,6;médio;Goiânia;bom
+111;F;63;1,62;76,1;médio;Rio Verde;bom
+112;M;63;1,77;72,6;médio;Goiania;ótimo
+113;M;36;1,66;58,6;médio;Anápolis;ótimo
+114;M;53;1,81;90,5;superior;Catalão;bom
+115;M;49;1,73;59,2;médio;Goiânia;regular
+116;M;55;1,67;68,8;superior;Anápolis;bom
+117;M;24;1,93;93,3;médio;Anápolis;bom
+118;F;69;1,68;71,7;fundamental;Rio Verde;bom
+119;F;67;1,54;56,0;superior;Anápolis;bom
+120;F;61;1,61;60,4;médio;Aparecida de Goiânia;bom
+121;F;66;1,50;61,8;superior;Luziânia;bom
+122;F;42;1,58;58,3;fundamental;Aparecida de Goiânia;ótimo
+123;M;61;1,81;75,7;superior;Goiânia;bom
+124;F;69;1,52;54,7;médio;Luziânia;bom
+125;F;69;1,64;54,5;superior;Goiânia;bom
+126;F;60;1,63;75,4;fundamental;Anapolis;bom
+127;F;66;1,61;67,4;fundamental;Rio Verde;ótimo
+128;F;44;1,58;65,5;médio;Catalão;ótimo
+129;F;68;1,63;68,1;superior;Anápolis;regular
+130;F;70;1,61;63,6;pós;Catalão;regular
+131;M;70;1,67;63,8;médio;Goiânia;ruim
+132;F;37;1,57;59,7;médio;Rio Verde;bom
+133;M;46;1,71;58,3;médio;Aparecida de Goiânia;ótimo
+134;F;22;1,56;61,9;médio;Aparecida de Goiânia;ótimo
+135;F;58;1,61;49,5;superior;Goiânia;ruim
+136;M;68;1,64;61,6;médio;Goiânia;bom
+137;M;45;1,75;84,9;pós;Goiânia;ótimo
+138;F;19;1,63;63,9;superior;Aparecida de Goiânia;ruim
+139;M;63;1,79;81,6;pós;Rio Verde;ótimo
+140;F;68;1,68;79,5;médio;Anápolis;bom
+141;F;51;1,62;;médio;Goiânia;bom
+142;F;70;1,61;70,6;médio;Aparecida de Goiânia;ruim
+143;M;51;1,72;65,2;fundamental;Anápolis;ótimo
+144;M;54;1,78;65,0;médio;Goiânia;ruim
+145;M;59;1,89;88,3;superior;Luziânia;ótimo
+146;F;46;1,62;73,4;médio;Goiânia;ótimo
+147;M;20;1,83;85,9;superior;Aparecida de Goiânia;bom
+148;F;32;1,66;42,3;médio;Rio Verde;ótimo
+149;M;51;1,68;61,9;médio;Goiânia;ótimo
+150;F;61;1,71;69,4;médio;Goiânia;bom
+151;F;43;1,56;59,0;superior;Goiânia;regular
+152;F;59;1,60;67,2;médio;Goiânia;bom
+153;M;57;;79,2;pós;Goiânia;ótimo
+154;F;70;1,64;66,3;fundamental;Rio Verde;ótimo
+155;F;31;1,68;81,2;superior;Goiânia;bom
+156;F;20;1,68;74,2;superior;Luziânia;regular
+157;F;68;1,69;68,4;médio;Goiânia;ruim
+158;M;63;1,75;73,5;superior;Aparecida de Goiânia;bom
+159;F;21;1,66;72,2;pós;Anápolis;bom
+160;M;62;1,69;712,0;pós;Anápolis;regular
+161;M;37;1,65;65,4;superior;Goiânia;bom
+162;F;51;1,62;56,3;médio;Aparecida de Goiânia;regular
+163;M;59;1,73;70,6;médio;Rio Verde;bom
+164;F;50;1,58;57,1;médio;Goiânia;bom
+165;M;29;1,85;90,9;superior;Luziânia;ótimo
+166;M;29;1,82;70,6;médio;Aparecida de Goiânia;bom
+167;F;41;1,58;60,6;superior;Aparecida de Goiânia;ótimo
+168;M;70;1,83;81,4;superior;Aparecida de Goiânia;ótimo
+169;M;39;1,87;65,8;pós;Goiânia;ótimo
+170;M;36;1,92;91,4;médio;Rio Verde;bom
+171;M;41;1,70;68,7;superior;Aparecida de Goiânia;ótimo
+172;F;37;1,50;57,2;pós;Aparecida de Goiânia;bom
+173;F;21;1,58;65,6;médio;Goiânia;bom
+174;F;30;1,63;77,0;superior;Anápolis;bom
+175;M;39;1,78;80,4;pós;Goiania;ruim
+176;M;19;1,83;63,5;fundamental;Catalão;regular
+177;F;42;1,61;61,6;médio;Anápolis;ruim
+178;M;57;1,84;109,4;médio;Rio Verde;bom
+179;M;20;1,70;63,2;superior;Anápolis;regular
+180;M;66;1,75;68,1;superior;Rio Verde;ruim
+181;F;47;1,52;47,6;médio;Goiânia;bom
+182;M;65;1,75;71,0;fundamental;Goiânia;ótimo
+183;M;25;1,70;76,9;superior;Goiânia;ótimo
+184;M;60;1,81;82,7;superior;Rio Verde;regular
+185;M;31;1,84;79,2;fundamental;Aparecida de Goiânia;bom
+186;F;55;1,66;54,7;fundamental;Rio Verde;ruim
+187;M;56;1,84;82,3;superior;Goiânia;bom
+188;F;50;1,61;49,6;pós;Anápolis;ótimo
+189;F;30;1,60;80,4;médio;Aparecida de Goiânia;ruim
+190;M;70;1,82;84,4;superior;;bom
+191;M;62;1,78;76,8;fundamental;Aparecida de Goiânia;regular
+192;F;67;1,55;62,3;superior;Luziânia;bom
+193;M;47;1,70;58,7;pós;Goiânia;bom
+194;F;65;1,47;48,2;médio;Aparecida de Goiânia;bom
+195;M;25;1,82;97,0;superior;Aparecida de Goiânia;ótimo
+196;F;54;1,55;51,4;fundamental;Goiânia;bom
+197;M;18;1,69;60,1;superior;Goiânia;regular
+198;M;37;1,74;82,6;fundamental;Anapolis;bom
+199;M;47;1,70;64,7;superior;Goiânia;regular
+200;M;26;1,76;85,1;médio;Goiânia;regular
+201;M;230;1,79;66,5;fundamental;Rio Verde;ruim
+202;M;46;1,76;89,1;superior;Rio Verde;bom
+203;M;37;1,74;80,9;médio;Luziânia;ótimo
+204;M;44;1,81;66,1;médio;Goiânia;bom
+205;F;44;1,67;75,6;fundamental;Catalão;regular
+206;M;30;1,82;69,5;pós;Aparecida de Goiânia;bom
+207;M;63;1,69;;superior;Trindade;ruim
+208;F;49;1,66;71,6;médio;Goiânia;ótimo
+209;F;64;1,63;54,7;superior;Anápolis;bom
+210;M;35;1,69;79,2;superior;Aparecida de Goiânia;ótimo
+211;M;54;1,66;61,0;médio;Goiânia;bom
+212;M;34;1,81;74,6;fundamental;Goiânia;ótimo
+213;M;35;1,69;59,4;superior;Anápolis;bom
+214;F;62;1,61;68,2;médio;Rio Verde;bom
+215;M;22;1,70;71,2;superior;Anápolis;bom
+216;F;50;1,62;62,9;fundamental;Goiânia;bom
+217;M;55;1,82;82,5;superior;Goiânia;regular
+218;F;23;1,56;56,2;médio;Catalão;bom
+219;M;29;1,67;70,0;superior;goiânia;bom
+220;M;68;1,82;85,4;fundamental;Goiânia;regular
+221;F;22;1,64;64,6;médio;Goiânia;ótimo
+222;M;58;1,78;78,2;médio;Aparecida de Goiânia;regular
+223;F;57;1,73;60,2;pós;Goiânia;ótimo
+224;M;38;1,79;77,5;médio;Anápolis;bom
+225;F;58;1,66;66,0;médio;Luziânia;ótimo
+226;M;43;1,56;76,6;superior;Anápolis;regular
+227;F;63;1,60;63,2;superior;Anápolis;bom
+228;M;45;1,77;87,7;superior;Goiânia;bom
+229;M;23;1,85;95,0;médio;Rio Verde;regular
+230;M;51;1,69;68,1;médio;Luziânia;bom

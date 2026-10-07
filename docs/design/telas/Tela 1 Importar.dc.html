@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet><link rel="stylesheet" href="tokens.css"></link><style>body{margin:0}a{color:var(--cor-primaria)}a:hover{color:var(--cor-primaria-hover)}</style></helmet>
+<div data-tema="{{ tema }}" data-screen-label="Tela 1 Importar" style="width:1440px;min-height:960px;display:grid;grid-template-columns:264px minmax(0,1fr);background:var(--cor-fundo);font-family:Inter,system-ui,sans-serif;color:var(--cor-texto);position:relative">
+  <dc-import name="Barra Lateral" atual="1" bloqueado="{{ bloqueado }}" hint-size="264px,100%"></dc-import>
+  <div style="display:flex;flex-direction:column;min-width:0">
+    <dc-import name="Cabecalho" tema="{{ tema }}" tem-arquivo="{{ enviado }}" hint-size="100%,64px"></dc-import>
+    <main style="padding:32px;display:flex;flex-direction:column;gap:24px;max-width:1112px;box-sizing:border-box;width:100%">
+      <div style="display:flex;flex-direction:column;gap:6px">
+        <span style="font-size:13px;font-weight:500;color:var(--cor-texto-2)">Etapa 1 de 8</span>
+        <h1 style="margin:0;font-size:28px;line-height:1.25;font-weight:700;letter-spacing:-.015em">Importar arquivo</h1>
+        <p style="margin:0;font-size:15px;line-height:1.55;color:var(--cor-texto-2)">Envie sua tabela de dados. Nós descobrimos sozinhos como ela foi escrita, e você confere antes de seguir.</p>
+      </div>
+
+      <sc-if value="{{ semArquivo }}" hint-placeholder-val="{{ false }}">
+        <sc-if value="{{ erro }}" hint-placeholder-val="{{ false }}">
+          <div role="alert" style="display:flex;gap:14px;padding:16px 18px;border-radius:12px;background:var(--cor-erro-suave);border:1px solid var(--cor-erro)">
+            <span aria-hidden="true" style="font-family:'Material Symbols Rounded';font-size:24px;line-height:1;color:var(--cor-erro);font-variation-settings:'FILL' 1">error</span>
+            <div style="flex:1;display:flex;flex-direction:column;gap:6px">
+              <span style="font-size:15px;font-weight:600">Não conseguimos ler este arquivo: <span style="font-family:'JetBrains Mono',monospace">relatorio_final.pdf</span></span>
+              <span style="font-size:14px;line-height:1.55">PDF não é um formato de tabela. Abra o arquivo na planilha de origem e salve como CSV ou XLSX, depois envie de novo.</span>
+              <div style="display:flex;gap:16px;margin-top:4px">
+                <span style="font-size:14px;font-weight:500;color:var(--cor-primaria);text-decoration:underline">Como exportar para CSV</span>
+                <span style="font-size:14px;font-weight:500;color:var(--cor-primaria);text-decoration:underline">Usar o arquivo de exemplo</span>
+              </div>
+            </div>
+          </div>
+        </sc-if>
+        <div style="border:2px dashed var(--cor-borda-forte);border-radius:16px;background:var(--cor-superficie);min-height:400px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:48px;text-align:center">
+          <span aria-hidden="true" style="width:72px;height:72px;border-radius:50%;background:var(--cor-primaria-suave);color:var(--cor-primaria);display:grid;place-items:center;font-family:'Material Symbols Rounded';font-size:36px;line-height:1">upload_file</span>
+          <div style="display:flex;flex-direction:column;gap:6px">
+            <span style="font-size:20px;font-weight:600">Arraste e solte seu arquivo aqui</span>
+            <span style="font-size:15px;color:var(--cor-texto-2)">ou escolha no computador. Tamanho máximo: 20 MB.</span>
+          </div>
+          <span style="white-space:nowrap;flex:none;display:inline-flex;align-items:center;gap:8px;height:44px;padding:0 20px;border-radius:8px;background:var(--cor-primaria);color:var(--cor-sobre-primaria);font-size:15px;font-weight:600"><span aria-hidden="true" style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1">folder_open</span>Escolher arquivo</span>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:8px">
+            <span style="font:500 13px 'JetBrains Mono',monospace;padding:4px 10px;border-radius:6px;background:var(--cor-superficie-2);border:1px solid var(--cor-borda)">.txt</span>
+            <span style="font:500 13px 'JetBrains Mono',monospace;padding:4px 10px;border-radius:6px;background:var(--cor-superficie-2);border:1px solid var(--cor-borda)">.csv</span>
+            <span style="font:500 13px 'JetBrains Mono',monospace;padding:4px 10px;border-radius:6px;background:var(--cor-superficie-2);border:1px solid var(--cor-borda)">.tsv</span>
+            <span style="font:500 13px 'JetBrains Mono',monospace;padding:4px 10px;border-radius:6px;background:var(--cor-superficie-2);border:1px solid var(--cor-borda)">.xlsx</span>
+            <span style="font:500 13px 'JetBrains Mono',monospace;padding:4px 10px;border-radius:6px;background:var(--cor-superficie-2);border:1px solid var(--cor-borda)">.json</span>
+          </div>
+        </div>
+        <p style="margin:0;font-size:14px;color:var(--cor-texto-2)">Sem dados à mão? <span style="color:var(--cor-primaria);font-weight:500;text-decoration:underline">Abrir pesquisa_saude.txt de exemplo</span></p>
+      </sc-if>
+
+      <sc-if value="{{ enviado }}" hint-placeholder-val="{{ true }}">
+        <div style="background:var(--cor-superficie);border:1px solid var(--cor-borda);border-radius:12px;box-shadow:var(--sombra-1)">
+          <div style="display:flex;align-items:center;gap:12px;padding:18px 24px;border-bottom:1px solid var(--cor-borda)">
+            <span aria-hidden="true" style="font-family:'Material Symbols Rounded';font-size:22px;line-height:1;color:var(--cor-sucesso);font-variation-settings:'FILL' 1">check_circle</span>
+            <div style="flex:1;display:flex;flex-direction:column;gap:2px">
+              <h2 style="margin:0;font-size:17px;font-weight:600">O que detectamos</h2>
+              <span style="font-size:14px;color:var(--cor-texto-2)">Lemos 230 linhas e 8 colunas. Se algo estiver diferente do seu arquivo, corrija abaixo.</span>
+            </div>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(5,minmax(0,1fr))">
+            <sc-for list="{{ deteccoes }}" as="d" hint-placeholder-count="5">
+              <div style="padding:18px 24px;display:flex;flex-direction:column;gap:8px;border-right:1px solid var(--cor-borda)">
+                <span style="font-size:13px;font-weight:500;color:var(--cor-texto-2)">{{ d.rotulo }}</span>
+                <span style="height:40px;display:flex;align-items:center;gap:6px;padding:0 8px 0 12px;border-radius:8px;border:1px solid var(--cor-borda-forte);background:var(--cor-superficie);font-size:14px;font-weight:500"><span style="flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ d.valor }}</span><span aria-hidden="true" style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1;color:var(--cor-texto-2)">expand_more</span></span>
+                <span style="font-size:12.5px;line-height:1.4;color:var(--cor-texto-2)">{{ d.motivo }}</span>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+
+        <div style="background:var(--cor-superficie);border:1px solid var(--cor-borda);border-radius:12px;box-shadow:var(--sombra-1);overflow:hidden">
+          <div style="display:flex;align-items:baseline;gap:12px;padding:16px 24px">
+            <h2 style="margin:0;font-size:17px;font-weight:600">Prévia</h2>
+            <span style="font-size:14px;color:var(--cor-texto-2);white-space:nowrap">20 primeiras linhas de 230</span>
+          </div>
+          <div style="border-top:1px solid var(--cor-borda)">
+            <table style="width:100%;border-collapse:collapse;font-size:13.5px;font-variant-numeric:tabular-nums">
+              <thead><tr>
+                <sc-for list="{{ cols }}" as="c" hint-placeholder-count="8">
+                  <th scope="col" style="position:sticky;top:0;background:var(--cor-superficie-2);text-align:{{ c.al }};padding:10px 16px;font:600 12.5px 'JetBrains Mono',monospace;border-bottom:1px solid var(--cor-borda-forte);white-space:nowrap">{{ c.n }}</th>
+                </sc-for>
+              </tr></thead>
+              <tbody>
+                <sc-for list="{{ linhas }}" as="l" hint-placeholder-count="20">
+                  <tr style="background:{{ l.bg }}">
+                    <td style="padding:8px 16px;text-align:right;color:var(--cor-texto-2)">{{ l.id }}</td>
+                    <td style="padding:8px 16px">{{ l.sexo }}</td>
+                    <td style="padding:8px 16px;text-align:right">{{ l.idade }}</td>
+                    <td style="padding:8px 16px;text-align:right">{{ l.altura }}</td>
+                    <td style="padding:8px 16px;text-align:right">{{ l.peso }}</td>
+                    <td style="padding:8px 16px">{{ l.esc }}</td>
+                    <td style="padding:8px 16px">{{ l.cidade }}</td>
+                    <td style="padding:8px 16px">{{ l.sat }}</td>
+                  </tr>
+                </sc-for>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div style="display:flex;justify-content:flex-end;gap:12px">
+          <span style="white-space:nowrap;flex:none;display:inline-flex;align-items:center;height:44px;padding:0 18px;border-radius:8px;border:1px solid var(--cor-borda-forte);background:var(--cor-superficie);font-size:15px;font-weight:500;box-sizing:border-box">Ler de novo</span>
+          <span style="white-space:nowrap;flex:none;display:inline-flex;align-items:center;gap:8px;height:44px;padding:0 20px;border-radius:8px;background:var(--cor-primaria);color:var(--cor-sobre-primaria);font-size:15px;font-weight:600">Continuar para Variáveis<span aria-hidden="true" style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1">arrow_forward</span></span>
+        </div>
+      </sc-if>
+    </main>
+  </div>
+  <sc-if value="{{ toast }}" hint-placeholder-val="{{ false }}">
+    <div role="status" aria-live="polite" style="position:absolute;right:32px;top:80px;width:380px;display:flex;gap:12px;align-items:flex-start;padding:14px 16px;border-radius:10px;background:var(--cor-superficie-elevada);border:1px solid var(--cor-borda);box-shadow:var(--sombra-2)">
+      <span aria-hidden="true" style="font-family:'Material Symbols Rounded';font-size:22px;line-height:1;color:var(--cor-sucesso);font-variation-settings:'FILL' 1">check_circle</span>
+      <div style="flex:1;display:flex;flex-direction:column;gap:2px"><span style="font-size:14px;font-weight:600">Arquivo lido: 230 linhas e 8 colunas.</span><span style="font-size:13px;color:var(--cor-texto-2)">As etapas 2 a 8 foram liberadas.</span></div>
+      <span aria-label="Fechar" style="font-family:'Material Symbols Rounded';font-size:18px;line-height:1;color:var(--cor-texto-2)">close</span>
+    </div>
+  </sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1440,&quot;height&quot;:960},&quot;estado&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;vazio&quot;,&quot;enviado&quot;,&quot;erro&quot;],&quot;default&quot;:&quot;enviado&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;tema&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;claro&quot;,&quot;escuro&quot;],&quot;default&quot;:&quot;claro&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;toast&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;}}">
+class Component extends DCLogic {
+  renderVals() {
+    const estado = this.props.estado ?? 'enviado';
+    const enviado = estado === 'enviado';
+    const deteccoes = [
+      { rotulo: 'Formato', valor: 'Texto (TXT)', motivo: 'Pela extensão e pelo conteúdo.' },
+      { rotulo: 'Separador', valor: 'Ponto e vírgula ( ; )', motivo: 'Aparece 7 vezes em todas as linhas.' },
+      { rotulo: 'Decimal', valor: 'Vírgula ( , )', motivo: 'Valores como 1,72 e 68,4.' },
+      { rotulo: 'Codificação', valor: 'UTF-8', motivo: 'Acentos lidos sem erro (Goiânia).' },
+      { rotulo: 'Cabeçalho', valor: 'Sim, 1ª linha', motivo: 'A 1ª linha tem só nomes, sem números.' },
+    ];
+    const cols = ['id', 'sexo', 'idade', 'altura_m', 'peso_kg', 'escolaridade', 'cidade', 'satisfacao'].map(n => ({ n, al: ['id', 'idade', 'altura_m', 'peso_kg'].includes(n) ? 'right' : 'left' }));
+    const sx = 'FMFFMMFMFMFFMFMMFFMF', es = ['médio', 'superior', 'pós', 'fundamental'], ci = ['Goiânia', 'Anápolis', 'Aparecida de Goiânia', 'Goiânia', 'Rio Verde', 'Goiania', 'Luziânia'], sa = ['bom', 'ótimo', 'regular', 'bom', 'ruim'];
+    const id = [34, 27, 45, 52, 23, 31, 61, 29, 38, 44, 26, 57, 33, 41, 22, 48, 36, 30, 55, 39];
+    const al = [1.62, 1.78, 1.58, 1.66, 1.81, 1.74, 1.60, 1.69, 1.57, 1.83, 1.64, 1.71, 1.59, 1.76, 1.65, 1.79, 1.61, 1.68, 1.72, 1.63];
+    const pe = [58.2, 79.6, 63.0, 71.4, 84.1, 68.4, 66.7, 72.0, 55.9, 90.3, 61.8, null, 57.4, 77.2, 62.5, 81.0, 64.3, 69.8, 74.6, 60.1];
+    const f = v => v == null ? '' : v.toFixed(v < 3 ? 2 : 1).replace('.', ',');
+    const linhas = id.map((idade, i) => ({ id: i + 1, sexo: sx[i], idade, altura: f(al[i]), peso: pe[i] == null ? '—' : f(pe[i]), esc: es[(i * 3) % 4], cidade: ci[(i * 5) % 7], sat: sa[(i * 2) % 5], bg: i % 2 ? 'var(--cor-zebra)' : 'transparent' }));
+    return { tema: this.props.tema ?? 'claro', enviado, semArquivo: !enviado, erro: estado === 'erro', bloqueado: !enviado, deteccoes, cols, linhas, toast: enviado && (this.props.toast ?? true) };
+  }
+}
+</script>
+</body>
+</html>

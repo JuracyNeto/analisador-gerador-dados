@@ -13,7 +13,7 @@ Discreta e contínua: todas. Binária: variância p(1−p) e DP √(p(1−p)). O
 - Binária: **Var = p(1 − p)**
 
 ## Casos de borda
-- n < 2 → variância/DP "não aplicável: precisa de pelo menos 2 valores".
+- n < 2 → variância/DP: "{medida} não se aplica: precisa de pelo menos 2 valores."
 - x̄ = 0 → CV indefinido: "O CV não pode ser calculado porque a média é zero."
 - Dados com valores negativos → CV calculado com |x̄| e aviso "CV pouco interpretável com valores negativos".
 - s = 0 → "Todos os valores são iguais; não há dispersão."

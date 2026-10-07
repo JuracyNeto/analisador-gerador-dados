@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet><link rel="stylesheet" href="tokens.css"></link><style>body{margin:0}a{color:var(--cor-primaria)}a:hover{color:var(--cor-primaria-hover)}</style></helmet>
+<div data-tema="{{ tema }}" data-screen-label="Tela 2 Variáveis" style="width:1440px;min-height:960px;display:grid;grid-template-columns:264px minmax(0,1fr);background:var(--cor-fundo);font-family:Inter,system-ui,sans-serif;color:var(--cor-texto)">
+  <dc-import name="Barra Lateral" atual="2" hint-size="264px,100%"></dc-import>
+  <div style="display:flex;flex-direction:column;min-width:0">
+    <dc-import name="Cabecalho" tema="{{ tema }}" hint-size="100%,64px"></dc-import>
+    <main style="padding:32px;display:flex;flex-direction:column;gap:24px;box-sizing:border-box;width:100%;max-width:1176px">
+      <div style="display:flex;align-items:flex-end;gap:24px">
+        <div style="flex:1;display:flex;flex-direction:column;gap:6px">
+          <span style="font-size:13px;font-weight:500;color:var(--cor-texto-2)">Etapa 2 de 8</span>
+          <h1 style="margin:0;font-size:28px;line-height:1.25;font-weight:700;letter-spacing:-.015em">Variáveis</h1>
+          <p style="margin:0;font-size:15px;line-height:1.55;color:var(--cor-texto-2)">Classificamos cada coluna pelo que ela contém. Confira o motivo e corrija o tipo se não concordar.</p>
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end">
+          <sc-for list="{{ resumo }}" as="r" hint-placeholder-count="5">
+            <span style="white-space:nowrap;flex:none;display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--cor-texto-2)"><span style="font:600 13px 'JetBrains Mono',monospace;color:var(--tipo-{{ r.k }})">{{ r.q }}</span>{{ r.nome }}</span>
+          </sc-for>
+        </div>
+      </div>
+
+      <div role="table" aria-label="Tipos detectados por coluna" style="background:var(--cor-superficie);border:1px solid var(--cor-borda);border-radius:12px;box-shadow:var(--sombra-1);overflow:hidden">
+        <div role="row" style="display:grid;grid-template-columns:140px 200px minmax(0,1fr) 120px 170px 200px;gap:16px;padding:0 20px;height:44px;align-items:center;background:var(--cor-superficie-2);border-bottom:1px solid var(--cor-borda-forte);font-size:12.5px;font-weight:600;color:var(--cor-texto-2)">
+          <span role="columnheader">Coluna</span><span role="columnheader">Tipo detectado</span><span role="columnheader">Por quê</span><span role="columnheader" style="text-align:right">Válidos / faltantes</span><span role="columnheader">Exemplos</span><span role="columnheader">Corrigir tipo</span>
+        </div>
+        <sc-for list="{{ vars }}" as="v" hint-placeholder-count="8">
+          <div role="row" style="display:grid;grid-template-columns:140px 200px minmax(0,1fr) 120px 170px 200px;gap:16px;padding:12px 20px;align-items:center;border-bottom:1px solid var(--cor-borda);background:{{ v.bg }}">
+            <span role="cell" style="font:600 14px 'JetBrains Mono',monospace">{{ v.col }}</span>
+            <span role="cell"><span style="white-space:nowrap;flex:none;display:inline-flex;align-items:center;gap:6px;height:26px;padding:0 10px 0 8px;border-radius:999px;background:var(--tipo-{{ v.k }}-suave);color:var(--tipo-{{ v.k }});border:1px solid color-mix(in oklab, var(--tipo-{{ v.k }}) 35%, transparent);font-size:13px;font-weight:600;white-space:nowrap"><span aria-hidden="true" style="font-family:'Material Symbols Rounded';font-size:17px;line-height:1">{{ v.icone }}</span>{{ v.tipo }}</span></span>
+            <span role="cell" style="font-size:14px;line-height:1.45;text-wrap:pretty">{{ v.motivo }}</span>
+            <span role="cell" style="text-align:right;font:500 13.5px 'JetBrains Mono',monospace"><span>{{ v.val }}</span><span style="color:var(--cor-texto-2)"> / </span><span style="color:{{ v.fcor }}">{{ v.falt }}</span></span>
+            <span role="cell" style="font:13px 'JetBrains Mono',monospace;color:var(--cor-texto-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ v.ex }}</span>
+            <span role="cell" style="height:36px;display:flex;align-items:center;gap:6px;padding:0 8px 0 12px;border-radius:8px;border:1px solid var(--cor-borda-forte);background:var(--cor-superficie);font-size:13.5px"><span style="flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ v.sel }}</span><span aria-hidden="true" style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1;color:var(--cor-texto-2)">expand_more</span></span>
+          </div>
+        </sc-for>
+      </div>
+
+      <div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:20px">
+        <sc-for list="{{ ordinais }}" as="o" hint-placeholder-count="2">
+          <div style="background:var(--cor-superficie);border:1px solid var(--cor-borda);border-radius:12px;box-shadow:var(--sombra-1);padding:20px 24px;display:flex;flex-direction:column;gap:14px">
+            <div style="display:flex;align-items:center;gap:10px">
+              <h2 style="margin:0;font-size:17px;font-weight:600;flex:1">Ordem das categorias · <span style="font-family:'JetBrains Mono',monospace">{{ o.col }}</span></h2>
+              <span style="white-space:nowrap;flex:none;display:inline-flex;align-items:center;gap:6px;height:26px;padding:0 10px 0 8px;border-radius:999px;background:var(--tipo-ordinal-suave);color:var(--tipo-ordinal);font-size:13px;font-weight:600"><span aria-hidden="true" style="font-family:'Material Symbols Rounded';font-size:17px;line-height:1">stairs</span>Ordinal</span>
+            </div>
+            <p style="margin:0;font-size:14px;color:var(--cor-texto-2);line-height:1.5">Arraste para mudar a ordem, do menor para o maior. Pelo teclado: foque um item e use ↑ e ↓.</p>
+            <ol style="list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px">
+              <sc-for list="{{ o.itens }}" as="it" hint-placeholder-count="4">
+                <li>
+                  <sc-if value="{{ it.arrastando }}">
+                    <div style="display:flex;align-items:center;gap:12px;height:44px;padding:0 12px;border-radius:8px;border:1px solid var(--cor-primaria);background:var(--cor-superficie-elevada);box-shadow:var(--sombra-2);outline:2px solid var(--cor-foco);outline-offset:1px">
+                      <span aria-hidden="true" style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1;color:var(--cor-primaria)">drag_indicator</span>
+                      <span style="font:600 13px 'JetBrains Mono',monospace;color:var(--cor-primaria);width:18px">{{ it.n }}</span>
+                      <span style="flex:1;font-size:14px;font-weight:600">{{ it.nome }}</span>
+                      <span style="font-size:12.5px;color:var(--cor-primaria);font-weight:500">Movendo…</span>
+                    </div>
+                  </sc-if>
+                  <sc-if value="{{ it.normal }}">
+                    <div style="display:flex;align-items:center;gap:12px;height:44px;padding:0 12px;border-radius:8px;border:1px solid var(--cor-borda);background:var(--cor-superficie)">
+                      <span aria-hidden="true" style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1;color:var(--cor-texto-2);cursor:grab">drag_indicator</span>
+                      <span style="font:600 13px 'JetBrains Mono',monospace;color:var(--cor-texto-2);width:18px">{{ it.n }}</span>
+                      <span style="flex:1;font-size:14px">{{ it.nome }}</span>
+                      <span style="font:12.5px 'JetBrains Mono',monospace;color:var(--cor-texto-2)">{{ it.q }} linhas</span>
+                      <span style="display:flex;gap:2px"><span aria-label="Subir" style="width:28px;height:28px;display:grid;place-items:center;border-radius:6px;font-family:'Material Symbols Rounded';font-size:18px;line-height:1;color:var(--cor-texto-2)">arrow_upward</span><span aria-label="Descer" style="width:28px;height:28px;display:grid;place-items:center;border-radius:6px;font-family:'Material Symbols Rounded';font-size:18px;line-height:1;color:var(--cor-texto-2)">arrow_downward</span></span>
+                    </div>
+                  </sc-if>
+                </li>
+              </sc-for>
+            </ol>
+            <span style="font:500 13px 'JetBrains Mono',monospace;color:var(--cor-texto-2)">{{ o.escala }}</span>
+          </div>
+        </sc-for>
+      </div>
+      <div style="display:flex;justify-content:flex-end">
+        <span style="white-space:nowrap;flex:none;display:inline-flex;align-items:center;gap:8px;height:44px;padding:0 20px;border-radius:8px;background:var(--cor-primaria);color:var(--cor-sobre-primaria);font-size:15px;font-weight:600">Continuar para Limpeza<span aria-hidden="true" style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1">arrow_forward</span></span>
+      </div>
+    </main>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1440,&quot;height&quot;:1100},&quot;tema&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;claro&quot;,&quot;escuro&quot;],&quot;default&quot;:&quot;claro&quot;,&quot;tsType&quot;:&quot;string&quot;}}">
+class Component extends DCLogic {
+  renderVals() {
+    const T = { identificador: ['Identificador', 'fingerprint', 'Identificador (ignorada)'], binaria: ['Binária', 'toggle_on', 'Binária'], discreta: ['Discreta', 'pin', 'Quantitativa discreta'], continua: ['Contínua', 'straighten', 'Quantitativa contínua'], ordinal: ['Ordinal', 'stairs', 'Qualitativa ordinal'], nominal: ['Nominal', 'sell', 'Qualitativa nominal'] };
+    const raw = [
+      ['id', 'identificador', 'Cada linha tem um valor diferente, em sequência (1, 2, 3…). Não entra nas análises.', 230, 0, '1, 2, 3, 4'],
+      ['sexo', 'binaria', 'Tem só dois valores: F e M', 230, 0, 'F, M'],
+      ['idade', 'discreta', 'Números inteiros, sem casas decimais', 229, 1, '34, 27, 45, 52'],
+      ['altura_m', 'continua', 'Números com casas decimais', 229, 1, '1,62; 1,78; 1,58'],
+      ['peso_kg', 'continua', 'Números com casas decimais', 227, 3, '58,2; 79,6; 63,0'],
+      ['escolaridade', 'ordinal', 'Os valores seguem uma escala conhecida: fundamental < médio < superior < pós', 230, 0, 'médio, pós'],
+      ['cidade', 'nominal', 'Textos sem ordem natural; 7 valores diferentes', 228, 2, 'Goiânia, Anápolis'],
+      ['satisfacao', 'ordinal', 'Os valores seguem uma escala conhecida: ruim < regular < bom < ótimo', 230, 0, 'bom, ótimo'],
+    ];
+    const vars = raw.map(([col, k, motivo, val, falt, ex], i) => ({ col, k, tipo: T[k][0], icone: T[k][1], sel: T[k][2], motivo, val, falt, fcor: falt ? 'var(--cor-texto)' : 'var(--cor-texto-2)', ex, bg: i % 2 ? 'var(--cor-zebra)' : 'transparent' }));
+    const resumo = [['continua', 2, 'contínuas'], ['discreta', 1, 'discreta'], ['ordinal', 2, 'ordinais'], ['nominal', 1, 'nominal'], ['binaria', 1, 'binária']].map(([k, q, nome]) => ({ k, q, nome }));
+    const mk = (arr, drag) => arr.map(([nome, q], i) => ({ n: i + 1, nome, q, arrastando: i === drag, normal: i !== drag }));
+    const ordinais = [
+      { col: 'escolaridade', itens: mk([['fundamental', 38], ['médio', 96], ['superior', 71], ['pós', 25]], -1), escala: 'fundamental < médio < superior < pós' },
+      { col: 'satisfacao', itens: mk([['ruim', 21], ['regular', 54], ['bom', 102], ['ótimo', 53]], 2), escala: 'ruim < regular < bom < ótimo' },
+    ];
+    return { tema: this.props.tema ?? 'claro', vars, resumo, ordinais };
+  }
+}
+</script>
+</body>
+</html>

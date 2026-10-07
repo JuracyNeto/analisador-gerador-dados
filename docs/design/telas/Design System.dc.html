@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet><link rel="stylesheet" href="tokens.css"></link><style>body{margin:0;background:#f5f6f8}a{color:var(--cor-primaria)}a:hover{color:var(--cor-primaria-hover)}</style></helmet>
+<div data-tema="claro" style="min-height:100vh;background:var(--cor-fundo);color:var(--cor-texto);font-family:Inter,system-ui,sans-serif">
+<div style="max-width:1320px;margin:0 auto;padding:56px 48px 96px;display:flex;flex-direction:column;gap:72px">
+
+<header style="display:flex;flex-direction:column;gap:10px">
+  <span style="font:500 13px 'JetBrains Mono',monospace;color:var(--cor-texto-2)">Analisador e Gerador de Dados · v1.0</span>
+  <h1 style="margin:0;font-size:40px;line-height:1.15;font-weight:700;letter-spacing:-.02em">Design system</h1>
+  <p style="margin:0;max-width:720px;font-size:16px;line-height:1.6;color:var(--cor-texto-2);text-wrap:pretty">Tokens, tipografia e componentes da aplicação. Todas as cores atendem WCAG 2.1 AA nos temas claro e escuro: texto ≥ 4,5:1, elementos de interface e gráficos ≥ 3:1. Tipo de variável e severidade sempre combinam ícone, palavra e cor.</p>
+  <nav style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px">
+    <a href="#cores" style="font-size:14px">Cores</a><span style="color:var(--cor-texto-desab)">·</span>
+    <a href="#semanticas" style="font-size:14px">Tipos e severidades</a><span style="color:var(--cor-texto-desab)">·</span>
+    <a href="#graficos" style="font-size:14px">Gráficos</a><span style="color:var(--cor-texto-desab)">·</span>
+    <a href="#tipografia" style="font-size:14px">Tipografia</a><span style="color:var(--cor-texto-desab)">·</span>
+    <a href="#espaco" style="font-size:14px">Espaço e elevação</a><span style="color:var(--cor-texto-desab)">·</span>
+    <a href="#componentes" style="font-size:14px">Componentes</a><span style="color:var(--cor-texto-desab)">·</span>
+    <a href="#alerta" style="font-size:14px">Cartão de alerta</a><span style="color:var(--cor-texto-desab)">·</span>
+    <a href="#handoff" style="font-size:14px">Handoff</a>
+  </nav>
+</header>
+
+<section id="cores" style="display:flex;flex-direction:column;gap:20px">
+  <h2 style="margin:0;font-size:24px;font-weight:600;letter-spacing:-.01em">Cores de interface</h2>
+  <div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:20px">
+    <div data-tema="claro" style="background:var(--cor-fundo);border:1px solid var(--cor-borda);border-radius:12px;padding:24px;display:flex;flex-direction:column;gap:14px">
+      <span style="font-size:14px;font-weight:600;color:var(--cor-texto)">Tema claro</span>
+      <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px 16px">
+        <sc-for list="{{ tokens }}" as="t" hint-placeholder-count="16">
+          <div style="display:flex;align-items:center;gap:10px">
+            <span style="width:36px;height:36px;border-radius:8px;flex:none;background:var(--{{ t.n }});border:1px solid var(--cor-borda)"></span>
+            <span style="display:flex;flex-direction:column;min-width:0"><span style="font:500 12.5px 'JetBrains Mono',monospace;color:var(--cor-texto)">--{{ t.n }}</span><span style="font:400 12px 'JetBrains Mono',monospace;color:var(--cor-texto-2)">{{ t.c }} · {{ t.uso }}</span></span>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+    <div data-tema="escuro" style="background:var(--cor-fundo);border:1px solid var(--cor-borda);border-radius:12px;padding:24px;display:flex;flex-direction:column;gap:14px">
+      <span style="font-size:14px;font-weight:600;color:var(--cor-texto)">Tema escuro</span>
+      <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px 16px">
+        <sc-for list="{{ tokens }}" as="t" hint-placeholder-count="16">
+          <div style="display:flex;align-items:center;gap:10px">
+            <span style="width:36px;height:36px;border-radius:8px;flex:none;background:var(--{{ t.n }});border:1px solid var(--cor-borda)"></span>
+            <span style="display:flex;flex-direction:column;min-width:0"><span style="font:500 12.5px 'JetBrains Mono',monospace;color:var(--cor-texto)">--{{ t.n }}</span><span style="font:400 12px 'JetBrains Mono',monospace;color:var(--cor-texto-2)">{{ t.e }} · {{ t.uso }}</span></span>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="semanticas" style="display:flex;flex-direction:column;gap:20px">
+  <h2 style="margin:0;font-size:24px;font-weight:600;letter-spacing:-.01em">Tipos de variável e severidades</h2>
+  <div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:20px">
+    <div data-tema="claro" style="background:var(--cor-superficie);border:1px solid var(--cor-borda);border-radius:12px;padding:24px;display:flex;flex-direction:column;gap:18px;color:var(--cor-texto)">
+      <span style="font-size:14px;font-weight:600">Tema claro</span>
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <sc-for list="{{ tipos }}" as="t" hint-placeholder-count="6">
+          <div style="display:flex;align-items:center;gap:14px">
+            <span style="white-space:nowrap;flex:none;display:inline-flex;align-items:center;gap:6px;height:26px;padding:0 10px 0 8px;border-radius:999px;background:var(--tipo-{{ t.k }}-suave);color:var(--tipo-{{ t.k }});border:1px solid color-mix(in oklab, var(--tipo-{{ t.k }}) 35%, transparent);font-size:13px;font-weight:600;white-space:nowrap;width:190px;box-sizing:border-box"><span aria-hidden="true" style="font-family:'Material Symbols Rounded';font-size:17px;line-height:1">{{ t.icone }}</span>{{ t.nome }}</span>
+            <span style="font:500 12px 'JetBrains Mono',monospace;color:var(--cor-texto-2)">--tipo-{{ t.k }}</span>
+          </div>
+        </sc-for>
+      </div>
+      <div style="height:1px;background:var(--cor-borda)"></div>
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <sc-for list="{{ sevs }}" as="s" hint-placeholder-count="3">
+          <div style="display:flex;align-items:center;gap:14px">
+            <span style="white-space:nowrap;flex:none;display:inline-flex;align-items:center;gap:6px;height:26px;padding:0 10px 0 8px;border-radius:6px;background:var(--sev-{{ s.k }}-suave);color:var(--sev-{{ s.k }});font-size:13px;font-weight:600;width:150px;box-sizing:border-box"><span aria-hidden="true" style="font-family:'Material Symbols Rounded';font-size:18px;line-height:1;font-variation-settings:'FILL' 1">{{ s.icone }}</span>{{ s.nome }}</span>
+            <span style="font:500 12px 'JetBrains Mono',monospace;color:var(--cor-texto-2)">--sev-{{ s.k }}</span>
+            <span style="font-size:13px;color:var(--cor-texto-2)">{{ s.quando }}</span>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+    <div data-tema="escuro" style="background:var(--cor-superficie);border:1px solid var(--cor-borda);border-radius:12px;padding:24px;display:flex;flex-direction:column;gap:18px;color:var(--cor-texto)">
+      <span style="font-size:14px;font-weight:600">Tema escuro</span>
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <sc-for list="{{ tipos }}" as="t" hint-placeholder-count="6">
+          <div style="display:flex;align-items:center;gap:14px">
+            <span style="white-space:nowrap;flex:none;display:inline-flex;align-items:center;gap:6px;height:26px;padding:0 10px 0 8px;border-radius:999px;background:var(--tipo-{{ t.k }}-suave);color:var(--tipo-{{ t.k }});border:1px solid color-mix(in oklab, var(--tipo-{{ t.k }}) 35%, transparent);font-size:13px;font-weight:600;white-space:nowrap;width:190px;box-sizing:border-box"><span aria-hidden="true" style="font-family:'Material Symbols Rounded';font-size:17px;line-height:1">{{ t.icone }}</span>{{ t.nome }}</span>
+            <span style="font-size:13px;color:var(--cor-texto-2)">{{ t.desc }}</span>
+          </div>
+        </sc-for>
+      </div>
+      <div style="height:1px;background:var(--cor-borda)"></div>
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <sc-for list="{{ sevs }}" as="s" hint-placeholder-count="3">
+          <div style="display:flex;align-items:center;gap:14px">
+            <span style="white-space:nowrap;flex:none;display:inline-flex;align-items:center;gap:6px;height:26px;padding:0 10px 0 8px;border-radius:6px;background:var(--sev-{{ s.k }}-suave);color:var(--sev-{{ s.k }});font-size:13px;font-weight:600;width:150px;box-sizing:border-box"><span aria-hidden="true" style="font-family:'Material Symbols Rounded';font-size:18px;line-height:1;font-variation-settings:'FILL' 1">{{ s.icone }}</span>{{ s.nome }}</span>
+            <span style="font-size:13px;color:var(--cor-texto-2)">Ícone: {{ s.forma }}</span>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="graficos" style="display:flex;flex-direction:column;gap:20px">
+  <div style="display:flex;flex-direction:column;gap:6px">
+    <h2 style="margin:0;font-size:24px;font-weight:600;letter-spacing:-.01em">Gráficos (estilo para o Plotly)</h2>
+    <p style="margin:0;max-width:760px;font-size:14px;line-height:1.6;color:var(--cor-texto-2)">Paleta categórica derivada de Okabe-Ito, ajustada para ≥ 3:1 sobre o fundo de cada tema. Sem 3D, sombras ou gradientes. Grade cinza fina, eixos com rótulos de 12 px, título descritivo acima e resumo textual ao lado.</p>
+  </div>
+  <div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:20px">
+    <div data-tema="claro" style="background:var(--cor-superficie);border:1px solid var(--cor-borda);border-radius:12px;padding:24px;display:flex;flex-direction:column;gap:16px;color:var(--cor-texto)">
+      <div style="display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:8px">
+        <sc-for list="{{ graf }}" as="g" hint-placeholder-count="8">
+          <div style="display:flex;flex-direction:column;gap:6px"><span style="height:40px;border-radius:6px;background:var(--graf-{{ g.n }})"></span><span style="font:500 11px 'JetBrains Mono',monospace;color:var(--cor-texto-2)">{{ g.n }} {{ g.c }}</span></div>
+        </sc-for>
+      </div>
+      <dc-import name="Grafico" tipo="histograma" titulo="Distribuição de peso_kg (n = 227)" largura="560" altura="240" hint-size="100%,300px"></dc-import>
+    </div>
+    <div data-tema="escuro" style="background:var(--cor-superficie);border:1px solid var(--cor-borda);border-radius:12px;padding:24px;display:flex;flex-direction:column;gap:16px;color:var(--cor-texto)">
+      <div style="display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:8px">
+        <sc-for list="{{ graf }}" as="g" hint-placeholder-count="8">
+          <div style="display:flex;flex-direction:column;gap:6px"><span style="height:40px;border-radius:6px;background:var(--graf-{{ g.n }})"></span><span style="font:500 11px 'JetBrains Mono',monospace;color:var(--cor-texto-2)">{{ g.n }} {{ g.e }}</span></div>
+        </sc-for>
+      </div>
+      <dc-import name="Grafico" tipo="histograma" titulo="Distribuição de peso_kg (n = 227)" largura="560" altura="240" hint-size="100%,300px"></dc-import>
+    </div>
+  </div>
+  <pre style="margin:0;padding:16px 20px;border-radius:10px;background:var(--cor-superficie-2);border:1px solid var(--cor-borda);font:13px/1.6 'JetBrains Mono',monospace;color:var(--cor-texto);white-space:pre-wrap">layout = { font: { family: "Inter", size: 12, color: var(--cor-texto-2) }, paper_bgcolor/plot_bgcolor: var(--graf-fundo),
+  xaxis/yaxis: { gridcolor: var(--graf-grade), linecolor: var(--graf-eixo), zeroline: false, ticks: "", separatethousands: true },
+  separators: ",.", colorway: [--graf-1 … --graf-8], bargap: 0.04, legend: { orientation: "h", y: 1.08 }, margin: { l: 60, r: 16, t: 32, b: 48 } }</pre>
+</section>
+
+<section id="tipografia" style="display:flex;flex-direction:column;gap:20px">
+  <h2 style="margin:0;font-size:24px;font-weight:600;letter-spacing:-.01em">Tipografia</h2>
+  <div style="background:var(--cor-superficie);border:1px solid var(--cor-borda);border-radius:12px;overflow:hidden">
+    <sc-for list="{{ tipografia }}" as="f" hint-placeholder-count="9">
+      <div style="display:grid;grid-template-columns:220px minmax(0,1fr);gap:24px;align-items:baseline;padding:16px 24px;border-bottom:1px solid var(--cor-borda)">
+        <span style="font:500 12.5px/1.5 'JetBrains Mono',monospace;color:var(--cor-texto-2)">{{ f.n }}<br></br>{{ f.spec }}</span>
+        <span style="font-family:{{ f.fam }};font-size:{{ f.s }}px;font-weight:{{ f.w }};line-height:{{ f.lh }};letter-spacing:{{ f.ls }};font-variant-numeric:tabular-nums">{{ f.ex }}</span>
+      </div>
+    </sc-for>
+  </div>
+</section>
+
+<section id="espaco" style="display:flex;flex-direction:column;gap:20px">
+  <h2 style="margin:0;font-size:24px;font-weight:600;letter-spacing:-.01em">Espaço, raios, elevação e foco</h2>
+  <div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:20px">
+    <div style="background:var(--cor-superficie);border:1px solid var(--cor-borda);border-radius:12px;padding:20px;display:flex;flex-direction:column;gap:8px">
+      <span style="font-size:14px;font-weight:600;margin-bottom:6px">Espaçamento (4/8)</span>
+      <sc-for list="{{ espacos }}" as="e" hint-placeholder-count="9">
+        <div style="display:flex;align-items:center;gap:10px"><span style="font:500 12px 'JetBrains Mono',monospace;color:var(--cor-texto-2);width:92px">--esp-{{ e }}</span><span style="height:10px;width:{{ e }}px;background:var(--cor-primaria);border-radius:2px"></span><span style="font:12px 'JetBrains Mono',monospace;color:var(--cor-texto-2)">{{ e }}</span></div>
+      </sc-for>
+    </div>
+    <div style="background:var(--cor-superficie);border:1px solid var(--cor-borda);border-radius:12px;padding:20px;display:flex;flex-direction:column;gap:12px">
+      <span style="font-size:14px;font-weight:600">Raios</span>
+      <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px">
+        <div style="display:flex;flex-direction:column;gap:6px"><span style="height:52px;border:1.5px solid var(--cor-borda-forte);border-radius:4px"></span><span style="font:12px 'JetBrains Mono',monospace;color:var(--cor-texto-2)">--raio-xs 4 · chips</span></div>
+        <div style="display:flex;flex-direction:column;gap:6px"><span style="height:52px;border:1.5px solid var(--cor-borda-forte);border-radius:6px"></span><span style="font:12px 'JetBrains Mono',monospace;color:var(--cor-texto-2)">--raio-sm 6 · badges</span></div>
+        <div style="display:flex;flex-direction:column;gap:6px"><span style="height:52px;border:1.5px solid var(--cor-borda-forte);border-radius:8px"></span><span style="font:12px 'JetBrains Mono',monospace;color:var(--cor-texto-2)">--raio-md 8 · campos</span></div>
+        <div style="display:flex;flex-direction:column;gap:6px"><span style="height:52px;border:1.5px solid var(--cor-borda-forte);border-radius:12px"></span><span style="font:12px 'JetBrains Mono',monospace;color:var(--cor-texto-2)">--raio-lg 12 · cards</span></div>
+      </div>
+    </div>
+    <div style="background:var(--cor-fundo);border:1px solid var(--cor-borda);border-radius:12px;padding:20px;display:flex;flex-direction:column;gap:14px">
+      <span style="font-size:14px;font-weight:600">Elevação</span>
+      <div style="height:44px;border-radius:10px;background:var(--cor-superficie);box-shadow:var(--sombra-1);display:flex;align-items:center;padding:0 12px;font:12px 'JetBrains Mono',monospace;color:var(--cor-texto-2)">--sombra-1 · cards</div>
+      <div style="height:44px;border-radius:10px;background:var(--cor-superficie-elevada);box-shadow:var(--sombra-2);display:flex;align-items:center;padding:0 12px;font:12px 'JetBrains Mono',monospace;color:var(--cor-texto-2)">--sombra-2 · menus, toast</div>
+      <div style="height:44px;border-radius:10px;background:var(--cor-superficie-elevada);box-shadow:var(--sombra-3);display:flex;align-items:center;padding:0 12px;font:12px 'JetBrains Mono',monospace;color:var(--cor-texto-2)">--sombra-3 · drawer</div>
+    </div>
+    <div style="background:var(--cor-superficie);border:1px solid var(--cor-borda);border-radius:12px;padding:20px;display:flex;flex-direction:column;gap:14px">
+      <span style="font-size:14px;font-weight:600">Foco visível</span>
+      <span style="align-self:flex-start;white-space:nowrap;flex:none;display:inline-flex;align-items:center;height:40px;padding:0 16px;border-radius:8px;background:var(--cor-primaria);color:var(--cor-sobre-primaria);font-size:14px;font-weight:600;outline:2px solid var(--cor-foco);outline-offset:2px">Botão em foco</span>
+      <span style="align-self:stretch;display:flex;align-items:center;height:40px;padding:0 12px;border-radius:8px;border:1px solid var(--cor-foco);background:var(--cor-superficie);font-size:14px;outline:2px solid var(--cor-foco);outline-offset:1px">Campo em foco</span>
+      <p style="margin:0;font-size:13px;line-height:1.5;color:var(--cor-texto-2)">Anel de 2 px em --cor-foco, afastado 2 px. Só aparece com :focus-visible (teclado).</p>
+    </div>
+  </div>
+</section>
+
+<section id="componentes" style="display:flex;flex-direction:column;gap:24px">
+  <h2 style="margin:0;font-size:24px;font-weight:600;letter-spacing:-.01em">Componentes</h2>
+
+  <div style="background:var(--cor-superficie);border:1px solid var(--cor-borda);border-radius:12px;padding:24px;display:flex;flex-direction:column;gap:16px">
+    <span style="font-size:16px;font-weight:600">Botão</span>
+    <div style="display:grid;grid-template-columns:100px repeat(6,minmax(0,1fr));gap:14px 12px;align-items:center">
+      <span></span>
+      <span style="font-size:12px;color:var(--cor-texto-2)">Padrão</span><span style="font-size:12px;color:var(--cor-texto-2)">Hover</span><span style="font-size:12px;color:var(--cor-texto-2)">Foco</span><span style="font-size:12px;color:var(--cor-texto-2)">Ativo</span><span style="font-size:12px;color:var(--cor-texto-2)">Desabilitado</span><span style="font-size:12px;color:var(--cor-texto-2)">Carregando</span>
+
+      <span style="font-size:13px;font-weight:500">Primário</span>
+      <span style="justify-self:start;white-space:nowrap;flex:none;display:inline-flex;align-items:center;gap:8px;height:40px;padding:0 16px;border-radius:8px;background:var(--cor-primaria);color:var(--cor-sobre-primaria);font-size:14px;font-weight:600">Continuar</span>
+      <span style="justify-self:start;white-space:nowrap;flex:none;display:inline-flex;align-items:center;gap:8px;height:40px;padding:0 16px;border-radius:8px;background:var(--cor-primaria-hover);color:var(--cor-sobre-primaria);font-size:14px;font-weight:600">Continuar</span>
+      <span style="justify-self:start;white-space:nowrap;flex:none;display:inline-flex;align-items:center;gap:8px;height:40px;padding:0 16px;border-radius:8px;background:var(--cor-primaria);color:var(--cor-sobre-primaria);font-size:14px;font-weight:600;outline:2px solid var(--cor-foco);outline-offset:2px">Continuar</span>
+      <span style="justify-self:start;white-space:nowrap;flex:none;display:inline-flex;align-items:center;gap:8px;height:40px;padding:0 16px;border-radius:8px;background:var(--cor-primaria-ativa);color:var(--cor-sobre-primaria);font-size:14px;font-weight:600">Continuar</span>
+      <span style="justify-self:start;white-space:nowrap;flex:none;display:inline-flex;align-items:center;gap:8px;height:40px;padding:0 16px;border-radius:8px;background:var(--cor-superficie-2);color:var(--cor-texto-desab);font-size:14px;font-weight:600">Continuar</span>
+      <span style="justify-self:start;white-space:nowrap;flex:none;display:inline-flex;align-items:center;gap:8px;height:40px;padding:0 16px;border-radius:8px;background:var(--cor-primaria);color:var(--cor-sobre-primaria);font-size:14px;font-weight:600;opacity:.85"><span aria-hidden="true" style="width:14px;height:14px;border-radius:50%;border:2px solid currentColor;border-right-color:transparent;box-sizing:border-box"></span>Calculando…</span>
+
+      <span style="font-size:13px;font-weight:500">Secundário</span>
+      <span style="justify-self:start;white-space:nowrap;flex:none;display:inline-flex;align-items:center;height:40px;padding:0 16px;border-radius:8px;border:1px solid var(--cor-borda-forte);background:var(--cor-superficie);color:var(--cor-texto);font-size:14px;font-weight:500;box-sizing:border-box">Baixar CSV</span>
+      <span style="justify-self:start;white-space:nowrap;flex:none;display:inline-flex;align-items:center;height:40px;padding:0 16px;border-radius:8px;border:1px solid var(--cor-borda-forte);background:var(--cor-superficie-2);color:var(--cor-texto);font-size:14px;font-weight:500;box-sizing:border-box">Baixar CSV</span>
+      <span style="justify-self:start;white-space:nowrap;flex:none;display:inline-flex;align-items:center;height:40px;padding:0 16px;border-radius:8px;border:1px solid var(--cor-borda-forte);background:var(--cor-superficie);color:var(--cor-texto);font-size:14px;font-weight:500;box-sizing:border-box;outline:2px solid var(--cor-foco);outline-offset:2px">Baixar CSV</span>
+      <span style="justify-self:start;white-space:nowrap;flex:none;display:inline-flex;align-items:center;height:40px;padding:0 16px;border-radius:8px;border:1px solid var(--cor-texto-2);background:var(--cor-borda);color:var(--cor-texto);font-size:14px;font-weight:500;box-sizing:border-box">Baixar CSV</span>
+      <span style="justify-self:start;white-space:nowrap;flex:none;display:inline-flex;align-items:center;height:40px;padding:0 16px;border-radius:8px;border:1px solid var(--cor-borda);background:var(--cor-superficie);color:var(--cor-texto-desab);font-size:14px;font-weight:500;box-sizing:border-box">Baixar CSV</span>
+      <span style="justify-self:start;white-space:nowrap;flex:none;display:inline-flex;align-items:center;gap:8px;height:40px;padding:0 16px;border-radius:8px;border:1px solid var(--cor-borda-forte);background:var(--cor-superficie);color:var(--cor-texto-2);font-size:14px;font-weight:500;box-sizing:border-box"><span aria-hidden="true" style="width:14px;height:14px;border-radius:50%;border:2px solid currentColor;border-right-color:transparent;box-sizing:border-box"></span>Gerando…</span>
+
+      <span style="font-size:13px;font-weight:500">Fantasma</span>
+      <span style="justify-self:start;white-space:nowrap;flex:none;display:inline-flex;align-items:center;height:40px;padding:0 12px;border-radius:8px;color:var(--cor-primaria);font-size:14px;font-weight:500">Ver fórmula</span>
+      <span style="justify-self:start;white-space:nowrap;flex:none;display:inline-flex;align-items:center;height:40px;padding:0 12px;border-radius:8px;background:var(--cor-primaria-suave);color:var(--cor-primaria);font-size:14px;font-weight:500">Ver fórmula</span>
+      <span style="justify-self:start;white-space:nowrap;flex:none;display:inline-flex;align-items:center;height:40px;padding:0 12px;border-radius:8px;color:var(--cor-primaria);font-size:14px;font-weight:500;outline:2px solid var(--cor-foco);outline-offset:2px">Ver fórmula</span>
+      <span style="justify-self:start;white-space:nowrap;flex:none;display:inline-flex;align-items:center;height:40px;padding:0 12px;border-radius:8px;background:color-mix(in oklab, var(--cor-primaria) 18%, var(--cor-superficie));color:var(--cor-primaria-ativa);font-size:14px;font-weight:500">Ver fórmula</span>
+      <span style="justify-self:start;white-space:nowrap;flex:none;display:inline-flex;align-items:center;height:40px;padding:0 12px;border-radius:8px;color:var(--cor-texto-desab);font-size:14px;font-weight:500">Ver fórmula</span>
+      <span style="justify-self:start;white-space:nowrap;flex:none;display:inline-flex;align-items:center;gap:8px;height:40px;padding:0 12px;border-radius:8px;color:var(--cor-primaria);font-size:14px;font-weight:500"><span aria-hidden="true" style="width:14px;height:14px;border-radius:50%;border:2px solid currentColor;border-right-color:transparent;box-sizing:border-box"></span>Abrindo…</span>
+
+      <span style="font-size:13px;font-weight:500">Perigo</span>
+      <span style="justify-self:start;white-space:nowrap;flex:none;display:inline-flex;align-items:center;height:40px;padding:0 16px;border-radius:8px;border:1px solid var(--cor-erro);color:var(--cor-erro);background:var(--cor-superficie);font-size:14px;font-weight:600;box-sizing:border-box">Desfazer tudo</span>
+      <span style="justify-self:start;white-space:nowrap;flex:none;display:inline-flex;align-items:center;height:40px;padding:0 16px;border-radius:8px;border:1px solid var(--cor-erro);color:var(--cor-erro);background:var(--cor-erro-suave);font-size:14px;font-weight:600;box-sizing:border-box">Desfazer tudo</span>
+      <span style="justify-self:start;white-space:nowrap;flex:none;display:inline-flex;align-items:center;height:40px;padding:0 16px;border-radius:8px;border:1px solid var(--cor-erro);color:var(--cor-erro);background:var(--cor-superficie);font-size:14px;font-weight:600;box-sizing:border-box;outline:2px solid var(--cor-foco);outline-offset:2px">Desfazer tudo</span>
+      <span style="justify-self:start;white-space:nowrap;flex:none;display:inline-flex;align-items:center;height:40px;padding:0 16px;border-radius:8px;background:var(--cor-erro);color:var(--cor-superficie);font-size:14px;font-weight:600">Desfazer tudo</span>
+      <span style="justify-self:start;white-space:nowrap;flex:none;display:inline-flex;align-items:center;height:40px;padding:0 16px;border-radius:8px;border:1px solid var(--cor-borda);color:var(--cor-texto-desab);background:var(--cor-superficie);font-size:14px;font-weight:600;box-sizing:border-box">Desfazer tudo</span>
+      <span style="justify-self:start;white-space:nowrap;flex:none;display:inline-flex;align-items:center;gap:8px;height:40px;padding:0 16px;border-radius:8px;border:1px solid var(--cor-erro);color:var(--cor-erro);background:var(--cor-superficie);font-size:14px;font-weight:600;box-sizing:border-box"><span aria-hidden="true" style="width:14px;height:14px;border-radius:50%;border:2px solid currentColor;border-right-color:transparent;box-sizing:border-box"></span>Desfazendo…</span>
+    </div>
+  </div>
+
+  <div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:24px">
+    <div style="background:var(--cor-superficie);border:1px solid var(--cor-borda);border-radius:12px;padding:24px;display:flex;flex-direction:column;gap:16px">
+      <span style="font-size:16px;font-weight:600">Campo de texto / número</span>
+      <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px">
+        <label style="display:flex;flex-direction:column;gap:6px"><span style="font-size:13px;font-weight:500">Padrão</span><span style="height:40px;display:flex;align-items:center;padding:0 12px;border-radius:8px;border:1px solid var(--cor-borda-forte);background:var(--cor-superficie);font:14px 'JetBrains Mono',monospace;color:var(--cor-texto-2)">ex.: 75</span></label>
+        <label style="display:flex;flex-direction:column;gap:6px"><span style="font-size:13px;font-weight:500">Hover</span><span style="height:40px;display:flex;align-items:center;padding:0 12px;border-radius:8px;border:1px solid var(--cor-texto-2);background:var(--cor-superficie);font:14px 'JetBrains Mono',monospace">75</span></label>
+        <label style="display:flex;flex-direction:column;gap:6px"><span style="font-size:13px;font-weight:500">Foco</span><span style="height:40px;display:flex;align-items:center;padding:0 12px;border-radius:8px;border:1px solid var(--cor-foco);outline:2px solid var(--cor-foco);outline-offset:1px;background:var(--cor-superficie);font:14px 'JetBrains Mono',monospace">75,0<span style="width:1px;height:18px;background:var(--cor-texto);margin-left:1px"></span></span></label>
+        <label style="display:flex;flex-direction:column;gap:6px"><span style="font-size:13px;font-weight:500">Desabilitado</span><span style="height:40px;display:flex;align-items:center;padding:0 12px;border-radius:8px;border:1px solid var(--cor-borda);background:var(--cor-superficie-2);font:14px 'JetBrains Mono',monospace;color:var(--cor-texto-desab)">—</span></label>
+        <label style="display:flex;flex-direction:column;gap:6px;grid-column:span 2"><span style="font-size:13px;font-weight:500">Erro · Valor mínimo (kg)</span><span style="height:40px;display:flex;align-items:center;padding:0 12px;border-radius:8px;border:2px solid var(--cor-erro);background:var(--cor-superficie);font:14px 'JetBrains Mono',monospace">120</span><span style="display:flex;align-items:center;gap:6px;font-size:13px;color:var(--cor-erro)"><span aria-hidden="true" style="font-family:'Material Symbols Rounded';font-size:16px;line-height:1;font-variation-settings:'FILL' 1">error</span>O mínimo precisa ser menor que o máximo (110). Ajuste um dos dois.</span></label>
+      </div>
+    </div>
+    <div style="background:var(--cor-superficie);border:1px solid var(--cor-borda);border-radius:12px;padding:24px;display:flex;flex-direction:column;gap:18px">
+      <span style="font-size:16px;font-weight:600">Select · Segmented control · Abas</span>
+      <div style="display:flex;gap:16px;align-items:flex-start;flex-wrap:wrap">
+        <div style="display:flex;flex-direction:column;gap:6px;width:240px"><span style="font-size:13px;font-weight:500">Coluna</span>
+          <span style="height:40px;display:flex;align-items:center;gap:8px;padding:0 10px 0 12px;border-radius:8px;border:1px solid var(--cor-borda-forte);font:500 14px 'JetBrains Mono',monospace"><span style="flex:1">peso_kg</span><span aria-hidden="true" style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1;color:var(--cor-texto-2)">expand_more</span></span>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:6px;width:240px"><span style="font-size:13px;font-weight:500">Aberto</span>
+          <div style="border-radius:8px;border:1px solid var(--cor-borda);background:var(--cor-superficie-elevada);box-shadow:var(--sombra-2);padding:4px;display:flex;flex-direction:column">
+            <span style="height:36px;display:flex;align-items:center;padding:0 10px;border-radius:6px;font-size:14px">Qualitativa nominal</span>
+            <span style="height:36px;display:flex;align-items:center;padding:0 10px;border-radius:6px;font-size:14px;background:var(--cor-primaria-suave);color:var(--cor-primaria);font-weight:500;justify-content:space-between">Quantitativa contínua<span aria-hidden="true" style="font-family:'Material Symbols Rounded';font-size:18px;line-height:1">check</span></span>
+            <span style="height:36px;display:flex;align-items:center;padding:0 10px;border-radius:6px;font-size:14px;color:var(--cor-texto-desab)">Binária · precisa de 2 valores</span>
+          </div>
+        </div>
+      </div>
+      <div role="radiogroup" style="align-self:flex-start;display:flex;padding:3px;border-radius:8px;background:var(--cor-superficie-2);border:1px solid var(--cor-borda);gap:2px">
+        <span role="radio" aria-checked="true" style="height:32px;display:flex;align-items:center;padding:0 14px;border-radius:6px;background:var(--cor-superficie);box-shadow:var(--sombra-1);font-size:14px;font-weight:600">Quartil</span>
+        <span role="radio" style="height:32px;display:flex;align-items:center;padding:0 14px;border-radius:6px;font-size:14px;color:var(--cor-texto-2)">Decil</span>
+        <span role="radio" style="height:32px;display:flex;align-items:center;padding:0 14px;border-radius:6px;font-size:14px;color:var(--cor-texto-2);outline:2px solid var(--cor-foco)">Percentil</span>
+      </div>
+      <div role="tablist" style="display:flex;gap:4px;border-bottom:1px solid var(--cor-borda)">
+        <span role="tab" aria-selected="true" style="height:44px;display:flex;align-items:center;padding:0 12px;font-size:14px;font-weight:600;color:var(--cor-primaria);box-shadow:inset 0 -2px 0 var(--cor-primaria)">Frequências</span>
+        <span role="tab" style="height:44px;display:flex;align-items:center;padding:0 12px;font-size:14px;color:var(--cor-texto-2)">Tendência central</span>
+        <span role="tab" style="height:44px;display:flex;align-items:center;padding:0 12px;font-size:14px;color:var(--cor-texto);background:var(--cor-superficie-2);border-radius:6px 6px 0 0">Dispersão (hover)</span>
+        <span role="tab" aria-disabled="true" style="height:44px;display:flex;align-items:center;gap:4px;padding:0 12px;font-size:14px;color:var(--cor-texto-desab)">Forma<span aria-hidden="true" style="font-family:'Material Symbols Rounded';font-size:16px;line-height:1">lock</span></span>
+      </div>
+    </div>
+  </div>
+
+  <div style="display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:24px">
+    <div style="background:var(--cor-superficie);border:1px solid var(--cor-borda);border-radius:12px;padding:24px;display:flex;flex-direction:column;gap:16px">
+      <span style="font-size:16px;font-weight:600">Card de métrica</span>
+      <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px">
+        <div style="border:1px solid var(--cor-borda);border-radius:12px;padding:18px;display:flex;flex-direction:column;gap:6px;background:var(--cor-superficie)">
+          <span style="font-size:13px;font-weight:500;color:var(--cor-texto-2)">Média</span>
+          <span style="font:600 32px/1.1 'JetBrains Mono',monospace;letter-spacing:-.02em">70,3<span style="font-size:16px;font-weight:500;color:var(--cor-texto-2);margin-left:4px">kg</span></span>
+          <span style="font-size:14px;line-height:1.5;text-wrap:pretty">Em média, as pessoas pesam 70,3 kg.</span>
+          <span style="font-size:14px;font-weight:500;color:var(--cor-primaria);display:flex;align-items:center;gap:4px;margin-top:4px">Ver fórmula<span aria-hidden="true" style="font-family:'Material Symbols Rounded';font-size:18px;line-height:1">expand_more</span></span>
+        </div>
+        <div style="border:1px solid var(--cor-borda);border-radius:12px;padding:18px;display:flex;flex-direction:column;gap:6px;background:var(--cor-superficie)">
+          <span style="font-size:13px;font-weight:500;color:var(--cor-texto-2)">Média</span>
+          <span style="font:600 32px/1.1 'JetBrains Mono',monospace;letter-spacing:-.02em">70,3<span style="font-size:16px;font-weight:500;color:var(--cor-texto-2);margin-left:4px">kg</span></span>
+          <span style="font-size:14px;line-height:1.5">Em média, as pessoas pesam 70,3 kg.</span>
+          <span style="font-size:14px;font-weight:500;color:var(--cor-primaria);display:flex;align-items:center;gap:4px;margin-top:4px">Ocultar fórmula<span aria-hidden="true" style="font-family:'Material Symbols Rounded';font-size:18px;line-height:1">expand_less</span></span>
+          <div style="padding:10px 12px;border-radius:8px;background:var(--cor-superficie-2);font:500 15px 'JetBrains Mono',monospace;text-align:center">x̄ = Σxᵢ / n = 15.958,1 / 227</div>
+        </div>
+        <div style="border:1px dashed var(--cor-borda-forte);border-radius:12px;padding:18px;display:flex;flex-direction:column;gap:6px;background:var(--cor-superficie-2)">
+          <span style="font-size:13px;font-weight:500;color:var(--cor-texto-2);display:flex;align-items:center;gap:6px">Média<span style="font-size:11px;font-weight:600;padding:1px 6px;border-radius:4px;border:1px solid var(--cor-borda-forte)">Não se aplica</span></span>
+          <span style="font:600 32px/1.1 'JetBrains Mono',monospace;color:var(--cor-texto-desab)">—</span>
+          <span style="font-size:14px;line-height:1.5;color:var(--cor-texto-2);text-wrap:pretty">Média não se aplica a categorias sem número: cidades não podem ser somadas.</span>
+        </div>
+      </div>
+      <span style="font-size:16px;font-weight:600;margin-top:8px">Régua de separatrizes</span>
+      <div style="display:flex;flex-direction:column;gap:6px;padding:8px 4px 0">
+        <div style="position:relative;height:56px">
+          <div style="position:absolute;left:0;right:0;top:26px;height:8px;border-radius:4px;background:var(--cor-superficie-2);border:1px solid var(--cor-borda)"></div>
+          <div style="position:absolute;left:52.95%;width:16.5%;top:26px;height:8px;background:color-mix(in oklab, var(--cor-primaria) 30%, var(--cor-superficie))"></div>
+          <div style="position:absolute;left:37.3%;top:20px;width:2px;height:20px;background:var(--cor-texto-2)"></div>
+          <div style="position:absolute;left:52.95%;top:20px;width:2px;height:20px;background:var(--cor-texto-2)"></div>
+          <div style="position:absolute;left:69.45%;top:20px;width:2px;height:20px;background:var(--cor-texto-2)"></div>
+          <div style="position:absolute;left:63.9%;top:0;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center"><span style="font:600 12px 'JetBrains Mono',monospace;color:var(--cor-primaria)">75</span><span style="width:14px;height:14px;margin-top:2px;border-radius:50%;background:var(--cor-primaria);border:2px solid var(--cor-superficie);box-sizing:border-box;box-shadow:0 0 0 1px var(--cor-primaria);transform:translateY(5px)"></span></div>
+        </div>
+        <div style="position:relative;height:18px;font:500 12px 'JetBrains Mono',monospace;color:var(--cor-texto-2)">
+          <span style="position:absolute;left:0">mín 43,8</span><span style="position:absolute;left:37.3%;transform:translateX(-50%)">Q1 62,1</span><span style="position:absolute;left:52.95%;transform:translateX(-50%)">Q2 69,8</span><span style="position:absolute;left:69.45%;transform:translateX(-50%)">Q3 77,9</span><span style="position:absolute;right:0">máx 92,9</span>
+        </div>
+      </div>
+    </div>
+    <div style="background:var(--cor-superficie);border:1px solid var(--cor-borda);border-radius:12px;padding:24px;display:flex;flex-direction:column;gap:16px">
+      <span style="font-size:16px;font-weight:600">Área de upload</span>
+      <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px">
+        <div style="border:2px dashed var(--cor-borda-forte);border-radius:12px;padding:22px 12px;display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center"><span aria-hidden="true" style="font-family:'Material Symbols Rounded';font-size:28px;line-height:1;color:var(--cor-texto-2)">upload_file</span><span style="font-size:13px;font-weight:500">Padrão</span></div>
+        <div style="border:2px dashed var(--cor-primaria);background:var(--cor-primaria-suave);border-radius:12px;padding:22px 12px;display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center;color:var(--cor-primaria)"><span aria-hidden="true" style="font-family:'Material Symbols Rounded';font-size:28px;line-height:1">file_download</span><span style="font-size:13px;font-weight:600">Solte para enviar</span></div>
+        <div style="border:2px solid var(--cor-borda);border-radius:12px;padding:18px 14px;display:flex;flex-direction:column;gap:8px"><span style="font-size:13px;font-weight:500">Enviando… 64%</span><span style="height:6px;border-radius:3px;background:var(--cor-superficie-2);overflow:hidden"><span style="display:block;width:64%;height:100%;background:var(--cor-primaria)"></span></span></div>
+        <div style="border:2px dashed var(--cor-erro);background:var(--cor-erro-suave);border-radius:12px;padding:18px 12px;display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center;color:var(--cor-erro)"><span aria-hidden="true" style="font-family:'Material Symbols Rounded';font-size:24px;line-height:1;font-variation-settings:'FILL' 1">error</span><span style="font-size:13px;font-weight:600">Formato não aceito</span></div>
+      </div>
+      <span style="font-size:16px;font-weight:600;margin-top:4px">Chip de tipo · estados</span>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+        <span style="white-space:nowrap;flex:none;display:inline-flex;align-items:center;gap:6px;height:26px;padding:0 10px 0 8px;border-radius:999px;background:var(--tipo-continua-suave);color:var(--tipo-continua);border:1px solid color-mix(in oklab, var(--tipo-continua) 35%, transparent);font-size:13px;font-weight:600"><span aria-hidden="true" style="font-family:'Material Symbols Rounded';font-size:17px;line-height:1">straighten</span>Contínua</span>
+        <span style="white-space:nowrap;flex:none;display:inline-flex;align-items:center;gap:6px;height:26px;padding:0 10px 0 8px;border-radius:999px;background:var(--tipo-continua-suave);color:var(--tipo-continua);border:1px solid var(--tipo-continua);font-size:13px;font-weight:600;outline:2px solid var(--cor-foco);outline-offset:2px"><span aria-hidden="true" style="font-family:'Material Symbols Rounded';font-size:17px;line-height:1">straighten</span>Contínua</span>
+        <span style="white-space:nowrap;flex:none;display:inline-flex;align-items:center;gap:6px;height:26px;padding:0 8px 0 8px;border-radius:999px;background:var(--tipo-identificador-suave);color:var(--tipo-identificador);border:1px dashed var(--tipo-identificador);font-size:13px;font-weight:600"><span aria-hidden="true" style="font-family:'Material Symbols Rounded';font-size:17px;line-height:1">fingerprint</span>Identificador · ignorada</span>
+        <span style="white-space:nowrap;flex:none;display:inline-flex;align-items:center;gap:6px;height:26px;padding:0 10px 0 8px;border-radius:999px;background:var(--tipo-ordinal-suave);color:var(--tipo-ordinal);border:1px solid color-mix(in oklab, var(--tipo-ordinal) 35%, transparent);font-size:13px;font-weight:600"><span aria-hidden="true" style="font-family:'Material Symbols Rounded';font-size:17px;line-height:1">stairs</span>Ordinal<span style="font-size:11px;font-weight:500;padding:0 5px;border-radius:4px;background:var(--cor-superficie);color:var(--cor-texto-2)">corrigido</span></span>
+      </div>
+    </div>
+  </div>
+
+  <div style="background:var(--cor-superficie);border:1px solid var(--cor-borda);border-radius:12px;padding:24px;display:flex;flex-direction:column;gap:16px">
+    <span style="font-size:16px;font-weight:600">Tabela de dados</span>
+    <div style="border:1px solid var(--cor-borda);border-radius:10px;overflow:hidden">
+      <table style="width:100%;border-collapse:collapse;font-size:14px;font-variant-numeric:tabular-nums">
+        <thead style="position:sticky;top:0"><tr style="background:var(--cor-superficie-2)">
+          <th scope="col" style="text-align:right;padding:10px 14px;font-size:12.5px;font-weight:600;color:var(--cor-texto-2);border-bottom:1px solid var(--cor-borda-forte);width:70px">linha</th>
+          <th scope="col" style="text-align:left;padding:10px 14px;font:600 12.5px 'JetBrains Mono',monospace;color:var(--cor-texto);border-bottom:1px solid var(--cor-borda-forte)">sexo</th>
+          <th scope="col" style="text-align:right;padding:10px 14px;font:600 12.5px 'JetBrains Mono',monospace;color:var(--cor-texto);border-bottom:1px solid var(--cor-borda-forte)">idade</th>
+          <th scope="col" style="text-align:right;padding:10px 14px;font:600 12.5px 'JetBrains Mono',monospace;color:var(--cor-texto);border-bottom:1px solid var(--cor-borda-forte)">altura_m</th>
+          <th scope="col" style="text-align:right;padding:10px 14px;font:600 12.5px 'JetBrains Mono',monospace;color:var(--cor-texto);border-bottom:1px solid var(--cor-borda-forte)">peso_kg</th>
+          <th scope="col" style="text-align:left;padding:10px 14px;font:600 12.5px 'JetBrains Mono',monospace;color:var(--cor-texto);border-bottom:1px solid var(--cor-borda-forte)">cidade</th>
+        </tr></thead>
+        <tbody>
+          <tr><td style="text-align:right;padding:9px 14px;color:var(--cor-texto-2)">119</td><td style="padding:9px 14px">F</td><td style="text-align:right;padding:9px 14px">34</td><td style="text-align:right;padding:9px 14px">1,64</td><td style="text-align:right;padding:9px 14px">61,8</td><td style="padding:9px 14px">Goiânia</td></tr>
+          <tr style="background:var(--cor-destaque-linha);box-shadow:inset 3px 0 0 var(--sev-atencao)"><td style="text-align:right;padding:9px 14px;font-weight:600">120</td><td style="padding:9px 14px">M</td><td style="text-align:right;padding:9px 14px">41</td><td style="text-align:right;padding:9px 14px">1,78</td><td style="text-align:right;padding:9px 14px;font-weight:600">70,0</td><td style="padding:9px 14px">Anápolis</td></tr>
+          <tr style="background:var(--cor-destaque-linha);box-shadow:inset 3px 0 0 var(--sev-atencao)"><td style="text-align:right;padding:9px 14px;font-weight:600">121</td><td style="padding:9px 14px">F</td><td style="text-align:right;padding:9px 14px">29</td><td style="text-align:right;padding:9px 14px">1,61</td><td style="text-align:right;padding:9px 14px;font-weight:600">75,0</td><td style="padding:9px 14px">Goiânia</td></tr>
+          <tr style="background:var(--cor-zebra)"><td style="text-align:right;padding:9px 14px;color:var(--cor-texto-2)">122</td><td style="padding:9px 14px">M</td><td style="text-align:right;padding:9px 14px">52</td><td style="text-align:right;padding:9px 14px">1,73</td><td style="text-align:right;padding:9px 14px">83,4</td><td style="padding:9px 14px">Rio Verde</td></tr>
+          <tr><td style="text-align:right;padding:9px 14px;color:var(--cor-texto-2)">123</td><td style="padding:9px 14px">F</td><td style="text-align:right;padding:9px 14px">23</td><td style="text-align:right;padding:9px 14px">1,58</td><td style="text-align:right;padding:9px 14px;color:var(--cor-texto-2);font-style:italic">vazio</td><td style="padding:9px 14px">Aparecida de Goiânia</td></tr>
+        </tbody>
+      </table>
+      <div style="display:flex;align-items:center;gap:12px;padding:10px 14px;border-top:1px solid var(--cor-borda);font-size:13px;color:var(--cor-texto-2)">
+        <span style="flex:1">Linhas 119–123 de 230 · <span style="white-space:nowrap;flex:none;display:inline-flex;align-items:center;gap:4px;color:var(--sev-atencao);font-weight:500"><span aria-hidden="true" style="font-family:'Material Symbols Rounded';font-size:16px;line-height:1;font-variation-settings:'FILL' 1">warning</span>2 linhas destacadas</span></span>
+        <span style="width:32px;height:32px;display:grid;place-items:center;border-radius:6px;border:1px solid var(--cor-borda)"><span aria-label="Página anterior" style="font-family:'Material Symbols Rounded';font-size:18px;line-height:1">chevron_left</span></span>
+        <span style="font-variant-numeric:tabular-nums">24 / 46</span>
+        <span style="width:32px;height:32px;display:grid;place-items:center;border-radius:6px;border:1px solid var(--cor-borda-forte);color:var(--cor-texto)"><span aria-label="Próxima página" style="font-family:'Material Symbols Rounded';font-size:18px;line-height:1">chevron_right</span></span>
+      </div>
+    </div>
+  </div>
+
+  <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px">
+    <div style="background:var(--cor-superficie);border:1px solid var(--cor-borda);border-radius:12px;padding:24px;display:flex;flex-direction:column;gap:14px">
+      <span style="font-size:16px;font-weight:600">Toast</span>
+      <div role="status" style="display:flex;gap:12px;align-items:flex-start;padding:14px 16px;border-radius:10px;background:var(--cor-superficie-elevada);border:1px solid var(--cor-borda);box-shadow:var(--sombra-2)">
+        <span aria-hidden="true" style="font-family:'Material Symbols Rounded';font-size:22px;line-height:1;color:var(--cor-sucesso);font-variation-settings:'FILL' 1">check_circle</span>
+        <div style="flex:1;display:flex;flex-direction:column;gap:2px"><span style="font-size:14px;font-weight:600">Limpeza aplicada: 12 linhas removidas.</span><span style="font-size:13px;color:var(--cor-texto-2)">Você pode desfazer na etapa Limpeza.</span></div>
+        <span aria-label="Fechar" style="font-family:'Material Symbols Rounded';font-size:18px;line-height:1;color:var(--cor-texto-2)">close</span>
+      </div>
+      <div role="alert" style="display:flex;gap:12px;align-items:flex-start;padding:14px 16px;border-radius:10px;background:var(--cor-superficie-elevada);border:1px solid var(--cor-borda);box-shadow:var(--sombra-2)">
+        <span aria-hidden="true" style="font-family:'Material Symbols Rounded';font-size:22px;line-height:1;color:var(--cor-erro);font-variation-settings:'FILL' 1">error</span>
+        <div style="flex:1;display:flex;flex-direction:column;gap:4px"><span style="font-size:14px;font-weight:600">Não conseguimos gerar o relatório.</span><span style="font-size:14px;font-weight:500;color:var(--cor-primaria)">Tentar de novo</span></div>
+      </div>
+      <span style="font-size:16px;font-weight:600;margin-top:6px">Tooltip</span>
+      <div style="display:flex;flex-direction:column;align-items:flex-start;gap:6px">
+        <div style="position:relative;max-width:260px;padding:8px 12px;border-radius:6px;background:var(--cor-texto);color:var(--cor-superficie);font-size:13px;line-height:1.45">CV: quanto o desvio representa da média. Acima de 30% é variação alta.</div>
+        <span style="margin-left:16px;width:0;height:0;border-left:6px solid transparent;border-right:6px solid transparent;border-top:6px solid var(--cor-texto);margin-top:-6px"></span>
+        <span style="white-space:nowrap;flex:none;display:inline-flex;align-items:center;gap:4px;font-size:13px;color:var(--cor-texto-2)">CV <span aria-label="O que é CV?" style="font-family:'Material Symbols Rounded';font-size:16px;line-height:1">help</span></span>
+      </div>
+    </div>
+    <div style="background:var(--cor-superficie);border:1px solid var(--cor-borda);border-radius:12px;padding:24px;display:flex;flex-direction:column;gap:14px">
+      <span style="font-size:16px;font-weight:600">Accordion · Banner · Fórmula</span>
+      <div style="border:1px solid var(--cor-borda);border-radius:10px">
+        <div style="display:flex;align-items:center;gap:8px;height:44px;padding:0 14px;font-size:14px;font-weight:500;color:var(--cor-texto-2)"><span aria-hidden="true" style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1">chevron_right</span>Detalhes técnicos</div>
+        <div style="border-top:1px solid var(--cor-borda);display:flex;align-items:center;gap:8px;height:44px;padding:0 14px;font-size:14px;font-weight:500"><span aria-hidden="true" style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1">expand_more</span>Detalhes técnicos</div>
+        <div style="padding:0 14px 14px 42px;font:13px/1.6 'JetBrains Mono',monospace;color:var(--cor-texto-2)">Shapiro-Wilk · W = 0,992 · p = 0,21</div>
+      </div>
+      <div role="note" style="display:flex;gap:10px;padding:12px 14px;border-radius:10px;background:var(--sev-atencao-suave);border:1px solid var(--sev-atencao-borda)">
+        <span aria-hidden="true" style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1;color:var(--sev-atencao);font-variation-settings:'FILL' 1">warning</span>
+        <p style="margin:0;font-size:14px;line-height:1.5"><strong style="font-weight:600">Fora da faixa observada.</strong> X = 2,10 está acima do maior valor (1,96). A previsão pode não ser confiável.</p>
+      </div>
+      <div style="padding:16px;border-radius:10px;background:var(--cor-superficie-2);display:flex;flex-direction:column;gap:8px">
+        <span style="font-size:12px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--cor-texto-2)">Desvio padrão amostral</span>
+        <span style="font:500 18px 'JetBrains Mono',monospace;text-align:center;padding:6px 0">s = √[ Σ(xᵢ − x̄)² / (n − 1) ]</span>
+        <span style="font:13px 'JetBrains Mono',monospace;color:var(--cor-texto-2);text-align:center">= √(28.348,2 / 226) = 11,2</span>
+      </div>
+    </div>
+    <div style="background:var(--cor-superficie);border:1px solid var(--cor-borda);border-radius:12px;padding:24px;display:flex;flex-direction:column;gap:14px">
+      <span style="font-size:16px;font-weight:600">Estado vazio · Skeleton</span>
+      <div style="border:1px dashed var(--cor-borda-forte);border-radius:12px;padding:24px;display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center">
+        <span aria-hidden="true" style="width:44px;height:44px;border-radius:50%;background:var(--cor-superficie-2);display:grid;place-items:center;font-family:'Material Symbols Rounded';font-size:24px;line-height:1;color:var(--cor-texto-2)">scatter_plot</span>
+        <span style="font-size:15px;font-weight:600">Escolha duas colunas numéricas</span>
+        <span style="font-size:13px;line-height:1.5;color:var(--cor-texto-2);max-width:260px">Selecione X e Y acima para ver a correlação e a reta de regressão.</span>
+      </div>
+      <div aria-busy="true" style="border:1px solid var(--cor-borda);border-radius:12px;padding:18px;display:flex;flex-direction:column;gap:10px">
+        <span style="width:40%;height:12px;border-radius:4px;background:var(--cor-superficie-2)"></span>
+        <span style="width:60%;height:28px;border-radius:6px;background:var(--cor-superficie-2)"></span>
+        <span style="width:90%;height:12px;border-radius:4px;background:var(--cor-superficie-2)"></span>
+      </div>
+      <span style="font-size:16px;font-weight:600;margin-top:4px">Drawer lateral</span>
+      <div style="position:relative;height:150px;border-radius:10px;overflow:hidden;background:var(--cor-overlay)">
+        <div style="position:absolute;top:0;right:0;bottom:0;width:62%;background:var(--cor-superficie-elevada);box-shadow:var(--sombra-3);padding:14px;display:flex;flex-direction:column;gap:8px">
+          <div style="display:flex;align-items:center;justify-content:space-between"><span style="font-size:14px;font-weight:600">Linhas 120–138</span><span aria-label="Fechar" style="font-family:'Material Symbols Rounded';font-size:18px;line-height:1">close</span></div>
+          <span style="height:10px;border-radius:3px;background:var(--cor-superficie-2)"></span><span style="height:10px;border-radius:3px;background:var(--cor-destaque-linha)"></span><span style="height:10px;border-radius:3px;background:var(--cor-destaque-linha)"></span><span style="height:10px;border-radius:3px;background:var(--cor-superficie-2)"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div style="background:var(--cor-superficie);border:1px solid var(--cor-borda);border-radius:12px;padding:24px;display:flex;gap:32px;align-items:flex-start">
+    <div style="display:flex;flex-direction:column;gap:8px;max-width:320px">
+      <span style="font-size:16px;font-weight:600">Stepper / barra lateral de etapas</span>
+      <p style="margin:0;font-size:14px;line-height:1.6;color:var(--cor-texto-2)">Concluída: círculo verde com ✓ e a palavra "Concluída". Atual: fundo primário suave, número preenchido e aria-current="step". Bloqueada: número tracejado, cadeado e texto desabilitado, com a frase explicando como liberar.</p>
+    </div>
+    <div style="height:560px;border:1px solid var(--cor-borda);border-radius:10px;overflow:hidden"><dc-import name="Barra Lateral" atual="4" hint-size="264px,560px"></dc-import></div>
+    <div style="height:560px;border:1px solid var(--cor-borda);border-radius:10px;overflow:hidden"><dc-import name="Barra Lateral" atual="1" bloqueado="{{ true }}" hint-size="264px,560px"></dc-import></div>
+  </div>
+</section>
+
+<section id="alerta" style="display:flex;flex-direction:column;gap:20px">
+  <div style="display:flex;flex-direction:column;gap:6px">
+    <h2 style="margin:0;font-size:24px;font-weight:600;letter-spacing:-.01em">Cartão de alerta</h2>
+    <p style="margin:0;max-width:760px;font-size:14px;line-height:1.6;color:var(--cor-texto-2)">Estrutura fixa em 8 partes: título · severidade · resumo · por que chama atenção · exemplo + "Ver na tabela" · pode ser normal se… · o que fazer · detalhes técnicos (recolhido).</p>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px;align-items:start">
+    <div style="display:flex;flex-direction:column;gap:8px"><span style="font:500 12px 'JetBrains Mono',monospace;color:var(--cor-texto-2)">recolhido · info</span><dc-import name="Cartao Alerta" alerta="R7" modo="recolhido" hint-size="100%,200px"></dc-import></div>
+    <div style="display:flex;flex-direction:column;gap:8px"><span style="font:500 12px 'JetBrains Mono',monospace;color:var(--cor-texto-2)">recolhido · atenção</span><dc-import name="Cartao Alerta" alerta="R4" modo="recolhido" hint-size="100%,200px"></dc-import></div>
+    <div style="display:flex;flex-direction:column;gap:8px"><span style="font:500 12px 'JetBrains Mono',monospace;color:var(--cor-texto-2)">recolhido · suspeita alta</span><dc-import name="Cartao Alerta" alerta="R1" modo="recolhido" hint-size="100%,200px"></dc-import></div>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px;align-items:start">
+    <div style="display:flex;flex-direction:column;gap:8px"><span style="font:500 12px 'JetBrains Mono',monospace;color:var(--cor-texto-2)">expandido · info</span><dc-import name="Cartao Alerta" alerta="R7" modo="expandido" hint-size="100%,640px"></dc-import></div>
+    <div style="display:flex;flex-direction:column;gap:8px"><span style="font:500 12px 'JetBrains Mono',monospace;color:var(--cor-texto-2)">expandido · atenção</span><dc-import name="Cartao Alerta" alerta="R4" modo="expandido" hint-size="100%,640px"></dc-import></div>
+    <div style="display:flex;flex-direction:column;gap:8px"><span style="font:500 12px 'JetBrains Mono',monospace;color:var(--cor-texto-2)">expandido · suspeita alta</span><dc-import name="Cartao Alerta" alerta="R1" modo="expandido" hint-size="100%,640px"></dc-import></div>
+  </div>
+</section>
+
+<section id="handoff" style="display:flex;flex-direction:column;gap:20px">
+  <h2 style="margin:0;font-size:24px;font-weight:600;letter-spacing:-.01em">Notas de handoff</h2>
+  <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px">
+    <div style="background:var(--cor-superficie);border:1px solid var(--cor-borda);border-radius:12px;padding:24px;display:flex;flex-direction:column;gap:10px;font-size:14px;line-height:1.6">
+      <span style="font-size:16px;font-weight:600">Tokens</span>
+      <p style="margin:0;color:var(--cor-texto-2)">Arquivo <code style="font-family:'JetBrains Mono',monospace;color:var(--cor-texto)">tokens.css</code> com variáveis CSS. Tema via atributo <code style="font-family:'JetBrains Mono',monospace;color:var(--cor-texto)">data-tema="claro|escuro"</code> no &lt;html&gt;; padrão segue prefers-color-scheme e a escolha fica em localStorage.</p>
+      <p style="margin:0;color:var(--cor-texto-2)">Prefixos: <code style="font-family:'JetBrains Mono',monospace;color:var(--cor-texto)">--cor-*</code> interface · <code style="font-family:'JetBrains Mono',monospace;color:var(--cor-texto)">--tipo-*</code> tipos de variável · <code style="font-family:'JetBrains Mono',monospace;color:var(--cor-texto)">--sev-*</code> severidades · <code style="font-family:'JetBrains Mono',monospace;color:var(--cor-texto)">--graf-*</code> Plotly · <code style="font-family:'JetBrains Mono',monospace;color:var(--cor-texto)">--sombra-*</code>. Cada cor semântica tem par <code style="font-family:'JetBrains Mono',monospace;color:var(--cor-texto)">-suave</code> para fundo.</p>
+      <p style="margin:0;color:var(--cor-texto-2)">No Plotly, ler as variáveis com getComputedStyle e reconstruir o layout ao trocar o tema.</p>
+    </div>
+    <div style="background:var(--cor-superficie);border:1px solid var(--cor-borda);border-radius:12px;padding:24px;display:flex;flex-direction:column;gap:10px;font-size:14px;line-height:1.6">
+      <span style="font-size:16px;font-weight:600">Espaçamento e medidas</span>
+      <ul style="margin:0;padding-left:18px;color:var(--cor-texto-2);display:flex;flex-direction:column;gap:4px">
+        <li>Escala <code style="font-family:'JetBrains Mono',monospace;color:var(--cor-texto)">--esp-4 … --esp-64</code> (4, 8, 12, 16, 20, 24, 32, 48, 64).</li>
+        <li>Barra lateral 264 px; cabeçalho 64 px; conteúdo com padding 32 px e largura máx. 1280 px.</li>
+        <li>Botões e campos 40 px de altura (alvo 44 px com a área de toque); itens de etapa 44 px.</li>
+        <li>Cards: raio 12, padding 18–24, gap entre cards 16.</li>
+        <li>Números sempre com <code style="font-family:'JetBrains Mono',monospace;color:var(--cor-texto)">font-variant-numeric: tabular-nums</code> e Intl.NumberFormat("pt-BR").</li>
+      </ul>
+    </div>
+    <div style="background:var(--cor-superficie);border:1px solid var(--cor-borda);border-radius:12px;padding:24px;display:flex;flex-direction:column;gap:10px;font-size:14px;line-height:1.6">
+      <span style="font-size:16px;font-weight:600">Responsivo e acessibilidade</span>
+      <ul style="margin:0;padding-left:18px;color:var(--cor-texto-2);display:flex;flex-direction:column;gap:4px">
+        <li>≥ 1280 px: barra lateral fixa expandida.</li>
+        <li>768–1279 px: barra recolhida em 72 px (só número/ícone, nome em tooltip); abre sobreposta com botão.</li>
+        <li>&lt; 768 px: leitura básica, grids em 1 coluna.</li>
+        <li>Toasts e resultados em <code style="font-family:'JetBrains Mono',monospace;color:var(--cor-texto)">aria-live="polite"</code>; erros em <code style="font-family:'JetBrains Mono',monospace;color:var(--cor-texto)">role="alert"</code>.</li>
+        <li>Drawer prende o foco e fecha com Esc, devolvendo o foco ao botão "Ver na tabela".</li>
+        <li>Gráficos com aria-label e resumo textual ao lado.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  renderVals() {
+    const tokens = [
+      ['cor-fundo', '#f5f6f8', '#0e1115', 'fundo da página'], ['cor-superficie', '#ffffff', '#161a20', 'cards'], ['cor-superficie-elevada', '#ffffff', '#1d222a', 'menus, drawer'], ['cor-superficie-2', '#f0f2f5', '#20262e', 'preenchimentos'],
+      ['cor-borda', '#dadee4', '#2f3640', 'divisórias'], ['cor-borda-forte', '#868f9c', '#707a89', 'campos (3:1)'], ['cor-texto', '#161a20', '#e8ebef', 'texto primário'], ['cor-texto-2', '#4b5462', '#a9b2be', 'texto secundário'],
+      ['cor-texto-desab', '#8c94a1', '#636c79', 'desabilitado'], ['cor-primaria', '#4338ca', '#9196f8', 'ação'], ['cor-primaria-suave', '#eef0fd', '#25274a', 'selecionado'], ['cor-foco', '#1d4ed8', '#7fabff', 'anel de foco'],
+      ['cor-sucesso', '#157a3c', '#4fd187', 'sucesso'], ['cor-erro', '#b42318', '#ff8278', 'erro'], ['cor-destaque-linha', '#fff4d6', '#3a3014', 'linha destacada'], ['cor-zebra', '#f7f8fa', '#1a1f26', 'tabela zebra'],
+    ].map(([n, c, e, uso]) => ({ n, c, e, uso }));
+    const tipos = [
+      { k: 'nominal', nome: 'Qualitativa nominal', icone: 'sell', desc: 'Categorias sem ordem (cidade)' },
+      { k: 'ordinal', nome: 'Qualitativa ordinal', icone: 'stairs', desc: 'Categorias com ordem (escolaridade)' },
+      { k: 'discreta', nome: 'Quantitativa discreta', icone: 'pin', desc: 'Números inteiros, contagens (idade)' },
+      { k: 'continua', nome: 'Quantitativa contínua', icone: 'straighten', desc: 'Medidas com casas decimais (peso_kg)' },
+      { k: 'binaria', nome: 'Binária', icone: 'toggle_on', desc: 'Só dois valores (sexo: F/M)' },
+      { k: 'identificador', nome: 'Identificador', icone: 'fingerprint', desc: 'Ignorada nas análises (id)' },
+    ];
+    const sevs = [
+      { k: 'info', nome: 'Informativo', icone: 'info', forma: 'círculo "i"', quando: 'curiosidade, não indica problema' },
+      { k: 'atencao', nome: 'Atenção', icone: 'warning', forma: 'triângulo', quando: 'padrão incomum, vale conferir' },
+      { k: 'alta', nome: 'Suspeita alta', icone: 'report', forma: 'octógono', quando: 'forte indício de inserção dirigida' },
+    ];
+    const gc = ['#0b6aa8', '#c4520a', '#0b7a5a', '#b0548f', '#8f6400', '#5a4bb5', '#3f8fc4', '#4b5563'];
+    const ge = ['#56b4e9', '#f08a3c', '#2fbf8f', '#e08fc0', '#e6c84a', '#b29cf0', '#8fd0f5', '#a9b2be'];
+    const graf = gc.map((c, i) => ({ n: i + 1, c, e: ge[i] }));
+    const I = 'Inter, system-ui, sans-serif', J = "'JetBrains Mono', monospace";
+    const tipografia = [
+      { n: 'display', spec: '40 / 700 / 1,15', fam: I, s: 40, w: 700, lh: 1.15, ls: '-0.02em', ex: 'Análise univariada' },
+      { n: 'titulo-1', spec: '28 / 700 / 1,25', fam: I, s: 28, w: 700, lh: 1.25, ls: '-0.015em', ex: 'Detector de dados artificiais' },
+      { n: 'titulo-2', spec: '20 / 600 / 1,3', fam: I, s: 20, w: 600, lh: 1.3, ls: '-0.01em', ex: 'Faltantes por coluna' },
+      { n: 'titulo-3', spec: '17 / 600 / 1,35', fam: I, s: 17, w: 600, lh: 1.35, ls: '0', ex: 'Muitos valores redondos em peso_kg' },
+      { n: 'corpo', spec: '15 / 400 / 1,55', fam: I, s: 15, w: 400, lh: 1.55, ls: '0', ex: 'A maioria das pessoas pesa entre 59,1 e 81,5 kg.' },
+      { n: 'corpo-p', spec: '14 / 400 / 1,5', fam: I, s: 14, w: 400, lh: 1.5, ls: '0', ex: 'Números com casas decimais.' },
+      { n: 'legenda', spec: '12–13 / 500 / 1,4', fam: I, s: 13, w: 500, lh: 1.4, ls: '0', ex: 'Válidos 227 · Faltantes 3' },
+      { n: 'numero-grande', spec: 'Mono 32 / 600 / 1,1', fam: J, s: 32, w: 600, lh: 1.1, ls: '-0.02em', ex: '70,3 · 15,9% · 1.234,56' },
+      { n: 'formula', spec: 'Mono 15 / 500 / 1,5', fam: J, s: 15, w: 500, lh: 1.5, ls: '0', ex: 'CV = (s / x̄) × 100' },
+    ];
+    return { tokens, tipos, sevs, graf, tipografia, espacos: [4, 8, 12, 16, 20, 24, 32, 48, 64] };
+  }
+}
+</script>
+</body>
+</html>

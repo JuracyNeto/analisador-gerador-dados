@@ -11,6 +11,8 @@ Um arquivo por decisão estrutural. Nome: `NNNN-titulo-curto.md`. Status: Propos
 | [0005](0005-textos-amigaveis.md) | Textos amigáveis e divulgação progressiva | Aceito |
 | [0006](0006-classificacao-de-tipos.md) | Classificação automática de tipos | Aceito |
 | [0007](0007-monolito-camadas-dominios.md) | Monólito em camadas com separação por domínio | Aceito |
+| [0008](0008-design-system-tokens-css.md) | Design system com variáveis CSS e tema por atributo | Aceito |
+| [0009](0009-injecao-entre-dominios.md) | Injeção de serviços entre domínios (fachada + provedor; `Depends` só no router) | Aceito |
 
 ## Modelo
 ```markdown

@@ -5,7 +5,8 @@ Camada de apresentação: `router.py` + `schemas.py` de cada domínio; `app/main
 | Método | Rota | Corpo / query | Resposta | Spec |
 |---|---|---|---|---|
 | POST | `/datasets` | multipart `arquivo` + opções de leitura | `{dataset_id, metadados, previa[20], colunas[]}` | 01 |
-| GET | `/datasets/{id}` | `?pagina=&tamanho=&versao=original|atual` | linhas paginadas | — |
+| POST | `/datasets/exemplo` | — | igual ao `POST /datasets` (carrega `dados-exemplo/pesquisa_saude.txt`, D52) | 01 |
+| GET | `/datasets/{id}` | `?pagina=&tamanho=&versao=original|atual` | `{resumo, versao, pagina, tamanho, total_paginas, linhas}` (D55) | — |
 | DELETE | `/datasets/{id}` | — | 204 | — |
 | GET | `/datasets/{id}/colunas` | — | `TipoColuna[]` | 02 |
 | PATCH | `/datasets/{id}/colunas/{col}` | `{tipo, categorias_ordem?}` | `TipoColuna` | 02 |
@@ -36,11 +37,11 @@ Camada de apresentação: `router.py` + `schemas.py` de cada domínio; `app/main
   "dispersao": { "...": "spec 07" },
   "forma": { "...": "spec 09 (M2)" },
   "interpretacoes": ["Média e mediana próximas...", "..."],
-  "formulas": [{ "nome": "Média", "latex": "\\bar{x}=\\frac{\\sum x_i}{n}", "texto": "x̄ = Σxᵢ / n" }],
-  "figuras": { "principal": { "...": "plotly json" }, "boxplot": {}, "ogiva": {} }
+  "formulas": [{ "chave": "media", "nome": "Média", "latex": "\\bar{x}=\\frac{\\sum x_i}{n}", "texto": "x̄ = Σxᵢ / n" }],
+  "figuras": [{ "id": "principal", "rotulo": "Histograma", "titulo": "...", "resumo": "...", "porque": "...", "recomendado": true, "dados": { "...": "plotly json" } }]
 }
 ```
-O frontend renderiza só o que veio; nunca decide aplicabilidade.
+Cada medida (`Medida {valor, aplicavel, motivo, calculo, interpretacao, formula}`) traz em `formula` a `chave` da sua fórmula em `formulas[]` (D66). O frontend renderiza só o que veio; nunca decide aplicabilidade.
 
 ## Erros
 Todas as falhas → HTTP 4xx/5xx com `{codigo, mensagem, sugestao}` (spec 17). Validação Pydantic é traduzida para mensagens em português.

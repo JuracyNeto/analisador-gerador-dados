@@ -1,0 +1,57 @@
+.banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: var(--esp-12) var(--esp-16);
+  border: 1px solid transparent;
+  border-radius: 10px;
+  font-size: 14px;
+  line-height: 1.5;
+}
+.info {
+  border-color: color-mix(in oklab, var(--sev-info) 30%, transparent);
+  background: var(--sev-info-suave);
+}
+.info .icone {
+  color: var(--sev-info);
+}
+.atencao {
+  border-color: var(--sev-atencao-borda);
+  background: var(--sev-atencao-suave);
+}
+.atencao .icone {
+  color: var(--sev-atencao);
+}
+.erro {
+  border-color: var(--cor-erro);
+  background: var(--cor-erro-suave);
+}
+.erro .icone {
+  color: var(--cor-erro);
+}
+.sucesso {
+  border-color: color-mix(in oklab, var(--cor-sucesso) 30%, transparent);
+  background: var(--cor-sucesso-suave);
+}
+.sucesso .icone {
+  color: var(--cor-sucesso);
+}
+.conteudo {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--esp-4);
+  min-width: 0;
+}
+.titulo {
+  font-weight: 600;
+}
+.erro .titulo {
+  font-size: 15px;
+}
+.acoes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--esp-8);
+  margin-top: var(--esp-4);
+}

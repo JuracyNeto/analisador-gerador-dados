@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet><link rel="stylesheet" href="tokens.css"></link><style>body{margin:0}a{color:var(--cor-primaria)}a:hover{color:var(--cor-primaria-hover)}</style></helmet>
+<div data-tema="{{ tema }}" data-screen-label="Tela 3 Limpeza" style="width:1440px;min-height:960px;display:grid;grid-template-columns:264px minmax(0,1fr);background:var(--cor-fundo);font-family:Inter,system-ui,sans-serif;color:var(--cor-texto)">
+  <dc-import name="Barra Lateral" atual="3" hint-size="264px,100%"></dc-import>
+  <div style="display:flex;flex-direction:column;min-width:0">
+    <dc-import name="Cabecalho" tema="{{ tema }}" hint-size="100%,64px"></dc-import>
+    <main style="padding:32px;display:flex;flex-direction:column;gap:24px;box-sizing:border-box;width:100%;max-width:1176px">
+      <div style="display:flex;flex-direction:column;gap:6px">
+        <span style="font-size:13px;font-weight:500;color:var(--cor-texto-2)">Etapa 3 de 8</span>
+        <h1 style="margin:0;font-size:28px;line-height:1.25;font-weight:700;letter-spacing:-.015em">Limpeza</h1>
+        <p style="margin:0;font-size:15px;line-height:1.55;color:var(--cor-texto-2)">Encontramos alguns problemas comuns. Escolha o que fazer com cada um; nada muda até você clicar em "Aplicar limpeza".</p>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px">
+        <sc-for list="{{ cards }}" as="c" hint-placeholder-count="4">
+          <div style="background:var(--cor-superficie);border:1px solid var(--cor-borda);border-radius:12px;box-shadow:var(--sombra-1);padding:18px 20px;display:flex;flex-direction:column;gap:6px">
+            <span style="display:flex;align-items:center;gap:8px;font-size:13px;font-weight:500;color:var(--cor-texto-2)"><span aria-hidden="true" style="font-family:'Material Symbols Rounded';font-size:18px;line-height:1">{{ c.icone }}</span>{{ c.rotulo }}</span>
+            <span style="font:600 32px/1.1 'JetBrains Mono',monospace;letter-spacing:-.02em">{{ c.valor }}<span style="font:500 15px Inter,sans-serif;color:var(--cor-texto-2);margin-left:6px">{{ c.unid }}</span></span>
+            <span style="font-size:13.5px;line-height:1.45">{{ c.frase }}</span>
+          </div>
+        </sc-for>
+      </div>
+      <div style="display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:20px;align-items:start">
+        <div style="display:flex;flex-direction:column;gap:16px">
+          <sc-for list="{{ secoes }}" as="s" hint-placeholder-count="4">
+            <section style="background:var(--cor-superficie);border:1px solid var(--cor-borda);border-radius:12px;box-shadow:var(--sombra-1);overflow:hidden">
+              <div style="display:flex;align-items:baseline;gap:12px;padding:16px 20px;border-bottom:1px solid var(--cor-borda)">
+                <h2 style="margin:0;font-size:17px;font-weight:600">{{ s.titulo }}</h2>
+                <span style="font-size:14px;color:var(--cor-texto-2)">{{ s.sub }}</span>
+              </div>
+              <div style="display:grid;grid-template-columns:120px minmax(0,1fr) 250px;gap:6px 16px;padding:8px 20px 6px;font-size:12.5px;font-weight:600;color:var(--cor-texto-2)"><span>{{ s.h1 }}</span><span>{{ s.h2 }}</span><span>Ação</span></div>
+              <sc-for list="{{ s.itens }}" as="i" hint-placeholder-count="3">
+                <div style="display:grid;grid-template-columns:120px minmax(0,1fr) 250px;gap:16px;padding:10px 20px;align-items:center;border-top:1px solid var(--cor-borda)">
+                  <span style="font:600 13.5px 'JetBrains Mono',monospace">{{ i.a }}</span>
+                  <span style="font-size:14px;line-height:1.45;font-variant-numeric:tabular-nums">{{ i.b }}</span>
+                  <span style="height:36px;display:flex;align-items:center;gap:6px;padding:0 8px 0 12px;border-radius:8px;border:1px solid var(--cor-borda-forte);background:var(--cor-superficie);font-size:13.5px"><span style="flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ i.acao }}</span><span aria-hidden="true" style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1;color:var(--cor-texto-2)">expand_more</span></span>
+                </div>
+              </sc-for>
+            </section>
+          </sc-for>
+          <section style="background:var(--cor-superficie);border:1px solid var(--cor-borda);border-radius:12px;box-shadow:var(--sombra-1);padding:16px 20px;display:flex;flex-direction:column;gap:12px">
+            <div style="display:flex;align-items:baseline;gap:12px"><h2 style="margin:0;font-size:17px;font-weight:600">Limites por coluna</h2><span style="font-size:14px;color:var(--cor-texto-2)">Opcional. Valores fora destes limites contam como "fora de faixa".</span></div>
+            <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px">
+              <sc-for list="{{ limites }}" as="l" hint-placeholder-count="3">
+                <div style="display:flex;flex-direction:column;gap:6px">
+                  <span style="font:600 13.5px 'JetBrains Mono',monospace">{{ l.col }}</span>
+                  <div style="display:flex;gap:8px;align-items:center">
+                    <label style="flex:1;display:flex;flex-direction:column;gap:4px"><span style="font-size:12px;color:var(--cor-texto-2)">Mínimo</span><span style="height:36px;display:flex;align-items:center;padding:0 10px;border-radius:8px;border:1px solid var(--cor-borda-forte);font:14px 'JetBrains Mono',monospace">{{ l.min }}</span></label>
+                    <label style="flex:1;display:flex;flex-direction:column;gap:4px"><span style="font-size:12px;color:var(--cor-texto-2)">Máximo</span><span style="height:36px;display:flex;align-items:center;padding:0 10px;border-radius:8px;border:1px solid var(--cor-borda-forte);font:14px 'JetBrains Mono',monospace">{{ l.max }}</span></label>
+                  </div>
+                </div>
+              </sc-for>
+            </div>
+          </section>
+          <div style="display:flex;gap:12px;justify-content:flex-end">
+            <span style="white-space:nowrap;flex:none;display:inline-flex;align-items:center;gap:8px;height:44px;padding:0 18px;border-radius:8px;border:1px solid var(--cor-erro);color:var(--cor-erro);background:var(--cor-superficie);font-size:15px;font-weight:600;box-sizing:border-box"><span aria-hidden="true" style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1">undo</span>Desfazer tudo</span>
+            <span style="white-space:nowrap;flex:none;display:inline-flex;align-items:center;gap:8px;height:44px;padding:0 20px;border-radius:8px;background:var(--cor-primaria);color:var(--cor-sobre-primaria);font-size:15px;font-weight:600"><span aria-hidden="true" style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1">cleaning_services</span>Aplicar limpeza</span>
+          </div>
+        </div>
+        <aside aria-label="Registro das ações" style="background:var(--cor-superficie);border:1px solid var(--cor-borda);border-radius:12px;box-shadow:var(--sombra-1);padding:18px 20px;display:flex;flex-direction:column;gap:14px">
+          <div style="display:flex;align-items:center;gap:8px"><span aria-hidden="true" style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1;color:var(--cor-texto-2)">history</span><h2 style="margin:0;font-size:16px;font-weight:600">O que fizemos</h2></div>
+          <ol style="list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:12px">
+            <sc-for list="{{ log }}" as="g" hint-placeholder-count="5">
+              <li style="display:flex;gap:10px;font-size:14px;line-height:1.5"><span aria-hidden="true" style="font-family:'Material Symbols Rounded';font-size:18px;line-height:1.3;color:var(--cor-sucesso)">check</span><span style="flex:1;text-wrap:pretty">{{ g.t }}<br></br><span style="font:12px 'JetBrains Mono',monospace;color:var(--cor-texto-2)">{{ g.h }}</span></span></li>
+            </sc-for>
+          </ol>
+          <div style="padding:10px 12px;border-radius:8px;background:var(--cor-superficie-2);font-size:13.5px;line-height:1.5">Resultado: <strong style="font-variant-numeric:tabular-nums">227 linhas</strong> (eram 230).</div>
+        </aside>
+      </div>
+    </main>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1440,&quot;height&quot;:1200},&quot;tema&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;claro&quot;,&quot;escuro&quot;],&quot;default&quot;:&quot;claro&quot;,&quot;tsType&quot;:&quot;string&quot;}}">
+class Component extends DCLogic {
+  renderVals() {
+    const cards = [
+      { icone: 'help_center', rotulo: 'Faltantes', valor: '7', unid: 'células', frase: 'Em 4 colunas; peso_kg tem 3.' },
+      { icone: 'content_copy', rotulo: 'Duplicados', valor: '3', unid: 'linhas', frase: 'Cópias exatas da linha 44.' },
+      { icone: 'straighten', rotulo: 'Fora de faixa', valor: '5', unid: 'valores', frase: 'Fora dos limites que você definiu.' },
+      { icone: 'spellcheck', rotulo: 'Grafias diferentes', valor: '2', unid: 'grupos', frase: 'Mesma cidade escrita de jeitos diferentes.' },
+    ];
+    const secoes = [
+      { titulo: 'Faltantes', sub: '7 células vazias', h1: 'Coluna', h2: 'Linhas afetadas', itens: [
+        { a: 'peso_kg', b: '3 · linhas 12, 141, 207', acao: 'Preencher com a mediana (69,8)' },
+        { a: 'cidade', b: '2 · linhas 64, 190', acao: 'Manter como "não informado"' },
+        { a: 'idade', b: '1 · linha 88', acao: 'Preencher com a mediana (37)' },
+        { a: 'altura_m', b: '1 · linha 153', acao: 'Preencher com a mediana (1,69)' } ] },
+      { titulo: 'Duplicados', sub: '3 linhas iguais', h1: 'Linhas', h2: 'Igual a', itens: [
+        { a: '45, 46, 47', b: 'Linha 44 (todas as 8 colunas iguais, exceto id)', acao: 'Remover' } ] },
+      { titulo: 'Fora de faixa', sub: '5 valores', h1: 'Coluna', h2: 'Valores', itens: [
+        { a: 'altura_m', b: 'Linha 77: 17,2 (provável vírgula no lugar errado)', acao: 'Corrigir para 1,72' },
+        { a: 'idade', b: 'Linhas 19 e 201: 0 e 230', acao: 'Remover o valor' },
+        { a: 'peso_kg', b: 'Linhas 99 e 160: 6,8 e 712', acao: 'Manter' } ] },
+      { titulo: 'Grafias diferentes', sub: '2 grupos em cidade', h1: 'Grupo', h2: 'Variações encontradas', itens: [
+        { a: 'Goiânia', b: '"Goiania" (6), "goiânia" (2)', acao: "Unificar 'Goiania' → 'Goiânia'" },
+        { a: 'Anápolis', b: '"Anapolis" (3)', acao: "Unificar 'Anapolis' → 'Anápolis'" } ] },
+    ];
+    const limites = [{ col: 'idade', min: '1', max: '110' }, { col: 'altura_m', min: '1,20', max: '2,20' }, { col: 'peso_kg', min: '30,0', max: '200,0' }];
+    const log = [
+      { t: 'Removemos 3 linhas duplicadas.', h: 'linhas 45, 46, 47' },
+      { t: 'Preenchemos 5 faltantes com a mediana da coluna.', h: 'peso_kg ×3 · idade ×1 · altura_m ×1' },
+      { t: "Unificamos 11 grafias de cidade.", h: "Goiania → Goiânia · Anapolis → Anápolis" },
+      { t: 'Corrigimos 1 altura com vírgula fora do lugar.', h: 'linha 77: 17,2 → 1,72' },
+      { t: 'Marcamos 2 idades como faltantes por estarem fora da faixa.', h: 'linhas 19 e 201' },
+    ];
+    return { tema: this.props.tema ?? 'claro', cards, secoes, limites, log };
+  }
+}
+</script>
+</body>
+</html>

@@ -33,20 +33,42 @@ Trabalho da disciplina de Estatística.
 - **Frontend:** React, Vite, TypeScript, react-plotly.js
 
 ## Como rodar
-> Em construção. Ver [`docs/roadmap.md`](docs/roadmap.md).
+Requisitos: Python 3.12+ e Node 22+.
 
+**Backend** (terminal 1)
 ```bash
-# backend
 cd backend
 python -m venv .venv
-.venv\Scripts\activate        # Windows
+.venv\Scripts\activate          # Windows  (Linux/macOS: source .venv/bin/activate)
 pip install -e ".[dev]"
-uvicorn app.main:app --reload
+uvicorn app.main:app --reload   # http://localhost:8000/docs
+```
 
-# frontend (outro terminal)
+**Frontend** (terminal 2)
+```bash
 cd frontend
 npm install
-npm run dev
+npm run dev                     # http://localhost:5173
+```
+
+**Qualidade** (os mesmos comandos do CI; no backend, com o venv ativo)
+```bash
+# em backend/
+ruff check . && ruff format --check . && mypy app && complexipy app --max-complexity-allowed 15 && pytest
+
+# em frontend/
+npm run lint && npm run format && npm run test && npm run build
+
+# na raiz
+npx --yes jscpd@4 backend/app backend/tests frontend/src
+```
+
+**Tipos do frontend após mudar a API**
+```bash
+# em backend/ (venv ativo)
+python scripts/exportar_openapi.py
+# em frontend/
+npm run gerar:tipos
 ```
 
 ## Documentação

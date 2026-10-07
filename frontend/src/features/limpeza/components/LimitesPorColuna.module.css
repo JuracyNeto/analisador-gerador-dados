@@ -1,0 +1,28 @@
+/* Tela 3: limites por coluna. */
+.grade {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: var(--esp-16);
+}
+
+.coluna {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  min-width: 0;
+}
+
+.nome {
+  padding: 0;
+  font: 600 13.5px var(--fonte-mono);
+}
+
+.campos {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--esp-8);
+  align-items: start;
+}

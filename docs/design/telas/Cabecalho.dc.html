@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet><link rel="stylesheet" href="tokens.css"></link></helmet>
+<header style="height:64px;box-sizing:border-box;display:flex;align-items:center;gap:16px;padding:0 32px;background:var(--cor-superficie);border-bottom:1px solid var(--cor-borda);font-family:Inter,system-ui,sans-serif;color:var(--cor-texto)">
+  <sc-if value="{{ temArquivo }}" hint-placeholder-val="{{ true }}">
+    <div style="display:flex;align-items:center;gap:12px;flex:1;min-width:0">
+      <span aria-hidden="true" style="font-family:'Material Symbols Rounded';font-size:22px;line-height:1;color:var(--cor-texto-2)">description</span>
+      <div style="display:flex;align-items:baseline;gap:12px;min-width:0">
+        <span style="font:600 14px 'JetBrains Mono',monospace;white-space:nowrap">pesquisa_saude.txt</span>
+        <span style="font-size:13px;color:var(--cor-texto-2);font-variant-numeric:tabular-nums;white-space:nowrap">230 linhas × 8 colunas</span>
+      </div>
+    </div>
+    <button style="all:unset;box-sizing:border-box;white-space:nowrap;flex:none;display:inline-flex;align-items:center;gap:8px;height:36px;padding:0 14px;border-radius:8px;border:1px solid var(--cor-borda-forte);font-size:14px;font-weight:500;color:var(--cor-texto);cursor:pointer" style-hover="background:var(--cor-superficie-2)">
+      <span aria-hidden="true" style="font-family:'Material Symbols Rounded';font-size:18px;line-height:1">swap_horiz</span>Trocar arquivo
+    </button>
+  </sc-if>
+  <sc-if value="{{ semArquivo }}" hint-placeholder-val="{{ false }}">
+    <span style="flex:1;font-size:14px;color:var(--cor-texto-2)">Nenhum arquivo importado</span>
+  </sc-if>
+  <div role="radiogroup" aria-label="Tema" style="display:flex;gap:2px;padding:3px;border-radius:999px;background:var(--cor-superficie-2);border:1px solid var(--cor-borda)">
+    <sc-if value="{{ claro }}" hint-placeholder-val="{{ true }}">
+      <span role="radio" aria-checked="true" aria-label="Tema claro" style="width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:var(--cor-superficie);box-shadow:var(--sombra-1);color:var(--cor-texto)"><span aria-hidden="true" style="font-family:'Material Symbols Rounded';font-size:18px;line-height:1">light_mode</span></span>
+      <span role="radio" aria-checked="false" aria-label="Tema escuro" style="width:30px;height:30px;border-radius:50%;display:grid;place-items:center;color:var(--cor-texto-2)"><span aria-hidden="true" style="font-family:'Material Symbols Rounded';font-size:18px;line-height:1">dark_mode</span></span>
+    </sc-if>
+    <sc-if value="{{ escuro }}" hint-placeholder-val="{{ false }}">
+      <span role="radio" aria-checked="false" aria-label="Tema claro" style="width:30px;height:30px;border-radius:50%;display:grid;place-items:center;color:var(--cor-texto-2)"><span aria-hidden="true" style="font-family:'Material Symbols Rounded';font-size:18px;line-height:1">light_mode</span></span>
+      <span role="radio" aria-checked="true" aria-label="Tema escuro" style="width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:var(--cor-superficie-elevada);box-shadow:var(--sombra-1);color:var(--cor-texto)"><span aria-hidden="true" style="font-family:'Material Symbols Rounded';font-size:18px;line-height:1">dark_mode</span></span>
+    </sc-if>
+  </div>
+</header>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1176,&quot;height&quot;:64},&quot;temArquivo&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;},&quot;tema&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;claro&quot;,&quot;escuro&quot;],&quot;default&quot;:&quot;claro&quot;,&quot;tsType&quot;:&quot;'claro'|'escuro'&quot;}}">
+class Component extends DCLogic {
+  renderVals() {
+    const tem = this.props.temArquivo ?? true;
+    const esc = this.props.tema === 'escuro';
+    return { temArquivo: tem, semArquivo: !tem, claro: !esc, escuro: esc };
+  }
+}
+</script>
+</body>
+</html>

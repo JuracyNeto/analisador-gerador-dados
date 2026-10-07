@@ -1,0 +1,50 @@
+.app {
+  display: grid;
+  grid-template-columns: var(--largura-barra) minmax(0, 1fr);
+  min-height: 100vh;
+  background: var(--cor-fundo);
+}
+.estreita {
+  grid-template-columns: var(--largura-barra-recolhida) minmax(0, 1fr);
+}
+/* Coluna fixa: a barra sobreposta sai do fluxo e o conteúdo não pode pular para a 1ª coluna. */
+.coluna {
+  display: flex;
+  flex-direction: column;
+  grid-column: 2;
+  min-width: 0;
+}
+.principal {
+  flex: 1;
+  width: 100%;
+  max-width: calc(var(--largura-conteudo) + 2 * var(--esp-32));
+  padding: var(--esp-32);
+}
+.pular {
+  position: absolute;
+  top: var(--esp-16);
+  left: var(--esp-16);
+  z-index: 60;
+  padding: var(--esp-8) var(--esp-12);
+  border-radius: var(--raio-md);
+  background: var(--cor-superficie-elevada);
+  box-shadow: var(--sombra-2);
+  transform: translateY(-200%);
+}
+.pular:focus {
+  transform: none;
+}
+.fundo {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  border: 0;
+  background: var(--cor-overlay);
+  cursor: pointer;
+}
+
+@media (max-width: 767px) {
+  .principal {
+    padding: var(--esp-16);
+  }
+}

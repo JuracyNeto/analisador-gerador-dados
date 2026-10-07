@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet><link rel="stylesheet" href="tokens.css"></link><style>body{margin:0}a{color:var(--cor-primaria)}a:hover{color:var(--cor-primaria-hover)}</style></helmet>
+<div data-tema="{{ tema }}" data-screen-label="Tela 7 Detector" style="width:1440px;min-height:960px;display:grid;grid-template-columns:264px minmax(0,1fr);background:var(--cor-fundo);font-family:Inter,system-ui,sans-serif;color:var(--cor-texto);position:relative;overflow:hidden">
+  <dc-import name="Barra Lateral" atual="7" hint-size="264px,100%"></dc-import>
+  <div style="display:flex;flex-direction:column;min-width:0">
+    <dc-import name="Cabecalho" tema="{{ tema }}" hint-size="100%,64px"></dc-import>
+    <main style="padding:32px;display:flex;flex-direction:column;gap:20px;box-sizing:border-box;width:100%;max-width:1176px">
+      <div style="display:flex;align-items:flex-end;gap:24px">
+        <div style="flex:1;display:flex;flex-direction:column;gap:6px">
+          <span style="font-size:13px;font-weight:500;color:var(--cor-texto-2)">Etapa 7 de 8</span>
+          <h1 style="margin:0;font-size:28px;line-height:1.25;font-weight:700;letter-spacing:-.015em">Detector de dados artificiais</h1>
+          <p style="margin:0;font-size:15px;line-height:1.55;color:var(--cor-texto-2)">Aplicamos 11 regras que procuram sinais comuns de dados inseridos ou gerados. Um alerta pede conferência, não é uma conclusão.</p>
+        </div>
+        <span style="white-space:nowrap;flex:none;display:inline-flex;align-items:center;gap:8px;height:40px;padding:0 16px;border-radius:8px;border:1px solid var(--cor-borda-forte);background:var(--cor-superficie);font-size:14px;font-weight:500;box-sizing:border-box"><span aria-hidden="true" style="font-family:'Material Symbols Rounded';font-size:18px;line-height:1">refresh</span>Analisar de novo</span>
+      </div>
+
+      <sc-if value="{{ comAlertas }}" hint-placeholder-val="{{ true }}">
+        <div style="background:var(--cor-superficie);border:1px solid var(--cor-borda);border-radius:12px;box-shadow:var(--sombra-1);padding:20px 24px;display:flex;align-items:center;gap:32px">
+          <div style="flex:1;display:flex;flex-direction:column;gap:4px">
+            <h2 style="margin:0;font-size:20px;font-weight:600;letter-spacing:-.01em">Encontramos 5 alertas em 3 colunas</h2>
+            <span style="font-size:14px;color:var(--cor-texto-2)">altura_m, peso_kg e idade · 9 regras verificadas, 2 não se aplicam a este arquivo</span>
+          </div>
+          <div style="display:flex;gap:24px">
+            <div style="display:flex;flex-direction:column;gap:4px"><span style="font:600 28px/1 'JetBrains Mono',monospace;color:var(--sev-alta)">2</span><span style="white-space:nowrap;flex:none;display:inline-flex;align-items:center;gap:5px;font-size:13px;font-weight:600;color:var(--sev-alta)"><span aria-hidden="true" style="font-family:'Material Symbols Rounded';font-size:17px;line-height:1;font-variation-settings:'FILL' 1">report</span>Suspeita alta</span></div>
+            <div style="display:flex;flex-direction:column;gap:4px"><span style="font:600 28px/1 'JetBrains Mono',monospace;color:var(--sev-atencao)">2</span><span style="white-space:nowrap;flex:none;display:inline-flex;align-items:center;gap:5px;font-size:13px;font-weight:600;color:var(--sev-atencao)"><span aria-hidden="true" style="font-family:'Material Symbols Rounded';font-size:17px;line-height:1;font-variation-settings:'FILL' 1">warning</span>Atenção</span></div>
+            <div style="display:flex;flex-direction:column;gap:4px"><span style="font:600 28px/1 'JetBrains Mono',monospace;color:var(--sev-info)">1</span><span style="white-space:nowrap;flex:none;display:inline-flex;align-items:center;gap:5px;font-size:13px;font-weight:600;color:var(--sev-info)"><span aria-hidden="true" style="font-family:'Material Symbols Rounded';font-size:17px;line-height:1;font-variation-settings:'FILL' 1">info</span>Informativo</span></div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+          <span style="font-size:13px;font-weight:500;color:var(--cor-texto-2)">Mostrar</span>
+          <span role="checkbox" aria-checked="true" style="white-space:nowrap;flex:none;display:inline-flex;align-items:center;gap:6px;height:34px;padding:0 12px;border-radius:999px;border:1px solid var(--sev-alta);background:var(--sev-alta-suave);color:var(--sev-alta);font-size:13.5px;font-weight:600"><span aria-hidden="true" style="font-family:'Material Symbols Rounded';font-size:16px;line-height:1">check</span>Suspeita alta (2)</span>
+          <span role="checkbox" aria-checked="true" style="white-space:nowrap;flex:none;display:inline-flex;align-items:center;gap:6px;height:34px;padding:0 12px;border-radius:999px;border:1px solid var(--sev-atencao);background:var(--sev-atencao-suave);color:var(--sev-atencao);font-size:13.5px;font-weight:600"><span aria-hidden="true" style="font-family:'Material Symbols Rounded';font-size:16px;line-height:1">check</span>Atenção (2)</span>
+          <span role="checkbox" aria-checked="true" style="white-space:nowrap;flex:none;display:inline-flex;align-items:center;gap:6px;height:34px;padding:0 12px;border-radius:999px;border:1px solid var(--sev-info);background:var(--sev-info-suave);color:var(--sev-info);font-size:13.5px;font-weight:600"><span aria-hidden="true" style="font-family:'Material Symbols Rounded';font-size:16px;line-height:1">check</span>Informativo (1)</span>
+          <span style="flex:1"></span>
+          <span style="font-size:13px;font-weight:500;color:var(--cor-texto-2)">Agrupar por</span>
+          <div role="radiogroup" style="display:flex;padding:3px;border-radius:8px;background:var(--cor-superficie-2);border:1px solid var(--cor-borda);gap:2px">
+            <span role="radio" aria-checked="true" style="height:30px;display:flex;align-items:center;padding:0 14px;border-radius:6px;background:var(--cor-superficie);box-shadow:var(--sombra-1);font-size:13.5px;font-weight:600">Coluna</span>
+            <span role="radio" aria-checked="false" style="height:30px;display:flex;align-items:center;padding:0 14px;border-radius:6px;font-size:13.5px;color:var(--cor-texto-2)">Regra</span>
+          </div>
+        </div>
+        <sc-for list="{{ grupos }}" as="g" hint-placeholder-count="3">
+          <section style="display:flex;flex-direction:column;gap:12px">
+            <h2 style="margin:8px 0 0;display:flex;align-items:baseline;gap:10px;font-size:15px;font-weight:600"><span style="font-family:'JetBrains Mono',monospace">{{ g.col }}</span><span style="font-size:13px;font-weight:400;color:var(--cor-texto-2)">{{ g.sub }}</span></h2>
+            <sc-for list="{{ g.alertas }}" as="a" hint-placeholder-count="2">
+              <dc-import name="Cartao Alerta" alerta="{{ a.r }}" modo="{{ a.modo }}" on-ver-tabela="{{ abrirDrawer }}" hint-size="100%,380px"></dc-import>
+            </sc-for>
+          </section>
+        </sc-for>
+      </sc-if>
+
+      <sc-if value="{{ vazio }}" hint-placeholder-val="{{ false }}">
+        <div style="background:var(--cor-superficie);border:1px solid var(--cor-borda);border-radius:12px;box-shadow:var(--sombra-1);padding:56px 48px;display:flex;flex-direction:column;align-items:center;gap:14px;text-align:center">
+          <span aria-hidden="true" style="width:64px;height:64px;border-radius:50%;background:var(--cor-sucesso-suave);color:var(--cor-sucesso);display:grid;place-items:center;font-family:'Material Symbols Rounded';font-size:34px;line-height:1">verified</span>
+          <h2 style="margin:0;font-size:20px;font-weight:600">Nenhum alerta</h2>
+          <p style="margin:0;max-width:560px;font-size:15px;line-height:1.6;text-wrap:pretty">Nenhuma das 11 regras encontrou suspeitas. Isso não garante que os dados sejam reais, mas não vimos sinais comuns de dados artificiais.</p>
+          <div style="display:flex;gap:12px;margin-top:6px">
+            <span style="white-space:nowrap;flex:none;display:inline-flex;align-items:center;height:40px;padding:0 16px;border-radius:8px;border:1px solid var(--cor-borda-forte);font-size:14px;font-weight:500;box-sizing:border-box">Ver as 11 regras</span>
+            <span style="white-space:nowrap;flex:none;display:inline-flex;align-items:center;gap:8px;height:40px;padding:0 16px;border-radius:8px;background:var(--cor-primaria);color:var(--cor-sobre-primaria);font-size:14px;font-weight:600">Continuar para Relatório<span aria-hidden="true" style="font-family:'Material Symbols Rounded';font-size:18px;line-height:1">arrow_forward</span></span>
+          </div>
+        </div>
+      </sc-if>
+
+      <section style="background:var(--cor-superficie);border:1px solid var(--cor-borda);border-radius:12px">
+        <button onClick="{{ alternarRegras }}" aria-expanded="{{ regrasAbertas }}" style="all:unset;box-sizing:border-box;display:flex;align-items:center;gap:10px;width:100%;height:52px;padding:0 20px;cursor:pointer">
+          <span aria-hidden="true" style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1;color:var(--cor-texto-2)">{{ setaRegras }}</span>
+          <span style="font-size:15px;font-weight:600;flex:1">Regras não verificadas</span>
+          <span style="font-size:13px;color:var(--cor-texto-2)">2 regras, com motivo</span>
+        </button>
+        <sc-if value="{{ regrasAbertas }}" hint-placeholder-val="{{ false }}">
+          <ul style="list-style:none;margin:0;padding:0 20px 16px 50px;display:flex;flex-direction:column;gap:10px">
+            <li style="font-size:14px;line-height:1.55;text-wrap:pretty"><strong style="font-weight:600">Lei de Benford</strong> não verificada em <span style="font-family:'JetBrains Mono',monospace">idade</span>: precisa de valores que variem em várias ordens de grandeza.</li>
+            <li style="font-size:14px;line-height:1.55;text-wrap:pretty"><strong style="font-weight:600">Comparação temporal</strong> não verificada: o arquivo não tem uma coluna de data.</li>
+          </ul>
+        </sc-if>
+      </section>
+    </main>
+  </div>
+
+  <sc-if value="{{ drawer }}" hint-placeholder-val="{{ false }}">
+    <div onClick="{{ fecharDrawer }}" style="position:absolute;inset:0;background:var(--cor-overlay)"></div>
+    <aside role="dialog" aria-modal="true" aria-labelledby="dw" style="position:absolute;top:0;right:0;bottom:0;width:600px;background:var(--cor-superficie-elevada);box-shadow:var(--sombra-3);display:flex;flex-direction:column">
+      <div style="display:flex;align-items:flex-start;gap:12px;padding:20px 24px;border-bottom:1px solid var(--cor-borda)">
+        <div style="flex:1;display:flex;flex-direction:column;gap:6px">
+          <span style="align-self:flex-start;white-space:nowrap;flex:none;display:inline-flex;align-items:center;gap:6px;height:24px;padding:0 8px;border-radius:6px;background:var(--sev-atencao-suave);color:var(--sev-atencao);font-size:12.5px;font-weight:600"><span aria-hidden="true" style="font-family:'Material Symbols Rounded';font-size:16px;line-height:1;font-variation-settings:'FILL' 1">warning</span>Atenção</span>
+          <h2 id="dw" style="margin:0;font-size:18px;font-weight:600">Linhas 120 a 138 · <span style="font-family:'JetBrains Mono',monospace">peso_kg</span></h2>
+          <span style="font-size:14px;color:var(--cor-texto-2)">19 linhas destacadas; 17 delas terminam em 0 ou 5.</span>
+        </div>
+        <button onClick="{{ fecharDrawer }}" aria-label="Fechar" style="all:unset;width:40px;height:40px;display:grid;place-items:center;border-radius:8px;cursor:pointer;outline:2px solid var(--cor-foco);outline-offset:-2px"><span aria-hidden="true" style="font-family:'Material Symbols Rounded';font-size:22px;line-height:1">close</span></button>
+      </div>
+      <div style="flex:1;overflow:auto">
+        <table style="width:100%;border-collapse:collapse;font-size:13.5px;font-variant-numeric:tabular-nums">
+          <thead><tr>
+            <th scope="col" style="position:sticky;top:0;background:var(--cor-superficie-2);text-align:right;padding:10px 16px;font-size:12.5px;font-weight:600;color:var(--cor-texto-2);border-bottom:1px solid var(--cor-borda-forte)">linha</th>
+            <th scope="col" style="position:sticky;top:0;background:var(--cor-superficie-2);text-align:left;padding:10px 16px;font:600 12.5px 'JetBrains Mono',monospace;border-bottom:1px solid var(--cor-borda-forte)">sexo</th>
+            <th scope="col" style="position:sticky;top:0;background:var(--cor-superficie-2);text-align:right;padding:10px 16px;font:600 12.5px 'JetBrains Mono',monospace;border-bottom:1px solid var(--cor-borda-forte)">idade</th>
+            <th scope="col" style="position:sticky;top:0;background:var(--cor-superficie-2);text-align:right;padding:10px 16px;font:600 12.5px 'JetBrains Mono',monospace;border-bottom:1px solid var(--cor-borda-forte)">altura_m</th>
+            <th scope="col" style="position:sticky;top:0;background:var(--cor-superficie-2);text-align:right;padding:10px 16px;font:600 12.5px 'JetBrains Mono',monospace;border-bottom:1px solid var(--cor-borda-forte);color:var(--sev-atencao)">peso_kg</th>
+            <th scope="col" style="position:sticky;top:0;background:var(--cor-superficie-2);text-align:left;padding:10px 16px;font:600 12.5px 'JetBrains Mono',monospace;border-bottom:1px solid var(--cor-borda-forte)">cidade</th>
+          </tr></thead>
+          <tbody>
+            <sc-for list="{{ linhas }}" as="l" hint-placeholder-count="22">
+              <tr style="background:{{ l.bg }};box-shadow:{{ l.sh }}">
+                <td style="padding:7px 16px;text-align:right;color:var(--cor-texto-2);font-weight:{{ l.w }}">{{ l.n }}</td>
+                <td style="padding:7px 16px">{{ l.sexo }}</td>
+                <td style="padding:7px 16px;text-align:right">{{ l.idade }}</td>
+                <td style="padding:7px 16px;text-align:right">{{ l.alt }}</td>
+                <td style="padding:7px 16px;text-align:right;font-weight:{{ l.w }}">{{ l.peso }}</td>
+                <td style="padding:7px 16px">{{ l.cid }}</td>
+              </tr>
+            </sc-for>
+          </tbody>
+        </table>
+      </div>
+      <div style="display:flex;align-items:center;gap:12px;padding:14px 24px;border-top:1px solid var(--cor-borda);font-size:13px;color:var(--cor-texto-2)">
+        <span style="flex:1">Linhas 117–141 de 227</span>
+        <span style="white-space:nowrap;flex:none;display:inline-flex;align-items:center;gap:6px;height:36px;padding:0 14px;border-radius:8px;border:1px solid var(--cor-borda-forte);font-size:14px;font-weight:500;color:var(--cor-texto);box-sizing:border-box"><span aria-hidden="true" style="font-family:'Material Symbols Rounded';font-size:18px;line-height:1">download</span>Exportar estas linhas</span>
+      </div>
+    </aside>
+  </sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1440,&quot;height&quot;:1500},&quot;estado&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;alertas&quot;,&quot;vazio&quot;],&quot;default&quot;:&quot;alertas&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;drawer&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;},&quot;regrasAbertas&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;},&quot;tema&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;claro&quot;,&quot;escuro&quot;],&quot;default&quot;:&quot;claro&quot;,&quot;tsType&quot;:&quot;string&quot;}}">
+class Component extends DCLogic {
+  state = { drawer: null, regras: null };
+  renderVals() {
+    const vazio = this.props.estado === 'vazio';
+    const drawer = this.state.drawer ?? !!this.props.drawer;
+    const regrasAbertas = this.state.regras ?? (this.props.regrasAbertas ?? vazio);
+    const modoBase = this.props.modoCartoes ?? 'padrao';
+    const grupos = [
+      { col: 'altura_m', sub: '2 alertas', alertas: [{ r: 'R1', modo: modoBase }, { r: 'R2', modo: 'recolhido' }] },
+      { col: 'peso_kg', sub: '1 alerta', alertas: [{ r: 'R4', modo: modoBase }] },
+      { col: 'idade', sub: '2 alertas', alertas: [{ r: 'R9', modo: 'recolhido' }, { r: 'R7', modo: 'recolhido' }] },
+    ];
+    const pesos = [63.4, 66.1, 58.7, 70, 75, 80, 75, 70, 65, 72.3, 75, 80, 85, 70, 75, 68.9, 70, 75, 80, 75, 70, 65, 61.2, 77.8, 69.5];
+    const sx = 'MFMFMFFMMFMFMFFMMFMFFMFMF', cs = ['Goiânia', 'Anápolis', 'Goiânia', 'Rio Verde', 'Aparecida de Goiânia', 'Goiânia', 'Luziânia'];
+    const linhas = pesos.map((p, i) => { const n = 117 + i; const dest = n >= 120 && n <= 138; return { n, sexo: sx[i], idade: 22 + (i * 7) % 40, alt: (1.58 + ((i * 13) % 30) / 100).toFixed(2).replace('.', ','), peso: p.toFixed(1).replace('.', ','), cid: cs[i % 7], bg: dest ? 'var(--cor-destaque-linha)' : (i % 2 ? 'var(--cor-zebra)' : 'transparent'), sh: dest ? 'inset 3px 0 0 var(--sev-atencao)' : 'none', w: dest ? 600 : 400 }; });
+    return {
+      tema: this.props.tema ?? 'claro', vazio, comAlertas: !vazio, grupos, drawer, linhas,
+      regrasAbertas, setaRegras: regrasAbertas ? 'expand_more' : 'chevron_right',
+      alternarRegras: () => this.setState({ regras: !regrasAbertas }),
+      abrirDrawer: () => this.setState({ drawer: true }), fecharDrawer: () => this.setState({ drawer: false }),
+    };
+  }
+}
+</script>
+</body>
+</html>

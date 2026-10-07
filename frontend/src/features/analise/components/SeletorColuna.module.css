@@ -1,0 +1,19 @@
+/* Tela 4: seletor de coluna (320 × 44) com o ChipTipo sobreposto antes da seta. */
+.seletor {
+  position: relative;
+  width: 320px;
+}
+
+/* Espaço para o chip; se o Select ganhar adorno próprio, remover. */
+.seletor :global(select) {
+  font-family: var(--fonte-mono);
+  padding-right: 150px;
+}
+
+/* O campo tem 44 px de altura e o chip 26. */
+.chip {
+  position: absolute;
+  right: 40px;
+  bottom: 9px;
+  pointer-events: none;
+}

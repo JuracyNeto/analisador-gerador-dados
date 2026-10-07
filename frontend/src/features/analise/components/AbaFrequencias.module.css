@@ -1,0 +1,13 @@
+/* Tela 4b: tabela ao lado do gráfico principal. */
+.grade {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+  gap: var(--esp-20);
+  align-items: start;
+}
+
+@media (max-width: 1279px) {
+  .grade {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

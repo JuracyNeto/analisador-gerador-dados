@@ -1,0 +1,38 @@
+.area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--esp-12);
+  padding: var(--esp-24);
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio-lg);
+  background: var(--cor-superficie-2);
+}
+.cabecalho {
+  width: 620px;
+  max-width: 100%;
+  margin: 0;
+  color: var(--cor-texto-2);
+  font-size: 13px;
+}
+.pagina {
+  position: relative;
+  width: 620px;
+  max-width: 100%;
+  aspect-ratio: 1 / 1.414;
+  box-shadow: var(--sombra-2);
+}
+/* Prévia sempre clara (D47): o HTML traz o próprio CSS claro. */
+.iframe {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  color-scheme: light;
+}
+.cobertura {
+  position: absolute;
+  inset: 0;
+  padding: var(--esp-48);
+  background: var(--cor-superficie);
+}

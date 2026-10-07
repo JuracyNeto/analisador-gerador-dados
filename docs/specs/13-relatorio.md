@@ -8,6 +8,8 @@ Domínio: `app/dominios/relatorio/` (templates Jinja2 em `templates/`) · Endpoi
 4. Limpeza: log em frases
 5. Por coluna analisada: tabela de frequência, tendência central, separatrizes, dispersão, gráfico principal, interpretações automáticas
 
+Parâmetros: `secoes` (leitura, tipos, limpeza, analises; D57), `colunas` e `offline`. Colunas identificador e vazias ficam fora.
+
 ## Relatório completo (M4) — adiciona
 6. Distribuição ajustada, assimetria e curtose
 7. Bivariada: r, equação, R², gráfico
@@ -20,6 +22,7 @@ Domínio: `app/dominios/relatorio/` (templates Jinja2 em `templates/`) · Endpoi
 - Fórmulas renderizadas com KaTeX (CDN) e fallback em texto
 - CSS `@media print`: quebra de página por seção, gráficos com largura total, sem elementos interativos
 - O usuário escolhe colunas e seções na tela Relatório
+- A prévia da tela usa sempre `offline=true`; o arquivo baixado segue a opção "Funciona sem internet" (D84)
 - Sem seção sobre uso de IA
 
 ## Relatório final do trabalho (documento do grupo)
