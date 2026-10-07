@@ -32,6 +32,7 @@ export const TEXTOS_VARIAVEIS = {
   toastTipo: (coluna: string, rotuloTipo: string) =>
     `Tipo de ${coluna} alterado para ${rotuloTipo}.`,
   continuar: 'Continuar para Limpeza',
+  voltar: 'Voltar para Importar',
 } as const;
 
 /** Singular e plural no resumo do topo ("2 contínuas · 1 discreta"). */

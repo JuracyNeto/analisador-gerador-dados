@@ -136,4 +136,20 @@ describe('PaginaLimpeza', () => {
     ).toBeInTheDocument();
     expect(chamadasPara(falso, 'POST', `${BASE}/limpeza/desfazer`)).toHaveLength(1);
   });
+
+  it('"Voltar para Variáveis" leva à etapa 2', async () => {
+    simularApi(rotas());
+    const { usuario, roteador } = renderizar();
+
+    await usuario.click(await screen.findByRole('button', { name: /Voltar para Variáveis/ }));
+    expect(roteador.state.location.pathname).toBe('/variaveis');
+  });
+
+  it('com problemas: "Continuar para Análise" leva à etapa 4', async () => {
+    simularApi(rotas());
+    const { usuario, roteador } = renderizar();
+
+    await usuario.click(await screen.findByRole('button', { name: /Continuar para Análise/ }));
+    expect(roteador.state.location.pathname).toBe('/analise');
+  });
 });
