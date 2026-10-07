@@ -1,0 +1,42 @@
+/* Um grupo de separatrizes (Quartis, Decis ou Percentis). */
+.lista {
+  min-width: 0;
+}
+
+.titulo {
+  margin: 0;
+  padding: var(--esp-8) var(--esp-16);
+  background: var(--cor-superficie-2);
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--cor-texto-2);
+  border-bottom: 1px solid var(--cor-borda-forte);
+}
+
+.itens {
+  margin: 0;
+}
+
+.item {
+  display: flex;
+  justify-content: space-between;
+  padding: 7px var(--esp-16);
+  font: 13.5px var(--fonte-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+.item[data-destaque='true'] {
+  background: var(--cor-primaria-suave);
+}
+
+.item[data-destaque='true'] .valor {
+  font-weight: 600;
+}
+
+.rotulo {
+  color: var(--cor-texto-2);
+}
+
+.valor {
+  margin: 0;
+}

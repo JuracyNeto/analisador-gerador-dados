@@ -44,3 +44,11 @@ export function lerNumeroPtBr(texto: string): number | null {
   if (PADRAO_PT_BR.test(limpo)) return Number(limpo.replaceAll('.', '').replace(',', '.'));
   return PADRAO_PONTO_DECIMAL.test(limpo) ? Number(limpo) : null;
 }
+
+/** Número com casas decimais fixas, pt-BR: formatarDecimal(4) → "4,0". */
+export function formatarDecimal(valor: number, casas = 1): string {
+  return new Intl.NumberFormat('pt-BR', {
+    minimumFractionDigits: casas,
+    maximumFractionDigits: casas,
+  }).format(valor);
+}

@@ -41,6 +41,8 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e
   - Tela Limpeza: cards de resumo, ação por problema, limites por coluna, aplicar e desfazer tudo, registro "O que fizemos" (3a).
   - Cabeçalho com linhas × colunas do dataset; sessão expirada avisa uma só vez, mesmo com várias consultas falhando juntas.
   - `ChipTipo`, `ConteudoConsulta`, `BarraAcoes`, `ExigeDataset`, `SemDataset` e convenção de chaves de query por dataset.
+- Tela Análise univariada (etapa 4): seletor de coluna (na URL), abas Frequências, Tendência central, Separatrizes, Dispersão e Gráficos; abas e medidas que não se aplicam aparecem desabilitadas ou esmaecidas com o motivo; número de classes ajustável (3 a 30); "Onde está meu valor?" com régua das separatrizes; estados de carregando, vazio e erro.
+- Utilitários do frontend: `urlDaApi`/`requisitarBlob`, colunas analisáveis compartilhadas, `baixarArquivo`, `formatarDecimal`.
 
 ### Removido
 - Página inicial com o status da API (as telas mostram a falta de conexão no próprio estado de erro).

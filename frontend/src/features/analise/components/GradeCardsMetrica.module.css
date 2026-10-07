@@ -1,0 +1,18 @@
+/* Tela 4: grade de cards de métrica (Tendência, Dispersão, resumo categórico). */
+.grade {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--esp-16);
+  align-items: start;
+}
+
+.grade[data-colunas='4'] {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+@media (max-width: 1279px) {
+  .grade,
+  .grade[data-colunas='4'] {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}

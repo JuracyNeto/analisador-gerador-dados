@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 import { respostaJson } from '../../testes/api';
-import { ErroApi, requisitar } from './cliente';
+import { ErroApi, requisitar, requisitarBlob, urlDaApi } from './cliente';
 
 describe('requisitar', () => {
   it('retorna o corpo quando a resposta é ok', async () => {
@@ -50,6 +50,39 @@ describe('requisitar', () => {
     await expect(requisitar('/saude')).rejects.toMatchObject({
       status: 502,
       codigo: 'SEM_CONEXAO',
+    });
+  });
+});
+
+describe('urlDaApi e requisitarBlob', () => {
+  it('monta a URL com o prefixo /api', () => {
+    expect(urlDaApi('/datasets/ds1/relatorio?offline=true')).toBe(
+      '/api/datasets/ds1/relatorio?offline=true',
+    );
+  });
+
+  it('devolve o corpo como Blob', async () => {
+    const html = new Response('<html></html>', {
+      status: 200,
+      headers: { 'Content-Type': 'text/html' },
+    });
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue(html));
+
+    const blob = await requisitarBlob('/datasets/ds1/relatorio');
+
+    await expect(blob.text()).resolves.toBe('<html></html>');
+  });
+
+  it('converte o erro padronizado também quando o corpo esperado é Blob', async () => {
+    const corpo = {
+      codigo: 'COLUNA_VAZIA',
+      mensagem: 'A coluna não tem valores.',
+      sugestao: 'Escolha outra.',
+    };
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue(respostaJson(400, corpo)));
+
+    await expect(requisitarBlob('/datasets/ds1/relatorio')).rejects.toMatchObject({
+      codigo: 'COLUNA_VAZIA',
     });
   });
 });

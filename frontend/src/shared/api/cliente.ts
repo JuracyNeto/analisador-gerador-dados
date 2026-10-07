@@ -50,16 +50,31 @@ async function lerCorpoDeErro(resposta: Response): Promise<CorpoErroApi> {
   return ehCorpoErroApi(corpo) ? corpo : corpoSemFormatoPadrao(resposta.status);
 }
 
-/**
- * Faz a requisição e devolve o corpo tipado.
- * O `as T` é o único cast permitido: T vem dos tipos gerados do OpenAPI (schema.d.ts).
- */
-export async function requisitar<T>(caminho: string, opcoes?: RequestInit): Promise<T> {
-  const resposta = await fetch(`${PREFIXO_API}${caminho}`, opcoes).catch(() => {
+export function urlDaApi(caminho: string): string {
+  return `${PREFIXO_API}${caminho}`;
+}
+
+async function buscar(caminho: string, opcoes?: RequestInit): Promise<Response> {
+  const resposta = await fetch(urlDaApi(caminho), opcoes).catch(() => {
     throw new ErroApi(0, SEM_CONEXAO);
   });
   if (!resposta.ok) {
     throw new ErroApi(resposta.status, await lerCorpoDeErro(resposta));
   }
+  return resposta;
+}
+
+/**
+ * Faz a requisição e devolve o corpo tipado.
+ * O `as T` é o único cast permitido: T vem dos tipos gerados do OpenAPI (schema.d.ts).
+ */
+export async function requisitar<T>(caminho: string, opcoes?: RequestInit): Promise<T> {
+  const resposta = await buscar(caminho, opcoes);
   return (await resposta.json()) as T;
+}
+
+/** Para respostas que não são JSON (ex.: relatório HTML para download). */
+export async function requisitarBlob(caminho: string): Promise<Blob> {
+  const resposta = await buscar(caminho);
+  return resposta.blob();
 }

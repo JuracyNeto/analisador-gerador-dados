@@ -1,0 +1,12 @@
+/* Card do gráfico: o resumo vem do Grafico (shared); aqui só o "Por que este gráfico?". */
+.porque {
+  margin: var(--esp-8) 0 0;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--cor-texto-2);
+}
+
+.porque strong {
+  color: var(--cor-texto);
+  font-weight: 600;
+}
