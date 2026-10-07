@@ -1,0 +1,13 @@
+/* Tela 1a: papel de cada uma das primeiras linhas do arquivo. */
+.fora {
+  color: var(--cor-texto-2);
+}
+
+.cabecalho {
+  color: var(--cor-primaria);
+  font-weight: 600;
+}
+
+.dados {
+  color: var(--cor-texto-2);
+}

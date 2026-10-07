@@ -3,6 +3,7 @@
 import csv
 import io
 import json
+import math
 import re
 import zipfile
 from collections.abc import Callable
@@ -16,18 +17,27 @@ from app.dominios.datasets.deteccao import (
     SEPARADOR_ESPACOS,
     Deteccao,
     decodificar,
-    detectar_cabecalho,
     detectar_decimal,
     detectar_formato,
+    detectar_linha_cabecalho,
     detectar_separador,
-    linhas_amostra,
+    linhas_numeradas,
+    quebrar,
 )
-from app.dominios.datasets.modelos import Aviso, MetadadosLeitura, OpcoesLeitura, ResultadoLeitura
+from app.dominios.datasets.modelos import (
+    Aviso,
+    LinhaArquivo,
+    MetadadosLeitura,
+    OpcoesLeitura,
+    ResultadoLeitura,
+)
 
 VALORES_FALTANTES = ("", "NA", "N/A", "NaN", "null", "None", "-", "?", "—")
 SEPARADORES_SUSPEITOS = (";", ",", "\t")
 NAO_SE_APLICA = "Não se aplica a este formato."
 ESCOLHIDO = "Escolhido por você."
+LINHAS_INICIAIS = 12  # primeiras linhas mostradas para escolher o cabeçalho
+LINHAS_DETECCAO_PLANILHA = 60
 _ESPACOS = re.compile(r"\s+")
 
 
@@ -37,10 +47,11 @@ class _LeituraBruta:
     codificacao: str | None = None
     separador: str | None = None
     decimal: str | None = None
-    tem_cabecalho: bool | None = None
+    linha_cabecalho: int | None = None
     abas: tuple[str, ...] = ()
     motivos: dict[str, str] = field(default_factory=dict)
     amostra: tuple[str, ...] = ()
+    linhas_iniciais: tuple[LinhaArquivo, ...] = ()
 
 
 type Leitor = Callable[[bytes, str, OpcoesLeitura], _LeituraBruta]
@@ -63,24 +74,46 @@ def padronizar_nomes(nomes: list[object]) -> list[str]:
     return resultado
 
 
-def _nomes_do_cabecalho(texto: str, separador: str | None) -> list[object]:
-    primeira = next(linha for linha in texto.splitlines() if linha.strip())
+def _celulas(linha: str, separador: str | None) -> list[str]:
+    """Células de uma linha respeitando aspas (para os nomes e a prévia das linhas)."""
     if separador == SEPARADOR_ESPACOS:
-        return list(re.split(SEPARADOR_ESPACOS, primeira.strip()))
-    return list(next(csv.reader([primeira], delimiter=separador or SEM_SEPARADOR)))
+        return re.split(SEPARADOR_ESPACOS, linha.strip())
+    return next(csv.reader([linha], delimiter=separador or SEM_SEPARADOR), [])
 
 
-def _ler_csv(texto: str, separador: str | None, decimal: str, tem_cabecalho: bool) -> pd.DataFrame:
-    nomes = padronizar_nomes(_nomes_do_cabecalho(texto, separador)) if tem_cabecalho else None
+def _nomes_do_cabecalho(texto: str, separador: str | None, linha: int) -> list[object]:
+    linhas = texto.splitlines()
+    if linha > len(linhas) or not linhas[linha - 1].strip():
+        raise erros.linha_cabecalho_invalida(linha)
+    return list(_celulas(linhas[linha - 1], separador))
+
+
+def _nomes_das_colunas(
+    texto: str, separador: str | None, linha_cabecalho: int, amostra: list[str]
+) -> list[str]:
+    """Nomes do cabeçalho; sem cabeçalho, col_1…col_n na largura da linha mais larga.
+
+    A largura explícita evita que um título de uma célula só defina a tabela inteira.
+    """
+    if linha_cabecalho:
+        return padronizar_nomes(_nomes_do_cabecalho(texto, separador, linha_cabecalho))
+    largura = max((len(_celulas(linha, separador)) for linha in amostra), default=1)
+    return padronizar_nomes([None] * largura)
+
+
+def _ler_csv(
+    texto: str, separador: str | None, decimal: str, nomes: list[str], linha_cabecalho: int
+) -> pd.DataFrame:
+    """Lê a tabela com os nomes dados; a linha do cabeçalho e as de cima ficam de fora."""
     try:
-        dados = pd.read_csv(
+        return pd.read_csv(
             io.StringIO(texto),
             sep=separador or SEM_SEPARADOR,
             engine="python" if separador == SEPARADOR_ESPACOS else "c",
             decimal=decimal,
             thousands="." if decimal == "," else None,
             header=None,
-            skiprows=1 if tem_cabecalho else 0,
+            skiprows=linha_cabecalho,
             names=nomes,
             index_col=False,
             na_values=list(VALORES_FALTANTES),
@@ -89,9 +122,14 @@ def _ler_csv(texto: str, separador: str | None, decimal: str, tem_cabecalho: boo
         )
     except (pd.errors.ParserError, pd.errors.EmptyDataError, ValueError) as erro:
         raise erros.arquivo_ilegivel() from erro
-    if nomes is None:
-        dados.columns = pd.Index(padronizar_nomes([None] * dados.shape[1]))
-    return dados
+
+
+def _linhas_iniciais_texto(texto: str, separador: str | None) -> tuple[LinhaArquivo, ...]:
+    primeiras = texto.splitlines()[:LINHAS_INICIAIS]
+    return tuple(
+        LinhaArquivo(n, tuple(_celulas(linha, separador)) if linha.strip() else ())
+        for n, linha in enumerate(primeiras, start=1)
+    )
 
 
 def _separador(opcoes: OpcoesLeitura, formato: str, amostra: list[str]) -> Deteccao[str | None]:
@@ -104,47 +142,87 @@ def _separador(opcoes: OpcoesLeitura, formato: str, amostra: list[str]) -> Detec
 
 def _ler_texto(conteudo: bytes, formato: str, opcoes: OpcoesLeitura) -> _LeituraBruta:
     texto, codificacao = decodificar(conteudo, opcoes.codificacao)
-    amostra = linhas_amostra(texto)
-    separador = _separador(opcoes, formato, amostra)
-    decimal = _ou_detectar(opcoes.decimal, lambda: detectar_decimal(amostra, separador.valor))
-    cabecalho = _ou_detectar(
-        opcoes.tem_cabecalho, lambda: detectar_cabecalho(amostra, separador.valor)
-    )
-    dados = _ler_csv(texto, separador.valor, decimal.valor, cabecalho.valor)
+    numeradas = linhas_numeradas(texto)
+    # Com a linha do cabeçalho escolhida, o título acima dela não entra nas detecções.
+    escolhida = opcoes.linha_cabecalho or 0
+    separador = _separador(opcoes, formato, [linha for n, linha in numeradas if n >= escolhida])
+    grade = [(n, [c.strip() for c in quebrar(linha, separador.valor)]) for n, linha in numeradas]
+    cabecalho = _ou_detectar(opcoes.linha_cabecalho, lambda: detectar_linha_cabecalho(grade))
+    tabela = [linha for n, linha in numeradas if n >= cabecalho.valor]
+    decimal = _ou_detectar(opcoes.decimal, lambda: detectar_decimal(tabela, separador.valor))
+    linhas = [linha for _, linha in numeradas]
+    nomes = _nomes_das_colunas(texto, separador.valor, cabecalho.valor, linhas)
+    dados = _ler_csv(texto, separador.valor, decimal.valor, nomes, cabecalho.valor)
     return _LeituraBruta(
         dados=dados,
         codificacao=codificacao.valor,
         separador=separador.valor,
         decimal=decimal.valor,
-        tem_cabecalho=cabecalho.valor,
+        linha_cabecalho=cabecalho.valor,
         motivos={
             "codificacao": codificacao.motivo,
             "separador": separador.motivo,
             "decimal": decimal.motivo,
             "cabecalho": cabecalho.motivo,
         },
-        amostra=tuple(amostra),
+        amostra=tuple(tabela),
+        linhas_iniciais=_linhas_iniciais_texto(texto, separador.valor),
     )
 
 
-def _ler_xlsx(conteudo: bytes, _formato: str, opcoes: OpcoesLeitura) -> _LeituraBruta:
+def _texto_da_celula(valor: object) -> str:
+    if valor is None or (isinstance(valor, float) and math.isnan(valor)):
+        return ""
+    if isinstance(valor, float) and valor.is_integer():
+        return str(int(valor))
+    return str(valor).strip()
+
+
+def _celulas_planilha(linha: pd.Series) -> tuple[str, ...]:
+    celulas = tuple(_texto_da_celula(valor) for valor in linha)
+    return celulas if any(celulas) else ()
+
+
+def _grade_planilha(bruto: pd.DataFrame) -> list[tuple[int, list[str]]]:
+    linhas = ((n, _celulas_planilha(linha)) for n, (_, linha) in enumerate(bruto.iterrows(), 1))
+    return [(n, list(celulas)) for n, celulas in linhas if celulas][:LINHAS_DETECCAO_PLANILHA]
+
+
+def _abrir_aba(conteudo: bytes, aba_escolhida: str | None) -> tuple[pd.DataFrame, tuple[str, ...]]:
+    """Aba inteira sem cabeçalho; linha N da planilha = posição N-1. Colunas vazias saem."""
     try:
         planilha = pd.ExcelFile(io.BytesIO(conteudo), engine="openpyxl")
         abas = tuple(str(nome) for nome in planilha.sheet_names)
-        aba = opcoes.aba or abas[0]
-        bruto = planilha.parse(aba, header=None)
+        bruto = planilha.parse(aba_escolhida or abas[0], header=None)
     except (ValueError, KeyError, zipfile.BadZipFile, OSError) as erro:
         raise erros.arquivo_ilegivel() from erro
-    tem_cabecalho = opcoes.tem_cabecalho is not False
-    dados = bruto.iloc[1:] if tem_cabecalho else bruto
-    nomes = list(bruto.iloc[0]) if tem_cabecalho else [None] * bruto.shape[1]
-    dados = dados.set_axis(padronizar_nomes(nomes), axis="columns").infer_objects()
-    motivo_cabecalho = ESCOLHIDO if opcoes.tem_cabecalho is not None else f"1ª linha da aba {aba}."
+    bruto = bruto.dropna(axis="columns", how="all")
+    if bruto.empty:
+        raise erros.arquivo_vazio()
+    return bruto, abas
+
+
+def _linha_valida(bruto: pd.DataFrame, linha: int) -> bool:
+    return linha == 0 or (linha <= len(bruto) and bool(_celulas_planilha(bruto.iloc[linha - 1])))
+
+
+def _ler_xlsx(conteudo: bytes, _formato: str, opcoes: OpcoesLeitura) -> _LeituraBruta:
+    bruto, abas = _abrir_aba(conteudo, opcoes.aba)
+    cabecalho = _ou_detectar(
+        opcoes.linha_cabecalho, lambda: detectar_linha_cabecalho(_grade_planilha(bruto))
+    )
+    linha = cabecalho.valor
+    if not _linha_valida(bruto, linha):
+        raise erros.linha_cabecalho_invalida(linha)
+    nomes = list(bruto.iloc[linha - 1]) if linha else [None] * bruto.shape[1]
+    dados = bruto.iloc[linha:].set_axis(padronizar_nomes(nomes), axis="columns").infer_objects()
+    iniciais = enumerate(bruto.head(LINHAS_INICIAIS).iterrows(), start=1)
     return _LeituraBruta(
         dados=dados,
-        tem_cabecalho=tem_cabecalho,
+        linha_cabecalho=linha,
         abas=abas,
-        motivos={"cabecalho": motivo_cabecalho},
+        motivos={"cabecalho": cabecalho.motivo},
+        linhas_iniciais=tuple(LinhaArquivo(n, _celulas_planilha(v)) for n, (_, v) in iniciais),
     )
 
 
@@ -170,8 +248,7 @@ def _ler_json(conteudo: bytes, _formato: str, opcoes: OpcoesLeitura) -> _Leitura
     return _LeituraBruta(
         dados=tabela,
         codificacao=codificacao.valor,
-        tem_cabecalho=True,
-        motivos={"codificacao": codificacao.motivo, "cabecalho": "Nomes vêm das chaves do JSON."},
+        motivos={"codificacao": codificacao.motivo},
     )
 
 
@@ -222,12 +299,13 @@ def _metadados(
         codificacao=bruta.codificacao,
         separador=bruta.separador,
         decimal=bruta.decimal,
-        tem_cabecalho=bruta.tem_cabecalho,
+        linha_cabecalho=bruta.linha_cabecalho,
         n_linhas=len(dados),
         n_colunas=dados.shape[1],
         abas=bruta.abas,
         avisos=_avisos(bruta, dados.shape[1]),
         motivos=motivos | bruta.motivos,
+        linhas_iniciais=bruta.linhas_iniciais,
     )
 
 

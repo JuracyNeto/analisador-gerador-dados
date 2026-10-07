@@ -68,4 +68,16 @@ describe('PaginaVariaveis', () => {
     renderizarComProvedores(<PaginaVariaveis />);
     expect(screen.getByText('Nenhum arquivo importado')).toBeInTheDocument();
   });
+
+  it('"Voltar para Importar" leva à etapa 1', async () => {
+    simularApi([{ caminho: CAMINHO_COLUNAS, corpo: COLUNAS_SAUDE }]);
+    const { usuario, roteador } = renderizarComProvedores(<PaginaVariaveis />, {
+      rota: '/variaveis',
+      dataset: DATASET_TESTE,
+    });
+
+    await usuario.click(await screen.findByRole('button', { name: /Voltar para Importar/ }));
+
+    expect(roteador.state.location.pathname).toBe('/importar');
+  });
 });

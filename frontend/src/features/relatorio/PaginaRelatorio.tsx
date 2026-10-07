@@ -1,7 +1,10 @@
 import { useState } from 'react';
 import { useColunasAnalisaveis } from '../../shared/api/colunas';
+import BotaoEtapa from '../../shared/navegacao/BotaoEtapa';
+import { CAMINHOS } from '../../shared/navegacao/caminhos';
 import SemDataset from '../../shared/sessao/SemDataset';
 import { useSessao } from '../../shared/sessao/useSessao';
+import BarraAcoes from '../../shared/ui/BarraAcoes';
 import Botao from '../../shared/ui/Botao';
 import EstadoErro from '../../shared/ui/EstadoErro';
 import PaginaEtapa from '../../shared/ui/PaginaEtapa';
@@ -16,6 +19,14 @@ import { TEXTOS_RELATORIO } from './textos';
 
 const ETAPA_RELATORIO = 8;
 const T = TEXTOS_RELATORIO;
+
+const ACOES_RODAPE = (
+  <BarraAcoes>
+    <BotaoEtapa para={CAMINHOS.analise} sentido="voltar">
+      {T.voltar}
+    </BotaoEtapa>
+  </BarraAcoes>
+);
 
 interface PropsAcoes {
   baixando: boolean;
@@ -101,6 +112,7 @@ function RelatorioDoDataset({ datasetId, nomeArquivo }: Readonly<Props>) {
           />
         </div>
       )}
+      {ACOES_RODAPE}
     </PaginaEtapa>
   );
 }

@@ -5,13 +5,14 @@ Pasta: `frontend/` · React + Vite + TypeScript · `react-plotly.js` · roteamen
 - **Barra lateral fixa** com as 8 etapas (ícone + nome + estado: concluída ✓ / atual / bloqueada). Etapas 2–8 liberadas após importar. Etapas que entram em versões futuras (5–7 no M1) ficam bloqueadas com "Disponível na versão {v}." (D60).
 - **Cabeçalho:** nome do arquivo ativo, n linhas × colunas, botão "Trocar arquivo", seletor de tema claro/escuro.
 - **Área principal** com título da etapa, uma frase de ajuda e o conteúdo.
+- **Barra de ações** no fim das etapas 2, 3, 4 e 8: secundário "Voltar para <etapa anterior disponível>" à esquerda e primário "Continuar para <próxima etapa>" à direita (D89). Na Limpeza sem problemas, o "Continuar" fica só no estado vazio.
 - **Sessão:** o arquivo ativo e as etapas visitadas ficam salvos no navegador; se a API avisar que a sessão expirou, o app volta para Importar com um aviso (D61).
 - Responsivo: ≥ 1280 px principal; 768–1279 px barra lateral recolhida (72 px), abre por cima do conteúdo; < 768 px leitura básica (não é foco).
 
 ## Telas
 | # | Tela | Conteúdo principal | Ações |
 |---|---|---|---|
-| 1 | Importar | Área de arrastar/soltar; formatos aceitos; após envio: detecções (formato, separador, decimal, codificação) com opção de corrigir; prévia de 20 linhas | Enviar, corrigir leitura, continuar |
+| 1 | Importar | Área de arrastar/soltar; formatos aceitos; após envio: detecções (formato, separador, decimal, codificação, aba, linha do cabeçalho) com opção de corrigir — também depois de avançar ou recarregar, pelo arquivo guardado no servidor (D88); início do arquivo; prévia de 20 linhas | Enviar, corrigir leitura (com aviso se houver tipos corrigidos ou limpeza), ler de novo, continuar |
 | 2 | Variáveis | Tabela: coluna · tipo (chip colorido + ícone) · motivo · n válidos/faltantes · exemplos · seletor para corrigir; editor de ordem para ordinais: arrastar nativo, Subir/Descer e ↑/↓ (D62) | Corrigir tipo, reordenar categorias |
 | 3 | Limpeza | Cards de resumo (faltantes, duplicados, fora de faixa, inconsistências); por problema, lista com ação escolhida; limites min/máx opcionais; log das ações | Aplicar, desfazer tudo |
 | 4 | Análise univariada | Seletor de coluna (com chip de tipo); abas: Frequências · Tendência · Separatrizes · Dispersão · Gráficos (Forma e distribuição entra no M2, D60); coluna escolhida na URL (D78); cada métrica em card com valor, interpretação e "ver fórmula"; itens não aplicáveis aparecem esmaecidos com motivo; painel "Onde está meu valor?" | Trocar coluna, nº de classes, consultar valor |

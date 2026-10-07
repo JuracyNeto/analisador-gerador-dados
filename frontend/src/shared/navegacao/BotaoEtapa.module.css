@@ -1,0 +1,4 @@
+/* Na barra de ações (alinhada à direita), o "Voltar" fica sozinho à esquerda. */
+.voltar {
+  margin-right: auto;
+}

@@ -3,7 +3,7 @@
 from datetime import datetime
 from typing import Literal
 
-from pydantic import BaseModel, ConfigDict, TypeAdapter
+from pydantic import BaseModel, ConfigDict, Field, TypeAdapter
 
 from app.compartilhado.tipos import OrigemTipo, TipoVariavel
 
@@ -21,17 +21,23 @@ class Aviso(Modelo):
     mensagem: str
 
 
+class LinhaArquivo(Modelo):
+    numero: int
+    celulas: list[str]
+
+
 class MetadadosLeitura(Modelo):
     formato: Literal["txt", "csv", "tsv", "xlsx", "json"]
     codificacao: str | None
     separador: str | None
     decimal: str | None
-    tem_cabecalho: bool | None
+    linha_cabecalho: int | None
     n_linhas: int
     n_colunas: int
     abas: list[str]
     avisos: list[Aviso]
     motivos: dict[str, str]
+    linhas_iniciais: list[LinhaArquivo]
 
 
 class TipoColuna(Modelo):
@@ -71,6 +77,16 @@ class EntradaLog(Modelo):
     frase: str
 
 
+class PedidoLeitura(Modelo):
+    """Opções que sobrescrevem a detecção; vazio = detectar tudo de novo (spec 01)."""
+
+    separador: str | None = None
+    decimal: Literal[",", "."] | None = None
+    codificacao: str | None = None
+    aba: str | None = None
+    linha_cabecalho: int | None = Field(default=None, ge=0)
+
+
 class ResumoDataset(Modelo):
     dataset_id: str
     nome_arquivo: str
@@ -79,6 +95,8 @@ class ResumoDataset(Modelo):
     n_linhas_original: int
     n_colunas: int
     log_limpeza: list[EntradaLog]
+    opcoes_leitura: PedidoLeitura
+    tem_ajustes: bool
 
 
 class PaginaDataset(Modelo):

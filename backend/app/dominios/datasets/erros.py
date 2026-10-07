@@ -34,6 +34,14 @@ def json_invalido() -> EntradaInvalida:
     )
 
 
+def linha_cabecalho_invalida(linha: int) -> EntradaInvalida:
+    return EntradaInvalida(
+        "LINHA_CABECALHO_INVALIDA",
+        f"A linha {linha} não existe no arquivo ou está vazia.",
+        "Escolha outra linha para o cabeçalho.",
+    )
+
+
 def arquivo_ilegivel() -> EntradaInvalida:
     return EntradaInvalida(
         "ARQUIVO_ILEGIVEL",

@@ -4,9 +4,10 @@ Camada de apresentação: `router.py` + `schemas.py` de cada domínio; `app/main
 ## Endpoints
 | Método | Rota | Corpo / query | Resposta | Spec |
 |---|---|---|---|---|
-| POST | `/datasets` | multipart `arquivo` + opções de leitura | `{dataset_id, metadados, previa[20], colunas[]}` | 01 |
+| POST | `/datasets` | multipart `arquivo` + opções de leitura (`separador`, `decimal`, `codificacao`, `aba`, `linha_cabecalho`) | `{dataset_id, metadados, previa[20], colunas[]}` | 01 |
 | POST | `/datasets/exemplo` | — | igual ao `POST /datasets` (carrega `dados-exemplo/pesquisa_saude.txt`, D52) | 01 |
-| GET | `/datasets/{id}` | `?pagina=&tamanho=&versao=original|atual` | `{resumo, versao, pagina, tamanho, total_paginas, linhas}` (D55) | — |
+| POST | `/datasets/{id}/leitura` | `{separador?, decimal?, codificacao?, aba?, linha_cabecalho?}` (vazio = detectar tudo de novo) | igual ao `POST /datasets`, com o mesmo `dataset_id`; tipos e limpeza recomeçam (D88) | 01 |
+| GET | `/datasets/{id}` | `?pagina=&tamanho=&versao=original|atual` | `{resumo, versao, pagina, tamanho, total_paginas, linhas}` (D55); `resumo` traz `opcoes_leitura` e `tem_ajustes` (tipos corrigidos ou limpeza aplicada) | — |
 | DELETE | `/datasets/{id}` | — | 204 | — |
 | GET | `/datasets/{id}/colunas` | — | `TipoColuna[]` | 02 |
 | PATCH | `/datasets/{id}/colunas/{col}` | `{tipo, categorias_ordem?}` | `TipoColuna` | 02 |

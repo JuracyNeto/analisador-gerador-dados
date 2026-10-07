@@ -1,20 +1,18 @@
-/** Detecções da leitura (MetadadosLeitura) ↔ campos da tela 1a ↔ formulário do POST /datasets. */
-import type { components, paths } from '../../shared/api/schema';
+/** Detecções da leitura (MetadadosLeitura) ↔ campos da tela 1a ↔ pedido de releitura. */
+import type { components } from '../../shared/api/schema';
 import {
-  OPCOES_CABECALHO,
   OPCOES_CODIFICACAO,
   OPCOES_DECIMAL,
   OPCOES_SEPARADOR,
   ROTULOS_FORMATO,
+  rotuloLinha,
+  SEM_CABECALHO,
   TEXTOS_IMPORTAR as T,
 } from './textos';
 
 export type MetadadosLeitura = components['schemas']['MetadadosLeitura'];
-type CorpoImportacao = NonNullable<
-  paths['/api/datasets']['post']['requestBody']
->['content']['multipart/form-data'];
-/** Opções de leitura que sobrescrevem a detecção (separador, decimal, codificacao, aba, tem_cabecalho). */
-export type OpcoesLeitura = Partial<Omit<CorpoImportacao, 'arquivo'>>;
+/** Opções de leitura que sobrescrevem a detecção (separador, decimal, codificacao, aba, linha_cabecalho). */
+export type OpcoesLeitura = components['schemas']['PedidoLeitura'];
 
 export type CampoDeteccao = keyof typeof T.campos;
 
@@ -69,9 +67,17 @@ function descrever(
   };
 }
 
-function valorCabecalho(tem: boolean | null): string | null {
-  if (tem === null) return null;
-  return tem ? 'sim' : 'nao';
+/** Linhas não vazias do início do arquivo + "Sem cabeçalho" (valor 0). */
+function opcoesCabecalho(meta: MetadadosLeitura): readonly OpcaoLeitura[] {
+  const linhas = meta.linhas_iniciais
+    .filter((linha) => linha.celulas.length > 0)
+    .map((linha) => ({ valor: String(linha.numero), rotulo: rotuloLinha(linha.numero) }));
+  return [...linhas, SEM_CABECALHO];
+}
+
+function descreverCabecalho(meta: MetadadosLeitura): DescricaoCampo | null {
+  const linha = meta.linha_cabecalho;
+  return descrever('cabecalho', linha === null ? null : String(linha), opcoesCabecalho(meta), meta);
 }
 
 function descreverAba(meta: MetadadosLeitura, opcoes: OpcoesLeitura): DescricaoCampo | null {
@@ -86,7 +92,7 @@ const CONSTRUTORES: Record<CampoDeteccao, Construtor> = {
   decimal: (m) => descrever('decimal', m.decimal, OPCOES_DECIMAL, m),
   codificacao: (m) => descrever('codificacao', m.codificacao, OPCOES_CODIFICACAO, m),
   aba: descreverAba,
-  cabecalho: (m) => descrever('cabecalho', valorCabecalho(m.tem_cabecalho), OPCOES_CABECALHO, m),
+  cabecalho: descreverCabecalho,
 };
 
 export function descreverDeteccoes(
@@ -105,15 +111,6 @@ export function aplicarCorrecao(
   valor: string,
 ): OpcoesLeitura {
   if (campo === 'formato') return opcoes;
-  if (campo === 'cabecalho') return { ...opcoes, tem_cabecalho: valor === 'sim' };
+  if (campo === 'cabecalho') return { ...opcoes, linha_cabecalho: Number(valor) };
   return { ...opcoes, [campo]: valor };
-}
-
-export function montarFormulario(arquivo: File, opcoes: OpcoesLeitura): FormData {
-  const formulario = new FormData();
-  formulario.append('arquivo', arquivo);
-  for (const [chave, valor] of Object.entries(opcoes)) {
-    if (valor !== null) formulario.append(chave, String(valor));
-  }
-  return formulario;
 }

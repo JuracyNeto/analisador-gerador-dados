@@ -24,7 +24,7 @@ def test_importar_com_opcoes_do_formulario(cliente: TestClient) -> None:
     resposta = cliente.post(
         "/api/datasets",
         files={"arquivo": ARQUIVO},
-        data={"separador": ";", "decimal": ",", "tem_cabecalho": "true"},
+        data={"separador": ";", "decimal": ",", "linha_cabecalho": "1"},
     )
 
     assert resposta.json()["metadados"]["motivos"]["separador"] == "Escolhido por você."
