@@ -51,7 +51,7 @@ def _script_plotly(offline: bool) -> str:
 def _leitura(resumo: Resumo) -> str:
     m = resumo.metadados
     dados = DadosLeitura(
-        m.formato, m.separador, m.decimal, m.codificacao, m.tem_cabecalho, m.n_linhas, m.n_colunas
+        m.formato, m.separador, m.decimal, m.codificacao, m.linha_cabecalho, m.n_linhas, m.n_colunas
     )
     return textos.descrever_leitura(dados)
 

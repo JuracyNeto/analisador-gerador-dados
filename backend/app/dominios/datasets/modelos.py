@@ -19,7 +19,8 @@ class OpcoesLeitura:
     decimal: str | None = None
     codificacao: str | None = None
     aba: str | None = None
-    tem_cabecalho: bool | None = None
+    linha_cabecalho: int | None = None
+    """Nº da linha do cabeçalho no arquivo; 0 = sem cabeçalho."""
 
 
 @dataclass(frozen=True, slots=True)
@@ -29,17 +30,26 @@ class Aviso:
 
 
 @dataclass(frozen=True, slots=True)
+class LinhaArquivo:
+    """Uma das primeiras linhas do arquivo como está escrita (vazia = sem células)."""
+
+    numero: int
+    celulas: tuple[str, ...]
+
+
+@dataclass(frozen=True, slots=True)
 class MetadadosLeitura:
     formato: str
     codificacao: str | None
     separador: str | None
     decimal: str | None
-    tem_cabecalho: bool | None
+    linha_cabecalho: int | None
     n_linhas: int
     n_colunas: int
     abas: tuple[str, ...] = ()
     avisos: tuple[Aviso, ...] = ()
     motivos: Mapping[str, str] = field(default_factory=dict)
+    linhas_iniciais: tuple[LinhaArquivo, ...] = ()
 
 
 @dataclass(frozen=True, slots=True, eq=False)

@@ -2,6 +2,7 @@
 
 import re
 from collections import Counter
+from collections.abc import Sequence
 from dataclasses import dataclass
 from pathlib import PurePath
 
@@ -13,6 +14,7 @@ CODIFICACAO_FINAL = "latin-1"  # decodifica qualquer byte; é o último recurso
 BOM_UTF8 = b"\xef\xbb\xbf"
 LINHAS_AMOSTRA = 50
 MIN_LINHAS_CABECALHO = 2
+MAX_LINHAS_TITULO = 10  # o cabeçalho é procurado entre as 10 primeiras linhas não vazias
 FRACAO_LINHAS_CONSTANTE = 0.9
 FRACAO_DECIMAL_VIRGULA = 0.8
 SEM_SEPARADOR = "\x1f"  # caractere que não aparece em texto: a linha inteira vira uma célula
@@ -21,6 +23,9 @@ CANDIDATOS_SEPARADOR = (";", ",", "\t", "|", SEPARADOR_ESPACOS)
 _NUMERO = re.compile(r"^-?[\d.,]*\d[\d.,]*$")
 _NUMERO_VIRGULA = re.compile(r"^-?\d{1,3}(\.\d{3})*(,\d+)?$|^-?\d+,\d+$")
 _PALAVRA = re.compile(r"\w+")
+
+type LinhaNumerada = tuple[int, list[str]]
+"""Nº da linha no arquivo (1, 2, …; linhas vazias contam) e as células já quebradas."""
 
 
 @dataclass(frozen=True, slots=True)
@@ -64,9 +69,15 @@ def decodificar(conteudo: bytes, codificacao: str | None) -> tuple[str, Deteccao
     return texto, Deteccao(CODIFICACAO_FINAL, _motivo_codificacao(texto))
 
 
+def linhas_numeradas(texto: str) -> list[tuple[int, str]]:
+    """Primeiras linhas não vazias com o nº da linha no arquivo (as vazias contam)."""
+    numeradas = enumerate(texto.splitlines(), start=1)
+    return [(n, linha) for n, linha in numeradas if linha.strip()][:LINHAS_AMOSTRA]
+
+
 def linhas_amostra(texto: str) -> list[str]:
     """Primeiras linhas não vazias, usadas nas detecções."""
-    return [linha for linha in texto.splitlines() if linha.strip()][:LINHAS_AMOSTRA]
+    return [linha for _, linha in linhas_numeradas(texto)]
 
 
 def quebrar(linha: str, separador: str | None) -> list[str]:
@@ -83,15 +94,25 @@ def _contagem_constante(linhas: list[str], separador: str) -> int:
     return contagem if vezes >= FRACAO_LINHAS_CONSTANTE * len(linhas) else 0
 
 
-def detectar_separador(linhas: list[str]) -> Deteccao[str | None]:
-    """O candidato que aparece o mesmo número de vezes nas linhas e gera mais colunas."""
-    if not linhas:
-        return Deteccao(None, "Não há linhas para analisar.")
+def _separador_constante(linhas: list[str]) -> Deteccao[str | None]:
     contagens = {c: _contagem_constante(linhas, c) for c in CANDIDATOS_SEPARADOR}
     melhor = max(CANDIDATOS_SEPARADOR, key=lambda c: contagens[c])
     if contagens[melhor] == 0:
         return Deteccao(None, "Não encontramos um separador; lemos uma coluna só.")
     return Deteccao(melhor, f"Aparece {contagens[melhor]} vezes em todas as linhas.")
+
+
+def detectar_separador(linhas: list[str]) -> Deteccao[str | None]:
+    """O candidato que aparece o mesmo número de vezes nas linhas e gera mais colunas.
+
+    Linhas de título acima da tabela não seguem a contagem: se não houver separador
+    constante, tenta de novo a partir da 2ª, 3ª… linha (até MAX_LINHAS_TITULO).
+    """
+    if not linhas:
+        return Deteccao(None, "Não há linhas para analisar.")
+    inicios = range(max(1, min(MAX_LINHAS_TITULO, len(linhas) - 1)))
+    deteccoes = (_separador_constante(linhas[inicio:]) for inicio in inicios)
+    return next((d for d in deteccoes if d.valor is not None), _separador_constante(linhas))
 
 
 def _tokens_decimais(linhas: list[str], separador: str | None) -> list[str]:
@@ -126,12 +147,50 @@ def _nome_se_repete(nomes: list[str], resto: list[list[str]]) -> bool:
     )
 
 
-def detectar_cabecalho(linhas: list[str], separador: str | None) -> Deteccao[bool]:
-    """Há cabeçalho se a 1ª linha tem só textos únicos que não se repetem nas colunas abaixo."""
+def _sem_colunas_vazias(linhas: Sequence[LinhaNumerada]) -> list[LinhaNumerada]:
+    """Tira as colunas vazias em todas as linhas (ex.: ";" sobrando no fim de cada linha)."""
+    largura = max(len(celulas) for _, celulas in linhas)
+    usadas = [i for i in range(largura) if any(i < len(c) and c[i] for _, c in linhas)]
+    return [(n, [celulas[i] for i in usadas if i < len(celulas)]) for n, celulas in linhas]
+
+
+def _largura_da_tabela(linhas: Sequence[LinhaNumerada]) -> int:
+    return Counter(len(celulas) for _, celulas in linhas).most_common(1)[0][0]
+
+
+def _linha_cheia(celulas: list[str], largura: int) -> bool:
+    return len(celulas) == largura and all(celulas)
+
+
+def _eh_cabecalho(celulas: list[str], largura: int, abaixo: list[list[str]]) -> bool:
+    return (
+        len(celulas) == largura
+        and _so_nomes_unicos(celulas)
+        and not _nome_se_repete(celulas, abaixo)
+    )
+
+
+def _motivo_cabecalho(numero: int, posicao: int) -> str:
+    if posicao == 0:
+        return "A 1ª linha tem só nomes, sem números."
+    return f"A linha {numero} é a primeira só com nomes; as linhas acima ficam de fora."
+
+
+def detectar_linha_cabecalho(linhas: Sequence[LinhaNumerada]) -> Deteccao[int]:
+    """Nº da linha do cabeçalho (0 = sem cabeçalho).
+
+    É a 1ª linha, entre as MAX_LINHAS_TITULO primeiras, com só nomes únicos na largura da
+    tabela que não se repetem na própria coluna; títulos e linhas incompletas acima dela
+    ficam de fora. Uma linha completa que não é cabeçalho já é dado: sem cabeçalho.
+    """
     if len(linhas) < MIN_LINHAS_CABECALHO:
-        return Deteccao(True, "O arquivo só tem uma linha.")
-    tabela = [[c.strip() for c in quebrar(linha, separador)] for linha in linhas]
-    primeira, resto = tabela[0], tabela[1:]
-    if _so_nomes_unicos(primeira) and not _nome_se_repete(primeira, resto):
-        return Deteccao(True, "A 1ª linha tem só nomes, sem números.")
-    return Deteccao(False, "A 1ª linha parece ser de dados; criamos os nomes col_1, col_2…")
+        return Deteccao(linhas[0][0] if linhas else 1, "O arquivo só tem uma linha.")
+    tabela = _sem_colunas_vazias(linhas)
+    largura = _largura_da_tabela(tabela)
+    for posicao, (numero, celulas) in enumerate(tabela[:MAX_LINHAS_TITULO]):
+        abaixo = [c for _, c in tabela[posicao + 1 :]]
+        if _eh_cabecalho(celulas, largura, abaixo):
+            return Deteccao(numero, _motivo_cabecalho(numero, posicao))
+        if _linha_cheia(celulas, largura):
+            break
+    return Deteccao(0, "A 1ª linha parece ser de dados; criamos os nomes col_1, col_2…")

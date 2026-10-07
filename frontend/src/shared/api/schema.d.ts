@@ -277,8 +277,8 @@ export interface components {
             codificacao?: string | null;
             /** Aba */
             aba?: string | null;
-            /** Tem Cabecalho */
-            tem_cabecalho?: boolean | null;
+            /** Linha Cabecalho */
+            linha_cabecalho?: number | null;
         };
         Celula: string | number | boolean | null;
         /** DatasetCriado */
@@ -438,6 +438,13 @@ export interface components {
             /** Max */
             max?: number | null;
         };
+        /** LinhaArquivo */
+        LinhaArquivo: {
+            /** Numero */
+            numero: number;
+            /** Celulas */
+            celulas: string[];
+        };
         /** LinhaDados */
         LinhaDados: {
             /** Linha */
@@ -498,8 +505,8 @@ export interface components {
             separador: string | null;
             /** Decimal */
             decimal: string | null;
-            /** Tem Cabecalho */
-            tem_cabecalho: boolean | null;
+            /** Linha Cabecalho */
+            linha_cabecalho: number | null;
             /** N Linhas */
             n_linhas: number;
             /** N Colunas */
@@ -512,6 +519,8 @@ export interface components {
             motivos: {
                 [key: string]: string;
             };
+            /** Linhas Iniciais */
+            linhas_iniciais: components["schemas"]["LinhaArquivo"][];
         };
         /** Moda */
         Moda: {

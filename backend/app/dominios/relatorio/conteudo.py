@@ -14,7 +14,7 @@ class DadosLeitura:
     separador: str | None
     decimal: str | None
     codificacao: str | None
-    tem_cabecalho: bool | None
+    linha_cabecalho: int | None
     n_linhas: int
     n_colunas: int
 
