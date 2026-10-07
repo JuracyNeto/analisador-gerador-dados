@@ -31,7 +31,12 @@ export const TEXTOS_IMPORTAR = {
     titulo: 'O que detectamos',
     lemos: (linhas: number, colunas: number) => `Lemos ${linhasEColunas(linhas, colunas)}.`,
     corrijaAbaixo: 'Se algo estiver diferente do seu arquivo, corrija abaixo.',
-    semArquivo: 'Para corrigir a leitura, envie o arquivo de novo.',
+  },
+  releitura: {
+    aviso: 'Ler de novo desfaz os ajustes de tipo e a limpeza.',
+    detalhe: 'Os tipos corrigidos e as ações de limpeza voltam ao início.',
+    confirmar: 'Ler de novo mesmo assim',
+    cancelar: 'Cancelar',
   },
   campos: {
     formato: 'Formato',
@@ -64,6 +69,8 @@ export const TEXTOS_IMPORTAR = {
     titulo: (linhas: number, colunas: number) =>
       `Arquivo lido: ${linhasEColunas(linhas, colunas)}.`,
     descricao: 'As etapas 2 a 8 foram liberadas.',
+    relido: (linhas: number, colunas: number) =>
+      `Arquivo lido de novo: ${linhasEColunas(linhas, colunas)}.`,
   },
 } as const;
 

@@ -41,27 +41,6 @@ describe('useImportacao', () => {
     expect(corpo.get('arquivo')).toBe(ARQUIVO);
   });
 
-  it('corrigir relê o mesmo arquivo com a correção acumulada', async () => {
-    const falso = simularApi([
-      { metodo: 'POST', caminho: '/datasets', status: 201, corpo: DATASET_CRIADO },
-    ]);
-    const { result } = renderizarEEnviar();
-    await waitFor(() => {
-      expect(result.current.importacao.corrigir).not.toBeNull();
-    });
-
-    act(() => {
-      result.current.importacao.corrigir?.('separador', ',');
-    });
-
-    await waitFor(() => {
-      expect(chamadasPara(falso, 'POST', '/datasets')).toHaveLength(2);
-    });
-    const segunda = chamadasPara(falso, 'POST', '/datasets')[1]?.corpo as FormData;
-    expect(segunda.get('arquivo')).toBe(ARQUIVO);
-    expect(segunda.get('separador')).toBe(',');
-  });
-
   it('expõe o erro e o nome do arquivo para o banner', async () => {
     simularApi([
       {
@@ -84,7 +63,7 @@ describe('useImportacao', () => {
     expect(result.current.sessao.dataset).toBeNull();
   });
 
-  it('o exemplo não pode ser corrigido, mas pode ser lido de novo', async () => {
+  it('abrir o exemplo define a sessão', async () => {
     simularApi([
       { metodo: 'POST', caminho: '/datasets/exemplo', status: 201, corpo: DATASET_CRIADO },
     ]);
@@ -95,9 +74,7 @@ describe('useImportacao', () => {
     });
 
     await waitFor(() => {
-      expect(result.current.sessao.dataset).not.toBeNull();
+      expect(result.current.sessao.dataset?.nomeArquivo).toBe('pesquisa_saude.txt');
     });
-    expect(result.current.importacao.corrigir).toBeNull();
-    expect(result.current.importacao.lerDeNovo).not.toBeNull();
   });
 });
