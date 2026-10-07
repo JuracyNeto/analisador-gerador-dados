@@ -4,6 +4,9 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e
 
 ## [Não lançado]
 
+### Adicionado
+- Botões "Voltar para …" e "Continuar para …" no fim das etapas Variáveis, Limpeza, Análise univariada e Relatório.
+
 ## [0.1.0] - 2026-10-07
 
 ### Adicionado
