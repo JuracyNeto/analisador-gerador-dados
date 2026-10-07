@@ -171,6 +171,15 @@ def test_linha_do_cabecalho_escolhida_vira_os_nomes() -> None:
     assert len(resultado.dados) == 1
 
 
+def test_sem_cabecalho_com_titulo_le_tudo_como_dados() -> None:
+    conteudo = b"Pesquisa\n\nsexo;peso\nF;58,2\nM;79,6\n"
+
+    resultado = ler_arquivo(conteudo, "dados.txt", OpcoesLeitura(linha_cabecalho=0))
+
+    assert list(resultado.dados.columns) == ["col_1", "col_2"]
+    assert resultado.dados["col_1"].tolist() == ["Pesquisa", "sexo", "F", "M"]
+
+
 @pytest.mark.parametrize("linha", [2, 9])
 def test_linha_do_cabecalho_vazia_ou_fora_do_arquivo(linha: int) -> None:
     with pytest.raises(EntradaInvalida) as erro:

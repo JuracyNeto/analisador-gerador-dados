@@ -88,15 +88,25 @@ def _nomes_do_cabecalho(texto: str, separador: str | None, linha: int) -> list[o
     return list(_celulas(linhas[linha - 1], separador))
 
 
-def _ler_csv(texto: str, separador: str | None, decimal: str, linha_cabecalho: int) -> pd.DataFrame:
-    """Lê a tabela; as linhas até a do cabeçalho (título e o próprio cabeçalho) ficam de fora."""
-    nomes = (
-        padronizar_nomes(_nomes_do_cabecalho(texto, separador, linha_cabecalho))
-        if linha_cabecalho
-        else None
-    )
+def _nomes_das_colunas(
+    texto: str, separador: str | None, linha_cabecalho: int, amostra: list[str]
+) -> list[str]:
+    """Nomes do cabeçalho; sem cabeçalho, col_1…col_n na largura da linha mais larga.
+
+    A largura explícita evita que um título de uma célula só defina a tabela inteira.
+    """
+    if linha_cabecalho:
+        return padronizar_nomes(_nomes_do_cabecalho(texto, separador, linha_cabecalho))
+    largura = max((len(_celulas(linha, separador)) for linha in amostra), default=1)
+    return padronizar_nomes([None] * largura)
+
+
+def _ler_csv(
+    texto: str, separador: str | None, decimal: str, nomes: list[str], linha_cabecalho: int
+) -> pd.DataFrame:
+    """Lê a tabela com os nomes dados; a linha do cabeçalho e as de cima ficam de fora."""
     try:
-        dados = pd.read_csv(
+        return pd.read_csv(
             io.StringIO(texto),
             sep=separador or SEM_SEPARADOR,
             engine="python" if separador == SEPARADOR_ESPACOS else "c",
@@ -112,9 +122,6 @@ def _ler_csv(texto: str, separador: str | None, decimal: str, linha_cabecalho: i
         )
     except (pd.errors.ParserError, pd.errors.EmptyDataError, ValueError) as erro:
         raise erros.arquivo_ilegivel() from erro
-    if nomes is None:
-        dados.columns = pd.Index(padronizar_nomes([None] * dados.shape[1]))
-    return dados
 
 
 def _linhas_iniciais_texto(texto: str, separador: str | None) -> tuple[LinhaArquivo, ...]:
@@ -143,7 +150,9 @@ def _ler_texto(conteudo: bytes, formato: str, opcoes: OpcoesLeitura) -> _Leitura
     cabecalho = _ou_detectar(opcoes.linha_cabecalho, lambda: detectar_linha_cabecalho(grade))
     tabela = [linha for n, linha in numeradas if n >= cabecalho.valor]
     decimal = _ou_detectar(opcoes.decimal, lambda: detectar_decimal(tabela, separador.valor))
-    dados = _ler_csv(texto, separador.valor, decimal.valor, cabecalho.valor)
+    linhas = [linha for _, linha in numeradas]
+    nomes = _nomes_das_colunas(texto, separador.valor, cabecalho.valor, linhas)
+    dados = _ler_csv(texto, separador.valor, decimal.valor, nomes, cabecalho.valor)
     return _LeituraBruta(
         dados=dados,
         codificacao=codificacao.valor,
