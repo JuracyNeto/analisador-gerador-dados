@@ -4,6 +4,8 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e
 
 ## [Não lançado]
 
+## [0.1.1] - 2026-10-07
+
 ### Adicionado
 - Linha do cabeçalho em qualquer posição: a leitura acha sozinha o cabeçalho abaixo de títulos e linhas vazias (TXT, CSV, TSV e XLSX), e a tela Importar deixa escolher a linha ("Linha 3") ou "Sem cabeçalho", com o card "Início do arquivo" mostrando as primeiras linhas e o que fica de fora.
 - Corrigir a leitura (separador, decimal, codificação, aba, linha do cabeçalho) também depois de avançar para outras etapas ou de recarregar a página: o servidor guarda o arquivo enviado e lê de novo (`POST /api/datasets/{id}/leitura`). Se já houver tipos corrigidos ou limpeza aplicada, a tela avisa antes que eles serão desfeitos.
