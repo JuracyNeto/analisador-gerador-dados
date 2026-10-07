@@ -99,4 +99,13 @@ describe('PaginaAnalise', () => {
 
     expect(screen.getByText(TEXTOS_ANALISE.semDataset)).toBeInTheDocument();
   });
+
+  it('voltar para Limpeza e continuar para Relatório no fim da tela', async () => {
+    const { usuario, roteador } = renderizarPagina();
+    await screen.findByText('60,0 ⊢ 76,5');
+
+    expect(screen.getByRole('button', { name: /Voltar para Limpeza/ })).toBeInTheDocument();
+    await usuario.click(screen.getByRole('button', { name: /Continuar para Relatório/ }));
+    expect(roteador.state.location.pathname).toBe('/relatorio');
+  });
 });

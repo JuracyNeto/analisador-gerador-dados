@@ -111,6 +111,8 @@ export const TEXTOS_LIMPEZA = {
     aplicar: 'Aplicar limpeza',
     aplicando: 'Aplicando…',
     semAcoes: 'Escolha ao menos uma ação diferente de "Manter".',
+    voltar: 'Voltar para Variáveis',
+    continuar: 'Continuar para Análise',
   },
   vazio: {
     titulo: 'Nenhum problema encontrado',

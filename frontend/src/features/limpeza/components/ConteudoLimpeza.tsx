@@ -1,5 +1,6 @@
 import { useId } from 'react';
 import { useNavigate } from 'react-router';
+import BotaoEtapa from '../../../shared/navegacao/BotaoEtapa';
 import { CAMINHOS } from '../../../shared/navegacao/caminhos';
 import BarraAcoes from '../../../shared/ui/BarraAcoes';
 import Botao from '../../../shared/ui/Botao';
@@ -19,6 +20,9 @@ function AcoesLimpeza({ limpeza }: Readonly<{ limpeza: Limpeza }>) {
   const temSecoes = limpeza.secoes.length > 0;
   return (
     <BarraAcoes>
+      <BotaoEtapa para={CAMINHOS.variaveis} sentido="voltar">
+        {T.botoes.voltar}
+      </BotaoEtapa>
       {semAcoes && temSecoes ? (
         <p id={idAjuda} className={estilos.ajuda}>
           {T.botoes.semAcoes}
@@ -47,6 +51,12 @@ function AcoesLimpeza({ limpeza }: Readonly<{ limpeza: Limpeza }>) {
         >
           {T.botoes.aplicar}
         </Botao>
+      ) : null}
+      {/* Sem problemas, o "Continuar" já está no estado vazio. */}
+      {temSecoes ? (
+        <BotaoEtapa para={CAMINHOS.analise} sentido="avancar">
+          {T.botoes.continuar}
+        </BotaoEtapa>
       ) : null}
     </BarraAcoes>
   );
