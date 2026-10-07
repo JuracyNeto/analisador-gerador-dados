@@ -11,7 +11,7 @@ Pasta: `frontend/` · React + Vite + TypeScript · `react-plotly.js` · roteamen
 ## Telas
 | # | Tela | Conteúdo principal | Ações |
 |---|---|---|---|
-| 1 | Importar | Área de arrastar/soltar; formatos aceitos; após envio: detecções (formato, separador, decimal, codificação) com opção de corrigir; prévia de 20 linhas | Enviar, corrigir leitura, continuar |
+| 1 | Importar | Área de arrastar/soltar; formatos aceitos; após envio: detecções (formato, separador, decimal, codificação, aba, linha do cabeçalho) com opção de corrigir — também depois de avançar ou recarregar, pelo arquivo guardado no servidor (D88); início do arquivo; prévia de 20 linhas | Enviar, corrigir leitura (com aviso se houver tipos corrigidos ou limpeza), ler de novo, continuar |
 | 2 | Variáveis | Tabela: coluna · tipo (chip colorido + ícone) · motivo · n válidos/faltantes · exemplos · seletor para corrigir; editor de ordem para ordinais: arrastar nativo, Subir/Descer e ↑/↓ (D62) | Corrigir tipo, reordenar categorias |
 | 3 | Limpeza | Cards de resumo (faltantes, duplicados, fora de faixa, inconsistências); por problema, lista com ação escolhida; limites min/máx opcionais; log das ações | Aplicar, desfazer tudo |
 | 4 | Análise univariada | Seletor de coluna (com chip de tipo); abas: Frequências · Tendência · Separatrizes · Dispersão · Gráficos (Forma e distribuição entra no M2, D60); coluna escolhida na URL (D78); cada métrica em card com valor, interpretação e "ver fórmula"; itens não aplicáveis aparecem esmaecidos com motivo; painel "Onde está meu valor?" | Trocar coluna, nº de classes, consultar valor |

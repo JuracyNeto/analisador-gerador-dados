@@ -6,9 +6,10 @@
 Uso local, um usuário, arquivos de até ~100 mil linhas. Várias telas operam sobre o mesmo conjunto.
 
 ## Decisão
-`app/dominios/datasets/repositorio.py` (padrão Repositório, injetado via `Depends`) mantém um dicionário `dataset_id (uuid4) → Dataset`, onde `Dataset` guarda: nome do arquivo, `original: DataFrame`, `atual: DataFrame` (após limpeza), `tipos: dict[col, TipoColuna]`, `log_limpeza: list`, `criado_em`. Resultados do gerador ficam em `gerado_id → DataFrame` até serem adotados ou descartados. Limite: 20 datasets; o mais antigo é descartado.
+`app/dominios/datasets/repositorio.py` (padrão Repositório, injetado via `Depends`) mantém um dicionário `dataset_id (uuid4) → Dataset`, onde `Dataset` guarda: nome do arquivo, `original: DataFrame`, `atual: DataFrame` (após limpeza), `tipos: dict[col, TipoColuna]`, `log_limpeza: list`, `criado_em`, e os bytes do arquivo enviado com as opções de leitura escolhidas (D88), para ler de novo com outras opções sem reenviar. Resultados do gerador ficam em `gerado_id → DataFrame` até serem adotados ou descartados. Limite: 20 datasets; o mais antigo é descartado.
 
 ## Consequências
 - (+) Zero infraestrutura; rápido.
 - (−) Reiniciar o servidor perde os dados. Mitigação: erro amigável "Sua sessão expirou. Envie o arquivo novamente." e o frontend guarda o nome do último arquivo para facilitar o reenvio.
 - (−) Não serve para multiusuário/hospedagem — fora do escopo.
+- (−) Guardar os bytes do arquivo dobra o uso de memória por dataset (até 50 MB cada); aceitável no uso local com o limite de 20 datasets (D88).
