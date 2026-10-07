@@ -31,7 +31,12 @@ export const TEXTOS_IMPORTAR = {
     titulo: 'O que detectamos',
     lemos: (linhas: number, colunas: number) => `Lemos ${linhasEColunas(linhas, colunas)}.`,
     corrijaAbaixo: 'Se algo estiver diferente do seu arquivo, corrija abaixo.',
-    semArquivo: 'Para corrigir a leitura, envie o arquivo de novo.',
+  },
+  releitura: {
+    aviso: 'Ler de novo desfaz os ajustes de tipo e a limpeza.',
+    detalhe: 'Os tipos corrigidos e as ações de limpeza voltam ao início.',
+    confirmar: 'Ler de novo mesmo assim',
+    cancelar: 'Cancelar',
   },
   campos: {
     formato: 'Formato',
@@ -49,11 +54,23 @@ export const TEXTOS_IMPORTAR = {
     legenda: 'Prévia dos dados importados',
     carregando: 'Carregando a prévia do arquivo…',
   },
+  inicio: {
+    titulo: 'Início do arquivo',
+    subtitulo:
+      'As linhas acima do cabeçalho ficam de fora. Para mudar, escolha outra linha em Cabeçalho.',
+    legenda: 'Primeiras linhas do arquivo, como estão escritas',
+    linha: 'Linha',
+    papel: 'Uso',
+    coluna: (posicao: number) => `Coluna ${String(posicao)}`,
+    papeis: { fora: 'Fica de fora', cabecalho: 'Cabeçalho', dados: '' },
+  },
   acoes: { lerDeNovo: 'Ler de novo', lendo: 'Lendo…', continuar: 'Continuar para Variáveis' },
   toast: {
     titulo: (linhas: number, colunas: number) =>
       `Arquivo lido: ${linhasEColunas(linhas, colunas)}.`,
     descricao: 'As etapas 2 a 8 foram liberadas.',
+    relido: (linhas: number, colunas: number) =>
+      `Arquivo lido de novo: ${linhasEColunas(linhas, colunas)}.`,
   },
 } as const;
 
@@ -86,7 +103,6 @@ export const OPCOES_CODIFICACAO = [
   { valor: 'latin-1', rotulo: 'Latin-1 (ISO-8859-1)' },
 ] as const;
 
-export const OPCOES_CABECALHO = [
-  { valor: 'sim', rotulo: 'Sim, 1ª linha' },
-  { valor: 'nao', rotulo: 'Não, só dados' },
-] as const;
+export const SEM_CABECALHO = { valor: '0', rotulo: 'Sem cabeçalho (só dados)' } as const;
+
+export const rotuloLinha = (numero: number) => `Linha ${String(numero)}`;

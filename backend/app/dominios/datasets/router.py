@@ -12,6 +12,7 @@ from app.dominios.datasets.schemas import (
     DatasetCriado,
     Diagnostico,
     PaginaDataset,
+    PedidoLeitura,
     PedidoLimpeza,
     ResultadoLimpeza,
     TipoColuna,
@@ -35,10 +36,10 @@ def _opcoes_leitura(
     decimal: Annotated[Literal[",", "."] | None, Form()] = None,
     codificacao: Annotated[str | None, Form()] = None,
     aba: Annotated[str | None, Form()] = None,
-    tem_cabecalho: Annotated[bool | None, Form()] = None,
+    linha_cabecalho: Annotated[int | None, Form(ge=0)] = None,
 ) -> OpcoesLeitura:
     """Campos opcionais do formulário que sobrescrevem a detecção (spec 01)."""
-    return OpcoesLeitura(separador, decimal, codificacao, aba, tem_cabecalho)
+    return OpcoesLeitura(separador, decimal, codificacao, aba, linha_cabecalho)
 
 
 Opcoes = Annotated[OpcoesLeitura, Depends(_opcoes_leitura)]
@@ -57,6 +58,12 @@ def importar(servico: Servico, arquivo: UploadFile, opcoes: Opcoes) -> DatasetCr
 )
 def importar_exemplo(servico: Servico) -> DatasetCriado:
     return DatasetCriado.model_validate(servico.importar_exemplo())
+
+
+@router.post("/{dataset_id}/leitura", summary="Lê de novo o arquivo com outras opções")
+def reler(servico: Servico, dataset_id: str, pedido: PedidoLeitura) -> DatasetCriado:
+    opcoes = OpcoesLeitura(**pedido.model_dump())
+    return DatasetCriado.model_validate(servico.reler(dataset_id, opcoes))
 
 
 @router.get("/{dataset_id}", summary="Resumo do dataset e linhas paginadas")

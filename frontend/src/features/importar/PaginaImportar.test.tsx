@@ -1,12 +1,19 @@
-import { screen } from '@testing-library/react';
+import { screen, waitFor } from '@testing-library/react';
 import { Route, Routes } from 'react-router';
 import { describe, expect, it } from 'vitest';
 import { chamadasPara, simularApi } from '../../testes/api';
-import { criarPagina, DATASET_CRIADO, ID_DATASET } from '../../testes/fixtures/datasets';
+import {
+  criarPagina,
+  criarResumo,
+  DATASET_CRIADO,
+  ID_DATASET,
+} from '../../testes/fixtures/datasets';
 import { DATASET_TESTE, renderizarComProvedores } from '../../testes/renderizar';
 import PaginaImportar from './PaginaImportar';
+import { TEXTOS_IMPORTAR as T } from './textos';
 
 const CAMINHO_PAGINA = `/datasets/${ID_DATASET}`;
+const CAMINHO_LEITURA = `${CAMINHO_PAGINA}/leitura`;
 const ARQUIVO = new File(['id;sexo'], 'pesquisa_saude.txt', { type: 'text/plain' });
 
 function renderizarPagina(dataset: typeof DATASET_TESTE | null = null) {
@@ -24,6 +31,7 @@ async function enviarComSucesso() {
   const falso = simularApi([
     { metodo: 'POST', caminho: '/datasets', status: 201, corpo: DATASET_CRIADO },
     { caminho: CAMINHO_PAGINA, corpo: criarPagina() },
+    { metodo: 'POST', caminho: CAMINHO_LEITURA, corpo: DATASET_CRIADO },
   ]);
   const { usuario } = renderizarPagina();
   await usuario.upload(screen.getByLabelText('Arquivo de dados'), ARQUIVO);
@@ -76,14 +84,16 @@ describe('PaginaImportar', () => {
     expect(screen.getByText('Arraste e solte seu arquivo aqui')).toBeInTheDocument();
   });
 
-  it('corrigir o separador relê o arquivo com a opção nova', async () => {
+  it('corrigir o separador relê no servidor o arquivo guardado, com a opção nova', async () => {
     const { falso, usuario } = await enviarComSucesso();
 
     await usuario.selectOptions(await screen.findByRole('combobox', { name: 'Separador' }), ',');
 
-    const envios = chamadasPara(falso, 'POST', '/datasets');
-    expect(envios).toHaveLength(2);
-    expect((envios[1]?.corpo as FormData).get('separador')).toBe(',');
+    expect(await screen.findByText('Arquivo lido de novo: 230 linhas e 8 colunas.')).toBeVisible();
+    expect(chamadasPara(falso, 'POST', CAMINHO_LEITURA).map((c) => c.corpo)).toEqual([
+      { separador: ',' },
+    ]);
+    expect(chamadasPara(falso, 'POST', '/datasets')).toHaveLength(1);
   });
 
   it('abrir o exemplo chama POST /datasets/exemplo', async () => {
@@ -101,13 +111,43 @@ describe('PaginaImportar', () => {
     expect(chamadasPara(falso, 'POST', '/datasets/exemplo')).toHaveLength(1);
   });
 
-  it('voltando com sessão e sem o arquivo: detecções só para leitura', async () => {
-    simularApi([{ caminho: CAMINHO_PAGINA, corpo: criarPagina() }]);
-    renderizarPagina(DATASET_TESTE);
+  it('voltando de outra etapa, ainda dá para corrigir a leitura', async () => {
+    const falso = simularApi([
+      {
+        caminho: CAMINHO_PAGINA,
+        corpo: criarPagina(criarResumo({ opcoes_leitura: { aba: 'B' } })),
+      },
+      { metodo: 'POST', caminho: CAMINHO_LEITURA, corpo: DATASET_CRIADO },
+    ]);
+    const { usuario } = renderizarPagina(DATASET_TESTE);
 
-    expect(
-      await screen.findByText(/Para corrigir a leitura, envie o arquivo de novo\./),
-    ).toBeInTheDocument();
-    expect(screen.queryByRole('button', { name: 'Ler de novo' })).not.toBeInTheDocument();
+    await usuario.selectOptions(await screen.findByRole('combobox', { name: 'Decimal' }), '.');
+
+    await waitFor(() => {
+      expect(chamadasPara(falso, 'POST', CAMINHO_LEITURA).map((c) => c.corpo)).toEqual([
+        { aba: 'B', decimal: '.' },
+      ]);
+    });
+  });
+
+  it('com tipos corrigidos ou limpeza, pede confirmação antes de ler de novo', async () => {
+    const falso = simularApi([
+      { caminho: CAMINHO_PAGINA, corpo: criarPagina(criarResumo({ tem_ajustes: true })) },
+      { metodo: 'POST', caminho: CAMINHO_LEITURA, corpo: DATASET_CRIADO },
+    ]);
+    const { usuario } = renderizarPagina(DATASET_TESTE);
+    const lerDeNovo = await screen.findByRole('button', { name: 'Ler de novo' });
+
+    await usuario.click(lerDeNovo);
+    expect(screen.getByText(T.releitura.aviso)).toBeInTheDocument();
+    await usuario.click(screen.getByRole('button', { name: T.releitura.cancelar }));
+    expect(screen.queryByText(T.releitura.aviso)).not.toBeInTheDocument();
+    expect(chamadasPara(falso, 'POST', CAMINHO_LEITURA)).toHaveLength(0);
+
+    await usuario.click(lerDeNovo);
+    await usuario.click(screen.getByRole('button', { name: T.releitura.confirmar }));
+    await waitFor(() => {
+      expect(chamadasPara(falso, 'POST', CAMINHO_LEITURA).map((c) => c.corpo)).toEqual([{}]);
+    });
   });
 });

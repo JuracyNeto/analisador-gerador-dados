@@ -71,6 +71,9 @@ class Resumo:
     n_linhas_original: int
     n_colunas: int
     log_limpeza: tuple[EntradaLog, ...]
+    opcoes_leitura: OpcoesLeitura
+    tem_ajustes: bool
+    """Tipos corrigidos ou limpeza aplicada: ler de novo desfaz esses ajustes."""
 
 
 @dataclass(frozen=True, slots=True)
@@ -117,25 +120,38 @@ class ServicoDatasets:
             numerico=self._config.limiar_numerico,
         )
 
-    def importar(self, conteudo: bytes, nome_arquivo: str, opcoes: OpcoesLeitura) -> Importacao:
-        """Lê o arquivo, classifica as colunas e guarda o dataset."""
-        if len(conteudo) > self._config.limite_arquivo_bytes:
-            raise erros.arquivo_grande(self._config.limite_arquivo_mb)
+    def _ler(
+        self, dataset_id: str, conteudo: bytes, nome_arquivo: str, opcoes: OpcoesLeitura
+    ) -> Importacao:
+        """Lê o arquivo, classifica as colunas e guarda o dataset com o id dado."""
         leitura = ler_arquivo(conteudo, nome_arquivo, opcoes)
         tipos = classificar_tabela(leitura.dados, leitura.metadados.decimal, self.limiares)
         dataset = Dataset(
-            id=uuid.uuid4().hex,
+            id=dataset_id,
             nome_arquivo=nome_arquivo,
             metadados=leitura.metadados,
             original=leitura.dados,
             atual=leitura.dados.copy(),
             tipos=tipos,
+            conteudo=conteudo,
+            opcoes=opcoes,
         )
         self._repositorio.adicionar(dataset)
         previa = linhas_dados(dataset.atual.head(self._config.tamanho_previa))
         return Importacao(
             dataset.id, nome_arquivo, dataset.metadados, previa, tuple(tipos.values())
         )
+
+    def importar(self, conteudo: bytes, nome_arquivo: str, opcoes: OpcoesLeitura) -> Importacao:
+        """Lê o arquivo, classifica as colunas e guarda o dataset."""
+        if len(conteudo) > self._config.limite_arquivo_bytes:
+            raise erros.arquivo_grande(self._config.limite_arquivo_mb)
+        return self._ler(uuid.uuid4().hex, conteudo, nome_arquivo, opcoes)
+
+    def reler(self, dataset_id: str, opcoes: OpcoesLeitura) -> Importacao:
+        """Lê de novo o arquivo guardado com outras opções; tipos e limpeza recomeçam (D88)."""
+        anterior = self.obter(dataset_id)
+        return self._ler(anterior.id, anterior.conteudo, anterior.nome_arquivo, opcoes)
 
     def importar_exemplo(self) -> Importacao:
         """Importa o arquivo de demonstração de dados-exemplo/ (D52)."""
@@ -158,6 +174,8 @@ class ServicoDatasets:
             n_linhas_original=len(dataset.original),
             n_colunas=dataset.atual.shape[1],
             log_limpeza=tuple(dataset.log_limpeza),
+            opcoes_leitura=dataset.opcoes,
+            tem_ajustes=_tem_ajustes(dataset),
         )
 
     def pagina(self, dataset_id: str, pagina: int, tamanho: int, versao: Versao) -> PaginaDataset:
@@ -235,6 +253,11 @@ class ServicoDatasets:
             n_linhas_original=len(dataset.original),
             colunas=tuple(dataset.tipos.values()),
         )
+
+
+def _tem_ajustes(dataset: Dataset) -> bool:
+    manual = any(tipo.origem == OrigemTipo.MANUAL for tipo in dataset.tipos.values())
+    return manual or bool(dataset.log_limpeza)
 
 
 def _tipo_atualizado(lida: ColunaLida, anterior: TipoColuna) -> TipoColuna:
