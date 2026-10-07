@@ -18,7 +18,7 @@ Pasta: `frontend/` · React + Vite + TypeScript · `react-plotly.js` · roteamen
 | 5 | Bivariada | Seletores X e Y; cards r, R², equação; gráfico dispersão + reta; resíduos; campo "Prever Y para X ="; heatmap de correlação | Prever |
 | 6 | Gerador | Abas Univariado / Bivariado; formulário (origem ou parâmetros, X, modo, seed, ajuste exato); resultado: comparação original × gerado, gráfico sobreposto, explicação | Gerar, baixar CSV, usar como dataset / anexar |
 | 7 | Detector | Resumo (contadores por severidade, colunas afetadas); filtro por severidade; agrupar por coluna/regra; lista de avisos (spec 16); "Regras não aplicadas" recolhível | Analisar, ver na tabela (abre drawer com linhas destacadas) |
-| 8 | Relatório | Checklist de seções e colunas; pré-visualização em iframe | Baixar HTML, imprimir |
+| 8 | Relatório | Checklist de seções (no M1: leitura, tipos, limpeza, análises — D57) e colunas; prévia em iframe sempre clara (D47) e sempre com `offline=true` (D84); "Funciona sem internet" vale para o arquivo baixado | Baixar HTML (D85), imprimir |
 
 ## Estados obrigatórios em toda tela
 Carregando (skeleton), vazio (com orientação do próximo passo), erro (mensagem da API + ação), sucesso (toast). Sessão expirada (`DATASET_NAO_ENCONTRADO`) em qualquer consulta encerra a sessão e volta para Importar, com um aviso só (D61/D69).

@@ -1,0 +1,29 @@
+.grupo {
+  display: flex;
+  flex-direction: column;
+  gap: var(--esp-4);
+  min-width: 0;
+  margin: 0;
+  padding: var(--esp-16) var(--esp-20);
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio-lg);
+  background: var(--cor-superficie);
+}
+.legenda {
+  display: flex;
+  float: left;
+  justify-content: space-between;
+  align-items: baseline;
+  width: 100%;
+  margin-bottom: var(--esp-8);
+  padding: 0;
+}
+.titulo {
+  font-size: 15px;
+  font-weight: 600;
+}
+.contador {
+  color: var(--cor-texto-2);
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+}
