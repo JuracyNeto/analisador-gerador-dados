@@ -1,5 +1,5 @@
-/** Detecções da leitura (MetadadosLeitura) ↔ campos da tela 1a ↔ formulário do POST /datasets. */
-import type { components, paths } from '../../shared/api/schema';
+/** Detecções da leitura (MetadadosLeitura) ↔ campos da tela 1a ↔ pedido de releitura. */
+import type { components } from '../../shared/api/schema';
 import {
   OPCOES_CODIFICACAO,
   OPCOES_DECIMAL,
@@ -11,11 +11,8 @@ import {
 } from './textos';
 
 export type MetadadosLeitura = components['schemas']['MetadadosLeitura'];
-type CorpoImportacao = NonNullable<
-  paths['/api/datasets']['post']['requestBody']
->['content']['multipart/form-data'];
 /** Opções de leitura que sobrescrevem a detecção (separador, decimal, codificacao, aba, linha_cabecalho). */
-export type OpcoesLeitura = Partial<Omit<CorpoImportacao, 'arquivo'>>;
+export type OpcoesLeitura = components['schemas']['PedidoLeitura'];
 
 export type CampoDeteccao = keyof typeof T.campos;
 
@@ -116,13 +113,4 @@ export function aplicarCorrecao(
   if (campo === 'formato') return opcoes;
   if (campo === 'cabecalho') return { ...opcoes, linha_cabecalho: Number(valor) };
   return { ...opcoes, [campo]: valor };
-}
-
-export function montarFormulario(arquivo: File, opcoes: OpcoesLeitura): FormData {
-  const formulario = new FormData();
-  formulario.append('arquivo', arquivo);
-  for (const [chave, valor] of Object.entries(opcoes)) {
-    if (valor !== null) formulario.append(chave, String(valor));
-  }
-  return formulario;
 }

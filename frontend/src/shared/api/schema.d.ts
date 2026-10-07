@@ -55,6 +55,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/datasets/{dataset_id}/leitura": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Lê de novo o arquivo com outras opções */
+        post: operations["reler_api_datasets__dataset_id__leitura_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/datasets/{dataset_id}": {
         parameters: {
             query?: never;
@@ -570,6 +587,22 @@ export interface components {
             /** Linhas */
             linhas: components["schemas"]["LinhaDados"][];
         };
+        /**
+         * PedidoLeitura
+         * @description Opções que sobrescrevem a detecção; vazio = detectar tudo de novo (spec 01).
+         */
+        PedidoLeitura: {
+            /** Separador */
+            separador?: string | null;
+            /** Decimal */
+            decimal?: ("," | ".") | null;
+            /** Codificacao */
+            codificacao?: string | null;
+            /** Aba */
+            aba?: string | null;
+            /** Linha Cabecalho */
+            linha_cabecalho?: number | null;
+        };
         /** PedidoLimpeza */
         PedidoLimpeza: {
             /** Acoes */
@@ -633,6 +666,9 @@ export interface components {
             n_colunas: number;
             /** Log Limpeza */
             log_limpeza: components["schemas"]["EntradaLog"][];
+            opcoes_leitura: components["schemas"]["PedidoLeitura"];
+            /** Tem Ajustes */
+            tem_ajustes: boolean;
         };
         /** Saude */
         Saude: {
@@ -829,6 +865,41 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["DatasetCriado"];
+                };
+            };
+        };
+    };
+    reler_api_datasets__dataset_id__leitura_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                dataset_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PedidoLeitura"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DatasetCriado"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
                 };
             };
         };

@@ -5,7 +5,7 @@ import { METADADOS_SAUDE } from '../../../testes/fixtures/datasets';
 import CardDeteccoes from './CardDeteccoes';
 
 describe('CardDeteccoes', () => {
-  it('com o arquivo na memória, cada detecção é um Select com o motivo', async () => {
+  it('cada detecção é um Select com o motivo', async () => {
     const aoCorrigir = vi.fn();
     render(<CardDeteccoes metadados={METADADOS_SAUDE} opcoes={{}} aoCorrigir={aoCorrigir} />);
 
@@ -27,15 +27,5 @@ describe('CardDeteccoes', () => {
 
     expect(screen.queryByRole('combobox', { name: 'Formato' })).not.toBeInTheDocument();
     expect(screen.getByText('Texto (TXT)')).toBeInTheDocument();
-  });
-
-  it('sem o arquivo, mostra os valores e explica como corrigir', () => {
-    render(<CardDeteccoes metadados={METADADOS_SAUDE} opcoes={{}} aoCorrigir={null} />);
-
-    expect(screen.queryAllByRole('combobox')).toHaveLength(0);
-    expect(screen.getByText('Ponto e vírgula ( ; )')).toBeInTheDocument();
-    expect(
-      screen.getByText(/Para corrigir a leitura, envie o arquivo de novo\./),
-    ).toBeInTheDocument();
   });
 });

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { METADADOS_COM_TITULO, METADADOS_SAUDE } from '../../testes/fixtures/datasets';
-import { aplicarCorrecao, descreverDeteccoes, montarFormulario } from './opcoesLeitura';
+import { aplicarCorrecao, descreverDeteccoes } from './opcoesLeitura';
 
 const XLSX = {
   ...METADADOS_SAUDE,
@@ -76,22 +76,5 @@ describe('aplicarCorrecao', () => {
 
   it('formato não é corrigível', () => {
     expect(aplicarCorrecao({}, 'formato', 'csv')).toEqual({});
-  });
-});
-
-describe('montarFormulario', () => {
-  it('envia o arquivo e só as opções definidas', () => {
-    const arquivo = new File(['a;b'], 'dados.txt', { type: 'text/plain' });
-
-    const formulario = montarFormulario(arquivo, {
-      separador: ',',
-      decimal: null,
-      linha_cabecalho: 0,
-    });
-
-    expect(formulario.get('arquivo')).toBe(arquivo);
-    expect(formulario.get('separador')).toBe(',');
-    expect(formulario.has('decimal')).toBe(false);
-    expect(formulario.get('linha_cabecalho')).toBe('0');
   });
 });

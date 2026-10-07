@@ -42,7 +42,7 @@ export default function PaginaImportar() {
         {sessao.dataset === null ? (
           <EnvioArquivo importacao={importacao} />
         ) : (
-          <ResultadoImportacao datasetId={sessao.dataset.id} importacao={importacao} />
+          <ResultadoImportacao datasetId={sessao.dataset.id} />
         )}
       </div>
     </PaginaEtapa>

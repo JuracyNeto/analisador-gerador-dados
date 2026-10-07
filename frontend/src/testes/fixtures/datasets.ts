@@ -186,6 +186,8 @@ export function criarResumo(dados: Partial<ResumoDataset> = {}): ResumoDataset {
     n_linhas_original: 230,
     n_colunas: 8,
     log_limpeza: [],
+    opcoes_leitura: {},
+    tem_ajustes: false,
     ...dados,
   };
 }

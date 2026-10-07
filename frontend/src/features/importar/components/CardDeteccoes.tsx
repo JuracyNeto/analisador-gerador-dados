@@ -11,7 +11,7 @@ import {
 import { TEXTOS_IMPORTAR as T } from '../textos';
 import estilos from './CardDeteccoes.module.css';
 
-type AoCorrigir = ((campo: Campo, valor: string) => void) | null;
+type AoCorrigir = (campo: Campo, valor: string) => void;
 
 interface PropsCardDeteccoes {
   metadados: MetadadosLeitura;
@@ -23,7 +23,7 @@ function CampoDeteccao({
   descricao,
   aoCorrigir,
 }: Readonly<{ descricao: DescricaoCampo; aoCorrigir: AoCorrigir }>) {
-  if (aoCorrigir === null || !descricao.corrigivel) {
+  if (!descricao.corrigivel) {
     return (
       <div className={estilos.campo}>
         <span className={estilos.rotulo}>{descricao.rotulo}</span>
@@ -54,7 +54,6 @@ export default function CardDeteccoes({
   aoCorrigir,
 }: Readonly<PropsCardDeteccoes>) {
   const campos = descreverDeteccoes(metadados, opcoes);
-  const complemento = aoCorrigir === null ? T.deteccoes.semArquivo : T.deteccoes.corrijaAbaixo;
   const titulo = (
     <span className={estilos.titulo}>
       <span className={estilos.icone}>
@@ -66,7 +65,7 @@ export default function CardDeteccoes({
   return (
     <Card
       titulo={titulo}
-      subtitulo={`${T.deteccoes.lemos(metadados.n_linhas, metadados.n_colunas)} ${complemento}`}
+      subtitulo={`${T.deteccoes.lemos(metadados.n_linhas, metadados.n_colunas)} ${T.deteccoes.corrijaAbaixo}`}
     >
       <div
         className={estilos.grade}
