@@ -3,7 +3,7 @@
 from datetime import datetime
 from typing import Literal
 
-from pydantic import BaseModel, ConfigDict, TypeAdapter
+from pydantic import BaseModel, ConfigDict, Field, TypeAdapter
 
 from app.compartilhado.tipos import OrigemTipo, TipoVariavel
 
@@ -77,6 +77,16 @@ class EntradaLog(Modelo):
     frase: str
 
 
+class PedidoLeitura(Modelo):
+    """Opções que sobrescrevem a detecção; vazio = detectar tudo de novo (spec 01)."""
+
+    separador: str | None = None
+    decimal: Literal[",", "."] | None = None
+    codificacao: str | None = None
+    aba: str | None = None
+    linha_cabecalho: int | None = Field(default=None, ge=0)
+
+
 class ResumoDataset(Modelo):
     dataset_id: str
     nome_arquivo: str
@@ -85,6 +95,8 @@ class ResumoDataset(Modelo):
     n_linhas_original: int
     n_colunas: int
     log_limpeza: list[EntradaLog]
+    opcoes_leitura: PedidoLeitura
+    tem_ajustes: bool
 
 
 class PaginaDataset(Modelo):

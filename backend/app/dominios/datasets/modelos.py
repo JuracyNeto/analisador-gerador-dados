@@ -106,3 +106,6 @@ class Dataset:
     tipos: dict[str, TipoColuna]
     log_limpeza: list[EntradaLog] = field(default_factory=list)
     criado_em: datetime = field(default_factory=datetime.now)
+    conteudo: bytes = field(default=b"", repr=False)
+    """Bytes do arquivo enviado, para ler de novo com outras opções (D88)."""
+    opcoes: OpcoesLeitura = field(default_factory=OpcoesLeitura)
