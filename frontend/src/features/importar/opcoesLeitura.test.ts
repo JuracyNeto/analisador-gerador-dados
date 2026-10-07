@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { METADADOS_SAUDE } from '../../testes/fixtures/datasets';
+import { METADADOS_COM_TITULO, METADADOS_SAUDE } from '../../testes/fixtures/datasets';
 import { aplicarCorrecao, descreverDeteccoes, montarFormulario } from './opcoesLeitura';
 
 const XLSX = {
@@ -30,7 +30,25 @@ describe('descreverDeteccoes', () => {
       corrigivel: true,
     });
     expect(campos[0]).toMatchObject({ rotuloValor: 'Texto (TXT)', corrigivel: false });
-    expect(campos[4]).toMatchObject({ valor: 'sim', rotuloValor: 'Sim, 1ª linha' });
+    expect(campos[4]).toMatchObject({ valor: '1', rotuloValor: 'Linha 1' });
+  });
+
+  it('cabeçalho oferece as linhas não vazias do início do arquivo e "Sem cabeçalho"', () => {
+    const cabecalho = descreverDeteccoes(METADADOS_COM_TITULO, {}).at(-1);
+
+    expect(cabecalho).toMatchObject({ campo: 'cabecalho', valor: '3', rotuloValor: 'Linha 3' });
+    expect(cabecalho?.opcoes).toEqual([
+      { valor: '1', rotulo: 'Linha 1' },
+      { valor: '3', rotulo: 'Linha 3' },
+      { valor: '4', rotulo: 'Linha 4' },
+      { valor: '0', rotulo: 'Sem cabeçalho (só dados)' },
+    ]);
+  });
+
+  it('JSON não tem linha de cabeçalho para escolher', () => {
+    const json = { ...METADADOS_SAUDE, formato: 'json' as const, linha_cabecalho: null };
+
+    expect(descreverDeteccoes(json, {}).map((c) => c.campo)).not.toContain('cabecalho');
   });
 
   it('XLSX troca separador, decimal e codificação pela aba', () => {
@@ -48,11 +66,12 @@ describe('descreverDeteccoes', () => {
 });
 
 describe('aplicarCorrecao', () => {
-  it('cabeçalho vira booleano e mantém as correções anteriores', () => {
-    expect(aplicarCorrecao({ separador: ',' }, 'cabecalho', 'nao')).toEqual({
+  it('cabeçalho vira o número da linha e mantém as correções anteriores', () => {
+    expect(aplicarCorrecao({ separador: ',' }, 'cabecalho', '3')).toEqual({
       separador: ',',
-      tem_cabecalho: false,
+      linha_cabecalho: 3,
     });
+    expect(aplicarCorrecao({}, 'cabecalho', '0')).toEqual({ linha_cabecalho: 0 });
   });
 
   it('formato não é corrigível', () => {
@@ -67,12 +86,12 @@ describe('montarFormulario', () => {
     const formulario = montarFormulario(arquivo, {
       separador: ',',
       decimal: null,
-      tem_cabecalho: false,
+      linha_cabecalho: 0,
     });
 
     expect(formulario.get('arquivo')).toBe(arquivo);
     expect(formulario.get('separador')).toBe(',');
     expect(formulario.has('decimal')).toBe(false);
-    expect(formulario.get('tem_cabecalho')).toBe('false');
+    expect(formulario.get('linha_cabecalho')).toBe('0');
   });
 });

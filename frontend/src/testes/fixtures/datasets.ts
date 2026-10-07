@@ -95,7 +95,7 @@ export const METADADOS_SAUDE: MetadadosLeitura = {
   codificacao: 'utf-8',
   separador: ';',
   decimal: ',',
-  tem_cabecalho: true,
+  linha_cabecalho: 1,
   n_linhas: 230,
   n_colunas: 8,
   abas: [],
@@ -107,6 +107,32 @@ export const METADADOS_SAUDE: MetadadosLeitura = {
     codificacao: 'Acentos lidos sem erro (Goiânia).',
     cabecalho: 'A 1ª linha tem só nomes, sem números.',
   },
+  linhas_iniciais: [
+    { numero: 1, celulas: ['id', 'sexo', 'idade'] },
+    { numero: 2, celulas: ['1', 'F', '34'] },
+    { numero: 3, celulas: ['2', 'M', '27'] },
+  ],
+};
+
+/** Planilha com título na 1ª linha, linha vazia e o cabeçalho na 3ª. */
+export const METADADOS_COM_TITULO: MetadadosLeitura = {
+  ...METADADOS_SAUDE,
+  formato: 'xlsx',
+  separador: null,
+  decimal: null,
+  codificacao: null,
+  linha_cabecalho: 3,
+  abas: ['Dados'],
+  motivos: {
+    formato: 'Pela extensão do arquivo.',
+    cabecalho: 'A linha 3 é a primeira só com nomes; as linhas acima ficam de fora.',
+  },
+  linhas_iniciais: [
+    { numero: 1, celulas: ['Pesquisa de satisfação', ''] },
+    { numero: 2, celulas: [] },
+    { numero: 3, celulas: ['nome', 'nota'] },
+    { numero: 4, celulas: ['Ana', '8.5'] },
+  ],
 };
 
 export const LINHAS_SAUDE: LinhaDados[] = [

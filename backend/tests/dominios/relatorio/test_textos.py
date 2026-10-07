@@ -5,7 +5,7 @@ from app.dominios.relatorio.textos import descrever_leitura, subtitulo
 
 
 def test_descrever_leitura_de_txt() -> None:
-    dados = DadosLeitura("txt", ";", ",", "utf-8", True, 230, 8)
+    dados = DadosLeitura("txt", ";", ",", "utf-8", 1, 230, 8)
 
     assert descrever_leitura(dados) == (
         "Arquivo de texto separado por ponto e vírgula, decimal com vírgula, codificação UTF-8 "
@@ -14,11 +14,18 @@ def test_descrever_leitura_de_txt() -> None:
 
 
 def test_descrever_leitura_de_planilha() -> None:
-    dados = DadosLeitura("xlsx", None, None, None, True, 1, 1)
+    dados = DadosLeitura("xlsx", None, None, None, 1, 1, 1)
 
     assert descrever_leitura(dados) == (
         "Planilha do Excel com cabeçalho na primeira linha. Foram lidas 1 linha e 1 coluna."
     )
+
+
+@pytest.mark.parametrize(
+    ("linha", "trecho"), [(0, "Planilha do Excel sem cabeçalho."), (3, "com cabeçalho na linha 3")]
+)
+def test_descrever_leitura_cita_a_linha_do_cabecalho(linha: int, trecho: str) -> None:
+    assert trecho in descrever_leitura(DadosLeitura("xlsx", None, None, None, linha, 2, 2))
 
 
 @pytest.mark.parametrize(

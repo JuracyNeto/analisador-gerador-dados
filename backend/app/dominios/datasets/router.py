@@ -35,10 +35,10 @@ def _opcoes_leitura(
     decimal: Annotated[Literal[",", "."] | None, Form()] = None,
     codificacao: Annotated[str | None, Form()] = None,
     aba: Annotated[str | None, Form()] = None,
-    tem_cabecalho: Annotated[bool | None, Form()] = None,
+    linha_cabecalho: Annotated[int | None, Form(ge=0)] = None,
 ) -> OpcoesLeitura:
     """Campos opcionais do formulário que sobrescrevem a detecção (spec 01)."""
-    return OpcoesLeitura(separador, decimal, codificacao, aba, tem_cabecalho)
+    return OpcoesLeitura(separador, decimal, codificacao, aba, linha_cabecalho)
 
 
 Opcoes = Annotated[OpcoesLeitura, Depends(_opcoes_leitura)]

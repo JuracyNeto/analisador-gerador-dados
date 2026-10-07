@@ -9,6 +9,7 @@ import ConteudoConsulta from '../../../shared/ui/ConteudoConsulta';
 import type { Importacao } from '../hooks/useImportacao';
 import { TEXTOS_IMPORTAR as T } from '../textos';
 import CardDeteccoes from './CardDeteccoes';
+import InicioArquivo from './InicioArquivo';
 import PreviaDados from './PreviaDados';
 
 interface PropsResultadoImportacao {
@@ -70,6 +71,7 @@ export default function ResultadoImportacao({
             opcoes={importacao.opcoes}
             aoCorrigir={importacao.corrigir}
           />
+          <InicioArquivo metadados={pagina.resumo.metadados} />
           <PreviaDados linhas={pagina.linhas} totalLinhas={pagina.resumo.n_linhas} />
           <AcoesResultado importacao={importacao} />
         </>

@@ -4,6 +4,13 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e
 
 ## [Não lançado]
 
+### Adicionado
+- Linha do cabeçalho em qualquer posição: a leitura acha sozinha o cabeçalho abaixo de títulos e linhas vazias (TXT, CSV, TSV e XLSX), e a tela Importar deixa escolher a linha ("Linha 3") ou "Sem cabeçalho", com o card "Início do arquivo" mostrando as primeiras linhas e o que fica de fora.
+
+### Alterado
+- API: a opção de leitura `tem_cabecalho` virou `linha_cabecalho` (nº da linha; `0` = sem cabeçalho), e os metadados trazem `linhas_iniciais`.
+- XLSX: colunas vazias em toda a aba são ignoradas.
+
 ## [0.1.0] - 2026-10-07
 
 ### Adicionado

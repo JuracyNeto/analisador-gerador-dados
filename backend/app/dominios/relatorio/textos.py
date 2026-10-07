@@ -39,6 +39,12 @@ def _quantidade(n: int, singular: str, plural: str) -> str:
     return f"{formatar_inteiro(n)} {pluralizar(n, singular, plural)}"
 
 
+def _texto_cabecalho(linha: int) -> str:
+    if linha == 0:
+        return "sem cabeçalho"
+    return "cabeçalho na primeira linha" if linha == 1 else f"cabeçalho na linha {linha}"
+
+
 def descrever_leitura(dados: DadosLeitura) -> str:
     """Ex.: "Arquivo de texto separado por ponto e vírgula, decimal com vírgula, …"."""
     partes = []
@@ -48,9 +54,9 @@ def descrever_leitura(dados: DadosLeitura) -> str:
         partes.append(DECIMAIS.get(dados.decimal, f"decimal {dados.decimal}"))
     if dados.codificacao:
         partes.append(f"codificação {dados.codificacao.upper()}")
-    if dados.tem_cabecalho is not None:
-        partes.append("cabeçalho na primeira linha" if dados.tem_cabecalho else "sem cabeçalho")
-    if partes and not partes[0].startswith("separado"):
+    if dados.linha_cabecalho is not None:
+        partes.append(_texto_cabecalho(dados.linha_cabecalho))
+    if partes and not partes[0].startswith(("separado", "sem ")):
         partes[0] = f"com {partes[0]}"
     inicio = FORMATOS.get(dados.formato, "Arquivo")
     descricao = f"{inicio} {juntar_lista(partes)}." if partes else f"{inicio}."

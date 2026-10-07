@@ -21,17 +21,23 @@ class Aviso(Modelo):
     mensagem: str
 
 
+class LinhaArquivo(Modelo):
+    numero: int
+    celulas: list[str]
+
+
 class MetadadosLeitura(Modelo):
     formato: Literal["txt", "csv", "tsv", "xlsx", "json"]
     codificacao: str | None
     separador: str | None
     decimal: str | None
-    tem_cabecalho: bool | None
+    linha_cabecalho: int | None
     n_linhas: int
     n_colunas: int
     abas: list[str]
     avisos: list[Aviso]
     motivos: dict[str, str]
+    linhas_iniciais: list[LinhaArquivo]
 
 
 class TipoColuna(Modelo):

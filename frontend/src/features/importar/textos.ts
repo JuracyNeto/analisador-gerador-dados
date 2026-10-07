@@ -49,6 +49,16 @@ export const TEXTOS_IMPORTAR = {
     legenda: 'Prévia dos dados importados',
     carregando: 'Carregando a prévia do arquivo…',
   },
+  inicio: {
+    titulo: 'Início do arquivo',
+    subtitulo:
+      'As linhas acima do cabeçalho ficam de fora. Para mudar, escolha outra linha em Cabeçalho.',
+    legenda: 'Primeiras linhas do arquivo, como estão escritas',
+    linha: 'Linha',
+    papel: 'Uso',
+    coluna: (posicao: number) => `Coluna ${String(posicao)}`,
+    papeis: { fora: 'Fica de fora', cabecalho: 'Cabeçalho', dados: '' },
+  },
   acoes: { lerDeNovo: 'Ler de novo', lendo: 'Lendo…', continuar: 'Continuar para Variáveis' },
   toast: {
     titulo: (linhas: number, colunas: number) =>
@@ -86,7 +96,6 @@ export const OPCOES_CODIFICACAO = [
   { valor: 'latin-1', rotulo: 'Latin-1 (ISO-8859-1)' },
 ] as const;
 
-export const OPCOES_CABECALHO = [
-  { valor: 'sim', rotulo: 'Sim, 1ª linha' },
-  { valor: 'nao', rotulo: 'Não, só dados' },
-] as const;
+export const SEM_CABECALHO = { valor: '0', rotulo: 'Sem cabeçalho (só dados)' } as const;
+
+export const rotuloLinha = (numero: number) => `Linha ${String(numero)}`;
