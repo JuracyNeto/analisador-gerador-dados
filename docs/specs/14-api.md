@@ -45,6 +45,8 @@ Camada de apresentação: `router.py` + `schemas.py` de cada domínio; `app/main
 Cada medida (`Medida {valor, aplicavel, motivo, calculo, interpretacao, formula}`) traz em `formula` a `chave` da sua fórmula em `formulas[]` (D66). O frontend renderiza só o que veio; nunca decide aplicabilidade.
 
 ## Erros
+`COLUNA_IGNORADA` (400) vale para os tipos auxiliares: "A coluna {col} é um identificador e fica fora das análises." / "A coluna {col} tem datas e fica fora das análises." (D90). `TipoVariavel` = `nominal`, `ordinal`, `discreta`, `continua`, `binaria`, `identificador`, `data`.
+
 Todas as falhas → HTTP 4xx/5xx com `{codigo, mensagem, sugestao}` (spec 17). Validação Pydantic é traduzida para mensagens em português.
 
 ## Dev

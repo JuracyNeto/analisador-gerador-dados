@@ -11,6 +11,7 @@ Coluna de texto conta como numérica se ≥ 90% dos valores válidos viram núme
 
 | # | Condição | Tipo | Motivo (modelo) |
 |---|---|---|---|
+| 0 | ≥ 90% dos valores válidos (`LIMIAR_DATA = 0,9`) num mesmo formato de data ou hora (abaixo), ou células de data/hora do XLSX; só para colunas que não são numéricas (D90) | `data` (auxiliar) | "Datas no formato DD/MM/AAAA (ex.: 07/10/2026)." / "Datas no formato AAAA-MM-DD (ex.: …)." / "Datas com horário (ex.: 07/10/2026 08:30)." / "Horários (ex.: 08:30)." / "Datas da planilha (ex.: …)." |
 | 1 | Nome casa `^(id|cod|codigo|código|cpf|cnpj|cep|telefone|fone|matricula|matrícula)\b` (sem acento/caixa) **ou** (não numérico contínuo e ≥ 95% únicos com n ≥ 20) | `identificador` | "Parece um código: {pct}% dos valores são únicos." / "O nome da coluna indica um código ({nome})." |
 | 2 | Exatamente 2 valores distintos | `binaria` | "Tem só dois valores: {a} e {b}." |
 | 3 | Texto e o conjunto de valores (normalizado) está contido em uma escala do dicionário ordinal | `ordinal` | "Os valores seguem uma escala conhecida: {escala}." |
@@ -19,7 +20,13 @@ Coluna de texto conta como numérica se ≥ 90% dos valores válidos viram núme
 | 6 | Numérico com decimais, ou inteiros com distintos > 30 | `continua` | "Números com casas decimais." / "Inteiros com muitos valores diferentes ({k}); tratada como contínua." |
 | — | 0 valores válidos | `identificador` (vazia) | "A coluna está vazia; foi ignorada." |
 
-Datas (`datetime` detectado via `pd.to_datetime` em ≥ 90% dos valores) → marcadas `data` (auxiliar), usadas apenas pelo detector R6.
+A regra 0 roda logo depois da coluna vazia: datas únicas por linha não viram "código".
+
+## Datas e horários (tipo auxiliar `data`, D90–D92)
+- Formatos explícitos (sem `pd.to_datetime` livre, que tomaria códigos e números por datas), em `app/compartilhado/datas.py`: `DD/MM/AAAA` (separador `/`, `-` ou `.`; dia e mês com 1 ou 2 dígitos), `AAAA-MM-DD`, qualquer um dos dois seguido de ` HH:MM[:SS]` (ou `T` no ISO) e só `HH:MM[:SS]`. Datas impossíveis (31/02, 25:00) não contam.
+- Dia primeiro (padrão brasileiro); mês primeiro (`MM/DD/AAAA`) só quando nenhum 1º campo passa de 12 e algum 2º campo passa (D91).
+- Colunas `data` ficam fora das análises (univariada, bivariada e relatório por coluna), como o identificador; aparecem na tela Variáveis com o chip "Data". O detector (R6, M3) usa as datas.
+- Fora do escopo: separar mês, ano ou dia da semana em colunas novas; datas por extenso.
 
 ## Dicionário ordinal (normalizar: minúsculas, sem acento, trim)
 - muito baixo < baixo < medio < alto < muito alto
@@ -33,7 +40,7 @@ Datas (`datetime` detectado via `pd.to_datetime` em ≥ 90% dos valores) → mar
 - leve < moderado < grave
 
 ## Ajuste manual
-`PATCH` com `{tipo, categorias_ordem?}`. Validações: `continua`/`discreta` exigem coluna numérica (erro `TIPO_INCOMPATIVEL`: "Esta coluna tem textos; não pode ser numérica."). Ordinal sem `categorias_ordem` usa ordem alfabética e avisa.
+`PATCH` com `{tipo, categorias_ordem?}`. Validações: `continua`/`discreta` exigem coluna numérica (erro `TIPO_INCOMPATIVEL`: "Esta coluna tem textos; não pode ser numérica."); `data` exige ≥ 90% de datas reconhecíveis (`TIPO_INCOMPATIVEL`: "Esta coluna não tem datas ou horários que dê para reconhecer.") (D92). Ordinal sem `categorias_ordem` usa ordem alfabética e avisa.
 
 ## Configuração
-`LIMIAR_DISCRETA = 30`, `LIMIAR_UNICOS_ID = 0.95`, `LIMIAR_NUMERICO = 0.9` em `app/core/config.py`.
+`LIMIAR_DISCRETA = 30`, `LIMIAR_UNICOS_ID = 0.95`, `LIMIAR_NUMERICO = 0.9`, `LIMIAR_DATA = 0.9` em `app/core/config.py`.

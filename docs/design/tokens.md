@@ -34,6 +34,7 @@ Fonte única: `frontend/src/shared/ui/tokens.css`. Tema por atributo `data-tema=
 | `--tipo-discreta` | #0b62a3 / #e7f1fa | #6fb6f2 / #15283a | `pin` | Discreta · Quantitativa discreta |
 | `--tipo-continua` | #0d7268 / #e3f4f1 | #4fd1c0 / #11302d | `straighten` | Contínua · Quantitativa contínua |
 | `--tipo-binaria` | #a14a0b / #fcefe4 | #f5a565 / #362416 | `toggle_on` | Binária |
+| `--tipo-data` | #5f6b00 / #f3f6dc | #c9d46a / #2b2f12 | `calendar_month` | Data · Data ou hora (ignorada) — borda tracejada como o identificador (D92) |
 | `--tipo-identificador` | #5b6472 / #eef0f3 | #a9b2be / #252b33 | `fingerprint` | Identificador · Identificador (ignorada) |
 
 Implementar como tabela `as const satisfies Record<TipoVariavel, ...>` em `shared/ui/tipos.ts` (padroes-codigo §5).

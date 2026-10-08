@@ -4,6 +4,13 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e
 
 ## [Não lançado]
 
+### Adicionado
+- Colunas de data, hora ou data e hora são reconhecidas (tipo Data), com o formato no motivo ("Datas no formato DD/MM/AAAA (ex.: 07/10/2026)."), chip próprio e correção manual na tela Variáveis, e ficam fora das análises.
+
+### Corrigido
+- Colunas de datas não aparecem mais como categorias (nominal) nem como código (identificador).
+- Datas de planilhas aparecem na prévia no formato 07/10/2026 (antes, 2026-10-07T00:00:00).
+
 ## [0.1.1] - 2026-10-07
 
 ### Adicionado
