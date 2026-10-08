@@ -66,6 +66,7 @@ const PRIMEIRAS_COLUNAS = {
   ordinal: categorica,
   nominal: categorica,
   binaria: categorica,
+  data: categorica,
   identificador: categorica,
 } satisfies Record<TipoVariavel, (nome: string) => Coluna[]>;
 

@@ -42,5 +42,6 @@ export const NOMES_RESUMO = {
   ordinal: ['ordinal', 'ordinais'],
   nominal: ['nominal', 'nominais'],
   binaria: ['binária', 'binárias'],
+  data: ['data', 'datas'],
   identificador: ['identificador', 'identificadores'],
 } as const satisfies Record<TipoVariavel, readonly [string, string]>;

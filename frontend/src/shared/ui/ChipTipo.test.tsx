@@ -23,6 +23,15 @@ describe('ChipTipo', () => {
     expect(screen.getByText('corrigido')).toBeInTheDocument();
   });
 
+  it('mostra o chip Data com o nome completo no tooltip', async () => {
+    const usuario = userEvent.setup();
+    render(<ChipTipo tipo="data" curto />);
+
+    await usuario.hover(screen.getByText('Data'));
+
+    expect(await screen.findByRole('tooltip')).toHaveTextContent('Data ou hora (ignorada)');
+  });
+
   it('expõe o tipo em data-tipo (identificador ganha borda tracejada no CSS)', () => {
     render(<ChipTipo tipo="identificador" curto />);
     expect(screen.getByText('Identificador').closest('[data-tipo]')).toHaveAttribute(

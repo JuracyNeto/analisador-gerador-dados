@@ -42,6 +42,12 @@ export const TIPOS_VARIAVEL = {
     rotuloCompleto: 'Binária',
     token: '--tipo-binaria',
   },
+  data: {
+    icone: 'calendar_month',
+    rotuloCurto: 'Data',
+    rotuloCompleto: 'Data ou hora (ignorada)',
+    token: '--tipo-data',
+  },
   identificador: {
     icone: 'fingerprint',
     rotuloCurto: 'Identificador',
@@ -57,6 +63,7 @@ export const ORDEM_TIPOS = [
   'ordinal',
   'nominal',
   'binaria',
+  'data',
   'identificador',
 ] as const satisfies readonly TipoVariavel[];
 
@@ -67,6 +74,16 @@ const TIPOS_NUMERICOS: ReadonlySet<TipoVariavel> = new Set<TipoVariavel>(['discr
 
 export function ehNumerico(tipo: TipoVariavel): boolean {
   return TIPOS_NUMERICOS.has(tipo);
+}
+
+/** Tipos auxiliares ficam fora das análises (D17, D90); espelha TIPOS_AUXILIARES do backend. */
+const TIPOS_AUXILIARES: ReadonlySet<TipoVariavel> = new Set<TipoVariavel>([
+  'identificador',
+  'data',
+]);
+
+export function ehAuxiliar(tipo: TipoVariavel): boolean {
+  return TIPOS_AUXILIARES.has(tipo);
 }
 
 export function corDoTipo(tipo: TipoVariavel): string {
