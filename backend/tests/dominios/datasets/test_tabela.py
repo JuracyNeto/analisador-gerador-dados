@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, time
 
 import numpy as np
 import pandas as pd
@@ -17,7 +17,10 @@ from app.dominios.datasets.tabela import celula, linhas_dados, paginar
         (pd.NA, None),
         ("Goiânia", "Goiânia"),
         (np.True_, True),
-        (datetime(2026, 10, 3, 9, 30), "2026-10-03T09:30:00"),
+        (datetime(2026, 10, 3, 9, 30), "03/10/2026 09:30"),
+        (time(8, 30), "08:30"),
+        (pd.NaT, None),
+        (pd.Timedelta(minutes=5), "0 days 00:05:00"),
     ],
 )
 def test_celula_vira_tipo_simples(valor: object, esperado: object) -> None:

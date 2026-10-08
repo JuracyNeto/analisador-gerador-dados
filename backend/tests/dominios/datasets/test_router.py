@@ -93,3 +93,18 @@ def test_alterar_tipo_incompativel(cliente: TestClient) -> None:
 
     assert resposta.status_code == 400
     assert resposta.json()["codigo"] == "TIPO_INCOMPATIVEL"
+
+
+def test_coluna_de_datas_pela_api(cliente: TestClient) -> None:
+    arquivo = ("datas.txt", b"quando;peso\n07/10/2026;58,2\n08/10/2026;79,6\n", "text/plain")
+    corpo = cliente.post("/api/datasets", files={"arquivo": arquivo}).json()
+    caminho = f"/api/datasets/{corpo['dataset_id']}/colunas/quando"
+
+    nominal = cliente.patch(caminho, json={"tipo": "nominal"})
+    data = cliente.patch(caminho, json={"tipo": "data"})
+    analise = cliente.get(f"{caminho}/analise")
+
+    assert corpo["colunas"][0]["tipo"] == "data"
+    assert (nominal.json()["tipo"], data.json()["tipo"]) == ("nominal", "data")
+    assert analise.status_code == 400
+    assert analise.json()["mensagem"] == "A coluna quando tem datas e fica fora das análises."
