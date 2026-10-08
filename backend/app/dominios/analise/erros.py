@@ -1,12 +1,19 @@
 """Erros do domínio analise (spec 14, formato da spec 16)."""
 
+from app.compartilhado.tipos import TipoVariavel
 from app.core.erros import EntradaInvalida
 
+POR_QUE_IGNORADA = {
+    TipoVariavel.IDENTIFICADOR: "é um identificador",
+    TipoVariavel.DATA: "tem datas",
+}
 
-def coluna_ignorada(coluna: str) -> EntradaInvalida:
+
+def coluna_ignorada(coluna: str, tipo: TipoVariavel) -> EntradaInvalida:
+    """Tipos auxiliares (identificador e data) ficam fora das análises (D17, D90)."""
     return EntradaInvalida(
         "COLUNA_IGNORADA",
-        f"A coluna {coluna} é um identificador e fica fora das análises.",
+        f"A coluna {coluna} {POR_QUE_IGNORADA[tipo]} e fica fora das análises.",
         "Mude o tipo na etapa Variáveis se ela tiver valores para analisar.",
     )
 
