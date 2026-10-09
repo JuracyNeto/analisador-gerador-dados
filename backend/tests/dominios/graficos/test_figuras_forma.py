@@ -6,7 +6,6 @@ import pytest
 from app.compartilhado.tipos import TipoVariavel
 from app.dominios.graficos import figuras_forma
 from app.dominios.graficos.entradas import (
-    Barra,
     BinomialFigura,
     CurvaFigura,
     DadosForma,
@@ -14,16 +13,8 @@ from app.dominios.graficos.entradas import (
 )
 from app.dominios.graficos.fabrica import figuras_forma as fabricar
 from app.dominios.graficos.tema import PAPEL_PRINCIPAL, PAPEL_REFERENCIA
+from tests.dominios.graficos.barras_exemplo import CLASSES, VALORES
 
-CLASSES = (
-    Barra("2,0 ⊢ 3,9", 2, 40.0, 40.0, inferior=2.0, superior=3.9),
-    Barra("3,9 ⊢ 5,8", 3, 60.0, 100.0, inferior=3.9, superior=5.8),
-)
-VALORES = (
-    Barra("1", 2, 20.0, 20.0, valor=1.0),
-    Barra("2", 5, 50.0, 70.0, valor=2.0),
-    Barra("3", 3, 30.0, 100.0, valor=3.0),
-)
 CURVA = CurvaFigura((1.0, 2.0, 3.0), (0.5, 2.0, 0.5), media=70.31, desvio=11.2)
 QQ = QQFigura((-1.0, 0.0, 1.0), (60.0, 70.0, 81.0), media=70.0, desvio=10.0)
 BINOMIAL = BinomialFigura((0, 1, 2), (3, 5, 2), (2.5, 5.0, 2.5), n=2, p=0.4567)
