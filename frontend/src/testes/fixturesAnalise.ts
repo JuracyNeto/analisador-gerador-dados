@@ -1,37 +1,23 @@
 import { vi } from 'vitest';
 import type { components } from '../shared/api/schema';
 import type { PropsPainel } from '../features/analise/tipos';
+import { figura, medida, naoSeAplica } from './fixtures/blocosAnalise';
 import { criarColuna, ID_DATASET } from './fixtures/datasets';
+import {
+  formaBinaria,
+  formaContinua,
+  formaDiscreta,
+  MOTIVO_BINOMIAL_CONTINUA,
+  MOTIVO_FORMA_NOMINAL,
+} from './fixtures/forma';
+
+export { medida, naoSeAplica } from './fixtures/blocosAnalise';
 
 type Esquemas = components['schemas'];
 type Analise = Esquemas['Analise'];
-type Medida = Esquemas['Medida'];
 type LinhaFrequencia = Esquemas['LinhaFrequencia'];
 type ValorSeparatriz = Esquemas['ValorSeparatriz'];
 type TipoColuna = Esquemas['TipoColuna'];
-
-export function medida(valor: Medida['valor'], extra: Partial<Medida> = {}): Medida {
-  return {
-    valor,
-    aplicavel: true,
-    motivo: null,
-    calculo: null,
-    interpretacao: null,
-    formula: null,
-    ...extra,
-  };
-}
-
-export function naoSeAplica(motivo: string): Medida {
-  return {
-    valor: null,
-    aplicavel: false,
-    motivo,
-    calculo: null,
-    interpretacao: null,
-    formula: null,
-  };
-}
 
 export const colunasPesquisa: TipoColuna[] = [
   criarColuna({ coluna: 'id', tipo: 'identificador' }),
@@ -91,18 +77,6 @@ export const quartisPeso: ValorSeparatriz[] = [
   separatriz('Q', 3, 0.75, 77.9),
 ];
 
-function figura(id: string, rotulo: string, recomendado: boolean): Esquemas['Figura'] {
-  return {
-    id,
-    rotulo,
-    titulo: `Figura ${id} de peso_kg`,
-    resumo: `Resumo de ${id}.`,
-    porque: `Por que ${id}.`,
-    recomendado,
-    dados: { data: [], layout: {} },
-  };
-}
-
 const APLICAVEL_NUMERICA = {
   acumulada: true,
   media: true,
@@ -114,6 +88,11 @@ const APLICAVEL_NUMERICA = {
   dispersao: true,
   variancia: true,
   cv: true,
+  forma: true,
+  assimetria: true,
+  curtose: true,
+  normal: true,
+  binomial: false,
 };
 
 export const analiseContinua: Analise = {
@@ -123,6 +102,7 @@ export const analiseContinua: Analise = {
   n_faltantes: 3,
   aplicavel: APLICAVEL_NUMERICA,
   nao_aplicavel: [
+    { item: 'binomial', motivo: MOTIVO_BINOMIAL_CONTINUA },
     {
       item: 'proporcao',
       motivo: 'Proporção não se aplica a quantitativas contínuas: precisa de duas categorias.',
@@ -175,7 +155,7 @@ export const analiseContinua: Analise = {
     ),
     destaques: ['P1', 'P5', 'P10', 'P25', 'P50', 'P75', 'P90', 'P95', 'P99'],
   },
-  forma: null,
+  forma: formaContinua,
   dispersao: {
     amplitude: medida(49.1, {
       interpretacao: 'Do menor (43,8) ao maior (92,9) valor.',
@@ -238,6 +218,11 @@ export const analiseNominal: Analise = {
     dispersao: false,
     variancia: false,
     cv: false,
+    forma: false,
+    assimetria: false,
+    curtose: false,
+    normal: false,
+    binomial: false,
   },
   // O backend emite separatrizes, dispersao e posicao quando não se aplicam (M1.4).
   nao_aplicavel: [
@@ -247,6 +232,7 @@ export const analiseNominal: Analise = {
     },
     { item: 'dispersao', motivo: MOTIVO_DISPERSAO },
     { item: 'posicao', motivo: '"Onde está meu valor?" só funciona com colunas numéricas.' },
+    { item: 'forma', motivo: MOTIVO_FORMA_NOMINAL },
   ],
   frequencias: {
     tipo: 'nominal',
@@ -292,11 +278,20 @@ export const analiseBinaria: Analise = {
   ...analiseNominal,
   coluna: 'sexo',
   tipo: 'binaria',
-  aplicavel: { ...analiseNominal.aplicavel, proporcao: true },
+  aplicavel: { ...analiseNominal.aplicavel, proporcao: true, forma: true, binomial: true },
+  forma: formaBinaria,
   tendencia: {
     ...analiseNominal.tendencia,
     proporcao: medida(0.52, { interpretacao: '52% das linhas são M.', formula: 'proporcao' }),
   },
+};
+
+export const analiseDiscreta: Analise = {
+  ...analiseContinua,
+  coluna: 'faltas',
+  tipo: 'discreta',
+  aplicavel: { ...APLICAVEL_NUMERICA, moda_czuber: false, normal: false, binomial: true },
+  forma: formaDiscreta,
 };
 
 export const posicaoQuartil: Esquemas['Posicao'] = {
