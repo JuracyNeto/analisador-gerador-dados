@@ -10,6 +10,10 @@ from app.compartilhado.tipos import TipoVariavel
 
 type Valor = float | str | None
 type TipoSeparatriz = Literal["quartil", "decil", "percentil"]
+type Distribuicao = Literal["normal", "binomial", "bernoulli"]
+type ClasseAssimetria = Literal["simetrica", "moderada", "forte"]
+type Sentido = Literal["direita", "esquerda"]
+type ClasseCurtose = Literal["mesocurtica", "leptocurtica", "platicurtica"]
 
 
 @dataclass(frozen=True, slots=True, eq=False)
@@ -159,6 +163,62 @@ class Figura:
 
 
 @dataclass(frozen=True, slots=True)
+class Parametro:
+    """Parâmetro estimado de uma distribuição (μ̂, σ̂, n, p̂, E[X], Var)."""
+
+    simbolo: str
+    nome: str
+    valor: float
+
+
+@dataclass(frozen=True, slots=True)
+class TesteAderencia:
+    nome: str
+    estatistica: float
+    gl: int | None
+    p_valor: float
+    compativel: bool
+
+
+@dataclass(frozen=True, slots=True)
+class Ajuste:
+    """Distribuição ajustada com teste de aderência, ou não aplicável com motivo (spec 09)."""
+
+    distribuicao: Distribuicao
+    aplicavel: bool = True
+    motivo: str | None = None
+    parametros: tuple[Parametro, ...] = ()
+    teste: TesteAderencia | None = None
+    complementar: TesteAderencia | None = None
+    frase: str | None = None
+    calculo: str | None = None
+    formula: str | None = None
+
+
+def ajuste_nao_aplicavel(distribuicao: Distribuicao, motivo: str) -> Ajuste:
+    return Ajuste(distribuicao, aplicavel=False, motivo=motivo)
+
+
+@dataclass(frozen=True, slots=True)
+class Forma:
+    """Assimetria, curtose e ajustes de uma coluna (spec 09, contrato `Analise.forma`)."""
+
+    assimetria: Medida
+    assimetria_pearson_1: Medida
+    assimetria_pearson_2: Medida
+    curtose: Medida
+    curtose_percentilica: Medida
+    normal: Ajuste
+    binomial: Ajuste
+    classificacao_assimetria: ClasseAssimetria | None = None
+    sentido_assimetria: Sentido | None = None
+    classificacao_curtose: ClasseCurtose | None = None
+    tentativas: int | None = None
+    interpretacao: str | None = None
+    figuras: tuple[Figura, ...] = ()
+
+
+@dataclass(frozen=True, slots=True)
 class Analise:
     coluna: str
     tipo: TipoVariavel
@@ -173,3 +233,4 @@ class Analise:
     interpretacoes: tuple[str, ...]
     formulas: tuple[Formula, ...]
     figuras: tuple[Figura, ...] = ()
+    forma: Forma | None = None
