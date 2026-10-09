@@ -108,3 +108,7 @@ def test_matriz_com_uma_coluna() -> None:
 
     assert matriz.colunas == ("a",)
     assert matriz.resumo == "Precisa de pelo menos duas colunas numéricas para montar a matriz."
+
+
+def test_t_negativo_usa_o_sinal_de_menos() -> None:
+    assert (correlacao.teste_t(-0.06, n=218).calculo or "").startswith("t = −0,8")

@@ -63,7 +63,7 @@ def teste_t(r: float, n: int) -> Medida:
     else:
         estatistica = r * math.sqrt(gl) / math.sqrt(1 - r**2)
         p = float(2 * stats.t.sf(abs(estatistica), gl))
-    texto_t = "∞" if math.isinf(estatistica) else _f(estatistica)
+    texto_t = "∞" if math.isinf(estatistica) else textos_bivariada.numero(estatistica)
     return Medida(
         p,
         calculo=f"t = {texto_t} · gl = {gl} · {formatar_p_valor(p)}",
