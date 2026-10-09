@@ -132,7 +132,12 @@ function objetoOuVazio(valor: unknown): Objeto {
 /** Pinta o traço com a série do seu papel; sem papel (pizza), fica o `colorway`. */
 function pintarTraco(traco: unknown, tokens: TokensGrafico): unknown {
   if (!ehObjetoSimples(traco)) return traco;
-  if (traco.meta === PAPEL_DIVERGENTE) return { ...traco, colorscale: escalaDivergente(tokens) };
+  if (traco.meta === PAPEL_DIVERGENTE)
+    return {
+      ...traco,
+      colorscale: escalaDivergente(tokens),
+      textfont: { ...objetoOuVazio(traco.textfont), color: tokens.texto },
+    };
   const { series } = tokens;
   const indice = SERIE_DO_PAPEL[String(traco.meta)];
   const cor = indice === undefined ? undefined : series[indice];

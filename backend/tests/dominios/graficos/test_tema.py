@@ -92,3 +92,4 @@ def test_colorir_pinta_o_heatmap_com_a_escala_divergente() -> None:
         [1, TOKENS_CLARO["--graf-1"]],
     ]
     assert "marker" not in traco
+    assert traco["textfont"] == {"color": TOKENS_CLARO["--cor-texto"]}

@@ -135,5 +135,6 @@ describe('papel divergente (heatmap)', () => {
       [1, '#0b6aa8'],
     ]);
     expect(traco).not.toHaveProperty('marker');
+    expect(traco?.textfont).toEqual({ color: '#161a20' });
   });
 });
