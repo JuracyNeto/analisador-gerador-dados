@@ -31,6 +31,7 @@ Barra com borda inferior 1 borda, gap 4. Aba 44 alto, padding 0 14, 14. Ativa: t
 Altura 26 (24 no drawer), padding 0 10 0 8, raio 6, 13/600, bg `--sev-X-suave`, texto `--sev-X`, ícone preenchido 18 (`font-variation-settings:'FILL' 1`).
 
 ## CardMetrica
+- `tamanhoValor="menor"` (26 px) para valores longos, como a equação da reta (tela 5a).
 Props: `rotulo, valor, unidade?, interpretacao, selo?, formula?: {expressao, calculo}`, `naoAplicavel?: {motivo}`. bg superficie, borda 1 borda, raio 12, sombra-1, padding 18 20, gap 6. Rótulo 13/500 texto-2; valor mono 32–34/600 com unidade 16/500 texto-2 (margem 4–6); selo opcional 12,5/600 bg primaria-suave texto primaria raio 6 padding 2 8 ("Variação moderada"); interpretação 14/1,5; botão fantasma "Ver fórmula"/"Ocultar fórmula" com `expand_more/less`. Fórmula aberta: bloco bg superficie-2 raio 8 padding 12 14, expressão mono 16/500 centralizada + cálculo mono 12,5 texto-2.
 **Não aplicável:** borda 1 tracejada borda-forte, bg superficie-2, sem sombra; rótulo + selo "Não se aplica" (11,5/600, borda 1 borda-forte, raio 4); valor "—" em texto desab; motivo 14 texto-2 no formato "{medida} não se aplica a {tipo}: {motivo}."
 
