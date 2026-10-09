@@ -4,6 +4,7 @@ import { abaEfetiva, abasDaAnalise } from '../abas';
 import { TEXTOS_ANALISE } from '../textos';
 import type { IdAba, PropsPainel } from '../tipos';
 import AbaDispersao from './AbaDispersao';
+import AbaForma from './AbaForma';
 import AbaFrequencias from './AbaFrequencias';
 import AbaGraficos from './AbaGraficos';
 import AbaSeparatrizes from './AbaSeparatrizes';
@@ -14,6 +15,7 @@ const PAINEIS: Record<IdAba, ComponentType<PropsPainel>> = {
   tendencia: AbaTendencia,
   separatrizes: AbaSeparatrizes,
   dispersao: AbaDispersao,
+  forma: AbaForma,
   graficos: AbaGraficos,
 };
 

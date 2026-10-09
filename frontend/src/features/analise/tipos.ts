@@ -10,6 +10,10 @@ export type Moda = Esquemas['Moda'];
 export type Separatrizes = Esquemas['Separatrizes'];
 export type ValorSeparatriz = Esquemas['ValorSeparatriz'];
 export type Dispersao = Esquemas['Dispersao'];
+export type Forma = Esquemas['Forma'];
+export type Ajuste = Esquemas['Ajuste'];
+export type TesteAderencia = Esquemas['TesteAderencia'];
+export type Parametro = Esquemas['Parametro'];
 export type Figura = Esquemas['Figura'];
 export type Formula = Esquemas['Formula'];
 export type Posicao = Esquemas['Posicao'];
@@ -17,8 +21,9 @@ export type TipoColuna = Esquemas['TipoColuna'];
 export type TipoVariavel = Esquemas['TipoVariavel'];
 export type TipoSeparatriz = Posicao['tipo'];
 
-/** Abas da tela 4 no M1 (a aba "Forma e distribuição" fica oculta até o M2, D60). */
-export type IdAba = 'frequencias' | 'tendencia' | 'separatrizes' | 'dispersao' | 'graficos';
+/** Abas da tela 4 (telas.md): "Forma e distribuição" entrou no M2 (D60 cumprida). */
+export type IdAba =
+  'frequencias' | 'tendencia' | 'separatrizes' | 'dispersao' | 'forma' | 'graficos';
 
 /** Props comuns de todos os painéis de aba (tabela de despacho em ConteudoAnalise). */
 export interface PropsPainel {
@@ -27,4 +32,5 @@ export interface PropsPainel {
   atualizando: boolean;
   classes: number | null;
   aoMudarClasses: (k: number) => void;
+  aoMudarTentativas: (n: number) => void;
 }

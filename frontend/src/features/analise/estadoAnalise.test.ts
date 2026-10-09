@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 import { ErroApi } from '../../shared/api/cliente';
 import { analiseContinua, colunasPesquisa } from '../../testes/fixturesAnalise';
-import { estadoDaAnalise, type ConsultaSimples } from './estadoAnalise';
+import { comPadraoDeTentativas, estadoDaAnalise, type ConsultaSimples } from './estadoAnalise';
 import type { Analise, TipoColuna } from './tipos';
 
 function consulta<T>(parcial: Partial<ConsultaSimples<T>>): ConsultaSimples<T> {
@@ -70,6 +70,29 @@ describe('estadoDaAnalise', () => {
       status: 'pronta',
       analise: analiseContinua,
       atualizando: true,
+    });
+  });
+});
+
+describe('comPadraoDeTentativas', () => {
+  const erro = (codigo: string) => new ErroApi(400, { codigo, mensagem: 'x', sugestao: 'y' });
+
+  it('troca o "Tentar de novo" por voltar ao padrão quando as tentativas são inválidas', () => {
+    const usarPadrao = vi.fn();
+    const estado = comPadraoDeTentativas(
+      { status: 'erro', erro: erro('TENTATIVAS_INVALIDAS'), tentarDeNovo: null },
+      usarPadrao,
+    );
+
+    expect(estado.status === 'erro' && estado.tentarDeNovo).toBe(usarPadrao);
+  });
+
+  it('não mexe nos outros estados', () => {
+    const estado = { status: 'erro' as const, erro: erro('COLUNA_VAZIA'), tentarDeNovo: null };
+
+    expect(comPadraoDeTentativas(estado, vi.fn())).toBe(estado);
+    expect(comPadraoDeTentativas({ status: 'sem-colunas' }, vi.fn())).toEqual({
+      status: 'sem-colunas',
     });
   });
 });

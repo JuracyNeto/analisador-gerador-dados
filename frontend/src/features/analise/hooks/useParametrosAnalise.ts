@@ -1,10 +1,19 @@
 import { startTransition } from 'react';
 import { useSearchParams } from 'react-router';
-import { comClasses, comColuna, lerParametros, type ParametrosAnalise } from '../parametros';
+import {
+  comClasses,
+  comColuna,
+  comTentativas,
+  lerParametros,
+  semTentativas,
+  type ParametrosAnalise,
+} from '../parametros';
 
 export interface ParametrosAnaliseNaUrl extends ParametrosAnalise {
   escolherColuna: (coluna: string) => void;
   mudarClasses: (k: number) => void;
+  mudarTentativas: (n: number) => void;
+  usarTentativasPadrao: () => void;
 }
 
 export function useParametrosAnalise(): ParametrosAnaliseNaUrl {
@@ -20,6 +29,12 @@ export function useParametrosAnalise(): ParametrosAnaliseNaUrl {
     },
     mudarClasses: (k) => {
       definirBusca((atual) => comClasses(atual, k), { replace: true });
+    },
+    mudarTentativas: (n) => {
+      definirBusca((atual) => comTentativas(atual, n), { replace: true });
+    },
+    usarTentativasPadrao: () => {
+      definirBusca((atual) => semTentativas(atual), { replace: true });
     },
   };
 }

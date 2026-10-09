@@ -1,18 +1,23 @@
 import { describe, expect, it } from 'vitest';
 import { filtrarAnalisaveis } from '../../shared/api/colunas';
 import { colunasPesquisa } from '../../testes/fixturesAnalise';
-import { colunaEscolhida, comClasses, comColuna, lerParametros } from './parametros';
+import { colunaEscolhida, comClasses, comColuna, comTentativas, lerParametros } from './parametros';
 
 describe('lerParametros', () => {
   it('lê coluna e classes da URL', () => {
     expect(lerParametros(new URLSearchParams('coluna=peso_kg&classes=12'))).toEqual({
       coluna: 'peso_kg',
       classes: 12,
+      tentativas: null,
     });
   });
 
   it('sem parâmetros: nenhuma coluna e classes de Sturges', () => {
-    expect(lerParametros(new URLSearchParams())).toEqual({ coluna: null, classes: null });
+    expect(lerParametros(new URLSearchParams())).toEqual({
+      coluna: null,
+      classes: null,
+      tentativas: null,
+    });
   });
 
   it.each([
@@ -53,5 +58,25 @@ describe('colunaEscolhida', () => {
 
   it('devolve null quando não há colunas', () => {
     expect(colunaEscolhida('peso_kg', [])).toBeNull();
+  });
+});
+
+describe('tentativas da Binomial na URL', () => {
+  it('lê tentativas inteiras a partir de 1 e ignora o resto', () => {
+    expect(lerParametros(new URLSearchParams('coluna=faltas&tentativas=10')).tentativas).toBe(10);
+    expect(lerParametros(new URLSearchParams('tentativas=0')).tentativas).toBeNull();
+    expect(lerParametros(new URLSearchParams('tentativas=2.5')).tentativas).toBeNull();
+    expect(lerParametros(new URLSearchParams('tentativas=abc')).tentativas).toBeNull();
+  });
+
+  it('grava as tentativas sem mexer no resto', () => {
+    expect(comTentativas(new URLSearchParams('coluna=faltas'), 20).toString()).toBe(
+      'coluna=faltas&tentativas=20',
+    );
+  });
+
+  it('trocar de coluna apaga classes e tentativas', () => {
+    const nova = comColuna(new URLSearchParams('coluna=a&classes=5&tentativas=10'), 'b');
+    expect(nova.toString()).toBe('coluna=b');
   });
 });

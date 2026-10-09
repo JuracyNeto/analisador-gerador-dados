@@ -1,7 +1,15 @@
 import numpy as np
 import pytest
 
-from app.dominios.analise.pontos_forma import comparacao_binomial, curva_normal, pontos_qq
+from app.compartilhado.tipos import TipoVariavel
+from app.dominios.analise.pontos_forma import (
+    comparacao_binomial,
+    curva_normal,
+    faixa_da_curva,
+    pontos_qq,
+)
+from app.dominios.analise.univariada import analisar_amostra
+from tests.dominios.analise.conftest import CriarAmostra
 
 
 def test_curva_normal_tem_area_igual_a_escala() -> None:
@@ -51,3 +59,15 @@ def test_comparacao_binomial_soma_os_esperados() -> None:
     assert comparacao.observados == (1, 2, 3, 1, 1)
     assert sum(comparacao.esperados) == pytest.approx(8.0)
     assert comparacao.esperados[2] == pytest.approx(8 * 6 / 16)
+
+
+def test_curva_cobre_as_classes_ou_os_valores(criar_amostra: CriarAmostra) -> None:
+    continua = analisar_amostra(criar_amostra(TipoVariavel.CONTINUA, [1.5, 2.2, 3.1, 4.8, 5.0]))
+    discreta = analisar_amostra(criar_amostra(TipoVariavel.DISCRETA, [0, 1, 1, 2, 4]))
+    linhas = continua.frequencias.linhas
+
+    assert faixa_da_curva(np.array([1.5, 5.0]), continua) == (
+        linhas[0].limite_inferior,
+        linhas[-1].limite_superior,
+    )
+    assert faixa_da_curva(np.array([0.0, 4.0]), discreta) == (-0.5, 4.5)

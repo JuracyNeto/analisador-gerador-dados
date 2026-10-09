@@ -10,7 +10,7 @@ from app.dominios.analise.resultados import Ajuste, Analise
 
 PONTOS_CURVA = 200
 MAX_PONTOS_QQ = 500  # D98: o QQ-plot nunca envia mais que isso (ADR 0003)
-DESVIOS_NA_CURVA = 4.0
+MEIA_UNIDADE = 0.5  # bastões: a curva vai meia unidade além do menor e do maior valor
 
 
 @dataclass(frozen=True, slots=True)
@@ -51,11 +51,13 @@ def curva_normal(media: float, desvio: float, inicio: float, fim: float, escala:
     return Curva(_tupla(x), _tupla(y), media, desvio)
 
 
-def faixa_da_curva(valores: np.ndarray, media: float, desvio: float) -> tuple[float, float]:
-    """Da menor ponta à maior: dados ou μ ± 4σ, o que for mais largo."""
-    inicio = min(float(valores.min()), media - DESVIOS_NA_CURVA * desvio)
-    fim = max(float(valores.max()), media + DESVIOS_NA_CURVA * desvio)
-    return inicio, fim
+def faixa_da_curva(valores: np.ndarray, analise: Analise) -> tuple[float, float]:
+    """A curva cobre o mesmo trecho do gráfico: as classes (contínua) ou os valores ± 0,5."""
+    linhas = analise.frequencias.linhas
+    inicio, fim = linhas[0].limite_inferior, linhas[-1].limite_superior
+    if inicio is not None and fim is not None:
+        return inicio, fim
+    return float(valores.min()) - MEIA_UNIDADE, float(valores.max()) + MEIA_UNIDADE
 
 
 def pontos_qq(valores: np.ndarray) -> PontosQQ:
@@ -105,7 +107,7 @@ def _curva(valores: np.ndarray, analise: Analise, normal: Ajuste) -> Curva | Non
     if not normal.aplicavel:
         return None
     media, desvio = (p.valor for p in normal.parametros)
-    inicio, fim = faixa_da_curva(valores, media, desvio)
+    inicio, fim = faixa_da_curva(valores, analise)
     return curva_normal(media, desvio, inicio, fim, _escala(analise))
 
 

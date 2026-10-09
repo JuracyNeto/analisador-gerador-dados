@@ -52,3 +52,10 @@ export function formatarDecimal(valor: number, casas = 1): string {
     maximumFractionDigits: casas,
   }).format(valor);
 }
+
+const P_VALOR_MINIMO = 0.001;
+
+/** Mesma regra de `formatar_p_valor` do backend: "p < 0,001" ou "p = 0,213" (3 algarismos). */
+export function formatarPValor(p: number): string {
+  return p < P_VALOR_MINIMO ? 'p < 0,001' : `p = ${formatarNumero(p, 3)}`;
+}

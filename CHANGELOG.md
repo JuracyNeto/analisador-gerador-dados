@@ -5,6 +5,7 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e
 ## [Não lançado]
 
 ### Adicionado
+- Aba "Forma e distribuição" na Análise univariada: assimetria, curtose, ajuste à Normal e à Binomial (ou Bernoulli), coeficientes de Pearson e curtose percentílica, frase de interpretação, histograma com curva Normal e QQ-plot; na discreta, campo "Número de tentativas (n)".
 - Forma e distribuição de cada coluna numérica na API (`Analise.forma`): assimetria (Fisher e Pearson), curtose (excesso e percentílica), ajuste à Normal (Shapiro-Wilk ou D'Agostino-Pearson, com qui-quadrado complementar), à Binomial (com `?tentativas=`) e Bernoulli para binárias, com frase de interpretação e gráficos (histograma ou bastões com curva Normal, QQ-plot, observado × Binomial).
 - Colunas de data, hora ou data e hora são reconhecidas (tipo Data), com o formato no motivo ("Datas no formato DD/MM/AAAA (ex.: 07/10/2026)."), chip próprio e correção manual na tela Variáveis, e ficam fora das análises.
 
