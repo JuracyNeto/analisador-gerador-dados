@@ -14,7 +14,7 @@ Camada de apresentação: `router.py` + `schemas.py` de cada domínio; `app/main
 | GET | `/datasets/{id}/diagnostico` | `?limites={col:{min,max}}` | `Diagnostico` | 03 |
 | POST | `/datasets/{id}/limpeza` | `{acoes[]}` | `{log[], n_linhas, colunas[]}` | 03 |
 | POST | `/datasets/{id}/limpeza/desfazer` | — | `{n_linhas}` | 03 |
-| GET | `/datasets/{id}/colunas/{col}/analise` | `?classes=` | `Analise` | 04–09 |
+| GET | `/datasets/{id}/colunas/{col}/analise` | `?classes=&sucesso=&tentativas=` (`tentativas` ≥ 1: nº de tentativas da Binomial; menor que o máximo observado → 400 `TENTATIVAS_INVALIDAS`) | `Analise` | 04–09 |
 | GET | `/datasets/{id}/colunas/{col}/posicao` | `?valor=&tipo=quartil|decil|percentil` | `Posicao` | 06 |
 | GET | `/datasets/{id}/bivariada` | `?x=&y=` | `Bivariada` | 10 |
 | GET | `/datasets/{id}/bivariada/prever` | `?x=&y=&valor=` | `{y_previsto, extrapolacao, frase}` | 10 |
@@ -36,7 +36,7 @@ Camada de apresentação: `router.py` + `schemas.py` de cada domínio; `app/main
   "tendencia": { "...": "spec 05" },
   "separatrizes": { "...": "spec 06" },
   "dispersao": { "...": "spec 07" },
-  "forma": { "...": "spec 09 (M2)" },
+  "forma": { "...": "spec 09: assimetria, curtose, ajustes normal/binomial, figuras (null em nominal/ordinal)" },
   "interpretacoes": ["Média e mediana próximas...", "..."],
   "formulas": [{ "chave": "media", "nome": "Média", "latex": "\\bar{x}=\\frac{\\sum x_i}{n}", "texto": "x̄ = Σxᵢ / n" }],
   "figuras": [{ "id": "principal", "rotulo": "Histograma", "titulo": "...", "resumo": "...", "porque": "...", "recomendado": true, "dados": { "...": "plotly json" } }]

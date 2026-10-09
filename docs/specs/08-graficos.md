@@ -7,8 +7,8 @@ Domínio: `app/dominios/graficos/` (`fabrica.py` + `tema.py`) · ADR 0003
 | Nominal | Barras **horizontais** ordenadas por frequência | Pizza **só se ≤ 5 categorias** | Comparar tamanhos é mais fácil em barras; pizza com muitas fatias confunde |
 | Binária | Barras (2 categorias) com % no rótulo | — | Simples e direto |
 | Ordinal | Barras verticais na **ordem da escala** | Barras de frequência acumulada | A ordem tem significado |
-| Discreta | Gráfico de **bastões** (hastes) | Boxplot; acumulada em escada | Valores isolados, não intervalos |
-| Contínua | **Histograma** (classes da spec 04); curva Normal ajustada no M2 (D56) | Boxplot, ogiva (Frᵢ); QQ-plot no M2 | Mostra forma, caudas e aderência |
+| Discreta | Gráfico de **bastões** (hastes) | Boxplot; acumulada em escada; na aba Forma: bastões + curva Normal e observado × Binomial | Valores isolados, não intervalos |
+| Contínua | **Histograma** (classes da spec 04) | Boxplot, ogiva (Frᵢ); na aba Forma: histograma + curva Normal e QQ-plot (D56, D94) | Mostra forma, caudas e aderência |
 | Par numérico | **Dispersão** com reta de regressão | Resíduos × X | Spec 10 |
 | Separatriz | Régua com marcas e marcador do valor | — | Spec 06 |
 | Detector | Gráficos específicos por regra (Benford: barras observado × esperado; último dígito: barras; blocos: linha da média por bloco com faixa total) | — | Spec 12 |
