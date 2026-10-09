@@ -175,6 +175,7 @@ export const analiseContinua: Analise = {
     ),
     destaques: ['P1', 'P5', 'P10', 'P25', 'P50', 'P75', 'P90', 'P95', 'P99'],
   },
+  forma: null,
   dispersao: {
     amplitude: medida(49.1, {
       interpretacao: 'Do menor (43,8) ao maior (92,9) valor.',
@@ -281,6 +282,7 @@ export const analiseNominal: Analise = {
   },
   separatrizes: null,
   dispersao: null,
+  forma: null,
   interpretacoes: [],
   formulas: [],
   figuras: [{ ...figura('principal', 'Barras', true), titulo: 'Pessoas por cidade (n = 228)' }],
