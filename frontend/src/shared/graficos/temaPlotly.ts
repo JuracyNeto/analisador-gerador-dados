@@ -110,6 +110,16 @@ export function extrairFigura(figura: Readonly<Objeto>): FiguraPlotly {
 
 /** Papel de cada traço (`meta`, vindo do backend) → índice da série do tema (D83). */
 const SERIE_DO_PAPEL: Readonly<Record<string, number>> = { principal: 0, referencia: 1 };
+const PAPEL_DIVERGENTE = 'divergente';
+
+/** Heatmap: `--graf-2` (−1) → fundo (0) → `--graf-1` (+1), igual ao tema do relatório (D103). */
+export function escalaDivergente(tokens: TokensGrafico): [number, string][] {
+  return [
+    [0, tokens.series[1] ?? ''],
+    [0.5, tokens.fundo],
+    [1, tokens.series[0] ?? ''],
+  ];
+}
 
 function temLinha(traco: Objeto): boolean {
   return traco.type === 'box' || (typeof traco.mode === 'string' && traco.mode.includes('lines'));
@@ -120,8 +130,10 @@ function objetoOuVazio(valor: unknown): Objeto {
 }
 
 /** Pinta o traço com a série do seu papel; sem papel (pizza), fica o `colorway`. */
-function pintarTraco(traco: unknown, series: readonly string[]): unknown {
+function pintarTraco(traco: unknown, tokens: TokensGrafico): unknown {
   if (!ehObjetoSimples(traco)) return traco;
+  if (traco.meta === PAPEL_DIVERGENTE) return { ...traco, colorscale: escalaDivergente(tokens) };
+  const { series } = tokens;
   const indice = SERIE_DO_PAPEL[String(traco.meta)];
   const cor = indice === undefined ? undefined : series[indice];
   if (cor === undefined) return traco;
@@ -133,7 +145,7 @@ function pintarTraco(traco: unknown, series: readonly string[]): unknown {
 export function montarFigura(figura: Readonly<Objeto>, tokens: TokensGrafico): FiguraPlotly {
   const { data, layout } = extrairFigura(figura);
   return {
-    data: data.map((traco) => pintarTraco(traco, tokens.series)),
+    data: data.map((traco) => pintarTraco(traco, tokens)),
     layout: mesclarLayout(layout, layoutTema(tokens)),
   };
 }

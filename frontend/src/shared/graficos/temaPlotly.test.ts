@@ -122,3 +122,18 @@ describe('montarFigura', () => {
     expect(figura.data[0]).toEqual({ type: 'bar', meta: 'principal', marker: { opacity: 0.85 } });
   });
 });
+
+describe('papel divergente (heatmap)', () => {
+  it('pinta a escala com graf-2, fundo e graf-1 do tema ativo', () => {
+    const figura = { data: [{ type: 'heatmap', meta: 'divergente', z: [[1]] }], layout: {} };
+
+    const [traco] = montarFigura(figura, TOKENS).data as Record<string, unknown>[];
+
+    expect(traco?.colorscale).toEqual([
+      [0, '#c4520a'],
+      [0.5, '#ffffff'],
+      [1, '#0b6aa8'],
+    ]);
+    expect(traco).not.toHaveProperty('marker');
+  });
+});
