@@ -158,3 +158,13 @@ def frase_conjunta(
         return None
     frase = "; ".join(partes)
     return f"{frase[0].upper()}{frase[1:]}."
+
+
+FRASE_BERNOULLI = (
+    "Com p estimado dos próprios dados, a Bernoulli repete as proporções observadas; "
+    "não há teste de aderência."
+)
+SEM_GRUPOS_PARA_TESTE = (
+    "Há poucos grupos para testar a aderência: o qui-quadrado precisa de pelo menos "
+    "3 grupos com esperado de 5 ou mais."
+)

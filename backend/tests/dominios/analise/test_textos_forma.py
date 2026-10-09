@@ -1,17 +1,12 @@
 import pytest
 
 from app.compartilhado.tipos import TipoVariavel
-from app.dominios.analise import textos_forma
-from app.dominios.analise.resultados import (
-    ClasseAssimetria,
-    ClasseCurtose,
-    Sentido,
-    TesteAderencia,
-)
+from app.dominios.analise import resultados, textos_forma
+from app.dominios.analise.resultados import ClasseAssimetria, ClasseCurtose, Sentido
 
-SHAPIRO = TesteAderencia("Shapiro-Wilk", 0.99329, None, 0.399, compativel=True)
-QUI = TesteAderencia("Qui-quadrado", 3.2, 4, 0.525, compativel=True)
-REPROVADO = TesteAderencia("Shapiro-Wilk", 0.83, None, 0.0000001, compativel=False)
+SHAPIRO = resultados.TesteAderencia("Shapiro-Wilk", 0.99329, None, 0.399, compativel=True)
+QUI = resultados.TesteAderencia("Qui-quadrado", 3.2, 4, 0.525, compativel=True)
+REPROVADO = resultados.TesteAderencia("Shapiro-Wilk", 0.83, None, 0.0000001, compativel=False)
 
 
 @pytest.mark.parametrize(
@@ -80,7 +75,7 @@ def test_frase_de_aderencia() -> None:
         (REPROVADO, "Shapiro-Wilk: W = 0,83 · p < 0,001 < 0,05"),
     ],
 )
-def test_calculo_do_teste(teste: TesteAderencia, texto: str) -> None:
+def test_calculo_do_teste(teste: resultados.TesteAderencia, texto: str) -> None:
     assert textos_forma.calculo_teste(teste) == texto
 
 
