@@ -8,7 +8,7 @@ import {
 } from '../../testes/fixtures/forma';
 import { naoSeAplica } from '../../testes/fixtures/blocosAnalise';
 import { exigir } from '../../testes/exigir';
-import { propsDoCartao } from './cartoes';
+import { propsDoCartao } from '../../shared/metricas/cartoes';
 import { cartoesForma, medidaDoAjuste, notaCoeficientes } from './cartoesForma';
 import { TEXTOS_ANALISE } from './textos';
 import type { Forma } from './tipos';

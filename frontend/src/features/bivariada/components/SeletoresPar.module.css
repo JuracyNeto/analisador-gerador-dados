@@ -1,0 +1,21 @@
+/* Tela 5a: X e Y (200 px cada) com o botão de troca (44 × 44) alinhado aos campos. */
+.seletores {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--esp-12);
+}
+
+.campo {
+  width: 200px;
+}
+
+.campo :global(select) {
+  font-family: var(--fonte-mono);
+}
+
+.trocar {
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  justify-content: center;
+}

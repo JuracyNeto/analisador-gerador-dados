@@ -3,7 +3,7 @@ import { ETAPAS } from '../etapas';
 import { type ContextoEtapas, dicaDaEtapa, estadoDaEtapa } from './estadoEtapa';
 
 const [IMPORTAR, VARIAVEIS, LIMPEZA] = ETAPAS;
-const BIVARIADA = ETAPAS[4];
+const GERADOR = ETAPAS[5];
 
 function contexto(parcial: Partial<ContextoEtapas>): ContextoEtapas {
   return { atual: null, temDataset: false, visitadas: new Set(), ...parcial };
@@ -26,7 +26,7 @@ describe('estadoDaEtapa', () => {
 
   it('etapa futura fica bloqueada mesmo com dataset e na própria rota', () => {
     expect(
-      estadoDaEtapa(BIVARIADA, contexto({ atual: 5, temDataset: true, visitadas: new Set([5]) })),
+      estadoDaEtapa(GERADOR, contexto({ atual: 6, temDataset: true, visitadas: new Set([6]) })),
     ).toBe('bloqueada');
   });
 });
@@ -34,9 +34,9 @@ describe('estadoDaEtapa', () => {
 describe('dicaDaEtapa', () => {
   it.each([
     [IMPORTAR, false, null],
-    [BIVARIADA, false, 'Disponível na versão v0.2.'],
+    [GERADOR, false, 'Disponível na versão v0.3.'],
     [IMPORTAR, true, 'Importar'],
-    [BIVARIADA, true, 'Bivariada. Disponível na versão v0.2.'],
+    [GERADOR, true, 'Gerador. Disponível na versão v0.3.'],
   ] as const)('%o recolhida=%s → %s', (etapa, recolhida, esperado) => {
     expect(dicaDaEtapa(etapa, recolhida)).toBe(esperado);
   });

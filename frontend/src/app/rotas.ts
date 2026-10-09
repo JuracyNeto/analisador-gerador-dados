@@ -7,6 +7,7 @@ const PaginaImportar = lazy(() => import('../features/importar/PaginaImportar'))
 const PaginaVariaveis = lazy(() => import('../features/variaveis/PaginaVariaveis'));
 const PaginaLimpeza = lazy(() => import('../features/limpeza/PaginaLimpeza'));
 const PaginaAnalise = lazy(() => import('../features/analise/PaginaAnalise'));
+const PaginaBivariada = lazy(() => import('../features/bivariada/PaginaBivariada'));
 const PaginaRelatorio = lazy(() => import('../features/relatorio/PaginaRelatorio'));
 const PaginaIndisponivel = lazy(() => import('./paginas/PaginaIndisponivel'));
 
@@ -16,7 +17,7 @@ const PAGINAS = {
   2: PaginaVariaveis,
   3: PaginaLimpeza,
   4: PaginaAnalise,
-  5: PaginaIndisponivel,
+  5: PaginaBivariada,
   6: PaginaIndisponivel,
   7: PaginaIndisponivel,
   8: PaginaRelatorio,

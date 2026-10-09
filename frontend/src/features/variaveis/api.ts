@@ -37,6 +37,7 @@ function invalidarDerivados(cliente: QueryClient, id: string): Promise<unknown> 
     chavesDataset.colunas(id),
     chavesDataset.diagnostico(id),
     chavesDataset.analises(id),
+    chavesDataset.bivariada(id),
     chavesDataset.relatorio(id),
   ];
   return Promise.all(chaves.map((queryKey) => cliente.invalidateQueries({ queryKey })));

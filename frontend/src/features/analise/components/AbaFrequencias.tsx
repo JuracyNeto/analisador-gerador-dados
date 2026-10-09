@@ -2,7 +2,7 @@ import { cartoesResumoCategorico } from '../cartoes';
 import type { PropsPainel } from '../tipos';
 import estilos from './AbaFrequencias.module.css';
 import CardGrafico from './CardGrafico';
-import GradeCardsMetrica from './GradeCardsMetrica';
+import GradeCardsMetrica from '../../../shared/metricas/GradeCardsMetrica';
 import paineis from './paineis.module.css';
 import TabelaFrequencias from './TabelaFrequencias';
 

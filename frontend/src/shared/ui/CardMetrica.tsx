@@ -12,6 +12,8 @@ interface FormulaMetrica {
 interface PropsCardMetrica {
   rotulo: string;
   valor: string;
+  /** `menor` (26 px) para valores longos, como a equação da reta (print 5a). */
+  tamanhoValor?: 'normal' | 'menor' | undefined;
   unidade?: string | undefined;
   interpretacao?: string | undefined;
   selo?: string | undefined;
@@ -28,6 +30,7 @@ export default function CardMetrica({ naoAplicavel, ...props }: Readonly<PropsCa
 function CardAplicavel({
   rotulo,
   valor,
+  tamanhoValor = 'normal',
   unidade,
   interpretacao,
   selo,
@@ -36,7 +39,7 @@ function CardAplicavel({
   return (
     <article className={estilos.card}>
       <h3 className={estilos.rotulo}>{rotulo}</h3>
-      <p className={estilos.valor}>
+      <p className={estilos.valor} data-tamanho={tamanhoValor}>
         {valor}
         {unidade ? <span className={estilos.unidade}>{unidade}</span> : null}
       </p>

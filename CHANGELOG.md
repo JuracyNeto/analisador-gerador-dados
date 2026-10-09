@@ -5,10 +5,14 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e
 ## [Não lançado]
 
 ### Adicionado
+- Etapa 5 Bivariada: escolha de X e Y (com troca), correlação de Pearson (com teste de significância e Spearman), R², reta de regressão, gráfico de dispersão com a reta, resíduos, previsão de Y por X com aviso de extrapolação e matriz de correlação.
 - API da análise bivariada: correlação de Pearson (com teste t) e Spearman, força e sentido, regressão linear simples (equação, R², erro padrão), resíduos, previsão de Y por X com aviso de extrapolação e matriz de correlação das colunas numéricas, com gráficos (dispersão com reta, resíduos e heatmap).
 - Aba "Forma e distribuição" na Análise univariada: assimetria, curtose, ajuste à Normal e à Binomial (ou Bernoulli), coeficientes de Pearson e curtose percentílica, frase de interpretação, histograma com curva Normal e QQ-plot; na discreta, campo "Número de tentativas (n)".
 - Forma e distribuição de cada coluna numérica na API (`Analise.forma`): assimetria (Fisher e Pearson), curtose (excesso e percentílica), ajuste à Normal (Shapiro-Wilk ou D'Agostino-Pearson, com qui-quadrado complementar), à Binomial (com `?tentativas=`) e Bernoulli para binárias, com frase de interpretação e gráficos (histograma ou bastões com curva Normal, QQ-plot, observado × Binomial).
 - Colunas de data, hora ou data e hora são reconhecidas (tipo Data), com o formato no motivo ("Datas no formato DD/MM/AAAA (ex.: 07/10/2026)."), chip próprio e correção manual na tela Variáveis, e ficam fora das análises.
+
+### Alterado
+- A Análise univariada continua para a Bivariada, e o Relatório volta para ela.
 
 ### Corrigido
 - Colunas de datas não aparecem mais como categorias (nominal) nem como código (identificador).

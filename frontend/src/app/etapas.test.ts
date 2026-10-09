@@ -6,8 +6,8 @@ describe('ETAPAS', () => {
     expect(ETAPAS.map((etapa) => etapa.numero)).toEqual([1, 2, 3, 4, 5, 6, 7, 8]);
   });
 
-  it('só 5, 6 e 7 são futuras no M1', () => {
-    expect(ETAPAS.filter(ehEtapaFutura).map((etapa) => etapa.numero)).toEqual([5, 6, 7]);
+  it('só 6 e 7 são futuras no M2 (Bivariada liberada)', () => {
+    expect(ETAPAS.filter(ehEtapaFutura).map((etapa) => etapa.numero)).toEqual([6, 7]);
   });
 });
 

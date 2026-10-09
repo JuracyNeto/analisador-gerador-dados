@@ -61,3 +61,9 @@ it('não aplicável fica esmaecido com motivo e sem fórmula', () => {
   expect(card).not.toHaveTextContent('70,3');
   expect(screen.queryByRole('button', { name: 'Ver fórmula' })).not.toBeInTheDocument();
 });
+
+it('valor menor para textos longos (equação da reta)', () => {
+  render(<CardMetrica rotulo="Reta de regressão" valor="Ŷ = −74,87 + 86·X" tamanhoValor="menor" />);
+
+  expect(screen.getByText('Ŷ = −74,87 + 86·X')).toHaveAttribute('data-tamanho', 'menor');
+});

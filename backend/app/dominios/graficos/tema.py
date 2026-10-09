@@ -83,7 +83,8 @@ def _tem_linha(traco: dict[str, Any]) -> bool:
 
 def _pintar(traco: dict[str, Any], cores: dict[str, str]) -> dict[str, Any]:
     if traco.get("meta") == PAPEL_DIVERGENTE:
-        return {**traco, "colorscale": ESCALA_DIVERGENTE_CLARA}
+        texto = {**traco.get("textfont", {}), "color": TOKENS_CLARO["--cor-texto"]}
+        return {**traco, "colorscale": ESCALA_DIVERGENTE_CLARA, "textfont": texto}
     cor = cores.get(str(traco.get("meta")))
     if cor is None:
         return traco

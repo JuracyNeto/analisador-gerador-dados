@@ -43,6 +43,7 @@ Referências: `telas/Telas.dc.html` (todas, com ids 1a…8a) e prints PNG 1440 p
 - Grid `1.5fr 1fr`: dispersão com reta (esquerda); à direita "Prever Y para X =" (campo + "Prever", resultado mono 26 em bloco superficie-2, **banner de extrapolação** quando X fora de [mín, máx]: "Fora da faixa observada. As alturas vão de 1,48 a 1,96 m. Prever fora disso (extrapolar) pode dar resultados pouco confiáveis.") e heatmap da matriz de correlação com resumo.
 - Card largo: gráfico de resíduos + "Como ler os resíduos".
 - Vazio: "Escolha duas colunas numéricas" / "Selecione X e Y acima para ver a correlação e a reta de regressão."
+- Implementação do M2 (D105): com duas ou mais numéricas a tela já abre com as duas primeiras (ou o par da URL); o vazio aparece só com menos de duas, com o texto "Este arquivo tem menos de duas colunas numéricas (discretas ou contínuas). Confira os tipos na etapa Variáveis." e a ação "Ir para Variáveis". Unidades ("cm", "kg") não existem nos dados e ficam de fora dos textos. Resíduos × X (D102). A equação da reta usa o valor menor do `CardMetrica` (`tamanhoValor="menor"`, 26 px).
 
 ## 6 Gerador → `features/gerador` (6a univariado, 6b bivariado)
 - Abas Univariado / Bivariado. Grid `360px 1fr`.

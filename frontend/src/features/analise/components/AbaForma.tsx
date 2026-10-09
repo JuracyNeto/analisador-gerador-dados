@@ -6,7 +6,7 @@ import type { Analise, Figura, Forma, PropsPainel } from '../tipos';
 import estilos from './AbaForma.module.css';
 import CardGrafico from './CardGrafico';
 import ControleTentativas from './ControleTentativas';
-import GradeCardsMetrica from './GradeCardsMetrica';
+import GradeCardsMetrica from '../../../shared/metricas/GradeCardsMetrica';
 import paineis from './paineis.module.css';
 
 const ALTURA_GRAFICO = 320;

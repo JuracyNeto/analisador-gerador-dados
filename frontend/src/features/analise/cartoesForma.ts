@@ -1,6 +1,7 @@
 /** Contrato `Forma` (spec 09) → cartões da aba "Forma e distribuição" (print 4e). */
 import { formatarNumero, formatarPValor } from '../../shared/lib/formatar';
-import type { DefinicaoCartao } from './cartoes';
+import { medidaAusente, type DefinicaoCartao } from '../../shared/metricas/cartoes';
+import { TEXTOS_METRICAS } from '../../shared/metricas/textos';
 import { TEXTOS_ANALISE } from './textos';
 import type { Ajuste, Forma, Medida, TesteAderencia } from './tipos';
 
@@ -43,16 +44,7 @@ function valorDoAjuste(ajuste: Ajuste): string {
 
 /** `Ajuste` não é `Medida`: o p-valor vira o valor do card e a frase vira a interpretação. */
 export function medidaDoAjuste(ajuste: Ajuste): Medida {
-  if (!ajuste.aplicavel) {
-    return {
-      valor: null,
-      aplicavel: false,
-      motivo: ajuste.motivo,
-      calculo: null,
-      interpretacao: null,
-      formula: null,
-    };
-  }
+  if (!ajuste.aplicavel) return medidaAusente(ajuste.motivo ?? TEXTOS_METRICAS.motivoPadrao);
   const parametros = parametrosEmTexto(ajuste);
   const frase = [ajuste.frase, parametros].filter(Boolean).join(' ');
   return {

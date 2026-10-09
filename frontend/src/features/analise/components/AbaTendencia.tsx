@@ -1,7 +1,7 @@
 import Banner from '../../../shared/ui/Banner';
 import { cartoesTendencia } from '../cartoes';
 import type { PropsPainel } from '../tipos';
-import GradeCardsMetrica from './GradeCardsMetrica';
+import GradeCardsMetrica from '../../../shared/metricas/GradeCardsMetrica';
 import paineis from './paineis.module.css';
 
 export default function AbaTendencia({ analise }: Readonly<PropsPainel>) {
