@@ -1,11 +1,14 @@
-"""Fachada do domínio analise: análise univariada, forma e "onde está meu valor?" (D54)."""
+"""Fachada do domínio analise: univariada, forma, "onde está meu valor?" e bivariada (D54)."""
 
 from dataclasses import dataclass, replace
 
 import numpy as np
+import pandas as pd
 
 from app.compartilhado.tipos import TIPOS_AUXILIARES, TIPOS_NUMERICOS
 from app.dominios.analise import erros
+from app.dominios.analise.bivariada import analisar_par, montar_par, prever_no_par
+from app.dominios.analise.correlacao import matriz_correlacao
 from app.dominios.analise.pontos_forma import PontosForma, pontos_da_forma
 from app.dominios.analise.posicao import calcular_posicao
 from app.dominios.analise.resultados import (
@@ -17,21 +20,36 @@ from app.dominios.analise.resultados import (
     TabelaFrequencia,
     TipoSeparatriz,
 )
+from app.dominios.analise.resultados_bivariada import Bivariada, MatrizCorrelacao, Par, Previsao
 from app.dominios.analise.univariada import analisar_amostra
 from app.dominios.datasets.servico import ServicoDatasets
 from app.dominios.graficos.servico import (
     Barra,
     BinomialFigura,
     CurvaFigura,
+    DadosBivariados,
     DadosForma,
+    DadosMatriz,
     DadosUnivariados,
     FiguraPronta,
     QQFigura,
+    figura_matriz,
+    figuras_bivariadas,
     figuras_forma,
     figuras_univariadas,
 )
 
-__all__ = ["Analise", "Figura", "OpcoesAnalise", "Posicao", "ServicoAnalise", "TipoSeparatriz"]
+__all__ = [
+    "Analise",
+    "Bivariada",
+    "Figura",
+    "MatrizCorrelacao",
+    "OpcoesAnalise",
+    "Posicao",
+    "Previsao",
+    "ServicoAnalise",
+    "TipoSeparatriz",
+]
 
 
 @dataclass(frozen=True, slots=True)
@@ -114,6 +132,29 @@ def _com_figuras_da_forma(amostra: Amostra, analise: Analise) -> Forma | None:
     return replace(analise.forma, figuras=_como_figuras(figuras_forma(dados)))
 
 
+def _figuras_bivariadas(par: Par, bivariada: Bivariada) -> tuple[Figura, ...]:
+    """Dispersão com a reta e resíduos × X, a partir do par já sem faltantes (spec 10)."""
+    reta = bivariada.regressao
+    dados = DadosBivariados(
+        x_nome=par.x,
+        y_nome=par.y,
+        x=tuple(float(v) for v in par.valores_x),
+        y=tuple(float(v) for v in par.valores_y),
+        a=reta.a,
+        b=reta.b,
+        equacao=reta.equacao,
+        forca=bivariada.forca,
+        sentido=bivariada.sentido,
+    )
+    return _como_figuras(figuras_bivariadas(dados))
+
+
+def _com_figura_da_matriz(matriz: MatrizCorrelacao) -> MatrizCorrelacao:
+    pronta = figura_matriz(DadosMatriz(matriz.colunas, matriz.valores, matriz.resumo))
+    figuras = _como_figuras((pronta,)) if pronta else ()
+    return replace(matriz, figura=figuras[0] if figuras else None)
+
+
 class ServicoAnalise:
     """Casos de uso da análise; os dados vêm da fachada do domínio datasets."""
 
@@ -150,3 +191,30 @@ class ServicoAnalise:
         if amostra.tipo not in TIPOS_NUMERICOS:
             raise erros.posicao_nao_aplicavel()
         return calcular_posicao(amostra.valores.to_numpy(dtype="float64"), valor, tipo)
+
+    def _numeros(self, dataset_id: str, coluna: str) -> pd.Series:
+        """Números da coluna; a bivariada só aceita discretas e contínuas (spec 10)."""
+        dados = self._datasets.coluna_para_analise(dataset_id, coluna)
+        if dados.tipo not in TIPOS_NUMERICOS or dados.numeros is None:
+            raise erros.coluna_nao_numerica(coluna)
+        return dados.numeros
+
+    def par(self, dataset_id: str, x: str, y: str) -> Par:
+        """X e Y só nas linhas em que as duas têm valor (D100)."""
+        return montar_par(x, y, self._numeros(dataset_id, x), self._numeros(dataset_id, y))
+
+    def bivariada(self, dataset_id: str, x: str, y: str) -> Bivariada:
+        """Correlação, regressão, resíduos e figuras do par (spec 10)."""
+        par = self.par(dataset_id, x, y)
+        resultado = analisar_par(par)
+        return replace(resultado, figuras=_figuras_bivariadas(par, resultado))
+
+    def prever(self, dataset_id: str, x: str, y: str, valor: float) -> Previsao:
+        """Ŷ para um X, com aviso de extrapolação (spec 10)."""
+        return prever_no_par(self.par(dataset_id, x, y), valor)
+
+    def correlacoes(self, dataset_id: str) -> MatrizCorrelacao:
+        """Pearson par a par de todas as colunas discretas e contínuas, com o heatmap."""
+        nomes = [c.coluna for c in self._datasets.colunas(dataset_id) if c.tipo in TIPOS_NUMERICOS]
+        tabela = pd.DataFrame({nome: self._numeros(dataset_id, nome) for nome in nomes})
+        return _com_figura_da_matriz(matriz_correlacao(tabela))

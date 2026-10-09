@@ -2,11 +2,16 @@
 
 from dataclasses import replace
 
-from app.dominios.analise import textos_bivariada
+import pandas as pd
+
+from app.dominios.analise import erros, textos_bivariada
 from app.dominios.analise.correlacao import classificar, pearson, spearman, teste_t
 from app.dominios.analise.formulas import formulas_usadas
-from app.dominios.analise.regressao import regressao
-from app.dominios.analise.resultados_bivariada import Bivariada, Faixa, Par
+from app.dominios.analise.regressao import prever, regressao
+from app.dominios.analise.resultados_bivariada import Bivariada, Faixa, Par, Previsao
+
+MIN_PARES = 3
+MIN_DISTINTOS = 2  # com um valor só não há variação
 
 CHAVES_FORMULAS: list[str | None] = [
     "pearson",
@@ -44,3 +49,29 @@ def analisar_par(par: Par) -> Bivariada:
         interpretacoes=tuple(frase for frase in interpretacoes if frase),
         formulas=formulas_usadas(CHAVES_FORMULAS),
     )
+
+
+def montar_par(x: str, y: str, serie_x: pd.Series, serie_y: pd.Series) -> Par:
+    """Só as linhas com X e Y (pelo número da linha, D49); n ≥ 3 e as duas com variação."""
+    if x == y:
+        raise erros.colunas_iguais()
+    juntos = pd.concat([serie_x, serie_y], axis="columns", keys=[x, y]).dropna()
+    if len(juntos) < MIN_PARES:
+        raise erros.poucos_pares(len(juntos), x, y)
+    for nome in (x, y):
+        if juntos[nome].nunique() < MIN_DISTINTOS:
+            raise erros.sem_variacao(nome)
+    return Par(
+        x,
+        y,
+        juntos[x].to_numpy(dtype="float64"),
+        juntos[y].to_numpy(dtype="float64"),
+        n_descartados=len(serie_x) - len(juntos),
+    )
+
+
+def prever_no_par(par: Par, valor: float) -> Previsao:
+    """ŷ = a + b·x com a reta do par; avisa quando x sai da faixa observada."""
+    reta = regressao(par.valores_x, par.valores_y, (par.x, par.y))
+    faixa = Faixa(float(par.valores_x.min()), float(par.valores_x.max()))
+    return prever(reta.a, reta.b, valor, faixa, (par.x, par.y))

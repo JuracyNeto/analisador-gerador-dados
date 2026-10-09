@@ -181,3 +181,50 @@ class Posicao(Modelo):
     maximo: float
     marcas: list[ValorSeparatriz]
     frase: str
+
+
+class Faixa(Modelo):
+    minimo: float
+    maximo: float
+
+
+class Regressao(Modelo):
+    a: float
+    b: float
+    equacao: str
+    reta: Medida
+    r2: Medida
+    se: Medida
+
+
+class Bivariada(Modelo):
+    x: str
+    y: str
+    n: int
+    n_descartados: int
+    pearson: Medida
+    teste_t: Medida
+    spearman: Medida
+    forca: Literal["fraca", "moderada", "forte"]
+    sentido: Literal["positiva", "negativa", "nula"]
+    regressao: Regressao
+    faixa_x: Faixa
+    interpretacoes: list[str]
+    formulas: list[Formula]
+    figuras: list[Figura]
+
+
+class Previsao(Modelo):
+    x: float
+    y_previsto: float
+    extrapolacao: bool
+    faixa_x: Faixa
+    frase: str
+    aviso: str | None
+
+
+class MatrizCorrelacao(Modelo):
+    colunas: list[str]
+    valores: list[list[float | None]]
+    resumo: str
+    figura: Figura | None
