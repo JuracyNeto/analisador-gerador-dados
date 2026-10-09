@@ -8,6 +8,8 @@ const F = TEXTOS_ANALISE.forma;
 const SEPARADOR = ' · ';
 const SEPARADOR_CALCULO = ' | ';
 const CASAS_COEFICIENTES = 4;
+/** G₁ e G₂ com 3 algarismos, como no print 4e ("0,32"). */
+const CASAS_FORMA = 3;
 
 function parametrosEmTexto(ajuste: Ajuste): string {
   return ajuste.parametros
@@ -91,9 +93,16 @@ export function cartoesForma(forma: Forma): DefinicaoCartao[] {
       id: 'assimetria',
       rotulo: F.assimetria,
       medida: forma.assimetria,
+      casasSignificativas: CASAS_FORMA,
       selo: seloAssimetria(forma),
     },
-    { id: 'curtose', rotulo: F.curtose, medida: forma.curtose, selo: seloCurtose(forma) },
+    {
+      id: 'curtose',
+      rotulo: F.curtose,
+      medida: forma.curtose,
+      casasSignificativas: CASAS_FORMA,
+      selo: seloCurtose(forma),
+    },
     {
       id: 'normal',
       rotulo: F.ajusteNormal,
