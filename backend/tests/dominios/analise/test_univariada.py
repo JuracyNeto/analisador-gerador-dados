@@ -20,8 +20,13 @@ def test_continua_tem_tudo_menos_proporcao(criar_amostra: CriarAmostra) -> None:
         "dispersao": True,
         "variancia": True,
         "cv": True,
+        "forma": True,
+        "assimetria": True,
+        "curtose": True,
+        "normal": True,
+        "binomial": False,
     }
-    assert [n.item for n in analise.nao_aplicavel] == ["proporcao"]
+    assert [n.item for n in analise.nao_aplicavel] == ["proporcao", "binomial"]
     chaves = [f.chave for f in analise.formulas]
     assert {"sturges", "media", "moda_czuber", "variancia", "cv"} <= set(chaves)
     assert analise.figuras == ()

@@ -7,6 +7,13 @@ from app.dominios.analise import textos
 from app.dominios.analise.dispersao import dispersao
 from app.dominios.analise.formulas import formulas_usadas
 from app.dominios.analise.frequencias import tabela_frequencia
+from app.dominios.analise.montagem_forma import (
+    ContextoForma,
+    aplicavel_forma,
+    forma_da_amostra,
+    formulas_forma,
+    nao_aplicaveis_forma,
+)
 from app.dominios.analise.resultados import (
     Amostra,
     Analise,
@@ -117,25 +124,32 @@ def _chaves_de_formulas(
 
 
 def analisar_amostra(
-    amostra: Amostra, classes: int | None = None, sucesso: str | None = None
+    amostra: Amostra,
+    classes: int | None = None,
+    sucesso: str | None = None,
+    tentativas: int | None = None,
 ) -> Analise:
-    """Frequências, tendência, separatrizes e dispersão de uma coluna, com motivos e fórmulas."""
+    """Frequências, tendência, separatrizes, dispersão e forma, com motivos e fórmulas."""
     tabela = tabela_frequencia(amostra, classes)
     tend = tendencia(amostra, tabela, sucesso)
     seps = separatrizes(amostra)
     disp = dispersao(amostra, seps, tend.proporcao)
+    forma = forma_da_amostra(amostra, ContextoForma(tabela, tend, seps), tentativas)
     medidas = _medidas(tend, disp)
+    nao_aplicaveis = _nao_aplicaveis(amostra, tabela, medidas, seps)
+    chaves = _chaves_de_formulas(amostra, tabela, medidas) + formulas_forma(forma)
     return Analise(
         coluna=amostra.coluna,
         tipo=amostra.tipo,
         n=amostra.n,
         n_faltantes=amostra.n_faltantes,
-        aplicavel=_aplicavel(amostra, tabela, medidas, seps),
-        nao_aplicavel=_nao_aplicaveis(amostra, tabela, medidas, seps),
+        aplicavel=_aplicavel(amostra, tabela, medidas, seps) | aplicavel_forma(forma),
+        nao_aplicavel=nao_aplicaveis + tuple(nao_aplicaveis_forma(amostra, forma)),
         frequencias=tabela,
         tendencia=tend,
         separatrizes=seps,
         dispersao=disp,
         interpretacoes=_interpretacoes(medidas),
-        formulas=formulas_usadas(_chaves_de_formulas(amostra, tabela, medidas)),
+        formulas=formulas_usadas(chaves),
+        forma=forma,
     )
