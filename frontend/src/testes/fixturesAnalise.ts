@@ -286,10 +286,27 @@ export const analiseBinaria: Analise = {
   },
 };
 
+const FALTAS = [3, 6, 8, 9, 6, 4, 2, 1, 1] as const;
+const TOTAL_FALTAS = FALTAS.reduce((soma, fi) => soma + fi, 0);
+
 export const analiseDiscreta: Analise = {
   ...analiseContinua,
   coluna: 'faltas',
   tipo: 'discreta',
+  n: TOTAL_FALTAS,
+  frequencias: {
+    ...analiseContinua.frequencias,
+    tipo: 'discreta',
+    total: TOTAL_FALTAS,
+    k: null,
+    k_sturges: null,
+    h: null,
+    metodo_classes: null,
+    linhas: FALTAS.map((fi, valor) => ({
+      ...linhaCategoria(String(valor), fi, TOTAL_FALTAS),
+      valor,
+    })),
+  },
   aplicavel: { ...APLICAVEL_NUMERICA, moda_czuber: false, normal: false, binomial: true },
   forma: formaDiscreta,
 };

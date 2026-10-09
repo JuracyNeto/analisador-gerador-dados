@@ -1,0 +1,16 @@
+/* Aba Forma (discreta): campo "Número de tentativas (n)" + botão Aplicar. */
+.controle {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--esp-12);
+  max-width: 520px;
+}
+
+.controle > :first-child {
+  flex: 1;
+}
+
+/* Alinha o botão com o campo (o rótulo fica acima do campo). */
+.botao {
+  margin-top: 26px;
+}
