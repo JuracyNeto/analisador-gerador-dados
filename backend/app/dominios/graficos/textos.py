@@ -17,6 +17,9 @@ ROTULOS = {
     "bastoes_normal": "Bastões + Normal",
     "qqplot": "QQ-plot",
     "binomial": "Observado × Binomial",
+    "dispersao": "Dispersão",
+    "residuos": "Resíduos",
+    "matriz": "Matriz",
 }
 
 PORQUE = {
@@ -47,6 +50,17 @@ PORQUE = {
         "pontos sobre a reta indicam dados normais."
     ),
     "binomial": "Compara quantas vezes cada contagem apareceu com o que a Binomial prevê.",
+    "dispersao": (
+        "Cada ponto é uma linha da tabela; a reta resume a tendência e serve para prever Y."
+    ),
+    "residuos": (
+        "Mostra quanto cada ponto fica acima ou abaixo da reta; ajuda a ver se uma reta "
+        "é um bom resumo da relação."
+    ),
+    "matriz": (
+        "Mostra de uma vez a correlação de cada par de colunas numéricas: azul quando "
+        "crescem juntas, laranja quando uma cresce e a outra diminui."
+    ),
 }
 
 
@@ -136,3 +150,37 @@ def titulo_qqplot(coluna: str) -> str:
 
 def titulo_binomial(coluna: str, tentativas: int, p: float) -> str:
     return f"{coluna}: observado × Binomial (n = {tentativas}; p = {formatar_numero(p)})"
+
+
+RESUMOS_DISPERSAO = {
+    ("forte", "positiva"): "Os pontos sobem da esquerda para a direita e ficam perto da reta.",
+    ("moderada", "positiva"): (
+        "Os pontos sobem da esquerda para a direita, mas se espalham em volta da reta."
+    ),
+    ("forte", "negativa"): "Os pontos descem da esquerda para a direita e ficam perto da reta.",
+    ("moderada", "negativa"): (
+        "Os pontos descem da esquerda para a direita, mas se espalham em volta da reta."
+    ),
+}
+SEM_DIRECAO = "Os pontos não seguem uma direção clara."
+TITULO_RESIDUOS = "Resíduos da regressão"
+TITULO_MATRIZ = "Matriz de correlação (Pearson)"
+
+
+def titulo_dispersao(x: str, y: str, n: int) -> str:
+    return f"{y} em função de {x} (n = {formatar_numero(n)})"
+
+
+def resumo_dispersao(forca: str, sentido: str, n: int, mostrados: int) -> str:
+    """Direção dos pontos (força e sentido de r) e o aviso de amostra, quando houver (D101)."""
+    texto = RESUMOS_DISPERSAO.get((forca, sentido), SEM_DIRECAO)
+    if mostrados < n:
+        texto += f" Mostramos {formatar_numero(mostrados)} dos {formatar_numero(n)} pontos."
+    return texto
+
+
+def resumo_residuos(y: str) -> str:
+    return (
+        f"Resíduo é a diferença entre o {y} real e o previsto. Pontos espalhados em volta do "
+        "zero, sem formar curva, indicam que a reta é um bom resumo da relação."
+    )

@@ -1,7 +1,14 @@
 import re
 
 from app.core.config import RAIZ_REPOSITORIO
-from app.dominios.graficos.tema import CORES_CLARAS, TOKENS_CLARO, colorir, layout_claro, mesclar
+from app.dominios.graficos.tema import (
+    CORES_CLARAS,
+    PAPEL_DIVERGENTE,
+    TOKENS_CLARO,
+    colorir,
+    layout_claro,
+    mesclar,
+)
 
 TOKENS_CSS = RAIZ_REPOSITORIO / "frontend" / "src" / "shared" / "ui" / "tokens.css"
 _DECLARACAO = re.compile(r"(--[\w-]+):\s*([^;]+);")
@@ -72,3 +79,16 @@ def test_cores_claras_vem_da_paleta_do_tema_claro() -> None:
         "principal": TOKENS_CLARO["--graf-1"],
         "referencia": TOKENS_CLARO["--graf-2"],
     } == CORES_CLARAS
+
+
+def test_colorir_pinta_o_heatmap_com_a_escala_divergente() -> None:
+    dados = {"data": [{"type": "heatmap", "z": [[1]], "meta": PAPEL_DIVERGENTE}]}
+
+    traco = colorir(dados, CORES_CLARAS)["data"][0]
+
+    assert traco["colorscale"] == [
+        [0, TOKENS_CLARO["--graf-2"]],
+        [0.5, TOKENS_CLARO["--graf-fundo"]],
+        [1, TOKENS_CLARO["--graf-1"]],
+    ]
+    assert "marker" not in traco

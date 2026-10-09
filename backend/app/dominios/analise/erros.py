@@ -40,3 +40,38 @@ def tentativas_invalidas(maximo: int) -> EntradaInvalida:
         f"O número de tentativas precisa ser pelo menos o maior valor observado ({maximo}).",
         f"Use um número igual ou maior que {maximo}.",
     )
+
+
+SUGESTAO_NUMERICAS = "Escolha colunas discretas ou contínuas."
+
+
+def coluna_nao_numerica(coluna: str) -> EntradaInvalida:
+    return EntradaInvalida(
+        "COLUNA_NAO_NUMERICA",
+        f"Escolha duas colunas numéricas: {coluna} não é numérica.",
+        SUGESTAO_NUMERICAS,
+    )
+
+
+def colunas_iguais() -> EntradaInvalida:
+    return EntradaInvalida(
+        "COLUNAS_IGUAIS",
+        "X e Y precisam ser colunas diferentes.",
+        "Escolha outra coluna para Y.",
+    )
+
+
+def poucos_pares(n: int, x: str, y: str) -> EntradaInvalida:
+    return EntradaInvalida(
+        "POUCOS_PARES",
+        f"Só há {n} linhas com {x} e {y} preenchidas; são precisas pelo menos 3.",
+        "Confira os faltantes na etapa Limpeza.",
+    )
+
+
+def sem_variacao(coluna: str) -> EntradaInvalida:
+    return EntradaInvalida(
+        "SEM_VARIACAO",
+        f"Todos os valores de {coluna} são iguais; não dá para medir a relação.",
+        "Escolha outra coluna.",
+    )

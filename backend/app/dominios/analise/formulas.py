@@ -136,6 +136,40 @@ FORMULAS: dict[str, Formula] = {
             r"\chi^2 = \sum \frac{(O_i - E_i)^2}{E_i}",
             "χ² = Σ (Oᵢ − Eᵢ)² / Eᵢ",
         ),
+        _f(
+            "pearson",
+            "Correlação de Pearson",
+            r"r = \frac{\sum (x_i - \bar{x})(y_i - \bar{y})}"
+            r"{\sqrt{\sum (x_i - \bar{x})^2 \cdot \sum (y_i - \bar{y})^2}}",
+            "r = Σ(xᵢ − x̄)(yᵢ − ȳ) / √[Σ(xᵢ − x̄)² · Σ(yᵢ − ȳ)²]",
+        ),
+        _f(
+            "teste_t_correlacao",
+            "Teste de significância de r",
+            r"t = \frac{r\sqrt{n-2}}{\sqrt{1-r^2}},\ gl = n - 2",
+            "t = r√(n − 2) / √(1 − r²), gl = n − 2",
+        ),
+        _f(
+            "spearman",
+            "Correlação de Spearman",
+            r"\rho = r(\text{postos de } X, \text{postos de } Y)",
+            "ρ = Pearson dos postos de X e de Y",
+        ),
+        _f(
+            "regressao",
+            "Reta de regressão",
+            r"\hat{Y} = a + bX,\ b = \frac{\sum (x_i - \bar{x})(y_i - \bar{y})}"
+            r"{\sum (x_i - \bar{x})^2},\ a = \bar{y} - b\bar{x}",
+            "Ŷ = a + bX · b = Σ(xᵢ − x̄)(yᵢ − ȳ) / Σ(xᵢ − x̄)² · a = ȳ − b·x̄",
+        ),
+        _f("r2", "Coeficiente de determinação", r"R^2 = r^2", "R² = r²"),
+        _f(
+            "erro_padrao_estimativa",
+            "Erro padrão da estimativa",
+            r"S_e = \sqrt{\frac{\sum (y_i - \hat{y}_i)^2}{n - 2}}",
+            "Sₑ = √[Σ(yᵢ − ŷᵢ)² / (n − 2)]",
+        ),
+        _f("residuo", "Resíduo", r"e_i = y_i - \hat{y}_i", "eᵢ = yᵢ − ŷᵢ"),
     )
 }
 

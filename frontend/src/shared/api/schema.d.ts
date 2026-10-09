@@ -209,6 +209,57 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/datasets/{dataset_id}/bivariada": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Correlação e regressão de duas colunas (spec 10) */
+        get: operations["bivariada_api_datasets__dataset_id__bivariada_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/datasets/{dataset_id}/bivariada/prever": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Prever Y para um valor de X (spec 10) */
+        get: operations["prever_api_datasets__dataset_id__bivariada_prever_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/datasets/{dataset_id}/correlacoes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Matriz de correlação das colunas numéricas (spec 10) */
+        get: operations["correlacoes_api_datasets__dataset_id__correlacoes_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/datasets/{dataset_id}/relatorio": {
         parameters: {
             query?: never;
@@ -305,6 +356,38 @@ export interface components {
             /** Mensagem */
             mensagem: string;
         };
+        /** Bivariada */
+        Bivariada: {
+            /** X */
+            x: string;
+            /** Y */
+            y: string;
+            /** N */
+            n: number;
+            /** N Descartados */
+            n_descartados: number;
+            pearson: components["schemas"]["Medida"];
+            teste_t: components["schemas"]["Medida"];
+            spearman: components["schemas"]["Medida"];
+            /**
+             * Forca
+             * @enum {string}
+             */
+            forca: "fraca" | "moderada" | "forte";
+            /**
+             * Sentido
+             * @enum {string}
+             */
+            sentido: "positiva" | "negativa" | "nula";
+            regressao: components["schemas"]["Regressao"];
+            faixa_x: components["schemas"]["Faixa"];
+            /** Interpretacoes */
+            interpretacoes: string[];
+            /** Formulas */
+            formulas: components["schemas"]["Formula"][];
+            /** Figuras */
+            figuras: components["schemas"]["Figura"][];
+        };
         /** Body_importar_api_datasets_post */
         Body_importar_api_datasets_post: {
             /** Arquivo */
@@ -381,6 +464,13 @@ export interface components {
             quando: string;
             /** Frase */
             frase: string;
+        };
+        /** Faixa */
+        Faixa: {
+            /** Minimo */
+            minimo: number;
+            /** Maximo */
+            maximo: number;
         };
         /** FaltantesColuna */
         FaltantesColuna: {
@@ -540,6 +630,16 @@ export interface components {
             /** Fr Acum Pct */
             fr_acum_pct: number | null;
         };
+        /** MatrizCorrelacao */
+        MatrizCorrelacao: {
+            /** Colunas */
+            colunas: string[];
+            /** Valores */
+            valores: (number | null)[][];
+            /** Resumo */
+            resumo: string;
+            figura: components["schemas"]["Figura"] | null;
+        };
         /** Medida */
         Medida: {
             valor: components["schemas"]["Valor"];
@@ -692,8 +792,34 @@ export interface components {
             /** Frase */
             frase: string;
         };
+        /** Previsao */
+        Previsao: {
+            /** X */
+            x: number;
+            /** Y Previsto */
+            y_previsto: number;
+            /** Extrapolacao */
+            extrapolacao: boolean;
+            faixa_x: components["schemas"]["Faixa"];
+            /** Frase */
+            frase: string;
+            /** Aviso */
+            aviso: string | null;
+        };
         /** @enum {string} */
         Problema: "faltantes" | "duplicados" | "fora_de_faixa" | "inconsistencia" | "tipo_misto";
+        /** Regressao */
+        Regressao: {
+            /** A */
+            a: number;
+            /** B */
+            b: number;
+            /** Equacao */
+            equacao: string;
+            reta: components["schemas"]["Medida"];
+            r2: components["schemas"]["Medida"];
+            se: components["schemas"]["Medida"];
+        };
         /** ResultadoLimpeza */
         ResultadoLimpeza: {
             /** Log */
@@ -1262,6 +1388,110 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Posicao"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    bivariada_api_datasets__dataset_id__bivariada_get: {
+        parameters: {
+            query: {
+                /** @description Coluna X (explica) */
+                x: string;
+                /** @description Coluna Y (é explicada) */
+                y: string;
+            };
+            header?: never;
+            path: {
+                dataset_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Bivariada"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    prever_api_datasets__dataset_id__bivariada_prever_get: {
+        parameters: {
+            query: {
+                /** @description Coluna X (explica) */
+                x: string;
+                /** @description Coluna Y (é explicada) */
+                y: string;
+                valor: number;
+            };
+            header?: never;
+            path: {
+                dataset_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Previsao"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    correlacoes_api_datasets__dataset_id__correlacoes_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                dataset_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MatrizCorrelacao"];
                 };
             };
             /** @description Validation Error */

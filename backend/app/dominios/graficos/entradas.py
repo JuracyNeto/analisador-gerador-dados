@@ -99,3 +99,25 @@ class DadosForma:
     binomial: BinomialFigura | None = None
     normal_compativel: bool | None = None
     binomial_compativel: bool | None = None
+
+
+@dataclass(frozen=True, slots=True)
+class DadosBivariados:
+    """Par de colunas já sem faltantes, a reta Ŷ = a + bX e a força/sentido da correlação."""
+
+    x_nome: str
+    y_nome: str
+    x: tuple[float, ...]
+    y: tuple[float, ...]
+    a: float
+    b: float
+    equacao: str
+    forca: str
+    sentido: str
+
+
+@dataclass(frozen=True, slots=True)
+class DadosMatriz:
+    colunas: tuple[str, ...]
+    valores: tuple[tuple[float | None, ...], ...]
+    resumo: str

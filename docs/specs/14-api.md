@@ -16,9 +16,9 @@ Camada de apresentação: `router.py` + `schemas.py` de cada domínio; `app/main
 | POST | `/datasets/{id}/limpeza/desfazer` | — | `{n_linhas}` | 03 |
 | GET | `/datasets/{id}/colunas/{col}/analise` | `?classes=&sucesso=&tentativas=` (`tentativas` ≥ 1: nº de tentativas da Binomial; menor que o máximo observado → 400 `TENTATIVAS_INVALIDAS`) | `Analise` | 04–09 |
 | GET | `/datasets/{id}/colunas/{col}/posicao` | `?valor=&tipo=quartil|decil|percentil` | `Posicao` | 06 |
-| GET | `/datasets/{id}/bivariada` | `?x=&y=` | `Bivariada` | 10 |
-| GET | `/datasets/{id}/bivariada/prever` | `?x=&y=&valor=` | `{y_previsto, extrapolacao, frase}` | 10 |
-| GET | `/datasets/{id}/correlacoes` | — | matriz + figura heatmap | 10 |
+| GET | `/datasets/{id}/bivariada` | `?x=&y=` | `Bivariada` (r, teste t, Spearman, reta, R², Sₑ, faixa de X, figuras) | 10 |
+| GET | `/datasets/{id}/bivariada/prever` | `?x=&y=&valor=` | `Previsao {x, y_previsto, extrapolacao, faixa_x, frase, aviso}` | 10 |
+| GET | `/datasets/{id}/correlacoes` | — | `MatrizCorrelacao {colunas, valores, resumo, figura}` | 10 |
 | POST | `/gerador/univariado` | ver spec 11 | `GeradoUni` | 11 |
 | POST | `/gerador/bivariado` | ver spec 11 | `GeradoBi` | 11 |
 | GET | `/gerador/{gid}/csv` | — | `text/csv` download | 11 |
@@ -45,7 +45,7 @@ Camada de apresentação: `router.py` + `schemas.py` de cada domínio; `app/main
 Cada medida (`Medida {valor, aplicavel, motivo, calculo, interpretacao, formula}`) traz em `formula` a `chave` da sua fórmula em `formulas[]` (D66). O frontend renderiza só o que veio; nunca decide aplicabilidade.
 
 ## Erros
-`COLUNA_IGNORADA` (400) vale para os tipos auxiliares: "A coluna {col} é um identificador e fica fora das análises." / "A coluna {col} tem datas e fica fora das análises." (D90). `TipoVariavel` = `nominal`, `ordinal`, `discreta`, `continua`, `binaria`, `identificador`, `data`.
+Bivariada (spec 10): `COLUNA_NAO_NUMERICA`, `COLUNAS_IGUAIS`, `POUCOS_PARES`, `SEM_VARIACAO` (400). `COLUNA_IGNORADA` (400) vale para os tipos auxiliares: "A coluna {col} é um identificador e fica fora das análises." / "A coluna {col} tem datas e fica fora das análises." (D90). `TipoVariavel` = `nominal`, `ordinal`, `discreta`, `continua`, `binaria`, `identificador`, `data`.
 
 Todas as falhas → HTTP 4xx/5xx com `{codigo, mensagem, sugestao}` (spec 17). Validação Pydantic é traduzida para mensagens em português.
 

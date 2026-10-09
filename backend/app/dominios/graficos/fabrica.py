@@ -8,8 +8,15 @@ import pandas as pd
 from app.compartilhado.numeros import formatar_percentual
 from app.compartilhado.tipos import TipoVariavel
 from app.dominios.graficos import figuras, textos
+from app.dominios.graficos import figuras_bivariadas as desenhos_bivariados
 from app.dominios.graficos import figuras_forma as desenhos_forma
-from app.dominios.graficos.entradas import DadosForma, DadosUnivariados, FiguraPronta
+from app.dominios.graficos.entradas import (
+    DadosBivariados,
+    DadosForma,
+    DadosMatriz,
+    DadosUnivariados,
+    FiguraPronta,
+)
 from app.dominios.graficos.figuras import Figura
 
 MAX_FATIAS_PIZZA = 5
@@ -39,6 +46,9 @@ MOLDES = {
     "bastoes_normal": _Molde("bastoes_normal", "bastoes_normal", textos.PORQUE["bastoes_normal"]),
     "qqplot": _Molde("qqplot", "qqplot", textos.PORQUE["qqplot"]),
     "binomial": _Molde("binomial", "binomial", textos.PORQUE["binomial"]),
+    "dispersao": _Molde("dispersao", "dispersao", textos.PORQUE["dispersao"], True),
+    "residuos": _Molde("residuos", "residuos", textos.PORQUE["residuos"]),
+    "matriz": _Molde("matriz", "matriz", textos.PORQUE["matriz"]),
 }
 
 
@@ -204,3 +214,34 @@ def figuras_forma(dados: DadosForma) -> tuple[FiguraPronta, ...]:
     """Figuras da aba Forma (spec 09): só as que têm dados (D94)."""
     candidatas = (_curva_da_forma(dados), _qqplot(dados), _binomial(dados))
     return tuple(figura for figura in candidatas if figura is not None)
+
+
+def figuras_bivariadas(dados: DadosBivariados) -> tuple[FiguraPronta, ...]:
+    """Dispersão com a reta e resíduos × X (spec 10)."""
+    n = len(dados.x)
+    mostrados = len(desenhos_bivariados.amostrar(dados.x, dados.y)[0])
+    dispersao = _pronta(
+        MOLDES["dispersao"],
+        textos.titulo_dispersao(dados.x_nome, dados.y_nome, n),
+        textos.resumo_dispersao(dados.forca, dados.sentido, n, mostrados),
+        desenhos_bivariados.dispersao(dados),
+    )
+    residuos = _pronta(
+        MOLDES["residuos"],
+        textos.TITULO_RESIDUOS,
+        textos.resumo_residuos(dados.y_nome),
+        desenhos_bivariados.residuos(dados),
+    )
+    return (dispersao, residuos)
+
+
+MIN_COLUNAS_MATRIZ = 2
+
+
+def figura_matriz(dados: DadosMatriz) -> FiguraPronta | None:
+    """Heatmap da matriz de correlação; com menos de 2 colunas não há figura."""
+    if len(dados.colunas) < MIN_COLUNAS_MATRIZ:
+        return None
+    return _pronta(
+        MOLDES["matriz"], textos.TITULO_MATRIZ, dados.resumo, desenhos_bivariados.heatmap(dados)
+    )
