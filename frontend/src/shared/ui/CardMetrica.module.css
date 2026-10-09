@@ -24,6 +24,9 @@
   letter-spacing: -0.02em;
   font-variant-numeric: tabular-nums;
 }
+.valor[data-tamanho='menor'] {
+  font-size: 26px;
+}
 .unidade {
   margin-left: 6px;
   font: 500 16px var(--fonte-texto);

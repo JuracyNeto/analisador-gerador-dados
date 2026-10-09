@@ -23,6 +23,7 @@ export interface DefinicaoCartao {
   selo?: string | undefined;
   unidade?: string | undefined;
   casasSignificativas?: number | undefined;
+  tamanhoValor?: 'normal' | 'menor' | undefined;
 }
 
 function acharFormula(formulas: readonly Formula[], chave: string | null): Formula | undefined {
@@ -56,6 +57,7 @@ export function propsDoCartao(
     rotulo,
     valor: formatarValorMedida(medida.valor, definicao.casasSignificativas),
     ...(definicao.unidade === undefined ? {} : { unidade: definicao.unidade }),
+    ...(definicao.tamanhoValor === undefined ? {} : { tamanhoValor: definicao.tamanhoValor }),
     ...(definicao.selo === undefined ? {} : { selo: definicao.selo }),
     ...(medida.interpretacao === null ? {} : { interpretacao: medida.interpretacao }),
     ...(formula === undefined ? {} : { formula }),

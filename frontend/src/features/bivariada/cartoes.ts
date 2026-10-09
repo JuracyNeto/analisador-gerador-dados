@@ -37,6 +37,6 @@ export function cartoesBivariada(bivariada: Bivariada): DefinicaoCartao[] {
       casasSignificativas: CASAS_R,
     },
     { id: 'r2', rotulo: C.r2, medida: regressao.r2, unidade: '%', casasSignificativas: CASAS_R2 },
-    { id: 'reta', rotulo: C.reta, medida: regressao.reta },
+    { id: 'reta', rotulo: C.reta, medida: regressao.reta, tamanhoValor: 'menor' },
   ];
 }

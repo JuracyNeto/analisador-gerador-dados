@@ -24,6 +24,7 @@ describe('cartoesBivariada', () => {
     expect(cartoes.map((c) => c.rotulo)).toEqual([C.pearson, C.r2, C.reta]);
     expect(cartoes.map((c) => c.valor)).toEqual(['0,78', '61', EQUACAO]);
     expect(cartoes[1]?.unidade).toBe('%');
+    expect(cartoes[2]?.tamanhoValor).toBe('menor');
     expect(cartoes[0]?.selo).toBe('Correlação positiva forte');
   });
 
