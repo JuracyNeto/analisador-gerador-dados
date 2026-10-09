@@ -109,6 +109,48 @@ class Figura(Modelo):
     dados: dict[str, Any]
 
 
+class Parametro(Modelo):
+    simbolo: str
+    nome: str
+    valor: float
+
+
+class TesteAderencia(Modelo):
+    nome: str
+    estatistica: float
+    gl: int | None
+    p_valor: float
+    compativel: bool
+
+
+class Ajuste(Modelo):
+    distribuicao: Literal["normal", "binomial", "bernoulli"]
+    aplicavel: bool
+    motivo: str | None
+    parametros: list[Parametro]
+    teste: TesteAderencia | None
+    complementar: TesteAderencia | None
+    frase: str | None
+    calculo: str | None
+    formula: str | None
+
+
+class Forma(Modelo):
+    assimetria: Medida
+    assimetria_pearson_1: Medida
+    assimetria_pearson_2: Medida
+    curtose: Medida
+    curtose_percentilica: Medida
+    classificacao_assimetria: Literal["simetrica", "moderada", "forte"] | None
+    sentido_assimetria: Literal["direita", "esquerda"] | None
+    classificacao_curtose: Literal["mesocurtica", "leptocurtica", "platicurtica"] | None
+    normal: Ajuste
+    binomial: Ajuste
+    tentativas: int | None
+    interpretacao: str | None
+    figuras: list[Figura]
+
+
 class Analise(Modelo):
     coluna: str
     tipo: TipoVariavel
@@ -120,6 +162,7 @@ class Analise(Modelo):
     tendencia: Tendencia
     separatrizes: Separatrizes | None
     dispersao: Dispersao | None
+    forma: Forma | None
     interpretacoes: list[str]
     formulas: list[Formula]
     figuras: list[Figura]
