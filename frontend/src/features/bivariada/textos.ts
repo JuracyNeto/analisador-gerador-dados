@@ -3,6 +3,14 @@ export const TEXTOS_BIVARIADA = {
   ajuda:
     'Veja se duas colunas numéricas andam juntas e use a reta para prever uma a partir da outra.',
   semDataset: 'Importe um arquivo para comparar duas colunas numéricas.',
+  carregandoColunas: 'Carregando as colunas…',
+  calculando: (x: string, y: string) => `Calculando a relação entre ${x} e ${y}…`,
+  vazio: {
+    titulo: 'Escolha duas colunas numéricas',
+    descricao:
+      'Este arquivo tem menos de duas colunas numéricas (discretas ou contínuas). Confira os tipos na etapa Variáveis.',
+    acao: 'Ir para Variáveis',
+  },
   seletores: { x: 'X (explica)', y: 'Y (é explicada)', trocar: 'Trocar X e Y' },
   previsao: {
     titulo: 'Prever Y para X =',

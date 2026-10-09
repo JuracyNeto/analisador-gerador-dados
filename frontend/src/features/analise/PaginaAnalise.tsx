@@ -1,9 +1,8 @@
 import { useColunasAnalisaveis } from '../../shared/api/colunas';
-import BotaoEtapa from '../../shared/navegacao/BotaoEtapa';
+import AcoesEtapa from '../../shared/navegacao/AcoesEtapa';
 import { CAMINHOS } from '../../shared/navegacao/caminhos';
 import SemDataset from '../../shared/sessao/SemDataset';
 import { useSessao } from '../../shared/sessao/useSessao';
-import BarraAcoes from '../../shared/ui/BarraAcoes';
 import PaginaEtapa from '../../shared/ui/PaginaEtapa';
 import { useAnalise } from './api';
 import CorpoAnalise from './components/CorpoAnalise';
@@ -17,14 +16,10 @@ const ETAPA_ANALISE = 4;
 const T = TEXTOS_ANALISE;
 
 const ACOES_ANALISE = (
-  <BarraAcoes>
-    <BotaoEtapa para={CAMINHOS.limpeza} sentido="voltar">
-      {T.navegacao.voltar}
-    </BotaoEtapa>
-    <BotaoEtapa para={CAMINHOS.bivariada} sentido="avancar">
-      {T.navegacao.continuar}
-    </BotaoEtapa>
-  </BarraAcoes>
+  <AcoesEtapa
+    voltar={{ para: CAMINHOS.limpeza, rotulo: T.navegacao.voltar }}
+    continuar={{ para: CAMINHOS.bivariada, rotulo: T.navegacao.continuar }}
+  />
 );
 
 function AnaliseDoDataset({ datasetId }: Readonly<{ datasetId: string }>) {
