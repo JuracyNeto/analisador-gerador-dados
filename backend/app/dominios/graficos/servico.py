@@ -15,25 +15,36 @@ from app.dominios.graficos.entradas import (
     Barra,
     BinomialFigura,
     CurvaFigura,
+    DadosBivariados,
     DadosForma,
+    DadosMatriz,
     DadosUnivariados,
     FiguraPronta,
     QQFigura,
 )
-from app.dominios.graficos.fabrica import figuras_forma, figuras_univariadas
+from app.dominios.graficos.fabrica import (
+    figura_matriz,
+    figuras_bivariadas,
+    figuras_forma,
+    figuras_univariadas,
+)
 from app.dominios.graficos.tema import CORES_CLARAS, colorir, layout_claro, mesclar
 
 __all__ = [
     "Barra",
     "BinomialFigura",
     "CurvaFigura",
+    "DadosBivariados",
     "DadosForma",
+    "DadosMatriz",
     "DadosUnivariados",
     "FiguraPronta",
     "QQFigura",
     "codigo_plotlyjs",
     "endereco_plotlyjs_cdn",
     "figura_html",
+    "figura_matriz",
+    "figuras_bivariadas",
     "figuras_forma",
     "figuras_univariadas",
 ]

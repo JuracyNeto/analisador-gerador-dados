@@ -25,7 +25,14 @@ PALETA = tuple(TOKENS_CLARO[f"--graf-{i}"] for i in range(1, 9))
 # Cada traço diz só o seu papel (`meta`); a cor sai do tema de quem desenha (D83).
 PAPEL_PRINCIPAL = "principal"
 PAPEL_REFERENCIA = "referencia"
-PAPEIS = frozenset({PAPEL_PRINCIPAL, PAPEL_REFERENCIA})
+# Heatmap: a escala vai de --graf-2 (−1) ao fundo (0) e a --graf-1 (+1) (D103).
+PAPEL_DIVERGENTE = "divergente"
+PAPEIS = frozenset({PAPEL_PRINCIPAL, PAPEL_REFERENCIA, PAPEL_DIVERGENTE})
+ESCALA_DIVERGENTE_CLARA = [
+    [0, TOKENS_CLARO["--graf-2"]],
+    [0.5, TOKENS_CLARO["--graf-fundo"]],
+    [1, TOKENS_CLARO["--graf-1"]],
+]
 CORES_CLARAS = {
     PAPEL_PRINCIPAL: TOKENS_CLARO["--graf-1"],
     PAPEL_REFERENCIA: TOKENS_CLARO["--graf-2"],
@@ -75,6 +82,8 @@ def _tem_linha(traco: dict[str, Any]) -> bool:
 
 
 def _pintar(traco: dict[str, Any], cores: dict[str, str]) -> dict[str, Any]:
+    if traco.get("meta") == PAPEL_DIVERGENTE:
+        return {**traco, "colorscale": ESCALA_DIVERGENTE_CLARA}
     cor = cores.get(str(traco.get("meta")))
     if cor is None:
         return traco
