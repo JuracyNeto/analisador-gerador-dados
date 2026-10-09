@@ -2,7 +2,7 @@
 
 from dataclasses import replace
 
-from app.compartilhado.tipos import TIPOS_NUMERICOS, TipoVariavel
+from app.compartilhado.tipos import TIPOS_AUXILIARES, TIPOS_NUMERICOS
 from app.dominios.analise import erros
 from app.dominios.analise.posicao import calcular_posicao
 from app.dominios.analise.resultados import (
@@ -60,8 +60,8 @@ class ServicoAnalise:
     def amostra(self, dataset_id: str, coluna: str) -> Amostra:
         """Valores válidos da coluna, já convertidos conforme o tipo."""
         dados = self._datasets.coluna_para_analise(dataset_id, coluna)
-        if dados.tipo == TipoVariavel.IDENTIFICADOR:
-            raise erros.coluna_ignorada(coluna)
+        if dados.tipo in TIPOS_AUXILIARES:
+            raise erros.coluna_ignorada(coluna, dados.tipo)
         serie = dados.numeros if dados.numeros is not None else dados.textos
         validos = serie.dropna()
         if validos.empty:

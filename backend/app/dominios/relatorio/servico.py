@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from datetime import datetime
 
 from app.compartilhado.numeros import formatar_numero, formatar_percentual
-from app.compartilhado.tipos import TipoVariavel
+from app.compartilhado.tipos import TIPOS_AUXILIARES, TipoVariavel
 from app.core.erros import EntradaInvalida
 from app.dominios.analise.servico import Analise, ServicoAnalise
 from app.dominios.datasets.servico import Resumo, ServicoDatasets
@@ -130,15 +130,13 @@ class ServicoRelatorio:
 
     def _colunas(self, dataset_id: str, pedido: PedidoRelatorio) -> tuple[SecaoColuna, ...]:
         tipos = self._datasets.colunas(dataset_id)
-        nomes = pedido.colunas or tuple(
-            t.coluna for t in tipos if t.tipo != TipoVariavel.IDENTIFICADOR
-        )
+        nomes = pedido.colunas or tuple(t.coluna for t in tipos if t.tipo not in TIPOS_AUXILIARES)
         secoes: list[SecaoColuna] = []
         for nome in nomes:
             try:
                 analise = self._analise.analisar(dataset_id, nome)
             except EntradaInvalida:
-                continue  # identificador ou coluna vazia: fica fora, como na tela
+                continue  # tipo auxiliar ou coluna vazia: fica fora, como na tela
             secoes.append(_secao_coluna(analise, len(secoes) + 1))
         return tuple(secoes)
 

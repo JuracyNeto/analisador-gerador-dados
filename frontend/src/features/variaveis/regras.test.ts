@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { COLUNAS_SAUDE } from '../../testes/fixtures/datasets';
+import { COLUNAS_SAUDE, criarColuna } from '../../testes/fixtures/datasets';
 import { aplicarAlteracao, contarPorTipo, juntarExemplos, moverItem } from './regras';
 
 describe('contarPorTipo', () => {
@@ -11,6 +11,11 @@ describe('contarPorTipo', () => {
       { tipo: 'nominal', quantidade: 1 },
       { tipo: 'binaria', quantidade: 1 },
     ]);
+  });
+
+  it('deixa as colunas de data fora do resumo', () => {
+    const comData = [...COLUNAS_SAUDE, criarColuna({ coluna: 'quando', tipo: 'data' })];
+    expect(contarPorTipo(comData).map((contagem) => contagem.tipo)).not.toContain('data');
   });
 });
 

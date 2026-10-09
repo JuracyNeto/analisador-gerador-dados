@@ -1,6 +1,6 @@
 import type { TipoColuna } from '../../shared/api/dataset';
 import type { components } from '../../shared/api/schema';
-import { ORDEM_TIPOS, type TipoVariavel } from '../../shared/ui/tiposVariavel';
+import { ehAuxiliar, ORDEM_TIPOS, type TipoVariavel } from '../../shared/ui/tiposVariavel';
 
 export type AlteracaoTipo = components['schemas']['AlteracaoTipo'];
 
@@ -11,9 +11,9 @@ export interface ContagemTipo {
 
 const MAX_EXEMPLOS = 4;
 
-/** Resumo do topo da tela 2; identificador fica de fora (é ignorado nas análises). */
+/** Resumo do topo da tela 2; identificador e data ficam de fora (são ignorados nas análises). */
 export function contarPorTipo(colunas: readonly TipoColuna[]): ContagemTipo[] {
-  return ORDEM_TIPOS.filter((tipo) => tipo !== 'identificador')
+  return ORDEM_TIPOS.filter((tipo) => !ehAuxiliar(tipo))
     .map((tipo) => ({ tipo, quantidade: colunas.filter((c) => c.tipo === tipo).length }))
     .filter((contagem) => contagem.quantidade > 0);
 }

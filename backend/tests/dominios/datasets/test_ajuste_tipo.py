@@ -67,3 +67,33 @@ def test_numeros_podem_virar_ordinal_com_categorias_em_texto() -> None:
 
     assert tipo.categorias_ordem == ("1", "2", "3")
     assert tipo.contagens == {"1": 2, "3": 1, "2": 1}
+
+
+DATAS = ["07/10/2026", "08/10/2026", "09/10/2026"]
+
+
+def test_textos_sem_datas_nao_viram_data() -> None:
+    with pytest.raises(EntradaInvalida) as erro:
+        ajustar_tipo(_coluna(["Goiânia", "Anápolis"]), TipoVariavel.DATA, None)
+
+    assert erro.value.codigo == "TIPO_INCOMPATIVEL"
+    assert erro.value.mensagem == "Esta coluna não tem datas ou horários que dê para reconhecer."
+
+
+def test_datas_podem_virar_nominal_e_voltar() -> None:
+    nominal = ajustar_tipo(_coluna(DATAS), TipoVariavel.NOMINAL, None)
+    data = ajustar_tipo(_coluna(DATAS), TipoVariavel.DATA, None)
+
+    assert (nominal.tipo, data.tipo, data.origem) == (
+        TipoVariavel.NOMINAL,
+        TipoVariavel.DATA,
+        OrigemTipo.MANUAL,
+    )
+    assert data.contagens == {}
+
+
+def test_datas_nao_viram_numero() -> None:
+    with pytest.raises(EntradaInvalida) as erro:
+        ajustar_tipo(_coluna(DATAS), TipoVariavel.CONTINUA, None)
+
+    assert erro.value.mensagem == "Esta coluna tem textos; não pode ser numérica."

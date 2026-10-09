@@ -21,6 +21,7 @@ class Configuracao(BaseSettings):
     limiar_discreta: int = 30
     limiar_unicos_identificador: float = 0.95
     limiar_numerico: float = 0.9
+    limiar_data: float = 0.9
     tamanho_previa: int = 20
     pasta_exemplos: Path = RAIZ_REPOSITORIO / "dados-exemplo"
     arquivo_exemplo: str = "pesquisa_saude.txt"

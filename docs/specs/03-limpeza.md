@@ -19,6 +19,8 @@ Domínio: `app/dominios/datasets/` (`limpeza.py`) · Endpoints: `GET /api/datase
 | Inconsistência de texto | `unificar` (para a grafia mais frequente) · `manter` |
 | Tipo misto | `marcar_faltante` · `manter` |
 
+Colunas `data` (spec 02): entram em faltantes (sugestão = moda) e na comparação de duplicados; fora de faixa, grafias e tipo misto não se aplicam. Valores que não viraram data ainda não aparecem no diagnóstico (limitação do M2.0).
+
 Ações são aplicadas sobre `atual` (ADR 0004) em ordem: inconsistência → tipo misto → duplicados → fora de faixa → faltantes. `original` nunca é alterado; existe "Desfazer tudo" (restaura `atual = original`).
 
 ## Log

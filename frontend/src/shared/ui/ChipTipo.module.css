@@ -13,7 +13,8 @@
   white-space: nowrap;
 }
 
-.chip[data-tipo='identificador'] {
+.chip[data-tipo='identificador'],
+.chip[data-tipo='data'] {
   border-style: dashed;
 }
 

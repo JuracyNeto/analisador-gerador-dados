@@ -38,6 +38,7 @@ export const colunasPesquisa: TipoColuna[] = [
   criarColuna({ coluna: 'sexo', tipo: 'binaria' }),
   criarColuna({ coluna: 'peso_kg', tipo: 'continua' }),
   criarColuna({ coluna: 'cidade', tipo: 'nominal' }),
+  criarColuna({ coluna: 'quando', tipo: 'data' }),
 ];
 
 const N = 227;

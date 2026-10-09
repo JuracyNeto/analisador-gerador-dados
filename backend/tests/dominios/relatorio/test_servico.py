@@ -2,7 +2,7 @@ import pytest
 
 from app.compartilhado.tipos import TipoVariavel
 from app.dominios.analise.servico import ServicoAnalise
-from app.dominios.datasets.servico import AcaoLimpeza, ServicoDatasets
+from app.dominios.datasets.servico import AcaoLimpeza, OpcoesLeitura, ServicoDatasets
 from app.dominios.relatorio.servico import PedidoRelatorio, ServicoRelatorio
 
 
@@ -58,3 +58,16 @@ def test_sem_limpeza_avisa(servico: ServicoRelatorio, servico_datasets: ServicoD
 
     assert "Nenhuma ação de limpeza foi aplicada." in html
     assert "Tipo escolhido por você." in html
+
+
+def test_coluna_de_datas_so_aparece_nos_tipos(
+    servico: ServicoRelatorio, servico_datasets: ServicoDatasets
+) -> None:
+    conteudo = b"quando;peso\n07/10/2026;58,2\n08/10/2026;79,6\n09/10/2026;63,0\n"
+    dataset_id = servico_datasets.importar(conteudo, "datas.txt", OpcoesLeitura()).dataset_id
+
+    html = servico.gerar(dataset_id, PedidoRelatorio(secoes=("tipos", "analises")))
+
+    assert "Data ou hora (ignorada)" in html
+    assert 'Análise de <span class="mono">quando</span>' not in html
+    assert 'Análise de <span class="mono">peso</span>' in html

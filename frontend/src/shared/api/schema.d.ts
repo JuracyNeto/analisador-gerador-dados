@@ -752,10 +752,10 @@ export interface components {
         };
         /**
          * TipoVariavel
-         * @description Tipos de variável da spec 02 (identificador é auxiliar e fica fora das análises).
+         * @description Tipos de variável da spec 02; identificador e data são auxiliares (fora das análises).
          * @enum {string}
          */
-        TipoVariavel: "nominal" | "ordinal" | "discreta" | "continua" | "binaria" | "identificador";
+        TipoVariavel: "nominal" | "ordinal" | "discreta" | "continua" | "binaria" | "identificador" | "data";
         /** ValidationError */
         ValidationError: {
             /** Location */

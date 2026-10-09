@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest';
-import { ehNumerico, estiloDoTipo, ORDEM_TIPOS, TIPOS_VARIAVEL } from './tiposVariavel';
+import { ehAuxiliar, ehNumerico, estiloDoTipo, ORDEM_TIPOS, TIPOS_VARIAVEL } from './tiposVariavel';
 
 describe('tiposVariavel', () => {
-  it('ORDEM_TIPOS cobre os 6 tipos sem repetir', () => {
+  it('ORDEM_TIPOS cobre os 7 tipos sem repetir', () => {
     expect(new Set(ORDEM_TIPOS).size).toBe(Object.keys(TIPOS_VARIAVEL).length);
   });
 
@@ -26,5 +26,15 @@ describe('tiposVariavel', () => {
 
   it('só discreta e contínua são numéricas', () => {
     expect(ORDEM_TIPOS.filter(ehNumerico)).toEqual(['continua', 'discreta']);
+  });
+
+  it('data e identificador são auxiliares (fora das análises)', () => {
+    expect(ORDEM_TIPOS.filter(ehAuxiliar)).toEqual(['data', 'identificador']);
+    expect(TIPOS_VARIAVEL.data).toEqual({
+      icone: 'calendar_month',
+      rotuloCurto: 'Data',
+      rotuloCompleto: 'Data ou hora (ignorada)',
+      token: '--tipo-data',
+    });
   });
 });
