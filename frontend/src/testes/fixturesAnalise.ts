@@ -329,5 +329,7 @@ export function propsPainel(analise: Analise): PropsPainel {
     atualizando: false,
     classes: null,
     aoMudarClasses: vi.fn(),
+    tentativas: null,
+    aoMudarTentativas: vi.fn(),
   };
 }

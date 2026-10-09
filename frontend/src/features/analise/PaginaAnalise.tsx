@@ -32,7 +32,8 @@ function AnaliseDoDataset({ datasetId }: Readonly<{ datasetId: string }>) {
   const parametros = useParametrosAnalise();
   const escolhida = colunaEscolhida(parametros.coluna, colunas.data ?? []);
   const nomeColuna = escolhida?.coluna ?? null;
-  const analise = useAnalise(datasetId, nomeColuna, parametros.classes);
+  const { classes, tentativas } = parametros;
+  const analise = useAnalise(datasetId, nomeColuna, { classes, tentativas });
   const seletor =
     colunas.data !== undefined && escolhida !== null ? (
       <SeletorColuna
@@ -47,8 +48,10 @@ function AnaliseDoDataset({ datasetId }: Readonly<{ datasetId: string }>) {
       <CorpoAnalise
         estado={estadoDaAnalise(colunas, analise, nomeColuna)}
         datasetId={datasetId}
-        classes={parametros.classes}
+        classes={classes}
         aoMudarClasses={parametros.mudarClasses}
+        tentativas={tentativas}
+        aoMudarTentativas={parametros.mudarTentativas}
       />
       {ACOES_ANALISE}
     </PaginaEtapa>

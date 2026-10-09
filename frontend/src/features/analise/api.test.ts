@@ -3,19 +3,32 @@ import { ErroApi } from '../../shared/api/cliente';
 import { chavesDataset } from '../../shared/api/dataset';
 import { caminhoAnalise, caminhoPosicao, chavesAnalise, podeTentarDeNovo } from './api';
 
+const SEM_OPCOES = { classes: null, tentativas: null };
+
 describe('caminhos da API de análise', () => {
+  it('manda classes e tentativas quando há', () => {
+    expect(caminhoAnalise('ds1', 'faltas', { classes: null, tentativas: 10 })).toBe(
+      '/datasets/ds1/colunas/faltas/analise?tentativas=10',
+    );
+    expect(caminhoAnalise('ds1', 'faltas', { classes: 5, tentativas: 10 })).toBe(
+      '/datasets/ds1/colunas/faltas/analise?classes=5&tentativas=10',
+    );
+  });
+
   it('pede a análise sem classes quando o usuário não mudou o número de classes', () => {
-    expect(caminhoAnalise('ds1', 'peso_kg', null)).toBe('/datasets/ds1/colunas/peso_kg/analise');
+    expect(caminhoAnalise('ds1', 'peso_kg', SEM_OPCOES)).toBe(
+      '/datasets/ds1/colunas/peso_kg/analise',
+    );
   });
 
   it('manda o número de classes escolhido', () => {
-    expect(caminhoAnalise('ds1', 'peso_kg', 12)).toBe(
+    expect(caminhoAnalise('ds1', 'peso_kg', { classes: 12, tentativas: null })).toBe(
       '/datasets/ds1/colunas/peso_kg/analise?classes=12',
     );
   });
 
   it('codifica nomes de coluna com espaço e acento', () => {
-    expect(caminhoAnalise('ds1', 'renda média', null)).toBe(
+    expect(caminhoAnalise('ds1', 'renda média', SEM_OPCOES)).toBe(
       '/datasets/ds1/colunas/renda%20m%C3%A9dia/analise',
     );
   });
@@ -27,11 +40,12 @@ describe('caminhos da API de análise', () => {
   });
 
   it('usa o prefixo de análises do M1.6 (limpeza e troca de tipo invalidam análise e posição)', () => {
-    expect(chavesAnalise.analise('ds1', 'peso_kg', null)).toEqual([
+    expect(chavesAnalise.analise('ds1', 'peso_kg', SEM_OPCOES)).toEqual([
       'datasets',
       'ds1',
       'analise',
       'peso_kg',
+      null,
       null,
     ]);
     expect(chavesAnalise.posicao('ds1', 'peso_kg', 75, 'quartil').slice(0, 3)).toEqual(

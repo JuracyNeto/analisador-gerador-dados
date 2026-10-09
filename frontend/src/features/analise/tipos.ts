@@ -31,4 +31,6 @@ export interface PropsPainel {
   atualizando: boolean;
   classes: number | null;
   aoMudarClasses: (k: number) => void;
+  tentativas: number | null;
+  aoMudarTentativas: (n: number) => void;
 }
