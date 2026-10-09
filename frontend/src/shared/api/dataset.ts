@@ -16,6 +16,7 @@ export const chavesDataset = {
   colunas: (id: string) => ['datasets', id, 'colunas'] as const,
   diagnostico: (id: string) => ['datasets', id, 'diagnostico'] as const,
   analises: (id: string) => ['datasets', id, 'analise'] as const,
+  bivariada: (id: string) => ['datasets', id, 'bivariada'] as const,
   relatorio: (id: string) => ['datasets', id, 'relatorio'] as const,
 };
 

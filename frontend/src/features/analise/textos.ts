@@ -20,7 +20,7 @@ export const TEXTOS_ANALISE = {
   carregandoColunas: 'Carregando as colunas…',
   calculando: (coluna: string) => `Calculando as estatísticas de ${coluna}…`,
   semDataset: 'Importe um arquivo para analisar as colunas, uma de cada vez.',
-  navegacao: { voltar: 'Voltar para Limpeza', continuar: 'Continuar para Relatório' },
+  navegacao: { voltar: 'Voltar para Limpeza', continuar: 'Continuar para Bivariada' },
   semColunas: {
     titulo: 'Nenhuma coluna para analisar',
     descricao:

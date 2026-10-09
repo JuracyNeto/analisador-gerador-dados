@@ -21,7 +21,7 @@ const ACOES_ANALISE = (
     <BotaoEtapa para={CAMINHOS.limpeza} sentido="voltar">
       {T.navegacao.voltar}
     </BotaoEtapa>
-    <BotaoEtapa para={CAMINHOS.relatorio} sentido="avancar">
+    <BotaoEtapa para={CAMINHOS.bivariada} sentido="avancar">
       {T.navegacao.continuar}
     </BotaoEtapa>
   </BarraAcoes>
