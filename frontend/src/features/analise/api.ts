@@ -1,6 +1,7 @@
 import { keepPreviousData, useQuery, type UseQueryResult } from '@tanstack/react-query';
-import { ErroApi, requisitar } from '../../shared/api/cliente';
+import { requisitar } from '../../shared/api/cliente';
 import { caminhoDataset, chavesDataset } from '../../shared/api/dataset';
+import { podeRepetir } from '../../shared/api/erros';
 import type { Analise, Posicao, TipoSeparatriz } from './tipos';
 
 export interface ConsultaPosicao {
@@ -49,7 +50,7 @@ const CODIGOS_DEFINITIVOS = new Set(['COLUNA_IGNORADA', 'COLUNA_VAZIA', 'COLUNA_
 
 /** Erros que não mudam ao repetir a requisição não ganham botão "Tentar de novo". */
 export function podeTentarDeNovo(erro: unknown): boolean {
-  return !(erro instanceof ErroApi && CODIGOS_DEFINITIVOS.has(erro.codigo));
+  return podeRepetir(erro, CODIGOS_DEFINITIVOS);
 }
 
 export function useAnalise(
