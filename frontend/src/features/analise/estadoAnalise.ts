@@ -1,3 +1,4 @@
+import { ErroApi } from '../../shared/api/cliente';
 import { podeTentarDeNovo } from './api';
 import type { Analise, TipoColuna } from './tipos';
 
@@ -39,4 +40,18 @@ export function estadoDaAnalise(
   if (analise.status === 'error') return estadoDeErro(analise);
   if (analise.data === undefined) return { status: 'calculando', coluna };
   return { status: 'pronta', analise: analise.data, atualizando: analise.isPlaceholderData };
+}
+
+const ERRO_TENTATIVAS = 'TENTATIVAS_INVALIDAS';
+
+/** `?tentativas=` inválido na URL: "Tentar de novo" volta para o padrão (o maior valor, D96). */
+export function comPadraoDeTentativas(
+  estado: EstadoAnalise,
+  usarPadrao: () => void,
+): EstadoAnalise {
+  const erroDeTentativas =
+    estado.status === 'erro' &&
+    estado.erro instanceof ErroApi &&
+    estado.erro.codigo === ERRO_TENTATIVAS;
+  return erroDeTentativas ? { ...estado, tentarDeNovo: usarPadrao } : estado;
 }

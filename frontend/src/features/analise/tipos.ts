@@ -21,8 +21,9 @@ export type TipoColuna = Esquemas['TipoColuna'];
 export type TipoVariavel = Esquemas['TipoVariavel'];
 export type TipoSeparatriz = Posicao['tipo'];
 
-/** Abas da tela 4 no M1 (a aba "Forma e distribuição" fica oculta até o M2, D60). */
-export type IdAba = 'frequencias' | 'tendencia' | 'separatrizes' | 'dispersao' | 'graficos';
+/** Abas da tela 4 (telas.md): "Forma e distribuição" entrou no M2 (D60 cumprida). */
+export type IdAba =
+  'frequencias' | 'tendencia' | 'separatrizes' | 'dispersao' | 'forma' | 'graficos';
 
 /** Props comuns de todos os painéis de aba (tabela de despacho em ConteudoAnalise). */
 export interface PropsPainel {
@@ -31,6 +32,5 @@ export interface PropsPainel {
   atualizando: boolean;
   classes: number | null;
   aoMudarClasses: (k: number) => void;
-  tentativas: number | null;
   aoMudarTentativas: (n: number) => void;
 }

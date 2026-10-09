@@ -5,6 +5,7 @@ import {
   comColuna,
   comTentativas,
   lerParametros,
+  semTentativas,
   type ParametrosAnalise,
 } from '../parametros';
 
@@ -12,6 +13,7 @@ export interface ParametrosAnaliseNaUrl extends ParametrosAnalise {
   escolherColuna: (coluna: string) => void;
   mudarClasses: (k: number) => void;
   mudarTentativas: (n: number) => void;
+  usarTentativasPadrao: () => void;
 }
 
 export function useParametrosAnalise(): ParametrosAnaliseNaUrl {
@@ -30,6 +32,9 @@ export function useParametrosAnalise(): ParametrosAnaliseNaUrl {
     },
     mudarTentativas: (n) => {
       definirBusca((atual) => comTentativas(atual, n), { replace: true });
+    },
+    usarTentativasPadrao: () => {
+      definirBusca((atual) => semTentativas(atual), { replace: true });
     },
   };
 }

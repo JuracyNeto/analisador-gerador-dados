@@ -8,7 +8,7 @@ import PaginaEtapa from '../../shared/ui/PaginaEtapa';
 import { useAnalise } from './api';
 import CorpoAnalise from './components/CorpoAnalise';
 import SeletorColuna from './components/SeletorColuna';
-import { estadoDaAnalise } from './estadoAnalise';
+import { comPadraoDeTentativas, estadoDaAnalise } from './estadoAnalise';
 import { useParametrosAnalise } from './hooks/useParametrosAnalise';
 import { colunaEscolhida } from './parametros';
 import { TEXTOS_ANALISE } from './textos';
@@ -46,11 +46,13 @@ function AnaliseDoDataset({ datasetId }: Readonly<{ datasetId: string }>) {
   return (
     <PaginaEtapa etapa={ETAPA_ANALISE} titulo={T.titulo} ajuda={T.ajuda} acoesTopo={seletor}>
       <CorpoAnalise
-        estado={estadoDaAnalise(colunas, analise, nomeColuna)}
+        estado={comPadraoDeTentativas(
+          estadoDaAnalise(colunas, analise, nomeColuna),
+          parametros.usarTentativasPadrao,
+        )}
         datasetId={datasetId}
         classes={classes}
         aoMudarClasses={parametros.mudarClasses}
-        tentativas={tentativas}
         aoMudarTentativas={parametros.mudarTentativas}
       />
       {ACOES_ANALISE}

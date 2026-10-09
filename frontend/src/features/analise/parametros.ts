@@ -54,6 +54,12 @@ export function comTentativas(busca: URLSearchParams, n: number): URLSearchParam
   return nova;
 }
 
+export function semTentativas(busca: URLSearchParams): URLSearchParams {
+  const nova = new URLSearchParams(busca);
+  nova.delete('tentativas');
+  return nova;
+}
+
 /** A coluna da URL, se ainda for analisável; senão a primeira da lista. */
 export function colunaEscolhida(
   pedida: string | null,

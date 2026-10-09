@@ -12,6 +12,7 @@ export const TEXTOS_ANALISE = {
     tendencia: 'Tendência central',
     separatrizes: 'Separatrizes',
     dispersao: 'Dispersão',
+    forma: 'Forma e distribuição',
     graficos: 'Gráficos',
   } satisfies Record<IdAba, string>,
   motivoPadrao: 'Não se aplica ao tipo desta coluna.',
