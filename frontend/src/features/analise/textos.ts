@@ -1,4 +1,5 @@
 import { escolherForma, pluralizar } from '../../shared/lib/pluralizar';
+import { TEXTOS_METRICAS } from '../../shared/metricas/textos';
 import type { IdAba, TipoSeparatriz } from './tipos';
 
 export const TEXTOS_ANALISE = {
@@ -15,7 +16,7 @@ export const TEXTOS_ANALISE = {
     forma: 'Forma e distribuição',
     graficos: 'Gráficos',
   } satisfies Record<IdAba, string>,
-  motivoPadrao: 'Não se aplica ao tipo desta coluna.',
+  motivoPadrao: TEXTOS_METRICAS.motivoPadrao,
   carregandoColunas: 'Carregando as colunas…',
   calculando: (coluna: string) => `Calculando as estatísticas de ${coluna}…`,
   semDataset: 'Importe um arquivo para analisar as colunas, uma de cada vez.',
