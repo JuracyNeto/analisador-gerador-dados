@@ -32,3 +32,11 @@ def posicao_nao_aplicavel() -> EntradaInvalida:
         '"Onde está meu valor?" só funciona com colunas numéricas.',
         "Escolha uma coluna discreta ou contínua.",
     )
+
+
+def tentativas_invalidas(maximo: int) -> EntradaInvalida:
+    return EntradaInvalida(
+        "TENTATIVAS_INVALIDAS",
+        f"O número de tentativas precisa ser pelo menos o maior valor observado ({maximo}).",
+        f"Use um número igual ou maior que {maximo}.",
+    )

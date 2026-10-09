@@ -80,6 +80,62 @@ FORMULAS: dict[str, Formula] = {
             "CV = (s / x̄) · 100%",
         ),
         _f("variancia_binaria", "Variância (binária)", r"Var = p(1 - p)", "Var = p(1 − p)"),
+        _f(
+            "assimetria",
+            "Assimetria (Fisher)",
+            r"G_1 = \frac{\sqrt{n(n-1)}}{n-2} \cdot \frac{m_3}{m_2^{3/2}},\ "
+            r"m_k = \frac{\sum (x_i - \bar{x})^k}{n}",
+            "G₁ = [√(n(n−1)) / (n−2)] · m₃ / m₂^(3/2), mₖ = Σ(xᵢ − x̄)ᵏ / n",
+        ),
+        _f(
+            "assimetria_pearson_1",
+            "1º coeficiente de Pearson",
+            r"As_1 = \frac{\bar{x} - Mo}{s}",
+            "As₁ = (x̄ − Mo) / s",
+        ),
+        _f(
+            "assimetria_pearson_2",
+            "2º coeficiente de Pearson",
+            r"As_2 = \frac{3(\bar{x} - Md)}{s}",
+            "As₂ = 3(x̄ − Md) / s",
+        ),
+        _f(
+            "curtose",
+            "Curtose (excesso)",
+            r"G_2 = \frac{(n+1)n(n-1)}{(n-2)(n-3)} \cdot \frac{\sum (x_i-\bar{x})^4}"
+            r"{(\sum (x_i-\bar{x})^2)^2} - \frac{3(n-1)^2}{(n-2)(n-3)}",
+            "G₂ = curtose amostral − 3 (Normal = 0)",
+        ),
+        _f(
+            "curtose_percentilica",
+            "Curtose percentílica",
+            r"K = \frac{Q_3 - Q_1}{2(P_{90} - P_{10})}",
+            "K = (Q3 − Q1) / [2(P90 − P10)] (Normal ≈ 0,263)",
+        ),
+        _f(
+            "normal",
+            "Distribuição Normal",
+            r"f(x) = \frac{1}{\sigma\sqrt{2\pi}} e^{-\frac{(x-\mu)^2}{2\sigma^2}}",
+            "f(x) = (1 / (σ√(2π))) · e^(−(x−μ)² / (2σ²))",
+        ),
+        _f(
+            "binomial",
+            "Distribuição Binomial",
+            r"P(X = k) = \binom{n}{k} p^k (1-p)^{n-k}",
+            "P(X = k) = C(n,k) · pᵏ · (1−p)ⁿ⁻ᵏ",
+        ),
+        _f(
+            "bernoulli",
+            "Distribuição de Bernoulli",
+            r"P(X = 1) = p,\ E[X] = p,\ Var = p(1-p)",
+            "P(X = 1) = p · E[X] = p · Var = p(1 − p)",
+        ),
+        _f(
+            "qui_quadrado",
+            "Qui-quadrado de aderência",
+            r"\chi^2 = \sum \frac{(O_i - E_i)^2}{E_i}",
+            "χ² = Σ (Oᵢ − Eᵢ)² / Eᵢ",
+        ),
     )
 }
 

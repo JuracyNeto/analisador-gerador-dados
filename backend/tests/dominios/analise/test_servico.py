@@ -2,7 +2,7 @@ import pytest
 
 from app.compartilhado.tipos import TipoVariavel
 from app.core.erros import EntradaInvalida
-from app.dominios.analise.servico import ServicoAnalise
+from app.dominios.analise.servico import OpcoesAnalise, ServicoAnalise
 from app.dominios.datasets.servico import OpcoesLeitura, ServicoDatasets
 
 CONTEUDO = (
@@ -28,7 +28,7 @@ def test_analisar_coluna_numerica(servico: ServicoAnalise, dataset_id: str) -> N
 
 
 def test_analisar_com_classes(servico: ServicoAnalise, dataset_id: str) -> None:
-    assert servico.analisar(dataset_id, "peso", classes=3).frequencias.k == 3
+    assert servico.analisar(dataset_id, "peso", OpcoesAnalise(classes=3)).frequencias.k == 3
 
 
 def test_identificador_fica_fora(servico: ServicoAnalise, dataset_id: str) -> None:

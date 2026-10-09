@@ -40,3 +40,13 @@ def formatar_percentual(valor: float, casas: int = 1) -> str:
 def formatar_fixo(valor: float, casas: int) -> str:
     """Número com casas decimais fixas: 60,0 · 1.234,50 (limites de classe)."""
     return _trocar_separadores(f"{valor:,.{casas}f}")
+
+
+P_VALOR_MINIMO = 0.001
+
+
+def formatar_p_valor(p: float) -> str:
+    """ "p < 0,001" para valores muito pequenos; senão "p = 0,213" (3 algarismos)."""
+    if p < P_VALOR_MINIMO:
+        return "p < 0,001"
+    return f"p = {formatar_numero(p, 3)}"

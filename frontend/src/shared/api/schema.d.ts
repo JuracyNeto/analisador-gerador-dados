@@ -182,7 +182,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Análise univariada da coluna (specs 04–07) */
+        /** Análise univariada da coluna (specs 04–09) */
         get: operations["analisar_api_datasets__dataset_id__colunas__coluna__analise_get"];
         put?: never;
         post?: never;
@@ -243,6 +243,28 @@ export interface components {
             /** Grupo */
             grupo?: string | null;
         };
+        /** Ajuste */
+        Ajuste: {
+            /**
+             * Distribuicao
+             * @enum {string}
+             */
+            distribuicao: "normal" | "binomial" | "bernoulli";
+            /** Aplicavel */
+            aplicavel: boolean;
+            /** Motivo */
+            motivo: string | null;
+            /** Parametros */
+            parametros: components["schemas"]["Parametro"][];
+            teste: components["schemas"]["TesteAderencia"] | null;
+            complementar: components["schemas"]["TesteAderencia"] | null;
+            /** Frase */
+            frase: string | null;
+            /** Calculo */
+            calculo: string | null;
+            /** Formula */
+            formula: string | null;
+        };
         /** AlteracaoTipo */
         AlteracaoTipo: {
             tipo: components["schemas"]["TipoVariavel"];
@@ -268,6 +290,7 @@ export interface components {
             tendencia: components["schemas"]["Tendencia"];
             separatrizes: components["schemas"]["Separatrizes"] | null;
             dispersao: components["schemas"]["Dispersao"] | null;
+            forma: components["schemas"]["Forma"] | null;
             /** Interpretacoes */
             interpretacoes: string[];
             /** Formulas */
@@ -403,6 +426,28 @@ export interface components {
             origem: "iqr" | "usuario";
             /** Ocorrencias */
             ocorrencias: components["schemas"]["Ocorrencia"][];
+        };
+        /** Forma */
+        Forma: {
+            assimetria: components["schemas"]["Medida"];
+            assimetria_pearson_1: components["schemas"]["Medida"];
+            assimetria_pearson_2: components["schemas"]["Medida"];
+            curtose: components["schemas"]["Medida"];
+            curtose_percentilica: components["schemas"]["Medida"];
+            /** Classificacao Assimetria */
+            classificacao_assimetria: ("simetrica" | "moderada" | "forte") | null;
+            /** Sentido Assimetria */
+            sentido_assimetria: ("direita" | "esquerda") | null;
+            /** Classificacao Curtose */
+            classificacao_curtose: ("mesocurtica" | "leptocurtica" | "platicurtica") | null;
+            normal: components["schemas"]["Ajuste"];
+            binomial: components["schemas"]["Ajuste"];
+            /** Tentativas */
+            tentativas: number | null;
+            /** Interpretacao */
+            interpretacao: string | null;
+            /** Figuras */
+            figuras: components["schemas"]["Figura"][];
         };
         /** Formula */
         Formula: {
@@ -587,6 +632,15 @@ export interface components {
             /** Linhas */
             linhas: components["schemas"]["LinhaDados"][];
         };
+        /** Parametro */
+        Parametro: {
+            /** Simbolo */
+            simbolo: string;
+            /** Nome */
+            nome: string;
+            /** Valor */
+            valor: number;
+        };
         /**
          * PedidoLeitura
          * @description Opções que sobrescrevem a detecção; vazio = detectar tudo de novo (spec 01).
@@ -719,6 +773,19 @@ export interface components {
             moda: components["schemas"]["Moda"];
             moda_czuber: components["schemas"]["Medida"];
             proporcao: components["schemas"]["Medida"];
+        };
+        /** TesteAderencia */
+        TesteAderencia: {
+            /** Nome */
+            nome: string;
+            /** Estatistica */
+            estatistica: number;
+            /** Gl */
+            gl: number | null;
+            /** P Valor */
+            p_valor: number;
+            /** Compativel */
+            compativel: boolean;
         };
         /** TipoColuna */
         TipoColuna: {
@@ -1141,6 +1208,8 @@ export interface operations {
                 classes?: number | null;
                 /** @description Categoria de sucesso (binária) */
                 sucesso?: string | null;
+                /** @description Nº de tentativas da Binomial (discreta) */
+                tentativas?: number | null;
             };
             header?: never;
             path: {

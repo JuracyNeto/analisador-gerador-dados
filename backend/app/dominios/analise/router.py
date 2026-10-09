@@ -5,13 +5,14 @@ from typing import Annotated, Literal
 from fastapi import APIRouter, Depends, Query
 
 from app.dominios.analise.schemas import Analise, Posicao
-from app.dominios.analise.servico import ServicoAnalise
+from app.dominios.analise.servico import OpcoesAnalise, ServicoAnalise
 from app.dominios.datasets.servico import ServicoDatasets, obter_servico_datasets
 
 router = APIRouter(prefix="/datasets/{dataset_id}/colunas/{coluna}", tags=["analise"])
 
 MIN_CLASSES = 3
 MAX_CLASSES = 30
+MAX_TENTATIVAS = 10_000
 
 
 def _servico(
@@ -23,15 +24,25 @@ def _servico(
 Servico = Annotated[ServicoAnalise, Depends(_servico)]
 
 
-@router.get("/analise", summary="Análise univariada da coluna (specs 04–07)")
+def _opcoes(
+    classes: Annotated[int | None, Query(ge=MIN_CLASSES, le=MAX_CLASSES)] = None,
+    sucesso: Annotated[str | None, Query(description="Categoria de sucesso (binária)")] = None,
+    tentativas: Annotated[
+        int | None,
+        Query(ge=1, le=MAX_TENTATIVAS, description="Nº de tentativas da Binomial (discreta)"),
+    ] = None,
+) -> OpcoesAnalise:
+    return OpcoesAnalise(classes, sucesso, tentativas)
+
+
+@router.get("/analise", summary="Análise univariada da coluna (specs 04–09)")
 def analisar(
     servico: Servico,
     dataset_id: str,
     coluna: str,
-    classes: Annotated[int | None, Query(ge=MIN_CLASSES, le=MAX_CLASSES)] = None,
-    sucesso: Annotated[str | None, Query(description="Categoria de sucesso (binária)")] = None,
+    opcoes: Annotated[OpcoesAnalise, Depends(_opcoes)],
 ) -> Analise:
-    return Analise.model_validate(servico.analisar(dataset_id, coluna, classes, sucesso))
+    return Analise.model_validate(servico.analisar(dataset_id, coluna, opcoes))
 
 
 @router.get("/posicao", summary='"Onde está meu valor?" (spec 06)')
