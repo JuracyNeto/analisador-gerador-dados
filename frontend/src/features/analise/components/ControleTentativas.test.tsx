@@ -8,16 +8,21 @@ import ControleTentativas from './ControleTentativas';
 
 const T = TEXTOS_ANALISE.forma.tentativas;
 
+/** Campo com 8 (máximo 8): troca o texto e clica em "Aplicar". */
+async function aplicarPeloBotao(texto: string) {
+  const usuario = userEvent.setup();
+  const aoAplicar = vi.fn();
+  render(<ControleTentativas tentativas={8} maximo={8} aoAplicar={aoAplicar} />);
+  const campo = screen.getByRole('textbox', { name: T.rotulo });
+  await usuario.clear(campo);
+  await usuario.type(campo, texto);
+  await usuario.click(screen.getByRole('button', { name: T.aplicar }));
+  return { aoAplicar, campo };
+}
+
 describe('ControleTentativas', () => {
   it('aplica um número válido pelo botão', async () => {
-    const usuario = userEvent.setup();
-    const aoAplicar = vi.fn();
-    render(<ControleTentativas tentativas={8} maximo={8} aoAplicar={aoAplicar} />);
-
-    const campo = screen.getByRole('textbox', { name: T.rotulo });
-    await usuario.clear(campo);
-    await usuario.type(campo, '10');
-    await usuario.click(screen.getByRole('button', { name: T.aplicar }));
+    const { aoAplicar } = await aplicarPeloBotao('10');
 
     expect(aoAplicar).toHaveBeenCalledWith(10);
   });
@@ -33,14 +38,7 @@ describe('ControleTentativas', () => {
   });
 
   it('recusa valor menor que o máximo, sem chamar a API', async () => {
-    const usuario = userEvent.setup();
-    const aoAplicar = vi.fn();
-    render(<ControleTentativas tentativas={8} maximo={8} aoAplicar={aoAplicar} />);
-
-    const campo = screen.getByRole('textbox', { name: T.rotulo });
-    await usuario.clear(campo);
-    await usuario.type(campo, '2');
-    await usuario.click(screen.getByRole('button', { name: T.aplicar }));
+    const { aoAplicar, campo } = await aplicarPeloBotao('2');
 
     expect(aoAplicar).not.toHaveBeenCalled();
     expect(screen.getByText(T.erroMinimo('8'))).toBeInTheDocument();
