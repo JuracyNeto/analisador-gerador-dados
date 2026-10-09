@@ -13,6 +13,8 @@ export const TEXTOS_BIVARIADA = {
     erroValor: 'Digite um número, por exemplo 1,75.',
     foraTitulo: 'Fora da faixa observada.',
   },
+  matriz: { carregando: 'Calculando a matriz de correlação…' },
+  residuos: { comoLer: 'Como ler os resíduos' },
   cartoes: {
     pearson: 'Correlação de Pearson (r)',
     r2: 'Coeficiente de determinação (R²)',
