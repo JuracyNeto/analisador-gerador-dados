@@ -4,6 +4,8 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e
 
 ## [Não lançado]
 
+## [0.2.0] - 2026-10-10
+
 ### Adicionado
 - Relatório com as seções Distribuições (forma de cada coluna: assimetria, curtose, ajustes e o gráfico com a curva) e Bivariada (matriz de correlação e os até 3 pares mais fortes, com medidas, equação e dispersão); na tela Relatório, as caixas "Distribuições" e "Bivariada", e as colunas habilitadas com "Análises por coluna" ou "Distribuições".
 - Etapa 5 Bivariada: escolha de X e Y (com troca), correlação de Pearson (com teste de significância e Spearman), R², reta de regressão, gráfico de dispersão com a reta, resíduos, previsão de Y por X com aviso de extrapolação e matriz de correlação.
