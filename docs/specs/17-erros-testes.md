@@ -16,7 +16,7 @@
 | separatrizes | quantis conhecidos; "onde está meu valor" nos limites e fora da faixa |
 | distribuicoes | amostra Normal → aderente; Exponencial → não aderente; Binomial conhecida |
 | correlacao | r = 1, r = −1, r ≈ 0; extrapolação |
-| gerador | tolerâncias da spec 11; seed |
+| gerador | tolerâncias da spec 11 (média/DP exatos com reescala, \|r − ρ\| < 1e-9 com ajuste exato, < 0,03 sem ajuste com n = 10.000); mesma semente → mesmo resultado; figura leve com 1.000.000 de valores; adotar novo/anexar e desfazer |
 | detector | falsos positivos < 5% (spec 12); cada dataset plantado dispara a regra esperada |
 | api | `TestClient`: fluxo feliz por endpoint + 404 + arquivo inválido |
 
