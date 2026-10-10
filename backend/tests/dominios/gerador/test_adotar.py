@@ -95,3 +95,16 @@ def test_anexar_sem_dataset(cliente: TestClient) -> None:
     resposta = cliente.post(f"/api/gerador/{gerado['gerado_id']}/adotar", json={"modo": "anexar"})
 
     assert resposta.json()["codigo"] == "PARAMETROS_INCOMPLETOS"
+
+
+def test_pares_viram_um_dataset_de_duas_colunas(cliente: TestClient) -> None:
+    corpo = {"n": 40, "media_x": 10, "media_y": 20, "desvio_x": 2, "desvio_y": 3, "rho": 0.5}
+    gerado = cliente.post("/api/gerador/bivariado", json=corpo).json()
+
+    adotado = cliente.post(
+        f"/api/gerador/{gerado['gerado_id']}/adotar", json={"modo": "novo"}
+    ).json()
+
+    colunas = cliente.get(f"/api/datasets/{adotado['dataset_id']}/colunas").json()
+    assert [(c["coluna"], c["tipo"]) for c in colunas] == [("x", "continua"), ("y", "continua")]
+    assert adotado["n_linhas"] == 40
