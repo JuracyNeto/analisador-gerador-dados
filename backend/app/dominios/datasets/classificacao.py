@@ -94,7 +94,8 @@ def texto_do_numero(valor: float) -> str:
 
 def _textos(serie: pd.Series, numeros: pd.Series | None) -> pd.Series:
     if numeros is None:
-        return serie.map(lambda v: v if pd.isna(v) else str(v))
+        # Datas e horários da planilha viram texto pt-BR (08:30, não 08:30:00) se mudarem de tipo.
+        return serie.map(lambda v: v if pd.isna(v) else formatar_data(v))
     return numeros.map(lambda v: v if pd.isna(v) else texto_do_numero(v))
 
 

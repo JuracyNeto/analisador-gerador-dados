@@ -131,15 +131,26 @@ def _leitura(formato: FormatoData, datas: pd.Series, originais: pd.Series) -> Le
     return LeituraDatas(formato, datas, float(reconhecidas.mean()), texto)
 
 
+def _formato_da_planilha(datas: pd.Series) -> FormatoData:
+    """Só horários, só datas com horário ou datas (com ou sem horário), como nos textos."""
+    validas = datas.dropna()
+    dias = validas.dt.normalize()
+    if (dias == pd.Timestamp(date(**DATA_DOS_HORARIOS))).all():
+        return "hora"
+    if (dias != validas).all():
+        return "data_hora"
+    return "planilha"
+
+
 def _da_planilha(validos: pd.Series) -> LeituraDatas | None:
     """Células de data/hora do XLSX chegam como datetime64 ou objetos date/time."""
     if pd.api.types.is_datetime64_any_dtype(validos):
-        return _leitura("planilha", validos, validos)
+        return _leitura(_formato_da_planilha(validos), validos, validos)
     eh_data = validos.map(lambda v: isinstance(v, date | time))
     if not eh_data.any():
         return None
-    datas = validos.where(eh_data).map(_como_datetime, na_action="ignore")
-    return _leitura("planilha", pd.to_datetime(datas), validos)
+    datas = pd.to_datetime(validos.where(eh_data).map(_como_datetime, na_action="ignore"))
+    return _leitura(_formato_da_planilha(datas), datas, validos)
 
 
 def _como_datetime(valor: date | time) -> datetime:

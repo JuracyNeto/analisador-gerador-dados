@@ -1,6 +1,7 @@
 import pytest
 
 from app.compartilhado.numeros import (
+    formatar_com_sinal,
     formatar_fixo,
     formatar_inteiro,
     formatar_numero,
@@ -51,3 +52,10 @@ def test_formatar_fixo_mantem_as_casas() -> None:
 )
 def test_formatar_p_valor(p: float, esperado: str) -> None:
     assert formatar_p_valor(p) == esperado
+
+
+@pytest.mark.parametrize(
+    ("valor", "texto"), [(-0.394, "−0,394"), (0.394, "0,394"), (-1234.5, "−1.234")]
+)
+def test_formatar_com_sinal_usa_o_sinal_de_menos(valor: float, texto: str) -> None:
+    assert formatar_com_sinal(valor) == texto

@@ -101,7 +101,7 @@ def test_horarios_da_planilha() -> None:
     leitura = reconhecer_datas(pd.Series([time(8, 30), time(17, 5), "?"]))
 
     assert leitura is not None
-    assert leitura.formato == "planilha"
+    assert leitura.formato == "hora"
     assert leitura.proporcao == pytest.approx(2 / 3)
     assert leitura.exemplo == "08:30"
 
@@ -121,6 +121,21 @@ def test_horarios_da_planilha() -> None:
 )
 def test_formatar_data(valor: object, texto: str) -> None:
     assert formatar_data(valor) == texto
+
+
+@pytest.mark.parametrize(
+    ("valores", "formato"),
+    [
+        (["2026-10-07 08:30", "2026-10-08 17:05"], "data_hora"),
+        (["2026-10-07", "2026-10-08 17:05"], "planilha"),
+        (["1900-01-01 08:30", "1900-01-01 17:05"], "hora"),
+    ],
+)
+def test_formato_das_datas_da_planilha(valores: list[str], formato: str) -> None:
+    leitura = reconhecer_datas(pd.Series(pd.to_datetime(valores, format="ISO8601")))
+
+    assert leitura is not None
+    assert leitura.formato == formato
 
 
 def test_datas_e_horarios_como_objetos_da_planilha() -> None:

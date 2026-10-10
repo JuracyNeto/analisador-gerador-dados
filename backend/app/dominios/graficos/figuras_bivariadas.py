@@ -8,7 +8,7 @@ from typing import Any
 
 import numpy as np
 
-from app.compartilhado.numeros import formatar_numero
+from app.compartilhado.numeros import formatar_com_sinal, formatar_numero
 from app.dominios.graficos.entradas import DadosBivariados, DadosMatriz
 from app.dominios.graficos.figuras import LARGURA_LINHA, Figura, figura_basica
 from app.dominios.graficos.tema import PAPEL_DIVERGENTE, PAPEL_PRINCIPAL, PAPEL_REFERENCIA
@@ -93,7 +93,7 @@ def residuos(dados: DadosBivariados) -> Figura:
 
 
 def _texto_celula(valor: float | None) -> str:
-    return "" if valor is None else formatar_numero(round(valor, CASAS_MATRIZ))
+    return "" if valor is None else formatar_com_sinal(round(valor, CASAS_MATRIZ))
 
 
 def heatmap(dados: DadosMatriz) -> Figura:

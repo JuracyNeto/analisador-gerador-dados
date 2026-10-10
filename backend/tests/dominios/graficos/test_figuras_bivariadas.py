@@ -23,7 +23,7 @@ DADOS = DadosBivariados(
 )
 MATRIZ = DadosMatriz(
     colunas=("idade", "altura_m", "peso_kg"),
-    valores=((1.0, 0.12, 0.21), (0.12, 1.0, 0.78), (0.21, 0.78, None)),
+    valores=((1.0, 0.12, -0.21), (0.12, 1.0, 0.78), (-0.21, 0.78, None)),
     resumo="O par mais forte é altura_m × peso_kg (0,78).",
 )
 
@@ -79,7 +79,7 @@ def test_heatmap_divergente_com_valores_anotados() -> None:
     assert traco["meta"] == PAPEL_DIVERGENTE
     assert (traco["zmin"], traco["zmax"]) == (-1, 1)
     assert traco["text"][1] == ["0,12", "1", "0,78"]
-    assert traco["text"][2][2] == ""
+    assert traco["text"][2] == ["−0,21", "0,78", ""]
     assert figura["layout"]["yaxis"]["autorange"] == "reversed"
 
 

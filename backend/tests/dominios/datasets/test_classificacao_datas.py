@@ -3,6 +3,7 @@ from datetime import time
 
 import pandas as pd
 import pytest
+from openpyxl import Workbook
 
 from app.compartilhado.tipos import TipoVariavel
 from app.dominios.datasets.classificacao import Classificacao, Limiares, classificar, ler_coluna
@@ -34,7 +35,7 @@ def _csv_de_datas() -> bytes:
         (["2026-10-07", "2026-10-08"], "Datas no formato AAAA-MM-DD (ex.: 2026-10-07)."),
         (["07/10/2026 08:30", "07/10/2026 09:00"], "Datas com horário (ex.: 07/10/2026 08:30)."),
         (["08:30", "17:05"], "Horários (ex.: 08:30)."),
-        ([time(8, 30), time(9, 0)], "Datas da planilha (ex.: 08:30)."),
+        ([time(8, 30), time(9, 0)], "Horários (ex.: 08:30)."),
     ],
 )
 def test_datas_e_horarios_viram_tipo_data(valores: list[object], motivo: str) -> None:
@@ -105,3 +106,21 @@ def test_exemplos_tem_os_mesmos_tipos(servico_datasets: ServicoDatasets) -> None
     importacao = servico_datasets.importar_exemplo()
 
     assert TipoVariavel.DATA not in {c.tipo for c in importacao.colunas}
+
+
+def test_horario_da_planilha_corrigido_para_nominal_fica_em_pt_br(
+    servico_datasets: ServicoDatasets,
+) -> None:
+    # O to_excel do pandas grava horários como texto; o openpyxl grava células de hora.
+    livro = Workbook()
+    for linha in (["hora", "valor"], [time(8, 0), 1], [time(8, 37), 2], [time(9, 14), 3]):
+        livro.active.append(linha)
+    buffer = io.BytesIO()
+    livro.save(buffer)
+    dataset_id = servico_datasets.importar(
+        buffer.getvalue(), "horas.xlsx", OpcoesLeitura()
+    ).dataset_id
+
+    hora = servico_datasets.alterar_tipo(dataset_id, "hora", TipoVariavel.NOMINAL)
+
+    assert hora.exemplos == ("08:00", "08:37", "09:14")
