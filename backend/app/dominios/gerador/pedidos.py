@@ -57,3 +57,34 @@ class Adotado:
     nome_arquivo: str
     n_linhas: int
     modo: ModoAdotar
+
+
+@dataclass(frozen=True, slots=True)
+class ResumoOrigem:
+    """O que a tela 6 mostra da coluna de origem antes de gerar."""
+
+    coluna: str
+    tipo: TipoVariavel
+    n: int
+    media: float | None = None
+    desvio: float | None = None
+    minimo: float | None = None
+    maximo: float | None = None
+    sucesso: str | None = None
+    fracasso: str | None = None
+    chance: float | None = None
+    so_preservar: bool = False
+
+
+@dataclass(frozen=True, slots=True)
+class ResumoOrigemPar:
+    """Médias, desvios e r do par, para preencher o formulário bivariado."""
+
+    x: str
+    y: str
+    n: int
+    media_x: float
+    media_y: float
+    desvio_x: float
+    desvio_y: float
+    r: float

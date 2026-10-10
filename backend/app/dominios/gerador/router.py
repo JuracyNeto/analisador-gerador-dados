@@ -75,6 +75,18 @@ def gerar_bivariado(servico: Servico, pedido: schemas.PedidoBivariado) -> schema
     return schemas.Gerado.model_validate(servico.bivariado(_bivariado(pedido)))
 
 
+@router.get("/origem", summary="Medidas da coluna de origem (formulário univariado)")
+def resumir_origem(servico: Servico, dataset_id: str, coluna: str) -> schemas.ResumoOrigem:
+    return schemas.ResumoOrigem.model_validate(servico.origem(Origem(dataset_id, coluna)))
+
+
+@router.get("/origem-par", summary="Médias, desvios e r do par de origem (formulário bivariado)")
+def resumir_origem_par(
+    servico: Servico, dataset_id: str, x: str, y: str
+) -> schemas.ResumoOrigemPar:
+    return schemas.ResumoOrigemPar.model_validate(servico.origem_par(OrigemPar(dataset_id, x, y)))
+
+
 @router.get("/{gerado_id}", summary="Uma geração guardada")
 def obter(servico: Servico, gerado_id: str) -> schemas.Gerado:
     return schemas.Gerado.model_validate(servico.obter(gerado_id))
