@@ -1,5 +1,10 @@
 /** Textos da tabela Original × Gerado (puro). Diferença absoluta com sinal (D110). */
-import { formatarInteiro, formatarNumero, formatarPercentual } from '../../shared/lib/formatar';
+import {
+  formatarDecimal,
+  formatarInteiro,
+  formatarNumero,
+  formatarPercentual,
+} from '../../shared/lib/formatar';
 import { TEXTOS_GERADOR } from './textos';
 import type { Gerado, LinhaComparacao } from './tipos';
 
@@ -17,13 +22,34 @@ export function formatarValor(linha: LinhaComparacao, valor: number | null): str
   return ehFrequencia(linha) ? formatarPercentual(valor) : formatarNumero(valor);
 }
 
-/** "+0,3", "−0,27", "0"; nas frequências, em pontos percentuais ("+2,2 p.p."). */
+const MENOS = '−';
+const DECIMAIS = /,(\d+)/u;
+
+function casasDe(texto: string): number {
+  return DECIMAIS.exec(texto)?.[1]?.length ?? 0;
+}
+
+function sinal(valor: number): string {
+  if (valor > 0) return '+';
+  return valor < 0 ? MENOS : '';
+}
+
+/**
+ * Na precisão dos valores mostrados (print 6a: "0,0", "+0,3", "−0,27"): o resto de
+ * arredondamento da reescala não aparece. Frequências em pontos percentuais.
+ */
 export function formatarDiferenca(linha: LinhaComparacao): string {
   const { diferenca } = linha;
   if (diferenca === null) return VAZIO;
-  const texto = formatarNumero(diferenca, ehFrequencia(linha) ? 2 : 4);
-  const comSinal = diferenca > 0 ? `+${texto}` : texto;
-  return ehFrequencia(linha) ? `${comSinal} p.p.` : comSinal;
+  const casas = Math.max(
+    casasDe(formatarValor(linha, linha.original)),
+    casasDe(formatarValor(linha, linha.gerado)),
+  );
+  const arredondada = Number(diferenca.toFixed(casas));
+  const absoluta =
+    arredondada === 0 ? formatarDecimal(0, casas) : formatarNumero(Math.abs(arredondada));
+  const texto = `${sinal(arredondada)}${absoluta}`;
+  return ehFrequencia(linha) ? `${texto} p.p.` : texto;
 }
 
 /** "Semente 42 · preservar estatísticas" (o modo vem dos parâmetros da geração). */

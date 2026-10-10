@@ -64,8 +64,5 @@
   line-height: 1.45;
 }
 .campos {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: var(--esp-8);
   margin-left: 32px;
 }
