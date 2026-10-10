@@ -3,9 +3,16 @@
 from dataclasses import dataclass
 from typing import Literal
 
-type Secao = Literal["leitura", "tipos", "limpeza", "analises"]
+type Secao = Literal["leitura", "tipos", "limpeza", "analises", "distribuicoes", "bivariada"]
 
-SECOES_M1: tuple[Secao, ...] = ("leitura", "tipos", "limpeza", "analises")
+SECOES_PADRAO: tuple[Secao, ...] = (
+    "leitura",
+    "tipos",
+    "limpeza",
+    "analises",
+    "distribuicoes",
+    "bivariada",
+)
 
 
 @dataclass(frozen=True, slots=True)
@@ -30,6 +37,7 @@ class LinhaTipo:
 class ItemMedida:
     rotulo: str
     valor: str
+    nota: str | None = None
 
 
 @dataclass(frozen=True, slots=True)
@@ -47,17 +55,59 @@ class FiguraRelatorio:
 
 
 @dataclass(frozen=True, slots=True)
-class SecaoColuna:
-    coluna: str
-    tipo: str
-    n: int
-    n_faltantes: int
+class BlocoAnalises:
+    """Frequências, medidas, separatrizes, figura principal e interpretações (seção analises)."""
+
     cabecalho_tabela: tuple[str, ...]
     linhas_tabela: tuple[tuple[str, ...], ...]
     medidas: tuple[ItemMedida, ...]
     separatrizes: str | None
     interpretacoes: tuple[str, ...]
     figura: FiguraRelatorio | None
+
+
+@dataclass(frozen=True, slots=True)
+class SecaoForma:
+    """Assimetria, curtose, ajustes e a 1ª figura da forma (seção distribuicoes)."""
+
+    medidas: tuple[ItemMedida, ...] = ()
+    ajustes: tuple[str, ...] = ()
+    interpretacao: str | None = None
+    figura: FiguraRelatorio | None = None
+    motivo: str | None = None
+
+
+@dataclass(frozen=True, slots=True)
+class SecaoColuna:
+    """Cada bloco só aparece com a sua caixa marcada na tela 8."""
+
+    coluna: str
+    tipo: str
+    n: int
+    n_faltantes: int
+    analises: BlocoAnalises | None
+    forma: SecaoForma | None
+    formulas: tuple[FormulaTexto, ...]
+
+
+@dataclass(frozen=True, slots=True)
+class ParRelatorio:
+    x: str
+    y: str
+    medidas: tuple[ItemMedida, ...]
+    equacao: str
+    interpretacoes: tuple[str, ...]
+    figura: FiguraRelatorio | None
+
+
+@dataclass(frozen=True, slots=True)
+class SecaoBivariada:
+    """Matriz de correlação e os pares mais fortes (|r| ≥ 0,3)."""
+
+    matriz: FiguraRelatorio | None
+    resumo: str
+    pares: tuple[ParRelatorio, ...]
+    vazio: str | None
     formulas: tuple[FormulaTexto, ...]
 
 
@@ -71,3 +121,4 @@ class ConteudoRelatorio:
     tipos: tuple[LinhaTipo, ...] | None = None
     limpeza: tuple[str, ...] | None = None
     colunas: tuple[SecaoColuna, ...] | None = None
+    bivariada: SecaoBivariada | None = None

@@ -174,6 +174,22 @@ FORMULAS: dict[str, Formula] = {
 }
 
 
+# Fórmulas da forma (spec 09): o relatório as mostra só com a seção Distribuições.
+CHAVES_FORMA = frozenset(
+    {
+        "assimetria",
+        "assimetria_pearson_1",
+        "assimetria_pearson_2",
+        "curtose",
+        "curtose_percentilica",
+        "normal",
+        "binomial",
+        "bernoulli",
+        "qui_quadrado",
+    }
+)
+
+
 def formulas_usadas(chaves: list[str | None]) -> tuple[Formula, ...]:
     """Fórmulas citadas pelas medidas aplicáveis, sem repetir, na ordem do catálogo."""
     pedidas = set(chaves)

@@ -1,7 +1,12 @@
 import pytest
 
 from app.dominios.relatorio.conteudo import DadosLeitura
-from app.dominios.relatorio.textos import descrever_leitura, subtitulo
+from app.dominios.relatorio.textos import (
+    descrever_leitura,
+    selo_assimetria,
+    selo_correlacao,
+    subtitulo,
+)
 
 
 def test_descrever_leitura_de_txt() -> None:
@@ -37,3 +42,28 @@ def test_descrever_leitura_cita_a_linha_do_cabecalho(linha: int, trecho: str) ->
 )
 def test_subtitulo(n: int, original: int, esperado: str) -> None:
     assert subtitulo("pesquisa.txt", n, original, 8) == esperado
+
+
+@pytest.mark.parametrize(
+    ("classe", "sentido", "esperado"),
+    [
+        ("simetrica", None, "Simétrica"),
+        ("simetrica", "direita", "Aproximadamente simétrica"),
+        ("moderada", None, "Moderada"),
+        ("forte", "esquerda", "Forte à esquerda"),
+    ],
+)
+def test_selo_assimetria(classe: str, sentido: str | None, esperado: str) -> None:
+    assert selo_assimetria(classe, sentido) == esperado
+
+
+@pytest.mark.parametrize(
+    ("forca", "sentido", "esperado"),
+    [
+        ("forte", "positiva", "Positiva forte"),
+        ("moderada", "nula", "Fraca"),
+        ("fraca", "negativa", "Fraca"),
+    ],
+)
+def test_selo_correlacao(forca: str, sentido: str, esperado: str) -> None:
+    assert selo_correlacao(forca, sentido) == esperado

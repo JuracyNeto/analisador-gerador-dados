@@ -20,10 +20,31 @@ def test_relatorio_em_html(cliente: TestClient) -> None:
     assert resposta.text.count("Plotly.newPlot(") == 2
 
 
+def test_secao_distribuicoes_aceita(cliente: TestClient) -> None:
+    dataset_id = _exemplo(cliente)
+
+    resposta = cliente.get(
+        f"/api/datasets/{dataset_id}/relatorio", params={"secoes": ["distribuicoes"]}
+    )
+
+    assert resposta.status_code == 200
+
+
+def test_sem_secoes_traz_as_seis(cliente: TestClient) -> None:
+    dataset_id = _exemplo(cliente)
+
+    html = cliente.get(f"/api/datasets/{dataset_id}/relatorio").text
+
+    for titulo in ("Leitura do arquivo", "Tipos de variável", "Limpeza", "Análise de"):
+        assert titulo in html
+    assert "<h3>Forma e distribuição</h3>" in html
+    assert ". Bivariada</h2>" in html
+
+
 def test_secao_desconhecida(cliente: TestClient) -> None:
     dataset_id = _exemplo(cliente)
 
-    resposta = cliente.get(f"/api/datasets/{dataset_id}/relatorio", params={"secoes": ["gerador"]})
+    resposta = cliente.get(f"/api/datasets/{dataset_id}/relatorio", params={"secoes": ["xyz"]})
 
     assert resposta.status_code == 422
 

@@ -33,6 +33,7 @@ TITULOS_SECOES = {
     "leitura": "Leitura do arquivo",
     "tipos": "Tipos de variável",
     "limpeza": "Limpeza",
+    "bivariada": "Bivariada",
 }
 
 
@@ -72,3 +73,39 @@ def subtitulo(nome_arquivo: str, n_linhas: int, n_linhas_original: int, n_coluna
     if n_linhas != n_linhas_original:
         linhas += " após limpeza"
     return f"{nome_arquivo} · {linhas} × {_quantidade(n_colunas, 'coluna', 'colunas')}"
+
+
+ROTULOS_FORMA = {
+    "assimetria": "Assimetria (G₁)",
+    "curtose": "Curtose (G₂)",
+    "assimetria_pearson_1": "As₁ (Pearson)",
+    "assimetria_pearson_2": "As₂ (Pearson)",
+    "curtose_percentilica": "K (percentílica)",
+}
+SELOS_ASSIMETRIA = {
+    "simetrica": "Aproximadamente simétrica",
+    "moderada": "Moderada",
+    "forte": "Forte",
+}
+SELOS_CURTOSE = {
+    "mesocurtica": "Mesocúrtica",
+    "leptocurtica": "Leptocúrtica",
+    "platicurtica": "Platicúrtica",
+}
+SEM_PAR_FORTE = "Nenhum par de colunas numéricas tem correlação moderada ou forte (|r| ≥ 0,3)."
+
+
+def selo_assimetria(classe: str, sentido: str | None) -> str:
+    """Como o selo da aba Forma: "Forte à direita", "Aproximadamente simétrica"."""
+    if sentido is None:
+        return "Simétrica" if classe == "simetrica" else SELOS_ASSIMETRIA[classe]
+    if classe == "simetrica":
+        return SELOS_ASSIMETRIA[classe]
+    return f"{SELOS_ASSIMETRIA[classe]} à {sentido}"
+
+
+def selo_correlacao(forca: str, sentido: str) -> str:
+    """Como o selo da tela Bivariada: "Positiva forte", "Fraca"."""
+    if forca == "fraca" or sentido == "nula":
+        return "Fraca"
+    return f"{sentido.capitalize()} {forca}"
