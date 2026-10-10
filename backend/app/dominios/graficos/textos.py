@@ -1,6 +1,6 @@
 """Títulos, "Por que este gráfico?" e resumos textuais das figuras (spec 08, spec 16)."""
 
-from app.compartilhado.numeros import formatar_numero, formatar_percentual
+from app.compartilhado.numeros import formatar_com_sinal, formatar_numero, formatar_percentual
 from app.dominios.graficos.entradas import Barra, DadosUnivariados, ResumoCaixa
 
 METADE_PCT = 50
@@ -20,6 +20,7 @@ ROTULOS = {
     "dispersao": "Dispersão",
     "residuos": "Resíduos",
     "matriz": "Matriz",
+    "sobreposicao": "Sobreposição",
 }
 
 PORQUE = {
@@ -61,6 +62,11 @@ PORQUE = {
         "Mostra de uma vez a correlação de cada par de colunas numéricas: azul quando "
         "crescem juntas, laranja quando uma cresce e a outra diminui."
     ),
+    "sobreposicao": (
+        "As barras do original e do gerado ficam uma sobre a outra; quanto mais se cobrem, "
+        "mais parecidas são as distribuições."
+    ),
+    "pares_gerados": "Cada ponto é um par gerado; a nuvem mostra a correlação obtida.",
 }
 
 
@@ -184,3 +190,33 @@ def resumo_residuos(y: str) -> str:
         f"Resíduo é a diferença entre o {y} real e o previsto. Pontos espalhados em volta do "
         "zero, sem formar curva, indicam que a reta é um bom resumo da relação."
     )
+
+
+LIMIAR_PARECIDAS_PP = 5.0  # pontos percentuais entre as barras das duas séries
+
+
+def titulo_sobreposicao(coluna: str) -> str:
+    return f"{coluna}: original e gerado sobrepostos"
+
+
+def titulo_gerados(coluna: str) -> str:
+    return f"{coluna}: valores gerados"
+
+
+def resumo_sobreposicao(maior_diferenca: float | None, n_gerado: int) -> str:
+    if maior_diferenca is None:
+        return f"Distribuição dos {formatar_numero(n_gerado)} valores gerados."
+    if maior_diferenca < LIMIAR_PARECIDAS_PP:
+        return "As duas distribuições têm formas parecidas."
+    return "As distribuições diferem em alguns trechos."
+
+
+def titulo_pares_gerados(n: int) -> str:
+    return f"Pares gerados (n = {formatar_numero(n)})"
+
+
+def resumo_pares_gerados(r: float, n: int, mostrados: int) -> str:
+    resumo = f"Correlação obtida: r = {formatar_com_sinal(r)}."
+    if mostrados < n:
+        resumo += f" Mostramos {formatar_numero(mostrados)} dos {formatar_numero(n)} pontos."
+    return resumo

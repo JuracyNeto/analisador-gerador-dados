@@ -4,6 +4,9 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e
 
 ## [Não lançado]
 
+### Adicionado
+- API do gerador: dados univariados (preservando as estatísticas de uma coluna ou com novos parâmetros) e pares com médias, desvios e correlação alvo, com comparação com o original, explicação do método, gráfico sobreposto, CSV e uso como novo dataset ou anexado ao atual.
+
 ## [0.2.0] - 2026-10-10
 
 ### Adicionado

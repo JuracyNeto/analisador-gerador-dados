@@ -14,6 +14,7 @@ from app.core.config import Configuracao, obter_configuracao
 from app.core.erros import ErroAplicacao
 from app.dominios.datasets import erros
 from app.dominios.datasets.ajuste_tipo import ajustar_tipo
+from app.dominios.datasets.anexacao import entrada_anexacao, preparar_linhas
 from app.dominios.datasets.classificacao import (
     ColunaLida,
     Limiares,
@@ -231,6 +232,18 @@ class ServicoDatasets:
         dataset.atual = resultado.dados
         dataset.log_limpeza.extend(resultado.log)
         self._reclassificar(dataset, resultado.colunas_alteradas)
+        return self._resultado_limpeza(dataset)
+
+    def anexar_linhas(self, dataset_id: str, linhas: pd.DataFrame, frase: str) -> ResultadoLimpeza:
+        """Linhas novas no fim da versão atual (dados gerados, D111); saem com "Desfazer"."""
+        dataset = self.obter(dataset_id)
+        faltando = [coluna for coluna in linhas.columns if coluna not in dataset.atual.columns]
+        if faltando:
+            raise erros.colunas_incompativeis(str(faltando[0]))
+        novas = preparar_linhas(dataset.atual, linhas, dataset.metadados.decimal)
+        dataset.atual = pd.concat([dataset.atual, novas])
+        dataset.log_limpeza.append(entrada_anexacao(novas, frase, datetime.now()))
+        self._reclassificar(dataset, list(dataset.tipos))
         return self._resultado_limpeza(dataset)
 
     def desfazer_limpeza(self, dataset_id: str) -> ResultadoLimpeza:

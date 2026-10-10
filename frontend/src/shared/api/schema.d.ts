@@ -260,6 +260,91 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/gerador/univariado": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Gera valores de uma coluna (preservando ou com novos parâmetros) */
+        post: operations["gerar_univariado_api_gerador_univariado_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/gerador/bivariado": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Gera pares com médias, desvios e correlação alvo */
+        post: operations["gerar_bivariado_api_gerador_bivariado_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/gerador/{gerado_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Uma geração guardada */
+        get: operations["obter_api_gerador__gerado_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/gerador/{gerado_id}/csv": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Dados gerados em CSV */
+        get: operations["baixar_csv_api_gerador__gerado_id__csv_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/gerador/{gerado_id}/adotar": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Usa a geração como novo dataset ou anexa ao dataset atual */
+        post: operations["adotar_api_gerador__gerado_id__adotar_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/datasets/{dataset_id}/relatorio": {
         parameters: {
             query?: never;
@@ -289,10 +374,24 @@ export interface components {
             acao: components["schemas"]["Acao"];
             /** Coluna */
             coluna?: string | null;
-            valor?: components["schemas"]["Celula"];
+            valor?: components["schemas"]["Celula-Input"];
             limites?: components["schemas"]["Limites"] | null;
             /** Grupo */
             grupo?: string | null;
+        };
+        /** Adotado */
+        Adotado: {
+            /** Dataset Id */
+            dataset_id: string;
+            /** Nome Arquivo */
+            nome_arquivo: string;
+            /** N Linhas */
+            n_linhas: number;
+            /**
+             * Modo
+             * @enum {string}
+             */
+            modo: "novo" | "anexar";
         };
         /** Ajuste */
         Ajuste: {
@@ -403,7 +502,7 @@ export interface components {
             /** Linha Cabecalho */
             linha_cabecalho?: number | null;
         };
-        Celula: string | number | boolean | null;
+        "Celula-Input": string | number | boolean | null;
         /** DatasetCriado */
         DatasetCriado: {
             /** Dataset Id */
@@ -482,7 +581,10 @@ export interface components {
             linhas: number[];
             sugeridos: components["schemas"]["ValoresSugeridos"];
         };
-        /** Figura */
+        /**
+         * Figura
+         * @description Figura Plotly pronta (ADR 0003): análise, bivariada e gerador usam o mesmo contrato.
+         */
         Figura: {
             /** Id */
             id: string;
@@ -550,6 +652,37 @@ export interface components {
             /** Texto */
             texto: string;
         };
+        /** Gerado */
+        Gerado: {
+            /** Gerado Id */
+            gerado_id: string;
+            /**
+             * Tipo
+             * @enum {string}
+             */
+            tipo: "univariado" | "bivariado";
+            /** Colunas */
+            colunas: string[];
+            /** N */
+            n: number;
+            /** Semente */
+            semente: number;
+            origem: components["schemas"]["OrigemGeracao"] | null;
+            /** Metodo */
+            metodo: string;
+            /** Explicacao */
+            explicacao: string;
+            /** Parametros */
+            parametros: components["schemas"]["ParametroGeracao"][];
+            /** Amostra */
+            amostra: {
+                [key: string]: components["schemas"]["app__dominios__gerador__schemas__Celula"];
+            }[];
+            /** Comparacao */
+            comparacao: components["schemas"]["LinhaComparacao"][];
+            /** Figuras */
+            figuras: components["schemas"]["Figura"][];
+        };
         /** Grafia */
         Grafia: {
             /** Texto */
@@ -597,13 +730,24 @@ export interface components {
             /** Celulas */
             celulas: string[];
         };
+        /** LinhaComparacao */
+        LinhaComparacao: {
+            /** Estatistica */
+            estatistica: string;
+            /** Original */
+            original: number | null;
+            /** Gerado */
+            gerado: number | null;
+            /** Diferenca */
+            diferenca: number | null;
+        };
         /** LinhaDados */
         LinhaDados: {
             /** Linha */
             linha: number;
             /** Valores */
             valores: {
-                [key: string]: components["schemas"]["Celula"];
+                [key: string]: components["schemas"]["app__dominios__datasets__schemas__Celula"];
             };
         };
         /** LinhaFrequencia */
@@ -707,7 +851,32 @@ export interface components {
         Ocorrencia: {
             /** Linha */
             linha: number;
-            valor: components["schemas"]["Celula"];
+            valor: components["schemas"]["app__dominios__datasets__schemas__Celula"];
+        };
+        /** OrigemColuna */
+        OrigemColuna: {
+            /** Dataset Id */
+            dataset_id: string;
+            /** Coluna */
+            coluna: string;
+        };
+        /** OrigemGeracao */
+        OrigemGeracao: {
+            /** Dataset Id */
+            dataset_id: string;
+            /** Nome Arquivo */
+            nome_arquivo: string;
+            /** Colunas */
+            colunas: string[];
+        };
+        /** OrigemPar */
+        OrigemPar: {
+            /** Dataset Id */
+            dataset_id: string;
+            /** X */
+            x: string;
+            /** Y */
+            y: string;
         };
         /**
          * OrigemTipo
@@ -741,6 +910,53 @@ export interface components {
             /** Valor */
             valor: number;
         };
+        /** ParametroGeracao */
+        ParametroGeracao: {
+            /** Nome */
+            nome: string;
+            /** Valor */
+            valor: string;
+        };
+        /** PedidoAdotar */
+        PedidoAdotar: {
+            /**
+             * Modo
+             * @enum {string}
+             */
+            modo: "novo" | "anexar";
+            /** Dataset Id */
+            dataset_id?: string | null;
+        };
+        /**
+         * PedidoBivariado
+         * @description Com origem, o que for omitido vem do par (médias, desvios e r de Pearson).
+         */
+        PedidoBivariado: {
+            origem?: components["schemas"]["OrigemPar"] | null;
+            /** N */
+            n: number;
+            /** Media X */
+            media_x?: number | null;
+            /** Media Y */
+            media_y?: number | null;
+            /** Desvio X */
+            desvio_x?: number | null;
+            /** Desvio Y */
+            desvio_y?: number | null;
+            /** Rho */
+            rho?: number | null;
+            /** Nome X */
+            nome_x?: string | null;
+            /** Nome Y */
+            nome_y?: string | null;
+            /**
+             * Ajuste Exato
+             * @default true
+             */
+            ajuste_exato: boolean;
+            /** Semente */
+            semente?: number | null;
+        };
         /**
          * PedidoLeitura
          * @description Opções que sobrescrevem a detecção; vazio = detectar tudo de novo (spec 01).
@@ -761,6 +977,41 @@ export interface components {
         PedidoLimpeza: {
             /** Acoes */
             acoes: components["schemas"]["AcaoLimpeza"][];
+        };
+        /**
+         * PedidoUnivariado
+         * @description Sem origem, só "parametros" (contínua, discreta ou binária).
+         */
+        PedidoUnivariado: {
+            origem?: components["schemas"]["OrigemColuna"] | null;
+            /** Tipo */
+            tipo?: ("continua" | "discreta" | "binaria") | null;
+            /** X */
+            x: number;
+            /**
+             * Modo
+             * @default preservar
+             * @enum {string}
+             */
+            modo: "preservar" | "parametros";
+            /** Media */
+            media?: number | null;
+            /** Desvio */
+            desvio?: number | null;
+            /** P */
+            p?: number | null;
+            /** Rotulos */
+            rotulos?: [
+                string,
+                string
+            ] | null;
+            /** Semente */
+            semente?: number | null;
+            /**
+             * Limitar Faixa
+             * @default false
+             */
+            limitar_faixa: boolean;
         };
         /** Posicao */
         Posicao: {
@@ -978,8 +1229,10 @@ export interface components {
             media: number | null;
             /** Mediana */
             mediana: number | null;
-            moda: components["schemas"]["Celula"];
+            moda: components["schemas"]["app__dominios__datasets__schemas__Celula"];
         };
+        app__dominios__datasets__schemas__Celula: string | number | boolean | null;
+        app__dominios__gerador__schemas__Celula: number | string | null;
     };
     responses: never;
     parameters: never;
@@ -1492,6 +1745,167 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["MatrizCorrelacao"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    gerar_univariado_api_gerador_univariado_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PedidoUnivariado"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Gerado"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    gerar_bivariado_api_gerador_bivariado_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PedidoBivariado"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Gerado"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    obter_api_gerador__gerado_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                gerado_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Gerado"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    baixar_csv_api_gerador__gerado_id__csv_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                gerado_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    adotar_api_gerador__gerado_id__adotar_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                gerado_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PedidoAdotar"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Adotado"];
                 };
             };
             /** @description Validation Error */

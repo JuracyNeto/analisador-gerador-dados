@@ -21,10 +21,13 @@ from app.dominios.analise.resultados import (
     Formula,
     Medida,
     Posicao,
+    ResumoNumerico,
     TabelaFrequencia,
     TipoSeparatriz,
 )
 from app.dominios.analise.resultados_bivariada import Bivariada, MatrizCorrelacao, Par, Previsao
+from app.dominios.analise.resumo import resumo_numerico
+from app.dominios.analise.tendencia import sucesso_padrao
 from app.dominios.analise.univariada import analisar_amostra
 from app.dominios.datasets.servico import ServicoDatasets
 from app.dominios.graficos.servico import (
@@ -54,8 +57,10 @@ __all__ = [
     "MatrizCorrelacao",
     "Medida",
     "OpcoesAnalise",
+    "Par",
     "Posicao",
     "Previsao",
+    "ResumoNumerico",
     "ServicoAnalise",
     "TipoSeparatriz",
 ]
@@ -169,6 +174,16 @@ class ServicoAnalise:
 
     def __init__(self, datasets: ServicoDatasets) -> None:
         self._datasets = datasets
+
+    @staticmethod
+    def resumo_numerico(valores: np.ndarray) -> ResumoNumerico:
+        """Média, DP, G₁ e G₂ de um vetor qualquer, com as fórmulas da análise (D108)."""
+        return resumo_numerico(valores)
+
+    @staticmethod
+    def sucesso_padrao(valores: pd.Series) -> str:
+        """Categoria contada como sucesso numa binária (spec 05)."""
+        return sucesso_padrao(valores)
 
     def amostra(self, dataset_id: str, coluna: str) -> Amostra:
         """Valores válidos da coluna, já convertidos conforme o tipo."""

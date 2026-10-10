@@ -1,4 +1,5 @@
 from collections.abc import Iterator
+from typing import Any
 
 import pytest
 from fastapi.testclient import TestClient
@@ -6,6 +7,7 @@ from fastapi.testclient import TestClient
 from app.core.config import Configuracao
 from app.dominios.datasets.repositorio import RepositorioDatasets
 from app.dominios.datasets.servico import ServicoDatasets, obter_servico_datasets
+from app.dominios.gerador.servico import RepositorioGerados, obter_repositorio_gerados
 from app.main import create_app
 
 
@@ -20,5 +22,7 @@ def servico_datasets() -> ServicoDatasets:
 def cliente(servico_datasets: ServicoDatasets) -> Iterator[TestClient]:
     app = create_app()
     app.dependency_overrides[obter_servico_datasets] = lambda: servico_datasets
+    gerados: RepositorioGerados[Any] = RepositorioGerados(Configuracao().max_gerados)
+    app.dependency_overrides[obter_repositorio_gerados] = lambda: gerados
     yield TestClient(app, raise_server_exceptions=False)
     app.dependency_overrides.clear()

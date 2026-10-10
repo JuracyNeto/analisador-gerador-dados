@@ -19,10 +19,11 @@ Camada de apresentação: `router.py` + `schemas.py` de cada domínio; `app/main
 | GET | `/datasets/{id}/bivariada` | `?x=&y=` | `Bivariada` (r, teste t, Spearman, reta, R², Sₑ, faixa de X, figuras) | 10 |
 | GET | `/datasets/{id}/bivariada/prever` | `?x=&y=&valor=` | `Previsao {x, y_previsto, extrapolacao, faixa_x, frase, aviso}` | 10 |
 | GET | `/datasets/{id}/correlacoes` | — | `MatrizCorrelacao {colunas, valores, resumo, figura}` | 10 |
-| POST | `/gerador/univariado` | ver spec 11 | `GeradoUni` | 11 |
-| POST | `/gerador/bivariado` | ver spec 11 | `GeradoBi` | 11 |
-| GET | `/gerador/{gid}/csv` | — | `text/csv` download | 11 |
-| POST | `/gerador/{gid}/adotar` | `{modo, dataset_id?}` | `{dataset_id}` | 11 |
+| POST | `/gerador/univariado` | `PedidoUnivariado` (spec 11) | `Gerado` (201) | 11 |
+| POST | `/gerador/bivariado` | `PedidoBivariado` (spec 11) | `Gerado` (201) | 11 |
+| GET | `/gerador/{gid}` | — | `Gerado` | 11 |
+| GET | `/gerador/{gid}/csv` | — | `text/csv` download (`;` e vírgula decimal) | 11 |
+| POST | `/gerador/{gid}/adotar` | `{modo: novo \| anexar, dataset_id?}` | `Adotado {dataset_id, nome_arquivo, n_linhas, modo}` (201) | 11 |
 | GET | `/datasets/{id}/detector` | `?regras=R1,R2…` | `ResultadoDetector` | 12 |
 | GET | `/datasets/{id}/relatorio` | `?colunas=&secoes=&offline=` (`secoes`: leitura, tipos, limpeza, analises, distribuicoes, bivariada; padrão = as 6; outra → 422) | `text/html` | 13 |
 
@@ -45,7 +46,7 @@ Camada de apresentação: `router.py` + `schemas.py` de cada domínio; `app/main
 Cada medida (`Medida {valor, aplicavel, motivo, calculo, interpretacao, formula}`) traz em `formula` a `chave` da sua fórmula em `formulas[]` (D66). O frontend renderiza só o que veio; nunca decide aplicabilidade.
 
 ## Erros
-Bivariada (spec 10): `COLUNA_NAO_NUMERICA`, `COLUNAS_IGUAIS`, `POUCOS_PARES`, `SEM_VARIACAO` (400). `COLUNA_IGNORADA` (400) vale para os tipos auxiliares: "A coluna {col} é um identificador e fica fora das análises." / "A coluna {col} tem datas e fica fora das análises." (D90). `TipoVariavel` = `nominal`, `ordinal`, `discreta`, `continua`, `binaria`, `identificador`, `data`.
+Bivariada (spec 10): `COLUNA_NAO_NUMERICA`, `COLUNAS_IGUAIS`, `POUCOS_PARES`, `SEM_VARIACAO` (400). Gerador (spec 11): `GERADO_NAO_ENCONTRADO` (404), `MODO_NAO_APLICAVEL`, `PARAMETROS_INCOMPLETOS`, `COLUNA_NAO_GERAVEL` e `COLUNAS_INCOMPATIVEIS` (400). `COLUNA_IGNORADA` (400) vale para os tipos auxiliares: "A coluna {col} é um identificador e fica fora das análises." / "A coluna {col} tem datas e fica fora das análises." (D90). `TipoVariavel` = `nominal`, `ordinal`, `discreta`, `continua`, `binaria`, `identificador`, `data`.
 
 Todas as falhas → HTTP 4xx/5xx com `{codigo, mensagem, sugestao}` (spec 17). Validação Pydantic é traduzida para mensagens em português.
 

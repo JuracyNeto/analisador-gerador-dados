@@ -16,6 +16,20 @@ type Sentido = Literal["direita", "esquerda"]
 type ClasseCurtose = Literal["mesocurtica", "leptocurtica", "platicurtica"]
 
 
+@dataclass(frozen=True, slots=True)
+class ResumoNumerico:
+    """Medidas de um vetor de números, sem dataset (gerador e detector, D108)."""
+
+    n: int
+    media: float
+    mediana: float
+    desvio_padrao: float
+    minimo: float
+    maximo: float
+    assimetria: float | None
+    curtose: float | None
+
+
 @dataclass(frozen=True, slots=True, eq=False)
 class Amostra:
     """Valores válidos de uma coluna: números (discreta/contínua) ou textos (categóricas)."""

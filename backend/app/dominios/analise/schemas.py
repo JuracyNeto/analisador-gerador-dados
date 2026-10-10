@@ -1,10 +1,11 @@
 """Contratos HTTP do domínio analise (spec 14; nomes na visão geral do M1)."""
 
-from typing import Any, Literal
+from typing import Literal
 
 from pydantic import BaseModel, ConfigDict
 
 from app.compartilhado.tipos import TipoVariavel
+from app.core.esquemas import Figura
 
 type Valor = float | str | None
 
@@ -97,16 +98,6 @@ class Dispersao(Modelo):
     iqr: Medida
     cv: Medida
     classificacao_cv: Literal["baixa", "media", "alta"] | None
-
-
-class Figura(Modelo):
-    id: str
-    rotulo: str
-    titulo: str
-    resumo: str
-    porque: str
-    recomendado: bool
-    dados: dict[str, Any]
 
 
 class Parametro(Modelo):

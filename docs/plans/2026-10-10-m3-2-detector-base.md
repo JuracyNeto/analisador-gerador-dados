@@ -4,7 +4,7 @@
 
 **Objetivo:** montar o esqueleto completo do detector (contrato `Aviso`, Template Method, registro, textos, resumo, endpoint e linhas para o drawer) e entregar as seis regras que olham uma coluna de cada vez: R3 (formato numérico), R4 (valores redondos), R5 (duplicatas), R7 (outliers), R8 (Benford) e R9 (último dígito).
 
-**Arquitetura:** domínio `detector` (spec 12, ADR 0005, D115):
+**Arquitetura:** domínio `detector` (spec 12, ADR 0005, D116):
 ```
 detector/
 ├── tabela.py          TabelaDetector, ColunaDetector (entrada pura das regras)
@@ -44,8 +44,8 @@ detector/
 ### Regras que o código implementa
 - **Template Method** (`RegraBase.executar(tabela) -> ResultadoRegra`): para cada alvo de `alvos(tabela)` (colunas do tipo certo, ou pares no M3.3) → `motivo_nao_aplicavel(alvo)` → `medir(alvo)` → `dispara(medicao)` → `montar_aviso(alvo, medicao)`. As subclasses implementam só os passos; nenhuma monta texto fora de `textos.py`. Cada regra tem `codigo`, `nome` e constantes nomeadas para os limiares (sem números mágicos).
 - **Severidades e limiares** (spec 12): R3 atenção (≥ 80% com decimais e inteiros agrupados — run de ≥ 5 inteiros seguidos — ou em posições regulares — passo constante entre os inteiros, ≥ 4 vezes); R4 atenção (n ≥ 50, binomial unilateral p < 0,01 e razão ≥ 1,5, para múltiplos de 5 — p₀ 0,2 — e de 10 — p₀ 0,1; avisa o mais forte); R5 atenção, **alta** com ≥ 3 cópias em linhas consecutivas; R7 info (moderado: fora de Q1 − 1,5·IQR / Q3 + 1,5·IQR) / atenção (extremo: fora de 3·IQR, ou |z| > 3); R8 atenção (positivas, n ≥ 100, máx/mín ≥ 100; χ² gl 8 com p < 0,01 **e** MAD > 0,015); R9 atenção (n ≥ 50, dígito final variável; χ² gl 9, p < 0,01).
-- **Dígito final** (D116): resolução da coluna = maior nº de casas observado (até 6); dígito = `round(|x| · 10^casas) mod 10`; constante (ex.: todos inteiros terminados em 0) → R4/R9 não se aplicam ("o último dígito é sempre o mesmo").
-- **R5** (D117): exatas em todas as colunas (linhas idênticas); quase idênticas só até 5.000 linhas: numéricas padronizadas, distância euclidiana < 0,01·√p e qualitativas iguais. Exemplo = o maior grupo de cópias.
+- **Dígito final** (D117): resolução da coluna = maior nº de casas observado (até 6); dígito = `round(|x| · 10^casas) mod 10`; constante (ex.: todos inteiros terminados em 0) → R4/R9 não se aplicam ("o último dígito é sempre o mesmo").
+- **R5** (D118): exatas em todas as colunas (linhas idênticas); quase idênticas só até 5.000 linhas: numéricas padronizadas, distância euclidiana < 0,01·√p e qualitativas iguais. Exemplo = o maior grupo de cópias.
 - **Textos** (spec 16, tom neutro): título ≤ 8 palavras ("Muitos valores redondos em peso_kg"); resumo com o número e o esperado ("46% dos valores terminam em 0 ou 5; em medições reais o esperado seria cerca de 20% (2,3× mais)."); `por_que`, `pode_ser_normal` (começa com "…"), `o_que_fazer`; p-valor traduzido com `p_valor_em_palavras`; exemplo "Linhas 120 a 138: 70, 75, 80, 75, 70…" (até 8 valores, com "…"); não aplicada: "{nome} não verificada em {col}: {motivo}." (ex.: "precisa de 100 valores ou mais; a coluna tem 48.").
 - **Resumo:** "Encontramos {n} alerta(s) em {k} coluna(s)" · detalhe "altura_m, peso_kg e idade · {v} regras verificadas, {k} não se aplicam a este arquivo" · vazio: "Nenhuma das 11 regras encontrou suspeitas. Isso não garante que os dados sejam reais, mas não vimos sinais comuns de dados artificiais." (no M3.2 o número vem de `len(registro)`, que chega a 11 no M3.3).
 
@@ -102,7 +102,7 @@ Para cada regra: testes com dados construídos que **disparam** (e conferem seve
 
 ### Tarefa 11: tipos e documentação
 - `exportar_openapi.py` → `gerar:tipos`.
-- Spec 12 (dígito final, quase duplicatas até 5.000, contagens do resumo), spec 14 (rotas e erro), `decisions.md` D115–D117 (próximos números livres), CHANGELOG › Adicionado: "API do detector com resumo e as regras de formato numérico, valores redondos, duplicatas, outliers, Lei de Benford e último dígito, cada alerta com explicação em linguagem simples."
+- Spec 12 (dígito final, quase duplicatas até 5.000, contagens do resumo), spec 14 (rotas e erro), `decisions.md` D116–D118 (próximos números livres), CHANGELOG › Adicionado: "API do detector com resumo e as regras de formato numérico, valores redondos, duplicatas, outliers, Lei de Benford e último dígito, cada alerta com explicação em linguagem simples."
 
 **Commit:** `docs: detector — base e regras de uma coluna (spec 12, API, decisões)`
 
