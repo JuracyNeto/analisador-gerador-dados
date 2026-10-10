@@ -108,8 +108,8 @@
   {% set numero.secao = numero.secao + 1 %}
   <section class="bivariada">
     <h2>{{ numero.secao }}. {{ titulos.bivariada }}</h2>
-    {% if b.matriz %}{{ figura(b.matriz) }}{% endif %}
-    <p>{{ b.resumo }}</p>
+    {# A legenda do heatmap já traz o resumo da matriz. #}
+    {% if b.matriz %}{{ figura(b.matriz) }}{% else %}<p>{{ b.resumo }}</p>{% endif %}
     {% if b.vazio %}<p>{{ b.vazio }}</p>{% endif %}
     {% for par in b.pares %}
     <h3><span class="mono">{{ par.y }}</span> em função de <span class="mono">{{ par.x }}</span></h3>

@@ -51,6 +51,7 @@ def test_mini_relatorio_completo(servico: ServicoRelatorio, dataset_id: str) -> 
     # 7 colunas + forma de idade, altura_m e peso_kg + matriz (sem par com |r| ≥ 0,3)
     assert html.count("Plotly.newPlot(") == 11
     assert "cdn.plot.ly/plotly-" in html
+    assert '<dd class="mono">-' not in html  # negativos com o sinal de menos (−)
     assert "inteligência artificial" not in html.lower()
 
 

@@ -57,5 +57,6 @@ def test_renderizar_forma_e_bivariada_numera_figuras_em_ordem() -> None:
     assert html.index("Figura 1 · Histograma") < html.index("<h2>2. Bivariada</h2>")
     assert html.index("<h2>2. Bivariada</h2>") < html.index("Figura 2 · Matriz")
     assert '<span class="mono">y</span> em função de <span class="mono">x</span>' in html
+    assert "Resumo da matriz." not in html  # a legenda da figura já traz o resumo
     assert "fᵢ" not in html
     assert "{{" not in html
