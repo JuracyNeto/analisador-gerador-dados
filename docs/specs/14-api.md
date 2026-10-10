@@ -22,6 +22,8 @@ Camada de apresentação: `router.py` + `schemas.py` de cada domínio; `app/main
 | POST | `/gerador/univariado` | `PedidoUnivariado` (spec 11) | `Gerado` (201) | 11 |
 | POST | `/gerador/bivariado` | `PedidoBivariado` (spec 11) | `Gerado` (201) | 11 |
 | GET | `/gerador/{gid}` | — | `Gerado` | 11 |
+| GET | `/gerador/origem` | `?dataset_id=&coluna=` | `ResumoOrigem {coluna, tipo, n, media, desvio, minimo, maximo, sucesso, fracasso, chance, so_preservar}` | 11 |
+| GET | `/gerador/origem-par` | `?dataset_id=&x=&y=` | `ResumoOrigemPar {x, y, n, media_x, media_y, desvio_x, desvio_y, r}` | 11 |
 | GET | `/gerador/{gid}/csv` | — | `text/csv` download (`;` e vírgula decimal) | 11 |
 | POST | `/gerador/{gid}/adotar` | `{modo: novo \| anexar, dataset_id?}` | `Adotado {dataset_id, nome_arquivo, n_linhas, modo}` (201) | 11 |
 | GET | `/datasets/{id}/detector` | `?regras=R1,R2…` | `ResultadoDetector` | 12 |
