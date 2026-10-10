@@ -61,12 +61,12 @@ it('etapas futuras ficam bloqueadas mesmo com arquivo e dizem a versão', async 
   salvarSessao([1]);
   renderizarBarra('/importar');
 
-  const gerador = screen.getByRole('button', { name: 'Gerador Bloqueada' });
-  await userEvent.hover(gerador);
+  const detector = screen.getByRole('button', { name: 'Detector Bloqueada' });
+  await userEvent.hover(detector);
 
-  expect(gerador).toHaveAttribute('aria-disabled', 'true');
+  expect(detector).toHaveAttribute('aria-disabled', 'true');
   expect(screen.getByRole('tooltip')).toHaveTextContent('Disponível na versão v0.3.');
-  expect(screen.getByRole('link', { name: 'Bivariada' })).toBeInTheDocument();
+  expect(screen.getByRole('link', { name: 'Gerador' })).toBeInTheDocument();
 });
 
 it('recolhida: nomes seguem acessíveis e o botão pede para expandir', async () => {

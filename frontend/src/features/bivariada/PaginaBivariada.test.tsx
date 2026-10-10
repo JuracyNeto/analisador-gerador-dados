@@ -113,13 +113,13 @@ describe('PaginaBivariada', () => {
     expect(await screen.findByText('Algo deu errado.')).toBeInTheDocument();
   });
 
-  it('voltar para a Análise e continuar para o Relatório', async () => {
+  it('voltar para a Análise e continuar para o Gerador', async () => {
     const { usuario, roteador } = renderizarPagina();
     await screen.findByText(EQUACAO);
 
     expect(screen.getByRole('button', { name: T.navegacao.voltar })).toBeInTheDocument();
     await usuario.click(screen.getByRole('button', { name: T.navegacao.continuar }));
-    expect(roteador.state.location.pathname).toBe('/relatorio');
+    expect(roteador.state.location.pathname).toBe('/gerador');
   });
 
   it('sem arquivo importado orienta a ir para Importar', () => {

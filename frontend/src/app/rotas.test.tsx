@@ -12,14 +12,23 @@ it.each(['/', '/caminho-que-nao-existe'])('%s leva para Importar', async (caminh
 });
 
 it('etapa futura abre a página que diz quando ela chega', async () => {
+  renderizarComRotas(ROTAS, '/detector');
+
+  expect(
+    await screen.findByRole('heading', { level: 1, name: 'Detector de dados artificiais' }),
+  ).toBeInTheDocument();
+  expect(
+    within(screen.getByRole('main')).getByText('Disponível na versão v0.3.'),
+  ).toBeInTheDocument();
+});
+
+it('/gerador abre a etapa 6', async () => {
   renderizarComRotas(ROTAS, '/gerador');
 
   expect(
     await screen.findByRole('heading', { level: 1, name: 'Gerador de dados' }),
   ).toBeInTheDocument();
-  expect(
-    within(screen.getByRole('main')).getByText('Disponível na versão v0.3.'),
-  ).toBeInTheDocument();
+  expect(screen.getByRole('tab', { name: 'Univariado' })).toBeInTheDocument();
 });
 
 it('/bivariada abre a etapa 5', async () => {

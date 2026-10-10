@@ -138,10 +138,10 @@ describe('PaginaRelatorio', () => {
     expect(screen.getByText(T.semDataset)).toBeInTheDocument();
   });
 
-  it('"Voltar para Bivariada" leva à etapa 5', async () => {
+  it('"Voltar para Gerador" leva à etapa 6', async () => {
     const { usuario, roteador } = renderizarPagina();
 
-    await usuario.click(await screen.findByRole('button', { name: /Voltar para Bivariada/ }));
-    expect(roteador.state.location.pathname).toBe('/bivariada');
+    await usuario.click(await screen.findByRole('button', { name: /Voltar para Gerador/ }));
+    expect(roteador.state.location.pathname).toBe('/gerador');
   });
 });

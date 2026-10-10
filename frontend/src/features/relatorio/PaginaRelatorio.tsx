@@ -22,7 +22,7 @@ const T = TEXTOS_RELATORIO;
 
 const ACOES_RODAPE = (
   <BarraAcoes>
-    <BotaoEtapa para={CAMINHOS.bivariada} sentido="voltar">
+    <BotaoEtapa para={CAMINHOS.gerador} sentido="voltar">
       {T.voltar}
     </BotaoEtapa>
   </BarraAcoes>

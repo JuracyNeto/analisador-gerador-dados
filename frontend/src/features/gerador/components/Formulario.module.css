@@ -1,0 +1,38 @@
+.formulario {
+  display: flex;
+  flex-direction: column;
+  gap: var(--esp-16);
+}
+.formulario > button[type='submit'] {
+  width: 100%;
+  margin-top: var(--esp-4);
+}
+.grupo {
+  display: flex;
+  flex-direction: column;
+  gap: var(--esp-8);
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+.legenda {
+  margin-bottom: var(--esp-4);
+  padding: 0;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--cor-texto);
+}
+.par {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--esp-12);
+}
+.caixaTexto {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.ajuda {
+  color: var(--cor-texto-2);
+  font-size: 13px;
+}
