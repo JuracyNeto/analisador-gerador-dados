@@ -25,7 +25,7 @@
 Login, banco de dados, multiusuário, hospedagem pública, machine learning, regressão múltipla, séries temporais avançadas, seção "uso de IA" no relatório.
 
 ## Tipos de variável
-`nominal`, `ordinal`, `discreta`, `continua`, `binaria` + auxiliar `identificador` (excluído da análise).
+`nominal`, `ordinal`, `discreta`, `continua`, `binaria` + auxiliares `identificador` e `data` (datas, horas ou data com hora; D90), excluídos da análise.
 
 ## Convenções estatísticas
 - Variância e DP amostrais (n−1) por padrão; populacional exibida ao lado.
