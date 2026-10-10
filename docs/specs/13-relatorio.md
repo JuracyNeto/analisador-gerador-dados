@@ -7,12 +7,12 @@ Domínio: `app/dominios/relatorio/` (templates Jinja2 em `templates/`) · Endpoi
 3. Tipos: tabela coluna → tipo → motivo
 4. Limpeza: log em frases
 5. Por coluna analisada: tabela de frequência, tendência central, separatrizes, dispersão, gráfico principal, interpretações automáticas
+6. Distribuições (M2, D106), dentro da seção de cada coluna, com o subtítulo "Forma e distribuição": assimetria G₁ e curtose G₂ com a classificação, As₁, As₂ e K, os ajustes Normal e Binomial/Bernoulli em frases ("Shapiro-Wilk: W = 0,9933 · p = 0,399 ≥ 0,05. Os dados são compatíveis com a distribuição Normal."), a frase conjunta e a 1ª figura da forma (histograma ou bastões com curva Normal, ou observado × Binomial). Nominal e ordinal mostram a frase de não se aplica. As fórmulas da forma entram na lista da coluna só com esta seção marcada.
+7. Bivariada (M2, D106), seção própria depois das colunas: heatmap da matriz de correlação com o resumo e, para cada um dos até 3 pares de maior |r| (≥ 0,3; empate pela ordem das colunas), o subtítulo "{y} em função de {x}", as medidas (r com força e sentido, p-valor do teste t, Spearman, R², Sₑ, n), a equação, as interpretações e a dispersão com a reta. Sem par com |r| ≥ 0,3: "Nenhum par de colunas numéricas tem correlação moderada ou forte (|r| ≥ 0,3)."; com menos de 2 colunas numéricas, só o resumo da matriz. Pares com `POUCOS_PARES` ou `SEM_VARIACAO` ficam de fora. Fórmulas no fim da seção.
 
-Parâmetros: `secoes` (leitura, tipos, limpeza, analises; D57), `colunas` e `offline`. Colunas identificador e vazias ficam fora.
+Parâmetros: `secoes` (leitura, tipos, limpeza, analises, distribuicoes, bivariada; sem o parâmetro, as 6 — D57, D106), `colunas` (valem para analises e distribuicoes) e `offline`. Colunas identificador, data e vazias ficam fora. A seção de uma coluna aparece se analises **ou** distribuicoes estiver marcada; cada bloco só com a sua caixa. Figuras numeradas na ordem do documento ("Figura N · …").
 
 ## Relatório completo (M4) — adiciona
-6. Distribuição ajustada, assimetria e curtose
-7. Bivariada: r, equação, R², gráfico
 8. Gerador (se usado): parâmetros, método, explicação, tabela de comparação
 9. Detector: resumo + avisos completos (com detalhes técnicos expandidos) + regras não aplicadas
 10. Apêndice de fórmulas usadas (só as das seções incluídas)

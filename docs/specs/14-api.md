@@ -24,7 +24,7 @@ Camada de apresentação: `router.py` + `schemas.py` de cada domínio; `app/main
 | GET | `/gerador/{gid}/csv` | — | `text/csv` download | 11 |
 | POST | `/gerador/{gid}/adotar` | `{modo, dataset_id?}` | `{dataset_id}` | 11 |
 | GET | `/datasets/{id}/detector` | `?regras=R1,R2…` | `ResultadoDetector` | 12 |
-| GET | `/datasets/{id}/relatorio` | `?colunas=&secoes=&offline=` | `text/html` | 13 |
+| GET | `/datasets/{id}/relatorio` | `?colunas=&secoes=&offline=` (`secoes`: leitura, tipos, limpeza, analises, distribuicoes, bivariada; padrão = as 6; outra → 422) | `text/html` | 13 |
 
 ## Contrato `Analise` (único para todos os tipos)
 ```json
