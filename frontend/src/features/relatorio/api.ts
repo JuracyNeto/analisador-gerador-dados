@@ -6,12 +6,14 @@ import { baixarArquivo } from '../../shared/lib/baixarArquivo';
 
 export type SecaoRelatorio = components['schemas']['Secao'];
 
-/** Seções aceitas no M1 (D57), na ordem do relatório. */
+/** Seções do relatório (D57, D106), na ordem em que aparecem no HTML. */
 export const SECOES_RELATORIO = [
   'leitura',
   'tipos',
   'limpeza',
   'analises',
+  'distribuicoes',
+  'bivariada',
 ] as const satisfies readonly SecaoRelatorio[];
 
 export interface SelecaoRelatorio {

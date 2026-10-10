@@ -7,7 +7,7 @@ from fastapi.responses import HTMLResponse
 
 from app.dominios.analise.servico import ServicoAnalise
 from app.dominios.datasets.servico import ServicoDatasets, obter_servico_datasets
-from app.dominios.relatorio.servico import SECOES_M1, PedidoRelatorio, Secao, ServicoRelatorio
+from app.dominios.relatorio.servico import SECOES_PADRAO, PedidoRelatorio, Secao, ServicoRelatorio
 
 router = APIRouter(prefix="/datasets/{dataset_id}", tags=["relatorio"])
 
@@ -26,7 +26,7 @@ def _pedido(
     ] = False,
 ) -> PedidoRelatorio:
     return PedidoRelatorio(
-        secoes=tuple(secoes) if secoes else SECOES_M1,
+        secoes=tuple(secoes) if secoes else SECOES_PADRAO,
         colunas=tuple(colunas) if colunas else None,
         offline=offline,
     )

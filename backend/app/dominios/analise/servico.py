@@ -9,13 +9,17 @@ from app.compartilhado.tipos import TIPOS_AUXILIARES, TIPOS_NUMERICOS
 from app.dominios.analise import erros
 from app.dominios.analise.bivariada import analisar_par, montar_par, prever_no_par
 from app.dominios.analise.correlacao import matriz_correlacao
+from app.dominios.analise.formulas import CHAVES_FORMA
 from app.dominios.analise.pontos_forma import PontosForma, pontos_da_forma
 from app.dominios.analise.posicao import calcular_posicao
 from app.dominios.analise.resultados import (
+    Ajuste,
     Amostra,
     Analise,
     Figura,
     Forma,
+    Formula,
+    Medida,
     Posicao,
     TabelaFrequencia,
     TipoSeparatriz,
@@ -40,10 +44,15 @@ from app.dominios.graficos.servico import (
 )
 
 __all__ = [
+    "CHAVES_FORMA",
+    "Ajuste",
     "Analise",
     "Bivariada",
     "Figura",
+    "Forma",
+    "Formula",
     "MatrizCorrelacao",
+    "Medida",
     "OpcoesAnalise",
     "Posicao",
     "Previsao",

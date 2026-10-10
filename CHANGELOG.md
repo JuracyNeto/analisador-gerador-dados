@@ -5,6 +5,7 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e
 ## [Não lançado]
 
 ### Adicionado
+- Relatório com as seções Distribuições (forma de cada coluna: assimetria, curtose, ajustes e o gráfico com a curva) e Bivariada (matriz de correlação e os até 3 pares mais fortes, com medidas, equação e dispersão); na tela Relatório, as caixas "Distribuições" e "Bivariada", e as colunas habilitadas com "Análises por coluna" ou "Distribuições".
 - Etapa 5 Bivariada: escolha de X e Y (com troca), correlação de Pearson (com teste de significância e Spearman), R², reta de regressão, gráfico de dispersão com a reta, resíduos, previsão de Y por X com aviso de extrapolação e matriz de correlação.
 - API da análise bivariada: correlação de Pearson (com teste t) e Spearman, força e sentido, regressão linear simples (equação, R², erro padrão), resíduos, previsão de Y por X com aviso de extrapolação e matriz de correlação das colunas numéricas, com gráficos (dispersão com reta, resíduos e heatmap).
 - Aba "Forma e distribuição" na Análise univariada: assimetria, curtose, ajuste à Normal e à Binomial (ou Bernoulli), coeficientes de Pearson e curtose percentílica, frase de interpretação, histograma com curva Normal e QQ-plot; na discreta, campo "Número de tentativas (n)".

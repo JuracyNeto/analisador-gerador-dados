@@ -31,12 +31,12 @@ describe('PaginaRelatorio', () => {
     ]);
   });
 
-  it('começa com as 4 seções do M1 e todas as colunas analisáveis marcadas', async () => {
+  it('começa com as 6 seções e todas as colunas analisáveis marcadas', async () => {
     renderizarPagina();
 
     const secoes = await screen.findByRole('group', { name: /^Seções/ });
-    expect(within(secoes).getAllByRole('checkbox', { checked: true })).toHaveLength(4);
-    expect(within(secoes).getByText('4 de 4')).toBeInTheDocument();
+    expect(within(secoes).getAllByRole('checkbox', { checked: true })).toHaveLength(6);
+    expect(within(secoes).getByText('6 de 6')).toBeInTheDocument();
     const colunas = await screen.findByRole('group', { name: /^Colunas/ });
     expect(within(colunas).getAllByRole('checkbox', { checked: true })).toHaveLength(3);
     expect(within(colunas).queryByText('id')).toBeNull();
@@ -47,7 +47,7 @@ describe('PaginaRelatorio', () => {
 
     await waitFor(() => {
       expect(previa().getAttribute('src')).toBe(
-        `/api${BASE}/relatorio?secoes=leitura&secoes=tipos&secoes=limpeza&secoes=analises&colunas=sexo&colunas=peso_kg&colunas=cidade&offline=true`,
+        `/api${BASE}/relatorio?secoes=leitura&secoes=tipos&secoes=limpeza&secoes=analises&secoes=distribuicoes&secoes=bivariada&colunas=sexo&colunas=peso_kg&colunas=cidade&offline=true`,
       );
     });
   });
@@ -61,11 +61,13 @@ describe('PaginaRelatorio', () => {
     });
   });
 
-  it('sem "Análises por coluna", as colunas ficam desabilitadas com a nota', async () => {
+  it('sem "Análises por coluna" e sem "Distribuições", as colunas ficam desabilitadas', async () => {
     const { usuario } = renderizarPagina();
     await screen.findByRole('checkbox', { name: /peso_kg/ });
 
     await usuario.click(screen.getByRole('checkbox', { name: T.rotulosSecoes.analises }));
+    expect(screen.getByRole('checkbox', { name: /peso_kg/ })).toBeEnabled();
+    await usuario.click(screen.getByRole('checkbox', { name: T.rotulosSecoes.distribuicoes }));
 
     expect(screen.getByRole('checkbox', { name: /peso_kg/ })).toBeDisabled();
     expect(screen.getByText(T.colunasSemAnalises)).toBeInTheDocument();

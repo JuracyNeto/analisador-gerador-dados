@@ -18,6 +18,7 @@ td.numero { text-align: right; font-variant-numeric: tabular-nums; }
 .medidas div { padding: 6px 10px; border-right: 1px solid var(--borda); }
 .medidas dt { font-size: 8pt; color: var(--texto-2); }
 .medidas dd { margin: 0; font-size: 12pt; font-weight: 600; }
+.medidas dd.selo { font-size: 8.5pt; font-weight: 500; color: var(--texto-2); }
 figure { margin: 16px 0; break-inside: avoid; }
 figcaption { font-weight: 600; font-size: 10.5pt; margin-bottom: 4px; }
 .grafico { width: 100%; height: 320px; }
@@ -26,6 +27,6 @@ figcaption { font-weight: 600; font-size: 10.5pt; margin-bottom: 4px; }
 @page { size: A4 portrait; margin: 18mm; }
 @media print {
   body { padding: 0; max-width: none; }
-  section.coluna { break-before: page; }
+  section.coluna, section.bivariada { break-before: page; }
   .grafico { width: 100% !important; }
 }
