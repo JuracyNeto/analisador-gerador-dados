@@ -10,10 +10,13 @@ from app.compartilhado.tipos import TipoVariavel
 from app.dominios.graficos import figuras, textos
 from app.dominios.graficos import figuras_bivariadas as desenhos_bivariados
 from app.dominios.graficos import figuras_forma as desenhos_forma
+from app.dominios.graficos import figuras_gerador as desenhos_gerador
 from app.dominios.graficos.entradas import (
     DadosBivariados,
     DadosForma,
     DadosMatriz,
+    DadosParesGerados,
+    DadosSobreposicao,
     DadosUnivariados,
     FiguraPronta,
 )
@@ -49,6 +52,8 @@ MOLDES = {
     "dispersao": _Molde("dispersao", "dispersao", textos.PORQUE["dispersao"], True),
     "residuos": _Molde("residuos", "residuos", textos.PORQUE["residuos"]),
     "matriz": _Molde("matriz", "matriz", textos.PORQUE["matriz"]),
+    "sobreposicao": _Molde("sobreposicao", "sobreposicao", textos.PORQUE["sobreposicao"], True),
+    "pares_gerados": _Molde("dispersao", "dispersao", textos.PORQUE["pares_gerados"], True),
 }
 
 
@@ -244,4 +249,44 @@ def figura_matriz(dados: DadosMatriz) -> FiguraPronta | None:
         return None
     return _pronta(
         MOLDES["matriz"], textos.TITULO_MATRIZ, dados.resumo, desenhos_bivariados.heatmap(dados)
+    )
+
+
+def _titulo_sobreposicao(dados: DadosSobreposicao) -> str:
+    if dados.original is None:
+        return textos.titulo_gerados(dados.coluna)
+    return textos.titulo_sobreposicao(dados.coluna)
+
+
+def figura_sobreposicao_numerica(dados: DadosSobreposicao) -> FiguraPronta:
+    """Original × gerado em histogramas sobrepostos (spec 11, D113)."""
+    diferenca = desenhos_gerador.maior_diferenca_numerica(dados)
+    return _pronta(
+        MOLDES["sobreposicao"],
+        _titulo_sobreposicao(dados),
+        textos.resumo_sobreposicao(diferenca, len(dados.gerado)),
+        desenhos_gerador.sobreposicao_numerica(dados),
+    )
+
+
+def figura_sobreposicao_categorica(dados: DadosSobreposicao) -> FiguraPronta:
+    """Original × gerado em barras agrupadas por categoria."""
+    diferenca = desenhos_gerador.maior_diferenca_categorica(dados)
+    return _pronta(
+        MOLDES["sobreposicao"],
+        _titulo_sobreposicao(dados),
+        textos.resumo_sobreposicao(diferenca, len(dados.gerado)),
+        desenhos_gerador.sobreposicao_categorica(dados),
+    )
+
+
+def figura_pares_gerados(dados: DadosParesGerados) -> FiguraPronta:
+    """Dispersão dos pares gerados (com os originais, quando há origem)."""
+    n = len(dados.x)
+    mostrados = len(desenhos_bivariados.amostrar(dados.x, dados.y)[0])
+    return _pronta(
+        MOLDES["pares_gerados"],
+        textos.titulo_pares_gerados(n),
+        textos.resumo_pares_gerados(dados.r, n, mostrados),
+        desenhos_gerador.dispersao_gerada(dados),
     )

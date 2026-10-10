@@ -121,3 +121,24 @@ class DadosMatriz:
     colunas: tuple[str, ...]
     valores: tuple[tuple[float | None, ...], ...]
     resumo: str
+
+
+@dataclass(frozen=True, slots=True, eq=False)
+class DadosSobreposicao:
+    """Valores do original (quando há origem) e do gerado, numéricos ou categorias."""
+
+    coluna: str
+    gerado: pd.Series
+    original: pd.Series | None = None
+    n_original: int = 0
+
+
+@dataclass(frozen=True, slots=True)
+class DadosParesGerados:
+    x_nome: str
+    y_nome: str
+    x: tuple[float, ...]
+    y: tuple[float, ...]
+    r: float
+    x_original: tuple[float, ...] | None = None
+    y_original: tuple[float, ...] | None = None
