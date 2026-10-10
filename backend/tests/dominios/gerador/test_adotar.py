@@ -21,6 +21,7 @@ def test_csv_com_ponto_e_virgula_e_virgula_decimal(cliente: TestClient) -> None:
     assert resposta.status_code == 200
     assert resposta.headers["content-type"].startswith("text/csv")
     assert 'filename="gerado-peso_kg.csv"' in resposta.headers["content-disposition"]
+    assert "\r" not in resposta.text
     linhas = resposta.text.splitlines()
     assert linhas[0] == "peso_kg"
     assert len(linhas) == 6

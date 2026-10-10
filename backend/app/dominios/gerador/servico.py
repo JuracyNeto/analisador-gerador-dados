@@ -121,8 +121,9 @@ class Gerado:
         return f"gerado-{'-'.join(self.colunas)}.csv"
 
     def csv(self) -> bytes:
-        """`;` e vírgula decimal, como o app lê (D111)."""
-        return self.dados.to_csv(sep=";", decimal=",", index=False).encode("utf-8")
+        """`;`, vírgula decimal e fim de linha LF (igual em qualquer sistema), como o app lê."""
+        texto = self.dados.to_csv(sep=";", decimal=",", index=False, lineterminator="\n")
+        return texto.encode("utf-8")
 
 
 def sortear_semente(semente: int | None) -> int:
