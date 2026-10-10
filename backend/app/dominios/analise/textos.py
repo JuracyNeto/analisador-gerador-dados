@@ -13,6 +13,7 @@ TIPO_LEGIVEL = {
     TipoVariavel.DISCRETA: "quantitativas discretas",
     TipoVariavel.CONTINUA: "quantitativas contínuas",
     TipoVariavel.IDENTIFICADOR: "identificadores",
+    TipoVariavel.DATA: "datas",
 }
 
 MOTIVOS = {

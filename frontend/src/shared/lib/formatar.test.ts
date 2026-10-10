@@ -4,6 +4,7 @@ import {
   formatarInteiro,
   formatarNumero,
   formatarPercentual,
+  formatarPValor,
   lerNumeroPtBr,
 } from './formatar';
 
@@ -13,7 +14,7 @@ describe('formatarNumero', () => {
     [12345.6, '12.346'],
     [0.0012346, '0,001235'],
     [0, '0'],
-    [-3.14159, '-3,142'],
+    [-3.14159, '−3,142'],
     [69.8, '69,8'],
     [1.72, '1,72'],
     [999.95, '1.000'],
@@ -59,6 +60,7 @@ describe('lerNumeroPtBr', () => {
     ['1.234,5', 1234.5],
     ['1.234.567,89', 1234567.89],
     ['-3', -3],
+    ['−0,394', -0.394],
     [' 7 ', 7],
     ['+2,5', 2.5],
     ['1.234', 1234],
@@ -80,5 +82,16 @@ describe('formatarDecimal', () => {
     [1234.5, 2, '1.234,50'],
   ])('formata %d com %d casa(s) fixa(s): %s', (valor, casas, esperado) => {
     expect(formatarDecimal(valor, casas)).toBe(esperado);
+  });
+});
+
+describe('formatarPValor', () => {
+  it.each([
+    [0.0004, 'p < 0,001'],
+    [0.001, 'p = 0,001'],
+    [0.2134, 'p = 0,213'],
+    [0.05, 'p = 0,05'],
+  ])('%s → %s', (p, esperado) => {
+    expect(formatarPValor(p)).toBe(esperado);
   });
 });

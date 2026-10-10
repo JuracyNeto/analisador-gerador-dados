@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { ErroApi } from './cliente';
-import { ehDatasetNaoEncontrado, textoDoErro } from './erros';
+import { ehDatasetNaoEncontrado, podeRepetir, textoDoErro } from './erros';
 
 const SESSAO_EXPIRADA = new ErroApi(404, {
   codigo: 'DATASET_NAO_ENCONTRADO',
@@ -49,4 +49,17 @@ describe('textoDoErro', () => {
       });
     },
   );
+});
+
+describe('podeRepetir', () => {
+  const definitivos = new Set(['COLUNA_VAZIA']);
+
+  it('erro definitivo da API não se repete; o resto sim', () => {
+    const vazia = new ErroApi(400, { codigo: 'COLUNA_VAZIA', mensagem: 'x', sugestao: 'y' });
+    const rede = new ErroApi(0, { codigo: 'SEM_CONEXAO', mensagem: 'x', sugestao: 'y' });
+
+    expect(podeRepetir(vazia, definitivos)).toBe(false);
+    expect(podeRepetir(rede, definitivos)).toBe(true);
+    expect(podeRepetir(new Error('x'), definitivos)).toBe(true);
+  });
 });

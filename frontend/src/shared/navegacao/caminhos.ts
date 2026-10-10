@@ -4,5 +4,6 @@ export const CAMINHOS = {
   variaveis: '/variaveis',
   limpeza: '/limpeza',
   analise: '/analise',
+  bivariada: '/bivariada',
   relatorio: '/relatorio',
 } as const;

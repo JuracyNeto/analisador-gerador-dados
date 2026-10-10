@@ -38,6 +38,7 @@ interface Props {
   datasetId: string;
   classes: number | null;
   aoMudarClasses: (k: number) => void;
+  aoMudarTentativas: (n: number) => void;
 }
 
 export default function CorpoAnalise({ estado, ...resto }: Readonly<Props>) {

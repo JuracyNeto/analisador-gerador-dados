@@ -12,6 +12,7 @@ def test_valores_padrao_seguem_as_specs() -> None:
     assert config.limiar_discreta == 30
     assert config.limiar_unicos_identificador == 0.95
     assert config.limiar_numerico == 0.9
+    assert config.limiar_data == 0.9
     assert config.tamanho_previa == 20
     assert "http://localhost:5173" in config.cors_origens
 

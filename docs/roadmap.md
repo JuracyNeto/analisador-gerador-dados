@@ -5,8 +5,8 @@ Início: 02/10/2026 · Entrega final: **08/12/2026**
 | Marco | Até | Entregas | Versão |
 |---|---|---|---|
 | **M0 Fundação** | 09/10 | Repositório, docs, CI, design das telas (Claude Design), esqueleto backend/frontend | — |
-| **M1 Prévia completa** | 30/10 | Specs 01–08 + 13 (mini relatório). Telas: Importar, Variáveis, Limpeza, Análise univariada, Relatório | `v0.1.0` |
-| **M2 Análise avançada** | 13/11 | Specs 09–10. Distribuições, assimetria/curtose na tela univariada; tela Bivariada | `v0.2.0` |
+| **M1 Prévia completa** | 30/10 | Specs 01–08 + 13 (mini relatório). Telas: Importar, Variáveis, Limpeza, Análise univariada, Relatório | `v0.1.0` ✓ 07/10 (+ `v0.1.1`) |
+| **M2 Análise avançada** | 13/11 | Specs 09–10. Distribuições, assimetria/curtose na tela univariada; tela Bivariada | `v0.2.0` ✓ 10/10 |
 | **M3 Gerador + Detector** | 27/11 | Specs 11–12. Telas Gerador e Detector; datasets de exemplo com dados plantados | `v0.3.0` |
 | **M4 Entrega** | 08/12 | Relatório final completo, prints, fórmulas, README, ajustes de UX e acessibilidade | `v1.0.0` |
 

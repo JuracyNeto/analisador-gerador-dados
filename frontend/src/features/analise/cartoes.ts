@@ -1,80 +1,13 @@
-import type { ComponentProps } from 'react';
-import type CardMetrica from '../../shared/ui/CardMetrica';
+import { medidaAusente, type DefinicaoCartao } from '../../shared/metricas/cartoes';
+import { formatarValorMedida } from '../../shared/metricas/formatacao';
 import { estaAplicavel, motivoNaoAplicavel } from './abas';
-import { formatarValorMedida } from './formatacao';
 import { TEXTOS_ANALISE } from './textos';
-import type { Analise, Dispersao, Formula, Medida, Moda } from './tipos';
-
-type PropsCardMetrica = ComponentProps<typeof CardMetrica>;
+import type { Analise, Dispersao, Medida, Moda } from './tipos';
 
 const C = TEXTOS_ANALISE.cartoes;
 
-export interface DefinicaoCartao {
-  id: string;
-  rotulo: string;
-  medida: Medida;
-  /** Medida de apoio mostrada no "Ver fórmula" do card (moda de Czuber na contínua). */
-  apoio?: Medida | undefined;
-  selo?: string | undefined;
-  unidade?: string | undefined;
-  casasSignificativas?: number | undefined;
-}
-
 /** `Moda` não é `Medida` e não traz chave; no catálogo do M1.4 a fórmula da moda bruta é `moda`. */
 const CHAVE_FORMULA_MODA = 'moda';
-
-function acharFormula(formulas: readonly Formula[], chave: string | null): Formula | undefined {
-  return chave === null ? undefined : formulas.find((formula) => formula.chave === chave);
-}
-
-function calculoDoCartao({ medida, apoio }: DefinicaoCartao): string | null {
-  if (apoio === undefined) return medida.calculo;
-  return C.apoioCzuber(apoio.calculo ?? `Mo = ${formatarValorMedida(apoio.valor)}`);
-}
-
-function formulaDoCartao(
-  definicao: DefinicaoCartao,
-  formulas: readonly Formula[],
-): PropsCardMetrica['formula'] {
-  const formula = acharFormula(formulas, (definicao.apoio ?? definicao.medida).formula);
-  if (formula === undefined) return undefined;
-  const calculo = calculoDoCartao(definicao);
-  return calculo === null ? { expressao: formula.texto } : { expressao: formula.texto, calculo };
-}
-
-export function propsDoCartao(
-  definicao: DefinicaoCartao,
-  formulas: readonly Formula[],
-): PropsCardMetrica {
-  const { rotulo, medida } = definicao;
-  if (!medida.aplicavel) {
-    return {
-      rotulo,
-      valor: '—',
-      naoAplicavel: { motivo: medida.motivo ?? TEXTOS_ANALISE.motivoPadrao },
-    };
-  }
-  const formula = formulaDoCartao(definicao, formulas);
-  return {
-    rotulo,
-    valor: formatarValorMedida(medida.valor, definicao.casasSignificativas),
-    ...(definicao.unidade === undefined ? {} : { unidade: definicao.unidade }),
-    ...(definicao.selo === undefined ? {} : { selo: definicao.selo }),
-    ...(medida.interpretacao === null ? {} : { interpretacao: medida.interpretacao }),
-    ...(formula === undefined ? {} : { formula }),
-  };
-}
-
-function medidaAusente(motivo: string): Medida {
-  return {
-    valor: null,
-    aplicavel: false,
-    motivo,
-    calculo: null,
-    interpretacao: null,
-    formula: null,
-  };
-}
 
 function comInterpretacao(medida: Medida, padrao: string): Medida {
   return { ...medida, interpretacao: medida.interpretacao ?? padrao };
@@ -115,9 +48,10 @@ function cartaoCentro(analise: Analise): DefinicaoCartao {
 /** Spec 05: o card mostra a moda bruta; na contínua, a de Czuber (pelas classes) vai como apoio no "Ver fórmula". */
 function cartaoModa(analise: Analise): DefinicaoCartao {
   const cartao = cartaoModaSimples(analise.tendencia.moda);
-  return estaAplicavel(analise, 'moda_czuber')
-    ? { ...cartao, apoio: analise.tendencia.moda_czuber }
-    : cartao;
+  if (!estaAplicavel(analise, 'moda_czuber')) return cartao;
+  const czuber = analise.tendencia.moda_czuber;
+  const calculo = C.apoioCzuber(czuber.calculo ?? `Mo = ${formatarValorMedida(czuber.valor)}`);
+  return { ...cartao, apoio: { medida: czuber, calculo } };
 }
 
 export function cartoesTendencia(analise: Analise): DefinicaoCartao[] {

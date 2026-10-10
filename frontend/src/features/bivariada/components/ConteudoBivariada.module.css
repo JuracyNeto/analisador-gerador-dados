@@ -1,0 +1,25 @@
+/* Tela 5a: grid 1.5fr 1fr (dispersão | prever + matriz); empilha abaixo de 1280 px. */
+.conteudo {
+  display: flex;
+  flex-direction: column;
+  gap: var(--esp-20);
+}
+
+.grade {
+  display: grid;
+  grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
+  gap: var(--esp-16);
+  align-items: start;
+}
+
+.lateral {
+  display: flex;
+  flex-direction: column;
+  gap: var(--esp-16);
+}
+
+@media (max-width: 1279px) {
+  .grade {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

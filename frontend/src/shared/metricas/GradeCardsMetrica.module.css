@@ -1,4 +1,4 @@
-/* Tela 4: grade de cards de métrica (Tendência, Dispersão, resumo categórico). */
+/* Grade de cards de métrica (telas 4 e 5). */
 .grade {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));

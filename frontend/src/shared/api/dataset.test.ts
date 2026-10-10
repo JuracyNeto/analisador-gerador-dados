@@ -12,6 +12,7 @@ describe('chavesDataset', () => {
       chavesDataset.colunas(ID_DATASET),
       chavesDataset.diagnostico(ID_DATASET),
       chavesDataset.analises(ID_DATASET),
+      chavesDataset.bivariada(ID_DATASET),
       chavesDataset.relatorio(ID_DATASET),
     ]) {
       expect(chave.slice(0, prefixo.length)).toEqual(prefixo);

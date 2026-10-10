@@ -182,7 +182,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Análise univariada da coluna (specs 04–07) */
+        /** Análise univariada da coluna (specs 04–09) */
         get: operations["analisar_api_datasets__dataset_id__colunas__coluna__analise_get"];
         put?: never;
         post?: never;
@@ -201,6 +201,57 @@ export interface paths {
         };
         /** "Onde está meu valor?" (spec 06) */
         get: operations["posicao_api_datasets__dataset_id__colunas__coluna__posicao_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/datasets/{dataset_id}/bivariada": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Correlação e regressão de duas colunas (spec 10) */
+        get: operations["bivariada_api_datasets__dataset_id__bivariada_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/datasets/{dataset_id}/bivariada/prever": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Prever Y para um valor de X (spec 10) */
+        get: operations["prever_api_datasets__dataset_id__bivariada_prever_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/datasets/{dataset_id}/correlacoes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Matriz de correlação das colunas numéricas (spec 10) */
+        get: operations["correlacoes_api_datasets__dataset_id__correlacoes_get"];
         put?: never;
         post?: never;
         delete?: never;
@@ -243,6 +294,28 @@ export interface components {
             /** Grupo */
             grupo?: string | null;
         };
+        /** Ajuste */
+        Ajuste: {
+            /**
+             * Distribuicao
+             * @enum {string}
+             */
+            distribuicao: "normal" | "binomial" | "bernoulli";
+            /** Aplicavel */
+            aplicavel: boolean;
+            /** Motivo */
+            motivo: string | null;
+            /** Parametros */
+            parametros: components["schemas"]["Parametro"][];
+            teste: components["schemas"]["TesteAderencia"] | null;
+            complementar: components["schemas"]["TesteAderencia"] | null;
+            /** Frase */
+            frase: string | null;
+            /** Calculo */
+            calculo: string | null;
+            /** Formula */
+            formula: string | null;
+        };
         /** AlteracaoTipo */
         AlteracaoTipo: {
             tipo: components["schemas"]["TipoVariavel"];
@@ -268,6 +341,7 @@ export interface components {
             tendencia: components["schemas"]["Tendencia"];
             separatrizes: components["schemas"]["Separatrizes"] | null;
             dispersao: components["schemas"]["Dispersao"] | null;
+            forma: components["schemas"]["Forma"] | null;
             /** Interpretacoes */
             interpretacoes: string[];
             /** Formulas */
@@ -281,6 +355,38 @@ export interface components {
             codigo: string;
             /** Mensagem */
             mensagem: string;
+        };
+        /** Bivariada */
+        Bivariada: {
+            /** X */
+            x: string;
+            /** Y */
+            y: string;
+            /** N */
+            n: number;
+            /** N Descartados */
+            n_descartados: number;
+            pearson: components["schemas"]["Medida"];
+            teste_t: components["schemas"]["Medida"];
+            spearman: components["schemas"]["Medida"];
+            /**
+             * Forca
+             * @enum {string}
+             */
+            forca: "fraca" | "moderada" | "forte";
+            /**
+             * Sentido
+             * @enum {string}
+             */
+            sentido: "positiva" | "negativa" | "nula";
+            regressao: components["schemas"]["Regressao"];
+            faixa_x: components["schemas"]["Faixa"];
+            /** Interpretacoes */
+            interpretacoes: string[];
+            /** Formulas */
+            formulas: components["schemas"]["Formula"][];
+            /** Figuras */
+            figuras: components["schemas"]["Figura"][];
         };
         /** Body_importar_api_datasets_post */
         Body_importar_api_datasets_post: {
@@ -359,6 +465,13 @@ export interface components {
             /** Frase */
             frase: string;
         };
+        /** Faixa */
+        Faixa: {
+            /** Minimo */
+            minimo: number;
+            /** Maximo */
+            maximo: number;
+        };
         /** FaltantesColuna */
         FaltantesColuna: {
             /** Coluna */
@@ -403,6 +516,28 @@ export interface components {
             origem: "iqr" | "usuario";
             /** Ocorrencias */
             ocorrencias: components["schemas"]["Ocorrencia"][];
+        };
+        /** Forma */
+        Forma: {
+            assimetria: components["schemas"]["Medida"];
+            assimetria_pearson_1: components["schemas"]["Medida"];
+            assimetria_pearson_2: components["schemas"]["Medida"];
+            curtose: components["schemas"]["Medida"];
+            curtose_percentilica: components["schemas"]["Medida"];
+            /** Classificacao Assimetria */
+            classificacao_assimetria: ("simetrica" | "moderada" | "forte") | null;
+            /** Sentido Assimetria */
+            sentido_assimetria: ("direita" | "esquerda") | null;
+            /** Classificacao Curtose */
+            classificacao_curtose: ("mesocurtica" | "leptocurtica" | "platicurtica") | null;
+            normal: components["schemas"]["Ajuste"];
+            binomial: components["schemas"]["Ajuste"];
+            /** Tentativas */
+            tentativas: number | null;
+            /** Interpretacao */
+            interpretacao: string | null;
+            /** Figuras */
+            figuras: components["schemas"]["Figura"][];
         };
         /** Formula */
         Formula: {
@@ -494,6 +629,16 @@ export interface components {
             fr_acum: number | null;
             /** Fr Acum Pct */
             fr_acum_pct: number | null;
+        };
+        /** MatrizCorrelacao */
+        MatrizCorrelacao: {
+            /** Colunas */
+            colunas: string[];
+            /** Valores */
+            valores: (number | null)[][];
+            /** Resumo */
+            resumo: string;
+            figura: components["schemas"]["Figura"] | null;
         };
         /** Medida */
         Medida: {
@@ -587,6 +732,15 @@ export interface components {
             /** Linhas */
             linhas: components["schemas"]["LinhaDados"][];
         };
+        /** Parametro */
+        Parametro: {
+            /** Simbolo */
+            simbolo: string;
+            /** Nome */
+            nome: string;
+            /** Valor */
+            valor: number;
+        };
         /**
          * PedidoLeitura
          * @description Opções que sobrescrevem a detecção; vazio = detectar tudo de novo (spec 01).
@@ -638,8 +792,34 @@ export interface components {
             /** Frase */
             frase: string;
         };
+        /** Previsao */
+        Previsao: {
+            /** X */
+            x: number;
+            /** Y Previsto */
+            y_previsto: number;
+            /** Extrapolacao */
+            extrapolacao: boolean;
+            faixa_x: components["schemas"]["Faixa"];
+            /** Frase */
+            frase: string;
+            /** Aviso */
+            aviso: string | null;
+        };
         /** @enum {string} */
         Problema: "faltantes" | "duplicados" | "fora_de_faixa" | "inconsistencia" | "tipo_misto";
+        /** Regressao */
+        Regressao: {
+            /** A */
+            a: number;
+            /** B */
+            b: number;
+            /** Equacao */
+            equacao: string;
+            reta: components["schemas"]["Medida"];
+            r2: components["schemas"]["Medida"];
+            se: components["schemas"]["Medida"];
+        };
         /** ResultadoLimpeza */
         ResultadoLimpeza: {
             /** Log */
@@ -678,7 +858,7 @@ export interface components {
             versao: string;
         };
         /** @enum {string} */
-        Secao: "leitura" | "tipos" | "limpeza" | "analises";
+        Secao: "leitura" | "tipos" | "limpeza" | "analises" | "distribuicoes" | "bivariada";
         /** Separatrizes */
         Separatrizes: {
             /** Quartis */
@@ -720,6 +900,19 @@ export interface components {
             moda_czuber: components["schemas"]["Medida"];
             proporcao: components["schemas"]["Medida"];
         };
+        /** TesteAderencia */
+        TesteAderencia: {
+            /** Nome */
+            nome: string;
+            /** Estatistica */
+            estatistica: number;
+            /** Gl */
+            gl: number | null;
+            /** P Valor */
+            p_valor: number;
+            /** Compativel */
+            compativel: boolean;
+        };
         /** TipoColuna */
         TipoColuna: {
             /** Coluna */
@@ -752,10 +945,10 @@ export interface components {
         };
         /**
          * TipoVariavel
-         * @description Tipos de variável da spec 02 (identificador é auxiliar e fica fora das análises).
+         * @description Tipos de variável da spec 02; identificador e data são auxiliares (fora das análises).
          * @enum {string}
          */
-        TipoVariavel: "nominal" | "ordinal" | "discreta" | "continua" | "binaria" | "identificador";
+        TipoVariavel: "nominal" | "ordinal" | "discreta" | "continua" | "binaria" | "identificador" | "data";
         /** ValidationError */
         ValidationError: {
             /** Location */
@@ -1141,6 +1334,8 @@ export interface operations {
                 classes?: number | null;
                 /** @description Categoria de sucesso (binária) */
                 sucesso?: string | null;
+                /** @description Nº de tentativas da Binomial (discreta) */
+                tentativas?: number | null;
             };
             header?: never;
             path: {
@@ -1193,6 +1388,110 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Posicao"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    bivariada_api_datasets__dataset_id__bivariada_get: {
+        parameters: {
+            query: {
+                /** @description Coluna X (explica) */
+                x: string;
+                /** @description Coluna Y (é explicada) */
+                y: string;
+            };
+            header?: never;
+            path: {
+                dataset_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Bivariada"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    prever_api_datasets__dataset_id__bivariada_prever_get: {
+        parameters: {
+            query: {
+                /** @description Coluna X (explica) */
+                x: string;
+                /** @description Coluna Y (é explicada) */
+                y: string;
+                valor: number;
+            };
+            header?: never;
+            path: {
+                dataset_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Previsao"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    correlacoes_api_datasets__dataset_id__correlacoes_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                dataset_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MatrizCorrelacao"];
                 };
             };
             /** @description Validation Error */

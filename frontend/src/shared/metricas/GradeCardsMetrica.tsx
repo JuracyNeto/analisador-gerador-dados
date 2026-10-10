@@ -1,6 +1,5 @@
-import CardMetrica from '../../../shared/ui/CardMetrica';
-import { propsDoCartao, type DefinicaoCartao } from '../cartoes';
-import type { Formula } from '../tipos';
+import CardMetrica from '../ui/CardMetrica';
+import { propsDoCartao, type DefinicaoCartao, type Formula } from './cartoes';
 import estilos from './GradeCardsMetrica.module.css';
 
 interface Props {

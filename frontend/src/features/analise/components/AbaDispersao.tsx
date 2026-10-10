@@ -3,7 +3,7 @@ import { estaAplicavel } from '../abas';
 import { cartoesDispersao, notaPopulacional } from '../cartoes';
 import { TEXTOS_ANALISE } from '../textos';
 import type { PropsPainel } from '../tipos';
-import GradeCardsMetrica from './GradeCardsMetrica';
+import GradeCardsMetrica from '../../../shared/metricas/GradeCardsMetrica';
 import paineis from './paineis.module.css';
 
 export default function AbaDispersao({ analise }: Readonly<PropsPainel>) {

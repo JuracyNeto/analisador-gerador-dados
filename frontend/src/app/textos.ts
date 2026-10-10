@@ -24,7 +24,6 @@ export const TEXTOS_APP = {
   abrindoEtapa: 'Abrindo a etapa…',
   ajudaFutura: 'Esta etapa faz parte do roteiro do projeto e ainda não foi liberada.',
   titulosFuturos: {
-    5: 'Análise bivariada',
     6: 'Gerador de dados',
     7: 'Detector de dados artificiais',
   } satisfies Record<EtapaFutura['numero'], string>,

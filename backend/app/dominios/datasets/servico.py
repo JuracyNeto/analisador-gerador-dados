@@ -118,6 +118,7 @@ class ServicoDatasets:
             discreta=self._config.limiar_discreta,
             unicos_identificador=self._config.limiar_unicos_identificador,
             numerico=self._config.limiar_numerico,
+            data=self._config.limiar_data,
         )
 
     def _ler(

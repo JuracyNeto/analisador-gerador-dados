@@ -1,4 +1,5 @@
 import { escolherForma, pluralizar } from '../../shared/lib/pluralizar';
+import { TEXTOS_METRICAS } from '../../shared/metricas/textos';
 import type { IdAba, TipoSeparatriz } from './tipos';
 
 export const TEXTOS_ANALISE = {
@@ -12,13 +13,14 @@ export const TEXTOS_ANALISE = {
     tendencia: 'Tendência central',
     separatrizes: 'Separatrizes',
     dispersao: 'Dispersão',
+    forma: 'Forma e distribuição',
     graficos: 'Gráficos',
   } satisfies Record<IdAba, string>,
-  motivoPadrao: 'Não se aplica ao tipo desta coluna.',
+  motivoPadrao: TEXTOS_METRICAS.motivoPadrao,
   carregandoColunas: 'Carregando as colunas…',
   calculando: (coluna: string) => `Calculando as estatísticas de ${coluna}…`,
   semDataset: 'Importe um arquivo para analisar as colunas, uma de cada vez.',
-  navegacao: { voltar: 'Voltar para Limpeza', continuar: 'Continuar para Relatório' },
+  navegacao: { voltar: 'Voltar para Limpeza', continuar: 'Continuar para Bivariada' },
   semColunas: {
     titulo: 'Nenhuma coluna para analisar',
     descricao:
@@ -102,6 +104,43 @@ export const TEXTOS_ANALISE = {
       regiao: string;
     }) =>
       `Régua de ${d.minimo} a ${d.maximo} com ${d.marcas}; o valor ${d.valor} fica no ${d.regiao}.`,
+  },
+  forma: {
+    assimetria: 'Assimetria',
+    curtose: 'Curtose (excesso)',
+    ajusteNormal: 'Ajuste à Normal',
+    ajusteBinomial: 'Ajuste Binomial',
+    ajusteBernoulli: 'Ajuste Bernoulli',
+    seloAssimetria: {
+      simetrica: { direita: 'Aprox. simétrica', esquerda: 'Aprox. simétrica', nenhum: 'Simétrica' },
+      moderada: {
+        direita: 'Moderada à direita',
+        esquerda: 'Moderada à esquerda',
+        nenhum: 'Moderada',
+      },
+      forte: { direita: 'Forte à direita', esquerda: 'Forte à esquerda', nenhum: 'Forte' },
+    },
+    seloCurtose: {
+      mesocurtica: 'Mesocúrtica',
+      leptocurtica: 'Leptocúrtica',
+      platicurtica: 'Platicúrtica',
+    },
+    nomes: { normal: 'Normal', binomial: 'Binomial', bernoulli: 'Bernoulli' },
+    compativel: (nome: string) => `Compatível com a ${nome}`,
+    afasta: (nome: string) => `Afasta-se da ${nome}`,
+    complementar: (texto: string) => `Teste complementar (classes) · ${texto}`,
+    pearson: (partes: string) => `Coeficientes de Pearson: ${partes}.`,
+    percentilica: (k: string) => `Curtose percentílica: K = ${k} (na Normal, K ≈ 0,263).`,
+    tentativas: {
+      rotulo: 'Número de tentativas (n)',
+      ajuda: (maximo: string) =>
+        `Quantas tentativas cada contagem teve. Padrão: o maior valor observado (${maximo}).`,
+      aplicar: 'Aplicar',
+      erroInteiro: 'Digite um número inteiro, como 10.',
+      erroMinimo: (maximo: string) =>
+        `O número de tentativas precisa ser pelo menos o maior valor observado (${maximo}).`,
+    },
+    tituloGraficos: 'Gráficos da distribuição',
   },
   graficos: {
     tipoGrafico: 'Tipo de gráfico',

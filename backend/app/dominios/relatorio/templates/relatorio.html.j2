@@ -50,42 +50,77 @@
   </section>
   {% endif %}
 
+  {% macro figura(f) %}
+    {% set numero.figura = numero.figura + 1 %}
+    <figure>
+      <figcaption>Figura {{ numero.figura }} · {{ f.titulo }}</figcaption>
+      {{ f.html | safe }}
+      <p class="nota">{{ f.resumo }}</p>
+    </figure>
+  {% endmacro %}
+  {% macro medidas(itens) %}
+    <dl class="medidas">
+      {% for m in itens %}<div><dt>{{ m.rotulo }}</dt><dd class="mono">{{ m.valor }}</dd>{% if m.nota %}<dd class="selo">{{ m.nota }}</dd>{% endif %}</div>{% endfor %}
+    </dl>
+  {% endmacro %}
+  {% macro formulas(lista) %}
+    <h3>Fórmulas usadas</h3>
+    <ul class="formulas">
+      {% for f in lista %}<li>{{ f.nome }}: <span class="formula" data-latex="{{ f.latex }}">{{ f.texto }}</span></li>{% endfor %}
+    </ul>
+  {% endmacro %}
+
   {% for col in c.colunas or [] %}
   {% set numero.secao = numero.secao + 1 %}
   <section class="coluna">
     <h2>{{ numero.secao }}. Análise de <span class="mono">{{ col.coluna }}</span></h2>
     <p class="nota">{{ col.tipo }} · {{ col.n }} valores válidos{% if col.n_faltantes %} · {{ col.n_faltantes }} faltantes{% endif %}</p>
-    {% if col.medidas %}
-    <dl class="medidas">
-      {% for m in col.medidas %}<div><dt>{{ m.rotulo }}</dt><dd class="mono">{{ m.valor }}</dd></div>{% endfor %}
-    </dl>
-    {% endif %}
-    {% if col.separatrizes %}<p class="mono">{{ col.separatrizes }}</p>{% endif %}
+    {% set a = col.analises %}
+    {% if a %}
+    {% if a.medidas %}{{ medidas(a.medidas) }}{% endif %}
+    {% if a.separatrizes %}<p class="mono">{{ a.separatrizes }}</p>{% endif %}
     <table class="frequencias">
-      <thead><tr>{% for titulo in col.cabecalho_tabela %}<th scope="col">{{ titulo }}</th>{% endfor %}</tr></thead>
+      <thead><tr>{% for titulo in a.cabecalho_tabela %}<th scope="col">{{ titulo }}</th>{% endfor %}</tr></thead>
       <tbody>
-      {% for linha in col.linhas_tabela %}
+      {% for linha in a.linhas_tabela %}
         <tr>{% for celula in linha %}<td{% if not loop.first %} class="numero"{% endif %}>{{ celula }}</td>{% endfor %}</tr>
       {% endfor %}
       </tbody>
     </table>
-    {% if col.figura %}
-    {% set numero.figura = numero.figura + 1 %}
-    <figure>
-      <figcaption>Figura {{ numero.figura }} · {{ col.figura.titulo }}</figcaption>
-      {{ col.figura.html | safe }}
-      <p class="nota">{{ col.figura.resumo }}</p>
-    </figure>
+    {% if a.figura %}{{ figura(a.figura) }}{% endif %}
+    {% for frase in a.interpretacoes %}<p>{{ frase }}</p>{% endfor %}
     {% endif %}
-    {% for frase in col.interpretacoes %}<p>{{ frase }}</p>{% endfor %}
-    {% if col.formulas %}
-    <h3>Fórmulas usadas</h3>
-    <ul class="formulas">
-      {% for f in col.formulas %}<li>{{ f.nome }}: <span class="formula" data-latex="{{ f.latex }}">{{ f.texto }}</span></li>{% endfor %}
-    </ul>
+    {% set f = col.forma %}
+    {% if f %}
+    <h3>Forma e distribuição</h3>
+    {% if f.motivo %}<p>{{ f.motivo }}</p>{% endif %}
+    {% if f.medidas %}{{ medidas(f.medidas) }}{% endif %}
+    {% for frase in f.ajustes %}<p>{{ frase }}</p>{% endfor %}
+    {% if f.interpretacao %}<p>{{ f.interpretacao }}</p>{% endif %}
+    {% if f.figura %}{{ figura(f.figura) }}{% endif %}
     {% endif %}
+    {% if col.formulas %}{{ formulas(col.formulas) }}{% endif %}
   </section>
   {% endfor %}
+
+  {% set b = c.bivariada %}
+  {% if b is not none %}
+  {% set numero.secao = numero.secao + 1 %}
+  <section class="bivariada">
+    <h2>{{ numero.secao }}. {{ titulos.bivariada }}</h2>
+    {# A legenda do heatmap já traz o resumo da matriz. #}
+    {% if b.matriz %}{{ figura(b.matriz) }}{% else %}<p>{{ b.resumo }}</p>{% endif %}
+    {% if b.vazio %}<p>{{ b.vazio }}</p>{% endif %}
+    {% for par in b.pares %}
+    <h3><span class="mono">{{ par.y }}</span> em função de <span class="mono">{{ par.x }}</span></h3>
+    {{ medidas(par.medidas) }}
+    <p class="mono">{{ par.equacao }}</p>
+    {% for frase in par.interpretacoes %}<p>{{ frase }}</p>{% endfor %}
+    {% if par.figura %}{{ figura(par.figura) }}{% endif %}
+    {% endfor %}
+    {% if b.formulas %}{{ formulas(b.formulas) }}{% endif %}
+  </section>
+  {% endif %}
 
   <footer class="rodape">Disciplina de Estatística · gerado pelo Analisador e Gerador de Dados</footer>
   <script>

@@ -1,7 +1,12 @@
 import { screen, waitFor } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { chamadasPara, type FetchFalso, type RotaFalsa, simularApi } from '../../testes/api';
-import { analiseContinua, analiseNominal, colunasPesquisa } from '../../testes/fixturesAnalise';
+import {
+  analiseContinua,
+  analiseDiscreta,
+  analiseNominal,
+  colunasPesquisa,
+} from '../../testes/fixturesAnalise';
 import { DATASET_TESTE, renderizarComProvedores } from '../../testes/renderizar';
 import PaginaAnalise from './PaginaAnalise';
 import { TEXTOS_ANALISE } from './textos';
@@ -100,12 +105,72 @@ describe('PaginaAnalise', () => {
     expect(screen.getByText(TEXTOS_ANALISE.semDataset)).toBeInTheDocument();
   });
 
-  it('voltar para Limpeza e continuar para Relatório no fim da tela', async () => {
+  it('voltar para Limpeza e continuar para Bivariada no fim da tela', async () => {
     const { usuario, roteador } = renderizarPagina();
     await screen.findByText('60,0 ⊢ 76,5');
 
     expect(screen.getByRole('button', { name: /Voltar para Limpeza/ })).toBeInTheDocument();
-    await usuario.click(screen.getByRole('button', { name: /Continuar para Relatório/ }));
-    expect(roteador.state.location.pathname).toBe('/relatorio');
+    await usuario.click(screen.getByRole('button', { name: /Continuar para Bivariada/ }));
+    expect(roteador.state.location.pathname).toBe('/bivariada');
+  });
+  it('aba "Forma e distribuição" mostra os ajustes da coluna', async () => {
+    const { usuario } = renderizarPagina();
+    await screen.findByText('60,0 ⊢ 76,5');
+
+    await usuario.click(screen.getByRole('tab', { name: /Forma e distribuição/ }));
+
+    expect(await screen.findByText(TEXTOS_ANALISE.forma.ajusteNormal)).toBeInTheDocument();
+    expect(screen.getByText('Compatível com a Normal')).toBeInTheDocument();
+  });
+
+  it('na nominal a aba "Forma e distribuição" fica desabilitada', async () => {
+    renderizarPagina('/analise?coluna=cidade');
+
+    const aba = await screen.findByRole('tab', { name: /Forma e distribuição/ });
+    expect(aba).toHaveAttribute('aria-disabled', 'true');
+  });
+
+  it('aplicar tentativas grava na URL e pede a análise com elas', async () => {
+    api = simularApi([
+      ROTA_COLUNAS,
+      { caminho: `${BASE}/colunas/peso_kg/analise`, corpo: analiseDiscreta },
+    ]);
+    const { usuario, roteador } = renderizarPagina();
+    await usuario.click(await screen.findByRole('tab', { name: /Forma e distribuição/ }));
+
+    const campo = screen.getByRole('textbox', { name: TEXTOS_ANALISE.forma.tentativas.rotulo });
+    await usuario.clear(campo);
+    await usuario.type(campo, '12{Enter}');
+
+    await waitFor(() => {
+      expect(roteador.state.location.search).toBe('?coluna=peso_kg&tentativas=12');
+    });
+    await waitFor(() => {
+      expect(
+        chamadasPara(api, 'GET', `${BASE}/colunas/peso_kg/analise`).map((c) => c.url),
+      ).toContain(`/api${BASE}/colunas/peso_kg/analise?tentativas=12`);
+    });
+  });
+
+  it('tentativas inválidas na URL: "Tentar de novo" volta para o padrão', async () => {
+    simularApi([
+      ROTA_COLUNAS,
+      {
+        caminho: `${BASE}/colunas/peso_kg/analise`,
+        status: 400,
+        corpo: {
+          codigo: 'TENTATIVAS_INVALIDAS',
+          mensagem: 'O número de tentativas precisa ser pelo menos o maior valor observado (8).',
+          sugestao: 'Use um número igual ou maior que 8.',
+        },
+      },
+    ]);
+    const { usuario, roteador } = renderizarPagina('/analise?coluna=peso_kg&tentativas=2');
+
+    await usuario.click(await screen.findByRole('button', { name: /Tentar de novo/ }));
+
+    await waitFor(() => {
+      expect(roteador.state.location.search).toBe('?coluna=peso_kg');
+    });
   });
 });

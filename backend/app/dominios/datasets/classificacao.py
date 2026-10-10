@@ -10,6 +10,7 @@ from dataclasses import dataclass
 
 import pandas as pd
 
+from app.compartilhado.datas import FormatoData, formatar_data, reconhecer_datas
 from app.compartilhado.numeros import formatar_numero
 from app.compartilhado.series import converter_para_numero, eh_inteira
 from app.compartilhado.textos import normalizar_texto, pluralizar
@@ -21,6 +22,14 @@ N_MINIMO_IDENTIFICADOR = 20
 N_EXEMPLOS = 5
 VALORES_BINARIA = 2
 PRECISAO_TEXTO = 12
+MOTIVOS_DATA: dict[FormatoData, str] = {
+    "dd/mm/aaaa": "Datas no formato DD/MM/AAAA (ex.: {exemplo}).",
+    "mm/dd/aaaa": "Datas no formato MM/DD/AAAA (ex.: {exemplo}).",
+    "aaaa-mm-dd": "Datas no formato AAAA-MM-DD (ex.: {exemplo}).",
+    "data_hora": "Datas com horário (ex.: {exemplo}).",
+    "hora": "Horários (ex.: {exemplo}).",
+    "planilha": "Datas da planilha (ex.: {exemplo}).",
+}
 _NOME_DE_CODIGO = re.compile(r"^(id|cod|codigo|cpf|cnpj|cep|telefone|fone|matricula)\b")
 
 
@@ -31,6 +40,7 @@ class Limiares:
     discreta: int = 30
     unicos_identificador: float = 0.95
     numerico: float = 0.9
+    data: float = 0.9
 
 
 @dataclass(frozen=True, slots=True)
@@ -84,7 +94,8 @@ def texto_do_numero(valor: float) -> str:
 
 def _textos(serie: pd.Series, numeros: pd.Series | None) -> pd.Series:
     if numeros is None:
-        return serie.map(lambda v: v if pd.isna(v) else str(v))
+        # Datas e horários da planilha viram texto pt-BR (08:30, não 08:30:00) se mudarem de tipo.
+        return serie.map(lambda v: v if pd.isna(v) else formatar_data(v))
     return numeros.map(lambda v: v if pd.isna(v) else texto_do_numero(v))
 
 
@@ -102,6 +113,17 @@ def _vazia(coluna: ColunaLida) -> Classificacao | None:
     if not coluna.validos.empty:
         return None
     return Classificacao(TipoVariavel.IDENTIFICADOR, "A coluna está vazia; foi ignorada.")
+
+
+def _data(coluna: ColunaLida) -> Classificacao | None:
+    """Datas, horários ou data com hora num mesmo formato em ≥ limiar dos valores (D90)."""
+    if coluna.numeros is not None:
+        return None
+    leitura = reconhecer_datas(coluna.serie)
+    if leitura is None or leitura.proporcao < coluna.limiares.data:
+        return None
+    motivo = MOTIVOS_DATA[leitura.formato].format(exemplo=leitura.exemplo)
+    return Classificacao(TipoVariavel.DATA, motivo)
 
 
 def _identificador(coluna: ColunaLida) -> Classificacao | None:
@@ -159,7 +181,15 @@ def _continua(coluna: ColunaLida) -> Classificacao:
 
 type Regra = Callable[[ColunaLida], Classificacao | None]
 
-REGRAS: tuple[Regra, ...] = (_vazia, _identificador, _binaria, _ordinal, _nominal, _discreta)
+REGRAS: tuple[Regra, ...] = (
+    _vazia,
+    _data,
+    _identificador,
+    _binaria,
+    _ordinal,
+    _nominal,
+    _discreta,
+)
 
 
 def classificar(coluna: ColunaLida) -> Classificacao:
@@ -169,6 +199,14 @@ def classificar(coluna: ColunaLida) -> Classificacao:
         if resultado is not None:
             return resultado
     return _continua(coluna)
+
+
+def _exemplos(coluna: ColunaLida, tipo: TipoVariavel) -> tuple[str, ...]:
+    """Até 5 valores distintos; datas da planilha no formato pt-BR."""
+    if tipo == TipoVariavel.DATA:
+        distintos = coluna.serie.dropna().unique()[:N_EXEMPLOS]
+        return tuple(formatar_data(v) for v in distintos)
+    return tuple(str(v) for v in coluna.validos.unique()[:N_EXEMPLOS])
 
 
 def descrever(coluna: ColunaLida, classificacao: Classificacao, origem: OrigemTipo) -> TipoColuna:
@@ -183,7 +221,7 @@ def descrever(coluna: ColunaLida, classificacao: Classificacao, origem: OrigemTi
         n_validos=len(coluna.validos),
         n_faltantes=int(coluna.serie.isna().sum()),
         n_distintos=coluna.n_distintos,
-        exemplos=tuple(str(v) for v in coluna.validos.unique()[:N_EXEMPLOS]),
+        exemplos=_exemplos(coluna, classificacao.tipo),
         categorias_ordem=classificacao.categorias_ordem,
         contagens={str(k): int(v) for k, v in contagens.items()} if categorica else {},
     )

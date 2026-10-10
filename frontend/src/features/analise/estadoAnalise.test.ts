@@ -1,30 +1,22 @@
 import { describe, expect, it, vi } from 'vitest';
 import { ErroApi } from '../../shared/api/cliente';
 import { analiseContinua, colunasPesquisa } from '../../testes/fixturesAnalise';
-import { estadoDaAnalise, type ConsultaSimples } from './estadoAnalise';
+import { consultaFalsa } from '../../testes/consultaFalsa';
+import { comPadraoDeTentativas, estadoDaAnalise } from './estadoAnalise';
 import type { Analise, TipoColuna } from './tipos';
 
-function consulta<T>(parcial: Partial<ConsultaSimples<T>>): ConsultaSimples<T> {
-  return {
-    status: 'pending',
-    data: undefined,
-    error: null,
-    isPlaceholderData: false,
-    refetch: vi.fn(),
-    ...parcial,
-  };
-}
-
-const colunasProntas = consulta<TipoColuna[]>({ status: 'success', data: colunasPesquisa });
-const analisePendente = consulta<Analise>({});
+const colunasProntas = consultaFalsa<TipoColuna[]>({ status: 'success', data: colunasPesquisa });
+const analisePendente = consultaFalsa<Analise>({});
 
 describe('estadoDaAnalise', () => {
   it('carrega as colunas primeiro', () => {
-    expect(estadoDaAnalise(consulta({}), analisePendente, null).status).toBe('carregando-colunas');
+    expect(estadoDaAnalise(consultaFalsa({}), analisePendente, null).status).toBe(
+      'carregando-colunas',
+    );
   });
 
   it('erro nas colunas pode ser tentado de novo', () => {
-    const colunas = consulta<TipoColuna[]>({ status: 'error', error: new Error('rede') });
+    const colunas = consultaFalsa<TipoColuna[]>({ status: 'error', error: new Error('rede') });
     const estado = estadoDaAnalise(colunas, analisePendente, null);
 
     expect(estado.status).toBe('erro');
@@ -52,7 +44,7 @@ describe('estadoDaAnalise', () => {
     });
     const estado = estadoDaAnalise(
       colunasProntas,
-      consulta<Analise>({ status: 'error', error: erro }),
+      consultaFalsa<Analise>({ status: 'error', error: erro }),
       'id',
     );
 
@@ -60,7 +52,7 @@ describe('estadoDaAnalise', () => {
   });
 
   it('com dados de outro nº de classes (placeholder), fica pronta e marcada como atualizando', () => {
-    const analise = consulta<Analise>({
+    const analise = consultaFalsa<Analise>({
       status: 'success',
       data: analiseContinua,
       isPlaceholderData: true,
@@ -70,6 +62,29 @@ describe('estadoDaAnalise', () => {
       status: 'pronta',
       analise: analiseContinua,
       atualizando: true,
+    });
+  });
+});
+
+describe('comPadraoDeTentativas', () => {
+  const erro = (codigo: string) => new ErroApi(400, { codigo, mensagem: 'x', sugestao: 'y' });
+
+  it('troca o "Tentar de novo" por voltar ao padrão quando as tentativas são inválidas', () => {
+    const usarPadrao = vi.fn();
+    const estado = comPadraoDeTentativas(
+      { status: 'erro', erro: erro('TENTATIVAS_INVALIDAS'), tentarDeNovo: null },
+      usarPadrao,
+    );
+
+    expect(estado.status === 'erro' && estado.tentarDeNovo).toBe(usarPadrao);
+  });
+
+  it('não mexe nos outros estados', () => {
+    const estado = { status: 'erro' as const, erro: erro('COLUNA_VAZIA'), tentarDeNovo: null };
+
+    expect(comPadraoDeTentativas(estado, vi.fn())).toBe(estado);
+    expect(comPadraoDeTentativas({ status: 'sem-colunas' }, vi.fn())).toEqual({
+      status: 'sem-colunas',
     });
   });
 });

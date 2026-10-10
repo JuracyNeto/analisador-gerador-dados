@@ -28,5 +28,5 @@ O título fica **fora** do Plotly (`<figcaption>` 14/600, descritivo: "Distribui
 | Ordinal | Barras na ordem da escala | — |
 | Nominal | Barras horizontais ordenadas da maior para a menor, rótulo "fi (fr%)" na ponta | — |
 | Binária | Barras (2 categorias) | — |
-| Par numérico | Dispersão + reta | Resíduos × previsto com linha zero tracejada; heatmap da matriz |
+| Par numérico | Dispersão + reta | Resíduos × X com linha zero tracejada (specs 08 e 10, D102; o print 5a mostra × Ŷ, que tem a mesma forma quando b > 0); heatmap da matriz |
 A tela mostra uma nota "Por que este gráfico?" explicando a escolha em linguagem simples.

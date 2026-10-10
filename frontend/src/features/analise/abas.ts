@@ -13,6 +13,7 @@ const ORDEM_ABAS: readonly IdAba[] = [
   'tendencia',
   'separatrizes',
   'dispersao',
+  'forma',
   'graficos',
 ];
 
@@ -20,6 +21,7 @@ const ORDEM_ABAS: readonly IdAba[] = [
 const CHAVE_APLICAVEL: Partial<Record<IdAba, string>> = {
   separatrizes: 'separatrizes',
   dispersao: 'dispersao',
+  forma: 'forma',
 };
 
 export function estaAplicavel(analise: Analise, chave: string): boolean {

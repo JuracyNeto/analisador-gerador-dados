@@ -7,6 +7,7 @@ O enunciado exige que o programa classifique cada coluna e, a partir disso, defi
 
 ## Decisão
 Regras ordenadas (primeira que casar vence), cada uma gera um **motivo** legível:
+0. Data (auxiliar, excluída): datas e horários num mesmo formato em ≥ 90% dos valores (acrescentada em 08/10/2026, D90).
 1. Identificador (auxiliar, excluído).
 2. Binária (2 valores distintos).
 3. Texto ordinal (dicionário de escalas conhecidas).

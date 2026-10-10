@@ -2,10 +2,13 @@ import pytest
 
 from app.compartilhado.tipos import TipoVariavel
 from app.core.erros import EntradaInvalida
-from app.dominios.analise.servico import ServicoAnalise
+from app.dominios.analise.servico import OpcoesAnalise, ServicoAnalise
 from app.dominios.datasets.servico import OpcoesLeitura, ServicoDatasets
 
-CONTEUDO = b"id;sexo;peso;obs\n1;F;58,2;\n2;M;79,6;\n3;F;;\n4;M;63,0;\n"
+CONTEUDO = (
+    b"id;sexo;peso;obs;quando\n1;F;58,2;;07/10/2026\n2;M;79,6;;08/10/2026\n"
+    b"3;F;;;09/10/2026\n4;M;63,0;;10/10/2026\n"
+)
 
 
 @pytest.fixture
@@ -25,7 +28,7 @@ def test_analisar_coluna_numerica(servico: ServicoAnalise, dataset_id: str) -> N
 
 
 def test_analisar_com_classes(servico: ServicoAnalise, dataset_id: str) -> None:
-    assert servico.analisar(dataset_id, "peso", classes=3).frequencias.k == 3
+    assert servico.analisar(dataset_id, "peso", OpcoesAnalise(classes=3)).frequencias.k == 3
 
 
 def test_identificador_fica_fora(servico: ServicoAnalise, dataset_id: str) -> None:
@@ -33,6 +36,15 @@ def test_identificador_fica_fora(servico: ServicoAnalise, dataset_id: str) -> No
         servico.analisar(dataset_id, "id")
 
     assert erro.value.codigo == "COLUNA_IGNORADA"
+    assert erro.value.mensagem == "A coluna id é um identificador e fica fora das análises."
+
+
+def test_coluna_de_datas_fica_fora(servico: ServicoAnalise, dataset_id: str) -> None:
+    with pytest.raises(EntradaInvalida) as erro:
+        servico.analisar(dataset_id, "quando")
+
+    assert erro.value.codigo == "COLUNA_IGNORADA"
+    assert erro.value.mensagem == "A coluna quando tem datas e fica fora das análises."
 
 
 def test_coluna_vazia(

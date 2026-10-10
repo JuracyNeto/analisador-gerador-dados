@@ -5,6 +5,9 @@ import math
 CASAS_SIGNIFICATIVAS_PADRAO = 4
 
 
+MENOS = "−"
+
+
 def _trocar_separadores(texto: str) -> str:
     """Converte '1,234.5' (formato do Python) em '1.234,5'."""
     return texto.replace(",", "_").replace(".", ",").replace("_", ".")
@@ -27,6 +30,18 @@ def formatar_numero(valor: float, casas_significativas: int = CASAS_SIGNIFICATIV
     return _trocar_separadores(texto)
 
 
+def com_sinal_de_menos(texto: str) -> str:
+    """Troca o hífen do número negativo pelo sinal de menos tipográfico (−)."""
+    return f"{MENOS}{texto[1:]}" if texto.startswith("-") else texto
+
+
+def formatar_com_sinal(
+    valor: float, casas_significativas: int = CASAS_SIGNIFICATIVAS_PADRAO
+) -> str:
+    """Como `formatar_numero`, com o sinal de menos (−) nos negativos: −0,394."""
+    return com_sinal_de_menos(formatar_numero(valor, casas_significativas))
+
+
 def formatar_inteiro(valor: int) -> str:
     """Inteiro com ponto de milhar: 1.234."""
     return _trocar_separadores(f"{valor:,d}")
@@ -40,3 +55,13 @@ def formatar_percentual(valor: float, casas: int = 1) -> str:
 def formatar_fixo(valor: float, casas: int) -> str:
     """Número com casas decimais fixas: 60,0 · 1.234,50 (limites de classe)."""
     return _trocar_separadores(f"{valor:,.{casas}f}")
+
+
+P_VALOR_MINIMO = 0.001
+
+
+def formatar_p_valor(p: float) -> str:
+    """ "p < 0,001" para valores muito pequenos; senão "p = 0,213" (3 algarismos)."""
+    if p < P_VALOR_MINIMO:
+        return "p < 0,001"
+    return f"p = {formatar_numero(p, 3)}"

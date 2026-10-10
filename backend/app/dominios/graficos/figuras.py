@@ -28,7 +28,7 @@ EIXO_ACUMULADA = "Frequência acumulada (%)"
 MARCADOR_BARRA = {"opacity": OPACIDADE_BARRA}
 
 
-def _figura(tracos: list[dict[str, Any]], eixo_x: str, eixo_y: str) -> Figura:
+def figura_basica(tracos: list[dict[str, Any]], eixo_x: str, eixo_y: str) -> Figura:
     layout = {
         "xaxis": {"title": {"text": eixo_x}},
         "yaxis": {"title": {"text": eixo_y}},
@@ -57,7 +57,7 @@ def barras_horizontais(barras: tuple[Barra, ...], coluna: str) -> Figura:
         "marker": MARCADOR_BARRA,
         "meta": PAPEL_PRINCIPAL,
     }
-    return _figura([_com_rotulos(traco, invertidas)], EIXO_FREQUENCIA, coluna)
+    return figura_basica([_com_rotulos(traco, invertidas)], EIXO_FREQUENCIA, coluna)
 
 
 def barras_verticais(barras: tuple[Barra, ...], coluna: str) -> Figura:
@@ -69,7 +69,7 @@ def barras_verticais(barras: tuple[Barra, ...], coluna: str) -> Figura:
         "marker": MARCADOR_BARRA,
         "meta": PAPEL_PRINCIPAL,
     }
-    return _figura([_com_rotulos(traco, barras)], coluna, EIXO_FREQUENCIA)
+    return figura_basica([_com_rotulos(traco, barras)], coluna, EIXO_FREQUENCIA)
 
 
 def bastoes(barras: tuple[Barra, ...], coluna: str) -> Figura:
@@ -91,7 +91,7 @@ def bastoes(barras: tuple[Barra, ...], coluna: str) -> Figura:
         "marker": {"size": 9},
         "meta": PAPEL_PRINCIPAL,
     }
-    return _figura([hastes, pontos], coluna, EIXO_FREQUENCIA)
+    return figura_basica([hastes, pontos], coluna, EIXO_FREQUENCIA)
 
 
 def histograma(barras: tuple[Barra, ...], coluna: str) -> Figura:
@@ -108,7 +108,7 @@ def histograma(barras: tuple[Barra, ...], coluna: str) -> Figura:
         "marker": MARCADOR_BARRA,
         "meta": PAPEL_PRINCIPAL,
     }
-    figura = _figura([traco], coluna, EIXO_FREQUENCIA)
+    figura = figura_basica([traco], coluna, EIXO_FREQUENCIA)
     figura["layout"]["bargap"] = 0
     return figura
 
@@ -156,7 +156,7 @@ def boxplot(caixa: ResumoCaixa, coluna: str) -> Figura:
         "marker": {"size": 7},
         "meta": PAPEL_REFERENCIA,
     }
-    return _figura([caixa_traco, pontos], coluna, "")
+    return figura_basica([caixa_traco, pontos], coluna, "")
 
 
 def _linha(x: list[float | None], y: list[float | None], forma: str = "linear") -> dict[str, Any]:
@@ -175,7 +175,7 @@ def ogiva(barras: tuple[Barra, ...], coluna: str) -> Figura:
     """Fr% acumulada nos limites superiores das classes, partindo de 0."""
     x = [barras[0].inferior, *(b.superior for b in barras)]
     y: list[float | None] = [0.0, *(b.acumulado_pct for b in barras)]
-    return _figura([_linha(x, y)], coluna, EIXO_ACUMULADA)
+    return figura_basica([_linha(x, y)], coluna, EIXO_ACUMULADA)
 
 
 def acumulada_categorias(barras: tuple[Barra, ...], coluna: str) -> Figura:
@@ -187,13 +187,13 @@ def acumulada_categorias(barras: tuple[Barra, ...], coluna: str) -> Figura:
         "marker": MARCADOR_BARRA,
         "meta": PAPEL_PRINCIPAL,
     }
-    return _figura([traco], coluna, EIXO_ACUMULADA)
+    return figura_basica([traco], coluna, EIXO_ACUMULADA)
 
 
 def acumulada_escada(barras: tuple[Barra, ...], coluna: str) -> Figura:
     """Discreta: frequência acumulada em escada."""
     traco = _linha([b.valor for b in barras], [b.acumulado_pct for b in barras], forma="hv")
-    return _figura([traco], coluna, EIXO_ACUMULADA)
+    return figura_basica([traco], coluna, EIXO_ACUMULADA)
 
 
 def pizza(barras: tuple[Barra, ...]) -> Figura:

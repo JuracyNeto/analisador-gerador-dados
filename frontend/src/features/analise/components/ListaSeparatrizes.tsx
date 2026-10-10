@@ -1,5 +1,5 @@
 import { useId } from 'react';
-import { formatarValorMedida } from '../formatacao';
+import { formatarValorMedida } from '../../../shared/metricas/formatacao';
 import type { ValorSeparatriz } from '../tipos';
 import estilos from './ListaSeparatrizes.module.css';
 

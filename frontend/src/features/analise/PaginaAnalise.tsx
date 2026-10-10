@@ -1,14 +1,13 @@
 import { useColunasAnalisaveis } from '../../shared/api/colunas';
-import BotaoEtapa from '../../shared/navegacao/BotaoEtapa';
+import AcoesEtapa from '../../shared/navegacao/AcoesEtapa';
 import { CAMINHOS } from '../../shared/navegacao/caminhos';
 import SemDataset from '../../shared/sessao/SemDataset';
 import { useSessao } from '../../shared/sessao/useSessao';
-import BarraAcoes from '../../shared/ui/BarraAcoes';
 import PaginaEtapa from '../../shared/ui/PaginaEtapa';
 import { useAnalise } from './api';
 import CorpoAnalise from './components/CorpoAnalise';
 import SeletorColuna from './components/SeletorColuna';
-import { estadoDaAnalise } from './estadoAnalise';
+import { comPadraoDeTentativas, estadoDaAnalise } from './estadoAnalise';
 import { useParametrosAnalise } from './hooks/useParametrosAnalise';
 import { colunaEscolhida } from './parametros';
 import { TEXTOS_ANALISE } from './textos';
@@ -17,14 +16,10 @@ const ETAPA_ANALISE = 4;
 const T = TEXTOS_ANALISE;
 
 const ACOES_ANALISE = (
-  <BarraAcoes>
-    <BotaoEtapa para={CAMINHOS.limpeza} sentido="voltar">
-      {T.navegacao.voltar}
-    </BotaoEtapa>
-    <BotaoEtapa para={CAMINHOS.relatorio} sentido="avancar">
-      {T.navegacao.continuar}
-    </BotaoEtapa>
-  </BarraAcoes>
+  <AcoesEtapa
+    voltar={{ para: CAMINHOS.limpeza, rotulo: T.navegacao.voltar }}
+    continuar={{ para: CAMINHOS.bivariada, rotulo: T.navegacao.continuar }}
+  />
 );
 
 function AnaliseDoDataset({ datasetId }: Readonly<{ datasetId: string }>) {
@@ -32,7 +27,8 @@ function AnaliseDoDataset({ datasetId }: Readonly<{ datasetId: string }>) {
   const parametros = useParametrosAnalise();
   const escolhida = colunaEscolhida(parametros.coluna, colunas.data ?? []);
   const nomeColuna = escolhida?.coluna ?? null;
-  const analise = useAnalise(datasetId, nomeColuna, parametros.classes);
+  const { classes, tentativas } = parametros;
+  const analise = useAnalise(datasetId, nomeColuna, { classes, tentativas });
   const seletor =
     colunas.data !== undefined && escolhida !== null ? (
       <SeletorColuna
@@ -45,10 +41,14 @@ function AnaliseDoDataset({ datasetId }: Readonly<{ datasetId: string }>) {
   return (
     <PaginaEtapa etapa={ETAPA_ANALISE} titulo={T.titulo} ajuda={T.ajuda} acoesTopo={seletor}>
       <CorpoAnalise
-        estado={estadoDaAnalise(colunas, analise, nomeColuna)}
+        estado={comPadraoDeTentativas(
+          estadoDaAnalise(colunas, analise, nomeColuna),
+          parametros.usarTentativasPadrao,
+        )}
         datasetId={datasetId}
-        classes={parametros.classes}
+        classes={classes}
         aoMudarClasses={parametros.mudarClasses}
+        aoMudarTentativas={parametros.mudarTentativas}
       />
       {ACOES_ANALISE}
     </PaginaEtapa>

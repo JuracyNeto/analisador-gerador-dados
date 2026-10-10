@@ -2,11 +2,12 @@
 
 import math
 from dataclasses import dataclass
-from datetime import date, datetime
+from datetime import date, time
 
 import numpy as np
 import pandas as pd
 
+from app.compartilhado.datas import formatar_data
 from app.dominios.datasets.modelos import Celula, LinhaDados
 
 
@@ -14,11 +15,13 @@ def celula(valor: object) -> Celula:
     """Valor de uma célula como tipo simples; faltante vira None."""
     if isinstance(valor, np.generic):
         valor = valor.item()
-    if isinstance(valor, datetime | date):
-        return valor.isoformat()
+    if valor is pd.NaT:  # NaT também é um datetime
+        return None
+    if isinstance(valor, date | time):
+        return formatar_data(valor)
     if isinstance(valor, float) and math.isnan(valor):
         return None
-    if valor is None or valor is pd.NA or valor is pd.NaT:
+    if valor is None or valor is pd.NA:
         return None
     if isinstance(valor, str | int | float | bool):
         return valor

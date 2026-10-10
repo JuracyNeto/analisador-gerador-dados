@@ -4,6 +4,26 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e
 
 ## [Não lançado]
 
+## [0.2.0] - 2026-10-10
+
+### Adicionado
+- Relatório com as seções Distribuições (forma de cada coluna: assimetria, curtose, ajustes e o gráfico com a curva) e Bivariada (matriz de correlação e os até 3 pares mais fortes, com medidas, equação e dispersão); na tela Relatório, as caixas "Distribuições" e "Bivariada", e as colunas habilitadas com "Análises por coluna" ou "Distribuições".
+- Etapa 5 Bivariada: escolha de X e Y (com troca), correlação de Pearson (com teste de significância e Spearman), R², reta de regressão, gráfico de dispersão com a reta, resíduos, previsão de Y por X com aviso de extrapolação e matriz de correlação.
+- API da análise bivariada: correlação de Pearson (com teste t) e Spearman, força e sentido, regressão linear simples (equação, R², erro padrão), resíduos, previsão de Y por X com aviso de extrapolação e matriz de correlação das colunas numéricas, com gráficos (dispersão com reta, resíduos e heatmap).
+- Aba "Forma e distribuição" na Análise univariada: assimetria, curtose, ajuste à Normal e à Binomial (ou Bernoulli), coeficientes de Pearson e curtose percentílica, frase de interpretação, histograma com curva Normal e QQ-plot; na discreta, campo "Número de tentativas (n)".
+- Forma e distribuição de cada coluna numérica na API (`Analise.forma`): assimetria (Fisher e Pearson), curtose (excesso e percentílica), ajuste à Normal (Shapiro-Wilk ou D'Agostino-Pearson, com qui-quadrado complementar), à Binomial (com `?tentativas=`) e Bernoulli para binárias, com frase de interpretação e gráficos (histograma ou bastões com curva Normal, QQ-plot, observado × Binomial).
+- Colunas de data, hora ou data e hora são reconhecidas (tipo Data), com o formato no motivo ("Datas no formato DD/MM/AAAA (ex.: 07/10/2026)."), chip próprio e correção manual na tela Variáveis, e ficam fora das análises.
+
+### Alterado
+- A Análise univariada continua para a Bivariada, e o Relatório volta para ela.
+- O relatório pedido sem escolher seções traz as 6 seções.
+
+### Corrigido
+- Números negativos aparecem com o sinal de menos (−) também na tela (cards, heatmap e demais valores), como no relatório.
+- Na planilha, colunas só de horários têm o motivo "Horários (ex.: 08:00)." (antes, "Datas da planilha"), e horários de uma coluna mudada para outro tipo aparecem como 08:00 (antes, 08:00:00).
+- Colunas de datas não aparecem mais como categorias (nominal) nem como código (identificador).
+- Datas de planilhas aparecem na prévia no formato 07/10/2026 (antes, 2026-10-07T00:00:00).
+
 ## [0.1.1] - 2026-10-07
 
 ### Adicionado

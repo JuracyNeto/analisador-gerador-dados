@@ -26,3 +26,8 @@ export function textoDoErro(erro: unknown): TextoErro {
     sugestao: erro.sugestao === '' ? ERRO_GENERICO.sugestao : erro.sugestao,
   };
 }
+
+/** Erros que não mudam ao repetir a requisição (entrada inválida) não ganham "Tentar de novo". */
+export function podeRepetir(erro: unknown, definitivos: ReadonlySet<string>): boolean {
+  return !(erro instanceof ErroApi && definitivos.has(erro.codigo));
+}

@@ -10,7 +10,7 @@ describe('caminhoRelatorio', () => {
     });
 
     expect(caminho).toBe(
-      '/datasets/ds1/relatorio?secoes=leitura&secoes=tipos&secoes=limpeza&secoes=analises&colunas=sexo&colunas=peso_kg&offline=true',
+      '/datasets/ds1/relatorio?secoes=leitura&secoes=tipos&secoes=limpeza&secoes=analises&secoes=distribuicoes&secoes=bivariada&colunas=sexo&colunas=peso_kg&offline=true',
     );
   });
 

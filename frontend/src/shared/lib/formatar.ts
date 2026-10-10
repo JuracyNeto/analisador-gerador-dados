@@ -7,6 +7,8 @@ const LOCALE = 'pt-BR';
 const VALOR_AUSENTE = '—';
 const PADRAO_PT_BR = /^[+-]?(?:\d{1,3}(?:\.\d{3})+|\d+)(?:,\d+)?$/;
 const PADRAO_PONTO_DECIMAL = /^[+-]?\d+\.\d+$/;
+/** Sinal de menos tipográfico, como no backend (`com_sinal_de_menos`). */
+const MENOS = '−';
 
 function formatador(casas: number): Intl.NumberFormat {
   // signDisplay 'negative' evita "-0" quando o arredondamento zera um negativo.
@@ -19,10 +21,11 @@ export function casasDecimais(valor: number, casasSignificativas: number): numbe
   return Math.max(0, casasSignificativas - 1 - Math.floor(Math.log10(Math.abs(valor))));
 }
 
-/** 70.314 → "70,31"; 12345.6 → "12.346"; 0.0012346 → "0,001235" (sem zeros à direita). */
+/** 70.314 → "70,31"; 12345.6 → "12.346"; −0.394 → "−0,394" (sem zeros à direita). */
 export function formatarNumero(valor: number, casasSignificativas = 4): string {
   if (!Number.isFinite(valor)) return VALOR_AUSENTE;
-  return formatador(casasDecimais(valor, casasSignificativas)).format(valor);
+  const texto = formatador(casasDecimais(valor, casasSignificativas)).format(valor);
+  return texto.startsWith('-') ? `${MENOS}${texto.slice(1)}` : texto;
 }
 
 /** 1234 → "1.234". */
@@ -36,11 +39,11 @@ export function formatarPercentual(valor: number, casas = 1): string {
 }
 
 /**
- * Lê um número digitado em pt-BR ("1.234,5", "1,72", "-3").
+ * Lê um número digitado em pt-BR ("1.234,5", "1,72", "-3" ou "−3").
  * Sem vírgula e com ponto fora do padrão de milhar ("1.72"), o ponto vale como decimal.
  */
 export function lerNumeroPtBr(texto: string): number | null {
-  const limpo = texto.trim();
+  const limpo = texto.trim().replace(MENOS, '-');
   if (PADRAO_PT_BR.test(limpo)) return Number(limpo.replaceAll('.', '').replace(',', '.'));
   return PADRAO_PONTO_DECIMAL.test(limpo) ? Number(limpo) : null;
 }
@@ -51,4 +54,11 @@ export function formatarDecimal(valor: number, casas = 1): string {
     minimumFractionDigits: casas,
     maximumFractionDigits: casas,
   }).format(valor);
+}
+
+const P_VALOR_MINIMO = 0.001;
+
+/** Mesma regra de `formatar_p_valor` do backend: "p < 0,001" ou "p = 0,213" (3 algarismos). */
+export function formatarPValor(p: number): string {
+  return p < P_VALOR_MINIMO ? 'p < 0,001' : `p = ${formatarNumero(p, 3)}`;
 }

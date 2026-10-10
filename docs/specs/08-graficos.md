@@ -7,9 +7,9 @@ Domínio: `app/dominios/graficos/` (`fabrica.py` + `tema.py`) · ADR 0003
 | Nominal | Barras **horizontais** ordenadas por frequência | Pizza **só se ≤ 5 categorias** | Comparar tamanhos é mais fácil em barras; pizza com muitas fatias confunde |
 | Binária | Barras (2 categorias) com % no rótulo | — | Simples e direto |
 | Ordinal | Barras verticais na **ordem da escala** | Barras de frequência acumulada | A ordem tem significado |
-| Discreta | Gráfico de **bastões** (hastes) | Boxplot; acumulada em escada | Valores isolados, não intervalos |
-| Contínua | **Histograma** (classes da spec 04); curva Normal ajustada no M2 (D56) | Boxplot, ogiva (Frᵢ); QQ-plot no M2 | Mostra forma, caudas e aderência |
-| Par numérico | **Dispersão** com reta de regressão | Resíduos × X | Spec 10 |
+| Discreta | Gráfico de **bastões** (hastes) | Boxplot; acumulada em escada; na aba Forma: bastões + curva Normal e observado × Binomial | Valores isolados, não intervalos |
+| Contínua | **Histograma** (classes da spec 04) | Boxplot, ogiva (Frᵢ); na aba Forma: histograma + curva Normal e QQ-plot (D56, D94) | Mostra forma, caudas e aderência |
+| Par numérico | **Dispersão** com reta de regressão (até 5.000 pontos, D101) | Resíduos × X com linha zero tracejada (D102); heatmap da matriz com escala divergente (D103) | Spec 10 |
 | Separatriz | Régua com marcas e marcador do valor | — | Spec 06 |
 | Detector | Gráficos específicos por regra (Benford: barras observado × esperado; último dígito: barras; blocos: linha da média por bloco com faixa total) | — | Spec 12 |
 
@@ -21,5 +21,5 @@ Domínio: `app/dominios/graficos/` (`fabrica.py` + `tema.py`) · ADR 0003
 - Formato pt-BR (vírgula decimal, `separators=",."` no layout).
 - Sem 3D, sem sombras, sem gradientes.
 - Boxplot com estatísticas pré-calculadas; discrepantes como pontos (máx. 500).
-- Cada traço traz o seu papel (`meta`: principal ou referencia), sem cor fixa: quem desenha pinta com o tema dele (relatório sempre claro; tela com o tema ativo) (D83). Nenhuma figura envia valores brutos (ADR 0003, D56).
+- Cada traço traz o seu papel (`meta`: principal, referencia ou divergente — o heatmap, com escala `--graf-2` → fundo → `--graf-1`, D103), sem cor fixa: quem desenha pinta com o tema dele (relatório sempre claro; tela com o tema ativo) (D83). Nenhuma figura envia valores brutos (ADR 0003, D56).
 - n > 5.000 → enviar bins agregados em vez de pontos brutos (ADR 0003).

@@ -1,0 +1,47 @@
+/* Tela 5a: "Prever Y para X =" (campo + botão, resultado mono 26 em superfície 2). */
+.corpo {
+  display: flex;
+  flex-direction: column;
+  gap: var(--esp-16);
+}
+
+.controles {
+  display: flex;
+  gap: var(--esp-12);
+  align-items: flex-start;
+}
+
+.controles > :first-child {
+  flex: 1;
+}
+
+/* Alinha o botão com o campo (o rótulo fica acima do campo). */
+.controles > button {
+  margin-top: 26px;
+}
+
+.resultado {
+  display: flex;
+  flex-direction: column;
+  gap: var(--esp-4);
+  padding: 14px var(--esp-16);
+  border-radius: var(--raio-md);
+  background: var(--cor-superficie-2);
+}
+
+.rotulo {
+  font-size: 13px;
+  color: var(--cor-texto-2);
+}
+
+.valor {
+  font: 600 26px/1.2 var(--fonte-mono);
+  color: var(--cor-texto);
+}
+
+.frase {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--cor-texto-2);
+}
