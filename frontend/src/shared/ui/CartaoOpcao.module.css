@@ -1,0 +1,71 @@
+.cartao {
+  display: flex;
+  flex-direction: column;
+  gap: var(--esp-8);
+  padding: var(--esp-12) var(--esp-16);
+  border: 1px solid var(--cor-borda-forte);
+  border-radius: var(--raio-md);
+  background: var(--cor-superficie);
+  transition:
+    border-color var(--transicao),
+    background-color var(--transicao);
+}
+.selecionado {
+  padding: 11px 15px;
+  border: 2px solid var(--cor-primaria);
+  background: var(--cor-primaria-suave);
+}
+.desabilitado {
+  border-style: dashed;
+  border-color: var(--cor-borda);
+  background: var(--cor-superficie-2);
+  color: var(--cor-texto-desab);
+}
+.cabecalho {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--esp-12);
+  cursor: pointer;
+}
+.desabilitado .cabecalho {
+  cursor: not-allowed;
+}
+.entrada {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: 0;
+  opacity: 0;
+}
+.marca {
+  flex: none;
+  width: 20px;
+  height: 20px;
+  border: 1.5px solid var(--cor-borda-forte);
+  border-radius: 50%;
+  background: var(--cor-superficie);
+}
+.entrada:checked + .marca {
+  border: 6px solid var(--cor-primaria);
+}
+.entrada:focus-visible + .marca {
+  outline: 2px solid var(--cor-foco);
+  outline-offset: 2px;
+}
+.titulo {
+  font-size: 15px;
+  font-weight: 600;
+}
+.descricao {
+  margin: 0 0 0 32px;
+  color: var(--cor-texto-2);
+  font-size: 13.5px;
+  line-height: 1.45;
+}
+.campos {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--esp-8);
+  margin-left: 32px;
+}

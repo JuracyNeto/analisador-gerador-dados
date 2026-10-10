@@ -1,0 +1,53 @@
+.slider {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.topo {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+.rotulo {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--cor-texto);
+}
+.valor {
+  font-family: var(--fonte-mono);
+  font-size: 15px;
+  font-weight: 600;
+}
+.trilho {
+  position: relative;
+  display: flex;
+  align-items: center;
+  height: 24px;
+}
+.zero {
+  position: absolute;
+  top: 2px;
+  width: 2px;
+  height: 20px;
+  margin-left: -1px;
+  background: var(--cor-borda-forte);
+  pointer-events: none;
+}
+.entrada {
+  position: relative;
+  width: 100%;
+  margin: 0;
+  accent-color: var(--cor-primaria);
+  cursor: pointer;
+}
+.entrada:focus-visible {
+  outline: 2px solid var(--cor-foco);
+  outline-offset: 2px;
+}
+.limites {
+  display: flex;
+  justify-content: space-between;
+  color: var(--cor-texto-2);
+  font-family: var(--fonte-mono);
+  font-size: 12px;
+}
