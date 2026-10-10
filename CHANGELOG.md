@@ -14,6 +14,7 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e
 
 ### Alterado
 - A Análise univariada continua para a Bivariada, e o Relatório volta para ela.
+- O relatório pedido sem escolher seções traz as 6 seções, e os números negativos aparecem com o sinal de menos (−).
 
 ### Corrigido
 - Colunas de datas não aparecem mais como categorias (nominal) nem como código (identificador).

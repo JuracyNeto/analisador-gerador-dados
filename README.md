@@ -8,15 +8,15 @@ Trabalho da disciplina de Estatística.
 
 **Análise**
 - Leitura de TXT, CSV, TSV, XLSX e JSON (detecção automática de separador, decimal e codificação)
-- Classificação automática de cada coluna: qualitativa nominal, qualitativa ordinal, quantitativa discreta, quantitativa contínua ou binária, com o motivo exibido e ajuste manual
+- Classificação automática de cada coluna: qualitativa nominal, qualitativa ordinal, quantitativa discreta, quantitativa contínua ou binária, com o motivo exibido e ajuste manual; colunas de data e hora são reconhecidas e ficam fora das análises
 - Limpeza: faltantes, duplicados e valores fora de faixa, com log das alterações
 - Frequências absoluta, relativa e acumulada (com classes para dados contínuos)
 - Média, mediana e moda
 - Quartis, decis e percentis, além de consulta de "em qual região está meu valor"
 - Amplitude, variância, desvio padrão, IQR (Q3 − Q1) e coeficiente de variação
-- Ajuste de distribuição Normal e Binomial
-- Assimetria e curtose
-- Correlação de Pearson, regressão linear simples e previsão de Y por X
+- Ajuste de distribuição Normal, Binomial e Bernoulli, com testes de aderência
+- Assimetria e curtose (Fisher, Pearson e percentílica), com histograma e curva Normal e QQ-plot
+- Correlação de Pearson (com teste de significância) e Spearman, regressão linear simples, resíduos, previsão de Y por X e matriz de correlação
 - Gráficos escolhidos automaticamente pelo tipo de variável
 
 **Gerador**
@@ -26,7 +26,7 @@ Trabalho da disciplina de Estatística.
 **Detector**
 - 11 regras de suspeita (blocos alinhados, correlação por blocos, formato numérico, valores redondos, duplicatas, comparação temporal, outliers, Lei de Benford, último dígito, normalidade perfeita demais e sequências), com explicações em linguagem simples
 
-**Relatório** em HTML (imprimível em PDF), com tabelas, gráficos e fórmulas.
+**Relatório** em HTML (imprimível em PDF, funciona sem internet), com tabelas, gráficos e fórmulas: leitura, tipos, limpeza, análise e forma de cada coluna e bivariada.
 
 ## Tecnologias
 - **Backend:** Python 3.12, FastAPI, pandas, numpy, scipy, plotly

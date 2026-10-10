@@ -63,5 +63,6 @@ Referências: `telas/Telas.dc.html` (todas, com ids 1a…8a) e prints PNG 1440 p
 
 ## 8 Relatório → `features/relatorio` (8a)
 - Topo: "Baixar HTML" (`code`) e primário "Imprimir / salvar PDF" (`print`).
+> Implementação do M2 (D57, D106): seções Leitura, Tipos, Limpeza, Análises por coluna, Distribuições e Bivariada ("6 de 6"); Gerador, Detector e Fórmulas entram no M3/M4. As colunas ficam habilitadas com "Análises por coluna" ou "Distribuições"; a forma de cada coluna entra dentro da seção dela e a Bivariada traz o heatmap e até 3 pares com |r| ≥ 0,3.
 - Grid `300px 1fr`. Esquerda: fieldsets "Seções" (Leitura, Tipos, Limpeza, Análises por coluna, Distribuições, Bivariada, Gerador, Detector, Fórmulas, cada uma com página) e "Colunas" (nome mono + tipo com ícone e cor), checkboxes 20 raio 5, contador "8 de 9".
 - Direita: área superficie-2 com "Prévia · A4 retrato" e "Página 1 de 11"; página A4 620×877 (proporção 1:1,414) **sempre clara** (#fff, texto #161a20), sombra-2, padding 48 52. A prévia real é o `iframe` do HTML gerado (spec 13). O relatório impresso segue esse estilo: cabeçalho com régua 1,5 px, título 22/700, seções numeradas 13/700, corpo 11/1,55, tabelas 10,5 com régua, figuras numeradas ("Figura 1 · …"), rodapé com paginação.
