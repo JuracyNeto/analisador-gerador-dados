@@ -36,17 +36,29 @@ def _fora(valores: np.ndarray, minimo: float, maximo: float) -> np.ndarray:
     return (valores < minimo) | (valores > maximo)
 
 
-def resortear_fora(
-    sortear: Callable[[int], np.ndarray], valores: np.ndarray, minimo: float, maximo: float
+def _sortear_dentro(
+    sortear: Callable[[int], np.ndarray],
+    valores: np.ndarray,
+    faixa: tuple[float, float],
+    ajustar: Callable[[np.ndarray], np.ndarray],
 ) -> tuple[np.ndarray, bool]:
-    """Sem reescala (discretas): sorteia de novo o que sai de [mín, máx]; devolve se recortou."""
+    """Sorteia de novo o que sai da faixa e ajusta, até 20 rodadas; depois recorta."""
+    minimo, maximo = faixa
     atuais = np.asarray(valores, dtype="float64").copy()
     for _ in range(RODADAS_FAIXA):
         fora = _fora(atuais, minimo, maximo)
         if not fora.any():
             return atuais, False
         atuais[fora] = sortear(int(fora.sum()))
+        atuais = ajustar(atuais)
     return np.clip(atuais, minimo, maximo), bool(_fora(atuais, minimo, maximo).any())
+
+
+def resortear_fora(
+    sortear: Callable[[int], np.ndarray], valores: np.ndarray, minimo: float, maximo: float
+) -> tuple[np.ndarray, bool]:
+    """Sem reescala (discretas): sorteia de novo o que sai de [mín, máx]; devolve se recortou."""
+    return _sortear_dentro(sortear, valores, (minimo, maximo), lambda atuais: atuais)
 
 
 def limitar_faixa(
@@ -57,11 +69,6 @@ def limitar_faixa(
     alvo: tuple[float, float],
 ) -> tuple[np.ndarray, bool]:
     """Sorteia de novo o que sai de [mín, máx] e refaz a reescala (D112); devolve se recortou."""
-    atuais = np.asarray(valores, dtype="float64").copy()
-    for _ in range(RODADAS_FAIXA):
-        fora = _fora(atuais, minimo, maximo)
-        if not fora.any():
-            return atuais, False
-        atuais[fora] = sortear(int(fora.sum()))
-        atuais = reescalar(atuais, *alvo)
-    return np.clip(atuais, minimo, maximo), bool(_fora(atuais, minimo, maximo).any())
+    return _sortear_dentro(
+        sortear, valores, (minimo, maximo), lambda atuais: reescalar(atuais, *alvo)
+    )
