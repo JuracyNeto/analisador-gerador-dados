@@ -32,6 +32,23 @@ def arredondar(valores: np.ndarray, casas: int) -> np.ndarray:
     return np.round(np.asarray(valores, dtype="float64"), casas)
 
 
+def _fora(valores: np.ndarray, minimo: float, maximo: float) -> np.ndarray:
+    return (valores < minimo) | (valores > maximo)
+
+
+def resortear_fora(
+    sortear: Callable[[int], np.ndarray], valores: np.ndarray, minimo: float, maximo: float
+) -> tuple[np.ndarray, bool]:
+    """Sem reescala (discretas): sorteia de novo o que sai de [mín, máx]; devolve se recortou."""
+    atuais = np.asarray(valores, dtype="float64").copy()
+    for _ in range(RODADAS_FAIXA):
+        fora = _fora(atuais, minimo, maximo)
+        if not fora.any():
+            return atuais, False
+        atuais[fora] = sortear(int(fora.sum()))
+    return np.clip(atuais, minimo, maximo), bool(_fora(atuais, minimo, maximo).any())
+
+
 def limitar_faixa(
     sortear: Callable[[int], np.ndarray],
     valores: np.ndarray,
@@ -42,10 +59,9 @@ def limitar_faixa(
     """Sorteia de novo o que sai de [mín, máx] e refaz a reescala (D112); devolve se recortou."""
     atuais = np.asarray(valores, dtype="float64").copy()
     for _ in range(RODADAS_FAIXA):
-        fora = (atuais < minimo) | (atuais > maximo)
+        fora = _fora(atuais, minimo, maximo)
         if not fora.any():
             return atuais, False
         atuais[fora] = sortear(int(fora.sum()))
         atuais = reescalar(atuais, *alvo)
-    fora = (atuais < minimo) | (atuais > maximo)
-    return np.clip(atuais, minimo, maximo), bool(fora.any())
+    return np.clip(atuais, minimo, maximo), bool(_fora(atuais, minimo, maximo).any())
