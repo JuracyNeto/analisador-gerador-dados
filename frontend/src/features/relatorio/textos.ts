@@ -14,9 +14,11 @@ export const TEXTOS_RELATORIO = {
     tipos: 'Tipos',
     limpeza: 'Limpeza',
     analises: 'Análises por coluna',
+    distribuicoes: 'Distribuições',
+    bivariada: 'Bivariada',
   } satisfies Record<SecaoRelatorio, string>,
   contador: (marcados: number, total: number) => `${String(marcados)} de ${String(total)}`,
-  colunasSemAnalises: 'Marque "Análises por coluna" para escolher as colunas.',
+  colunasSemAnalises: 'Marque "Análises por coluna" ou "Distribuições" para escolher as colunas.',
   carregandoColunas: 'Carregando as colunas…',
   offline: 'Funciona sem internet',
   offlineAjuda:

@@ -4,6 +4,7 @@ import ChipTipo from '../../../shared/ui/ChipTipo';
 import EstadoCarregando from '../../../shared/ui/EstadoCarregando';
 import { SECOES_RELATORIO } from '../api';
 import type { SelecaoNaTela } from '../hooks/useSelecaoRelatorio';
+import { usaColunas } from '../selecao';
 import { TEXTOS_RELATORIO } from '../textos';
 import GrupoCaixas from './GrupoCaixas';
 import estilos from './OpcoesRelatorio.module.css';
@@ -37,7 +38,7 @@ export default function OpcoesRelatorio({
   offline,
   aoMudarOffline,
 }: Readonly<Props>) {
-  const semAnalises = !selecao.secoes.includes('analises');
+  const semAnalises = !usaColunas(selecao.secoes);
 
   return (
     <div className={estilos.opcoes}>

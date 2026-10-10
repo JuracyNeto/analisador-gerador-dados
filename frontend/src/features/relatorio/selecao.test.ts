@@ -33,8 +33,28 @@ describe('selecaoEfetiva', () => {
     });
   });
 
+  it('só com "distribuicoes", as colunas continuam no pedido', () => {
+    expect(selecaoEfetiva({ secoes: ['distribuicoes'], colunas: ['peso_kg'] })).toEqual({
+      secoes: ['distribuicoes'],
+      colunas: ['peso_kg'],
+    });
+  });
+
+  it('sem colunas, "analises" e "distribuicoes" saem do pedido', () => {
+    expect(
+      selecaoEfetiva({ secoes: ['analises', 'distribuicoes', 'bivariada'], colunas: [] }),
+    ).toEqual({ secoes: ['bivariada'], colunas: [] });
+  });
+
+  it('"bivariada" sozinha não leva colunas', () => {
+    expect(selecaoEfetiva({ secoes: ['bivariada'], colunas: ['peso_kg'] })).toEqual({
+      secoes: ['bivariada'],
+      colunas: [],
+    });
+  });
+
   it('nada efetivo vira null (estado vazio)', () => {
     expect(selecaoEfetiva({ secoes: [], colunas: ['peso_kg'] })).toBeNull();
-    expect(selecaoEfetiva({ secoes: ['analises'], colunas: [] })).toBeNull();
+    expect(selecaoEfetiva({ secoes: ['analises', 'distribuicoes'], colunas: [] })).toBeNull();
   });
 });
