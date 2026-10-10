@@ -858,7 +858,7 @@ export interface components {
             versao: string;
         };
         /** @enum {string} */
-        Secao: "leitura" | "tipos" | "limpeza" | "analises";
+        Secao: "leitura" | "tipos" | "limpeza" | "analises" | "distribuicoes" | "bivariada";
         /** Separatrizes */
         Separatrizes: {
             /** Quartis */
