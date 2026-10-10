@@ -25,6 +25,9 @@ class Configuracao(BaseSettings):
     tamanho_previa: int = 20
     pasta_exemplos: Path = RAIZ_REPOSITORIO / "dados-exemplo"
     arquivo_exemplo: str = "pesquisa_saude.txt"
+    max_gerados: int = 20
+    limite_geracao: int = 1_000_000
+    tamanho_amostra_gerada: int = 50
 
     @property
     def limite_arquivo_bytes(self) -> int:

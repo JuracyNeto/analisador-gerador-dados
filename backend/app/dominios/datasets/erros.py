@@ -89,3 +89,11 @@ def acao_incompativel(coluna: str | None, motivo: str) -> EntradaInvalida:
     return EntradaInvalida(
         "ACAO_INCOMPATIVEL", f"Esta ação não serve para {alvo}: {motivo}", "Escolha outra ação."
     )
+
+
+def colunas_incompativeis(coluna: str) -> EntradaInvalida:
+    return EntradaInvalida(
+        "COLUNAS_INCOMPATIVEIS",
+        f"O dataset não tem a coluna {coluna}.",
+        'Use "Usar como novo dataset".',
+    )
