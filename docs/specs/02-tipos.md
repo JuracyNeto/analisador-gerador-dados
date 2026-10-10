@@ -11,7 +11,7 @@ Coluna de texto conta como numérica se ≥ 90% dos valores válidos viram núme
 
 | # | Condição | Tipo | Motivo (modelo) |
 |---|---|---|---|
-| 0 | ≥ 90% dos valores válidos (`LIMIAR_DATA = 0,9`) num mesmo formato de data ou hora (abaixo), ou células de data/hora do XLSX; só para colunas que não são numéricas (D90) | `data` (auxiliar) | "Datas no formato DD/MM/AAAA (ex.: 07/10/2026)." / "Datas no formato AAAA-MM-DD (ex.: …)." / "Datas com horário (ex.: 07/10/2026 08:30)." / "Horários (ex.: 08:30)." / "Datas da planilha (ex.: …)." |
+| 0 | ≥ 90% dos valores válidos (`LIMIAR_DATA = 0,9`) num mesmo formato de data ou hora (abaixo), ou células de data/hora do XLSX; só para colunas que não são numéricas (D90) | `data` (auxiliar) | "Datas no formato DD/MM/AAAA (ex.: 07/10/2026)." / "Datas no formato AAAA-MM-DD (ex.: …)." / "Datas com horário (ex.: 07/10/2026 08:30)." / "Horários (ex.: 08:30)." / "Datas da planilha (ex.: …)." — no XLSX, só horários usam "Horários", só datas com horário usam "Datas com horário" e o resto "Datas da planilha" (D107) |
 | 1 | Nome casa `^(id|cod|codigo|código|cpf|cnpj|cep|telefone|fone|matricula|matrícula)\b` (sem acento/caixa) **ou** (não numérico contínuo e ≥ 95% únicos com n ≥ 20) | `identificador` | "Parece um código: {pct}% dos valores são únicos." / "O nome da coluna indica um código ({nome})." |
 | 2 | Exatamente 2 valores distintos | `binaria` | "Tem só dois valores: {a} e {b}." |
 | 3 | Texto e o conjunto de valores (normalizado) está contido em uma escala do dicionário ordinal | `ordinal` | "Os valores seguem uma escala conhecida: {escala}." |

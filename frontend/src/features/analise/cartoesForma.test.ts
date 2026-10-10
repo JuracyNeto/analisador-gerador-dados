@@ -29,7 +29,7 @@ describe('cartoesForma', () => {
       F.ajusteNormal,
       F.ajusteBinomial,
     ]);
-    expect(cartoes.map((c) => c.valor)).toEqual(['0,32', '-0,18', 'p = 0,21', '—']);
+    expect(cartoes.map((c) => c.valor)).toEqual(['0,32', '−0,18', 'p = 0,21', '—']);
     expect(cartoes.map((c) => c.selo)).toEqual([
       'Aprox. simétrica',
       'Mesocúrtica',

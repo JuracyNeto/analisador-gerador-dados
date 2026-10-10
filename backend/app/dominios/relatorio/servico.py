@@ -5,7 +5,7 @@ from dataclasses import dataclass
 from datetime import datetime
 from itertools import combinations
 
-from app.compartilhado.numeros import formatar_numero, formatar_p_valor, formatar_percentual
+from app.compartilhado.numeros import formatar_com_sinal, formatar_p_valor, formatar_percentual
 from app.compartilhado.tipos import TIPOS_AUXILIARES, TipoVariavel
 from app.core.erros import EntradaInvalida
 from app.dominios.analise.servico import (
@@ -43,7 +43,6 @@ __all__ = ["SECOES_PADRAO", "PedidoRelatorio", "Secao", "ServicoRelatorio", "par
 
 FORMATO_DATA = "%d/%m/%Y %H:%M"
 ESCAPE_FECHAMENTO = r"<\/script"
-MENOS = "−"
 CABECALHOS_PRIMEIRA_COLUNA = {
     TipoVariavel.CONTINUA: "Classe",
     TipoVariavel.DISCRETA: "Valor",
@@ -84,14 +83,8 @@ def _limpeza(resumo: Resumo) -> tuple[str, ...]:
     return tuple(e.frase for e in resumo.log_limpeza) or (textos.SEM_LIMPEZA,)
 
 
-def _numero(valor: float) -> str:
-    """Negativos com o sinal de menos tipográfico (−), como na tela."""
-    texto = formatar_numero(valor)
-    return f"{MENOS}{texto[1:]}" if texto.startswith("-") else texto
-
-
 def _valor(valor: float | str | None, sufixo: str = "") -> str:
-    return f"{_numero(valor)}{sufixo}" if isinstance(valor, float) else str(valor)
+    return f"{formatar_com_sinal(valor)}{sufixo}" if isinstance(valor, float) else str(valor)
 
 
 def _itens(candidatas: Iterable[tuple[str, Medida, str]]) -> list[ItemMedida]:

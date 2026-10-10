@@ -5,6 +5,9 @@ import math
 CASAS_SIGNIFICATIVAS_PADRAO = 4
 
 
+MENOS = "−"
+
+
 def _trocar_separadores(texto: str) -> str:
     """Converte '1,234.5' (formato do Python) em '1.234,5'."""
     return texto.replace(",", "_").replace(".", ",").replace("_", ".")
@@ -25,6 +28,18 @@ def formatar_numero(valor: float, casas_significativas: int = CASAS_SIGNIFICATIV
     if "." in texto:
         texto = texto.rstrip("0").rstrip(".")
     return _trocar_separadores(texto)
+
+
+def com_sinal_de_menos(texto: str) -> str:
+    """Troca o hífen do número negativo pelo sinal de menos tipográfico (−)."""
+    return f"{MENOS}{texto[1:]}" if texto.startswith("-") else texto
+
+
+def formatar_com_sinal(
+    valor: float, casas_significativas: int = CASAS_SIGNIFICATIVAS_PADRAO
+) -> str:
+    """Como `formatar_numero`, com o sinal de menos (−) nos negativos: −0,394."""
+    return com_sinal_de_menos(formatar_numero(valor, casas_significativas))
 
 
 def formatar_inteiro(valor: int) -> str:

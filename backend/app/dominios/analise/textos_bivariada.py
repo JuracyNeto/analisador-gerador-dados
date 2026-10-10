@@ -3,7 +3,7 @@
 from itertools import combinations
 
 from app.compartilhado.estatistica import ALFA
-from app.compartilhado.numeros import formatar_numero
+from app.compartilhado.numeros import MENOS, formatar_com_sinal, formatar_numero
 from app.compartilhado.textos import juntar_lista, p_valor_em_palavras
 from app.dominios.analise.resultados_bivariada import Faixa, Forca, Sentido
 
@@ -11,17 +11,11 @@ __all__ = ["Forca", "Sentido"]
 
 LIMIAR_FRACA = 0.3
 CASAS_MATRIZ = 2
-MENOS = "−"
 SEM_PARES = "Precisa de pelo menos duas colunas numéricas para montar a matriz."
 
 
-def com_sinal_de_menos(texto: str) -> str:
-    """Troca o hífen do número negativo pelo sinal de menos tipográfico (−)."""
-    return f"{MENOS}{texto[1:]}" if texto.startswith("-") else texto
-
-
 def numero(valor: float) -> str:
-    return com_sinal_de_menos(formatar_numero(valor))
+    return formatar_com_sinal(valor)
 
 
 def formatar_equacao(a: float, b: float) -> str:

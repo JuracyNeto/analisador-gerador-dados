@@ -14,9 +14,11 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e
 
 ### Alterado
 - A Análise univariada continua para a Bivariada, e o Relatório volta para ela.
-- O relatório pedido sem escolher seções traz as 6 seções, e os números negativos aparecem com o sinal de menos (−).
+- O relatório pedido sem escolher seções traz as 6 seções.
 
 ### Corrigido
+- Números negativos aparecem com o sinal de menos (−) também na tela (cards, heatmap e demais valores), como no relatório.
+- Na planilha, colunas só de horários têm o motivo "Horários (ex.: 08:00)." (antes, "Datas da planilha"), e horários de uma coluna mudada para outro tipo aparecem como 08:00 (antes, 08:00:00).
 - Colunas de datas não aparecem mais como categorias (nominal) nem como código (identificador).
 - Datas de planilhas aparecem na prévia no formato 07/10/2026 (antes, 2026-10-07T00:00:00).
 
