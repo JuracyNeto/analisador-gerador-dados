@@ -18,7 +18,7 @@ const T = TEXTOS_BIVARIADA;
 const ACOES_BIVARIADA = (
   <AcoesEtapa
     voltar={{ para: CAMINHOS.analise, rotulo: T.navegacao.voltar }}
-    continuar={{ para: CAMINHOS.relatorio, rotulo: T.navegacao.continuar }}
+    continuar={{ para: CAMINHOS.gerador, rotulo: T.navegacao.continuar }}
   />
 );
 

@@ -101,3 +101,28 @@ class Adotado(Modelo):
     nome_arquivo: str
     n_linhas: int
     modo: Literal["novo", "anexar"]
+
+
+class ResumoOrigem(Modelo):
+    coluna: str
+    tipo: Literal["nominal", "ordinal", "discreta", "continua", "binaria"]
+    n: int
+    media: float | None
+    desvio: float | None
+    minimo: float | None
+    maximo: float | None
+    sucesso: str | None
+    fracasso: str | None
+    chance: float | None
+    so_preservar: bool
+
+
+class ResumoOrigemPar(Modelo):
+    x: str
+    y: str
+    n: int
+    media_x: float
+    media_y: float
+    desvio_x: float
+    desvio_y: float
+    r: float

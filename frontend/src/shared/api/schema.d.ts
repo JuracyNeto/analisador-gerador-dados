@@ -294,6 +294,40 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/gerador/origem": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Medidas da coluna de origem (formulário univariado) */
+        get: operations["resumir_origem_api_gerador_origem_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/gerador/origem-par": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Médias, desvios e r do par de origem (formulário bivariado) */
+        get: operations["resumir_origem_par_api_gerador_origem_par_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/gerador/{gerado_id}": {
         parameters: {
             query?: never;
@@ -1101,6 +1135,53 @@ export interface components {
             /** Tem Ajustes */
             tem_ajustes: boolean;
         };
+        /** ResumoOrigem */
+        ResumoOrigem: {
+            /** Coluna */
+            coluna: string;
+            /**
+             * Tipo
+             * @enum {string}
+             */
+            tipo: "nominal" | "ordinal" | "discreta" | "continua" | "binaria";
+            /** N */
+            n: number;
+            /** Media */
+            media: number | null;
+            /** Desvio */
+            desvio: number | null;
+            /** Minimo */
+            minimo: number | null;
+            /** Maximo */
+            maximo: number | null;
+            /** Sucesso */
+            sucesso: string | null;
+            /** Fracasso */
+            fracasso: string | null;
+            /** Chance */
+            chance: number | null;
+            /** So Preservar */
+            so_preservar: boolean;
+        };
+        /** ResumoOrigemPar */
+        ResumoOrigemPar: {
+            /** X */
+            x: string;
+            /** Y */
+            y: string;
+            /** N */
+            n: number;
+            /** Media X */
+            media_x: number;
+            /** Media Y */
+            media_y: number;
+            /** Desvio X */
+            desvio_x: number;
+            /** Desvio Y */
+            desvio_y: number;
+            /** R */
+            r: number;
+        };
         /** Saude */
         Saude: {
             /** Status */
@@ -1811,6 +1892,71 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Gerado"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    resumir_origem_api_gerador_origem_get: {
+        parameters: {
+            query: {
+                dataset_id: string;
+                coluna: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ResumoOrigem"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    resumir_origem_par_api_gerador_origem_par_get: {
+        parameters: {
+            query: {
+                dataset_id: string;
+                x: string;
+                y: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ResumoOrigemPar"];
                 };
             };
             /** @description Validation Error */

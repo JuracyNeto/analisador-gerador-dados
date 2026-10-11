@@ -5,7 +5,14 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e
 ## [Não lançado]
 
 ### Adicionado
+- Etapa 6 Gerador: dados univariados e bivariados (pela coluna ou par do dataset, ou com parâmetros manuais) com a tabela Original × Gerado, gráfico, explicação do método, Baixar CSV, Anexar ao dataset atual e Usar como novo dataset.
 - API do gerador: dados univariados (preservando as estatísticas de uma coluna ou com novos parâmetros) e pares com médias, desvios e correlação alvo, com comparação com o original, explicação do método, gráfico sobreposto, CSV e uso como novo dataset ou anexado ao atual.
+
+### Alterado
+- A Bivariada continua para o Gerador, e o Relatório volta para ele.
+
+### Corrigido
+- Arquivos com `;` e duas ou mais colunas com vírgula decimal (ex.: `1,5;2,25`) eram lidos com a vírgula como separador.
 
 ## [0.2.0] - 2026-10-10
 

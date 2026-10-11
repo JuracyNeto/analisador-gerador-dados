@@ -29,6 +29,11 @@ Matriz de covariância alvo Σ = [[σx², ρσxσy], [ρσxσy, σy²]] = L·L�
 
 **Saída (`Gerado`, `tipo: "bivariado"`):** `comparacao` com n, médias, desvios e "Correlação (r)" (com origem, `original` = o par; sem origem, `original` = o alvo pedido), `figuras [dispersao]` (pares gerados e, com origem, os originais; até 5.000 pontos por série, D101) e `explicacao`.
 
+## Medidas da origem (tela 6)
+- `GET /api/gerador/origem?dataset_id=&coluna=` → `{coluna, tipo, n, media, desvio, minimo, maximo, sucesso, fracasso, chance, so_preservar}`: numéricas trazem média, desvio, mín e máx ("Mesma média (70,3) e desvio (11,2) da coluna.", "Nenhum valor abaixo de 43,8 ou acima de 92,9."); binária, o sucesso e a chance; nominal e ordinal, `so_preservar` (D116).
+- `GET /api/gerador/origem-par?dataset_id=&x=&y=` → `{x, y, n, media_x, media_y, desvio_x, desvio_y, r}` para preencher o formulário bivariado.
+- Campo que o usuário não editou não vai no pedido (bivariado) ou vai com o valor exato da origem (univariado), nunca com o texto arredondado da tela.
+
 ## CSV e adotar
 - `GET /api/gerador/{gid}/csv`: `;` como separador e vírgula decimal (como o app lê), nome `gerado-{colunas}.csv`.
 - `POST /api/gerador/{gid}/adotar {modo: "novo"|"anexar", dataset_id?}` → `{dataset_id, nome_arquivo, n_linhas, modo}`. "novo" importa o CSV da geração como um dataset novo; "anexar" põe as linhas no fim da versão atual do dataset (colunas de mesmo nome; as demais ficam faltantes), registra "Anexamos 500 linhas geradas em peso_kg." no log da limpeza e sai com "Desfazer limpeza" (D111) — usado na demonstração do detector. Coluna que não existe no dataset → 400 `COLUNAS_INCOMPATIVEIS`.

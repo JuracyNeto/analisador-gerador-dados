@@ -31,5 +31,5 @@ export const TEXTOS_BIVARIADA = {
     selo: (sentido: 'positiva' | 'negativa', forca: 'moderada' | 'forte') =>
       `Correlação ${sentido} ${forca}`,
   },
-  navegacao: { voltar: 'Voltar para Análise univariada', continuar: 'Continuar para Relatório' },
+  navegacao: { voltar: 'Voltar para Análise univariada', continuar: 'Continuar para Gerador' },
 };

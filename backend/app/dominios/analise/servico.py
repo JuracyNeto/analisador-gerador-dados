@@ -49,6 +49,7 @@ from app.dominios.graficos.servico import (
 __all__ = [
     "CHAVES_FORMA",
     "Ajuste",
+    "Amostra",
     "Analise",
     "Bivariada",
     "Figura",

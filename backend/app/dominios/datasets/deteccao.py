@@ -19,7 +19,9 @@ FRACAO_LINHAS_CONSTANTE = 0.9
 FRACAO_DECIMAL_VIRGULA = 0.8
 SEM_SEPARADOR = "\x1f"  # caractere que não aparece em texto: a linha inteira vira uma célula
 SEPARADOR_ESPACOS = r"\s{2,}"
-CANDIDATOS_SEPARADOR = (";", ",", "\t", "|", SEPARADOR_ESPACOS)
+PONTO_E_VIRGULA = ";"
+VIRGULA = ","
+CANDIDATOS_SEPARADOR = (PONTO_E_VIRGULA, VIRGULA, "\t", "|", SEPARADOR_ESPACOS)
 _NUMERO = re.compile(r"^-?[\d.,]*\d[\d.,]*$")
 _NUMERO_VIRGULA = re.compile(r"^-?\d{1,3}(\.\d{3})*(,\d+)?$|^-?\d+,\d+$")
 _PALAVRA = re.compile(r"\w+")
@@ -94,9 +96,24 @@ def _contagem_constante(linhas: list[str], separador: str) -> int:
     return contagem if vezes >= FRACAO_LINHAS_CONSTANTE * len(linhas) else 0
 
 
+def _virgulas_sao_decimais(linhas: list[str]) -> bool:
+    """Toda célula (separada por ;) que tem vírgula é um número como 1,5 ou 1.234,5."""
+    celulas = [c.strip() for linha in linhas for c in quebrar(linha, PONTO_E_VIRGULA)]
+    com_virgula = [c for c in celulas if "," in c]
+    return bool(com_virgula) and all(_NUMERO_VIRGULA.match(c) for c in com_virgula)
+
+
+def _melhor_separador(linhas: list[str], contagens: dict[str, int]) -> str:
+    """O que gera mais colunas; mas vírgulas decimais não vencem um ; constante (D116)."""
+    melhor = max(CANDIDATOS_SEPARADOR, key=lambda c: contagens[c])
+    if melhor == VIRGULA and contagens[PONTO_E_VIRGULA] > 0 and _virgulas_sao_decimais(linhas):
+        return PONTO_E_VIRGULA
+    return melhor
+
+
 def _separador_constante(linhas: list[str]) -> Deteccao[str | None]:
     contagens = {c: _contagem_constante(linhas, c) for c in CANDIDATOS_SEPARADOR}
-    melhor = max(CANDIDATOS_SEPARADOR, key=lambda c: contagens[c])
+    melhor = _melhor_separador(linhas, contagens)
     if contagens[melhor] == 0:
         return Deteccao(None, "Não encontramos um separador; lemos uma coluna só.")
     return Deteccao(melhor, f"Aparece {contagens[melhor]} vezes em todas as linhas.")

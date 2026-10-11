@@ -58,7 +58,7 @@ Execução prevista (um bloco por vez): M3.0 → M3.1 → M3.2 → M3.3 → M3.4
 - **pandas 3**: nunca comparar `dtype == object`. O `to_excel` do pandas grava horários como texto (use o openpyxl direto nos testes). Arquivos escritos por script: LF, UTF-8.
 - Números exibidos com o sinal de menos (−) (`formatar_com_sinal`, D107).
 - Aleatoriedade sempre com `np.random.default_rng(semente)`; nada de `np.random.seed` global. Testes com semente fixa.
-- Toda decisão nova vai para `docs/decisions.md` com o **próximo número livre** (D108–D114 usadas no M3.0; próxima D115); os números abaixo são os previstos na ordem dos blocos. Toda entrega vai para `CHANGELOG.md` › *Não lançado*.
+- Toda decisão nova vai para `docs/decisions.md` com o **próximo número livre** (D108–D114 no M3.0, D115–D117 no M3.1; próxima D118); os números abaixo são os previstos na ordem dos blocos. Toda entrega vai para `CHANGELOG.md` › *Não lançado*.
 - Teste manual no preview (`.claude/launch.json`: `backend` 8000, `frontend` 5173) antes do push de cada bloco com tela; viewport fixa com `resize_window` e conferência pelo DOM. Depois de editar o backend, o `--reload` apaga os datasets: recarregue o exemplo antes de testar.
 - PR, merge e release só com o ok do usuário; merge só com os 3 checks verdes (`gh pr merge N --merge`).
 
@@ -114,6 +114,8 @@ Adotado { dataset_id: str, nome_arquivo: str, n_linhas: int, modo: "novo" | "ane
 | GET | `/gerador/{gid}` | — | `Gerado` (para o relatório e para reabrir) |
 | GET | `/gerador/{gid}/csv` | — | `text/csv` (`;` e vírgula decimal, como o app lê; nome `gerado-{colunas}.csv`) |
 | POST | `/gerador/{gid}/adotar` | `{modo: "novo" | "anexar", dataset_id?: str}` | `Adotado` (201) |
+| GET | `/gerador/origem` | `dataset_id`, `coluna` | `ResumoOrigem` (M3.1, D116) |
+| GET | `/gerador/origem-par` | `dataset_id`, `x`, `y` | `ResumoOrigemPar` (M3.1, D116) |
 
 - **Comparação** (univariado numérico): n, Média, Mediana, Desvio padrão, Mínimo, Máximo, Assimetria, Curtose; `diferenca = gerado − original` (absoluta, como no print 6a; D110); sem origem, `original = None` e `diferenca = None`. Qualitativas: uma linha "fr% · {categoria}" por categoria (diferença em pontos percentuais). Bivariado: Média X, Média Y, DP X, DP Y e "Correlação (r)" com o alvo (ρ) na coluna `original` quando não há origem.
 - **Gerações em memória:** `RepositorioGerados` no domínio `gerador` (limite `max_gerados = 20`, o mais antigo sai), injetado como o de datasets (ADR 0009). Sumiu → 404 `GERADO_NAO_ENCONTRADO`.
@@ -187,15 +189,17 @@ ResultadoDetector {resumo: ResumoDetector, avisos: [Aviso], nao_aplicadas: [Regr
 | D112 | "Limitar à faixa original": valores fora de [mín, máx] são sorteados de novo e a reescala é refeita (até 20 rodadas; depois recorte); média e DP ficam muito próximos, mas não exatos (texto do print 6a) | M3.0 |
 | D113 | Sobreposição com classes comuns (faixa da união, k de Sturges da menor série) em frequência relativa, barras `overlay` 0,55 (`graficos-plotly.md`); qualitativas com barras agrupadas | M3.0 |
 | D114 | Bivariado com ajuste exato não arredonda (r = ρ exato); sem ajuste, casas das colunas de origem (2 sem origem); contrato `Figura` em `core/esquemas.py` | M3.0 |
-| D115 | Gerador funciona sem dataset (só "Parâmetros manuais"); "Usar como novo dataset" cria a sessão | M3.1 |
-| D116 | Detector: Template Method (`RegraBase.executar` = alvos → aplicável? → medir → dispara? → aviso) com textos só em `textos.py`; entrada `TabelaDetector` montada pelo serviço | M3.2 |
-| D117 | R4/R9: "dígito final" = último dígito na resolução da coluna (maior nº de casas observado); regra não se aplica se esse dígito é constante | M3.2 |
-| D118 | R5: duplicatas exatas sempre; quase duplicatas só até 5.000 linhas (distância par a par O(n²)), com o motivo nas não aplicadas acima disso | M3.2 |
-| D119 | R1: referência por simulação com semente fixa e somas acumuladas (vetorizado); R2 em todos os pares de numéricas | M3.3 |
-| D120 | Figuras do detector (R1 média por bloco, R8 Benford, R9 último dígito) dentro dos detalhes técnicos (spec 08; os prints não mostram gráficos) | M3.3 |
-| D121 | Datasets plantados gerados por `backend/scripts/gerar_exemplos_detector.py` (semente fixa, reprodutível); `vendas_correlacao_puxada.txt` ganha coluna `data` para demonstrar também a R6; exemplos escolhíveis em `POST /datasets/exemplo?arquivo=` | M3.3 |
-| D122 | Tela 7: filtros e agrupamento na URL; 1º alerta de cada grupo aberto; drawer com ±3 linhas de contexto; "Exportar estas linhas" gera o CSV no navegador | M3.4 |
-| D123 | Relatório com `gerador` (via `?gerado=`) e `detector` já no M3 (escolha do usuário em 10/10/2026); padrão = 8 seções | M3.5 |
+| D115 | Tela 6: aba na URL, gerador sem dataset, campo sem edição = valor exato da origem, diferença na precisão dos valores, `ultimoGerado` na sessão | M3.1 |
+| D116 | `GET /gerador/origem` e `/gerador/origem-par` para o formulário | M3.1 |
+| D117 | Leitura: `;` vence vírgulas decimais (defeito achado no teste do M3.1) | M3.1 |
+| D118 | Detector: Template Method (`RegraBase.executar` = alvos → aplicável? → medir → dispara? → aviso) com textos só em `textos.py`; entrada `TabelaDetector` montada pelo serviço | M3.2 |
+| D119 | R4/R9: "dígito final" = último dígito na resolução da coluna (maior nº de casas observado); regra não se aplica se esse dígito é constante | M3.2 |
+| D120 | R5: duplicatas exatas sempre; quase duplicatas só até 5.000 linhas (distância par a par O(n²)), com o motivo nas não aplicadas acima disso | M3.2 |
+| D121 | R1: referência por simulação com semente fixa e somas acumuladas (vetorizado); R2 em todos os pares de numéricas | M3.3 |
+| D122 | Figuras do detector (R1 média por bloco, R8 Benford, R9 último dígito) dentro dos detalhes técnicos (spec 08; os prints não mostram gráficos) | M3.3 |
+| D123 | Datasets plantados gerados por `backend/scripts/gerar_exemplos_detector.py` (semente fixa, reprodutível); `vendas_correlacao_puxada.txt` ganha coluna `data` para demonstrar também a R6; exemplos escolhíveis em `POST /datasets/exemplo?arquivo=` | M3.3 |
+| D124 | Tela 7: filtros e agrupamento na URL; 1º alerta de cada grupo aberto; drawer com ±3 linhas de contexto; "Exportar estas linhas" gera o CSV no navegador | M3.4 |
+| D125 | Relatório com `gerador` (via `?gerado=`) e `detector` já no M3 (escolha do usuário em 10/10/2026); padrão = 8 seções | M3.5 |
 
 ## Dependências novas
 - Nenhuma: `numpy` e `scipy` (KDE, Poisson, testes) já estão no backend; o frontend usa só componentes próprios.
@@ -217,8 +221,8 @@ ResultadoDetector {resumo: ResumoDetector, avisos: [Aviso], nao_aplicadas: [Regr
 3. **Discreta "preservar" com x̄ = 0:** o critério de Poisson divide por x̄; com x̄ = 0 vai para a empírica.
 4. **Binária:** o "sucesso" segue a regra da análise (`sucesso_padrao`, spec 05), para p̂ bater com a tela 4.
 5. **Sobreposição com até 1.000.000 valores:** a figura leva só as alturas das barras (ADR 0003), nunca os valores; dispersão com no máximo 5.000 pontos (D101).
-6. **R4/R9 "casa variável":** a spec não define o dígito final de números com casas diferentes; D117.
-7. **R5 quase duplicatas** é O(n²); limite de 5.000 linhas (D118).
-8. **Detector × gráficos:** spec 08 lista figuras por regra, os prints não mostram; ficam nos detalhes técnicos (D120).
+6. **R4/R9 "casa variável":** a spec não define o dígito final de números com casas diferentes; D119.
+7. **R5 quase duplicatas** é O(n²); limite de 5.000 linhas (D120).
+8. **Detector × gráficos:** spec 08 lista figuras por regra, os prints não mostram; ficam nos detalhes técnicos (D122).
 9. **Contagem de regras do resumo:** o print diz "9 regras verificadas, 2 não se aplicam a este arquivo" e lista não verificações por coluna; definimos as duas contagens por regra e a lista por (regra, coluna) (contrato acima).
 10. **Falsos positivos:** as amostras do teste são arredondadas a 2 casas (como medições reais); sem isso, R4 e R9 não se aplicam (dígito final de float é ruído) e o teste não mede nada.

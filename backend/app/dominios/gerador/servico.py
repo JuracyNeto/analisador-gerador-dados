@@ -10,7 +10,7 @@ import pandas as pd
 from app.compartilhado.textos import juntar_lista
 from app.compartilhado.tipos import TIPOS_AUXILIARES, TIPOS_NUMERICOS, TipoVariavel
 from app.core.config import Configuracao, obter_configuracao
-from app.dominios.analise.servico import ServicoAnalise
+from app.dominios.analise.servico import Amostra, ServicoAnalise
 from app.dominios.datasets.servico import OpcoesLeitura, ServicoDatasets
 from app.dominios.gerador import erros, textos
 from app.dominios.gerador.bivariado import ParametrosBivariado, gerar_pares, gerar_pares_exatos
@@ -34,6 +34,8 @@ from app.dominios.gerador.pedidos import (
     OrigemPar,
     PedidoBivariado,
     PedidoUnivariado,
+    ResumoOrigem,
+    ResumoOrigemPar,
 )
 from app.dominios.gerador.preparo import (
     BaseBivariada,
@@ -45,6 +47,8 @@ from app.dominios.gerador.preparo import (
     descricao_univariada,
     medidas_par,
     preparo_sem_origem,
+    resumo_origem,
+    resumo_origem_par,
     validar_parametros,
 )
 from app.dominios.gerador.reescala import arredondar
@@ -73,6 +77,8 @@ __all__ = [
     "PedidoBivariado",
     "PedidoUnivariado",
     "RepositorioGerados",
+    "ResumoOrigem",
+    "ResumoOrigemPar",
     "ServicoGerador",
     "obter_repositorio_gerados",
 ]
@@ -225,11 +231,29 @@ class ServicoGerador:
         resultado = gerar_univariado(preparo.tipo, preparo.entrada, semente)
         return self._guardar(self._montar_univariado(pedido, preparo, resultado, semente))
 
-    def _com_origem(self, pedido: PedidoUnivariado, origem: Origem) -> Preparo:
+    def _amostra(self, origem: Origem) -> Amostra:
+        """Valores válidos da coluna; identificador e data não servem de origem."""
         tipos = {c.coluna: c.tipo for c in self._datasets.colunas(origem.dataset_id)}
         if tipos.get(origem.coluna) in TIPOS_AUXILIARES:
             raise erros.coluna_nao_geravel(origem.coluna, tipos[origem.coluna])
-        amostra = self._analise.amostra(origem.dataset_id, origem.coluna)
+        return self._analise.amostra(origem.dataset_id, origem.coluna)
+
+    def origem(self, origem: Origem) -> ResumoOrigem:
+        """Medidas da coluna de origem para o formulário da tela 6."""
+        amostra = self._amostra(origem)
+        rotulos = self._rotulos(amostra.tipo, amostra.valores)
+        return resumo_origem(origem.coluna, amostra.tipo, amostra.valores, rotulos)
+
+    def origem_par(self, origem: OrigemPar) -> ResumoOrigemPar:
+        """Médias, desvios e r do par de origem (formulário bivariado)."""
+        par = self._analise.par(origem.dataset_id, origem.x, origem.y)
+        medidas = medidas_par(
+            np.asarray(par.valores_x, dtype="float64"), np.asarray(par.valores_y, dtype="float64")
+        )
+        return resumo_origem_par(origem.x, origem.y, medidas)
+
+    def _com_origem(self, pedido: PedidoUnivariado, origem: Origem) -> Preparo:
+        amostra = self._amostra(origem)
         validar_parametros(amostra.tipo, pedido)
         entrada = EntradaEstrategia(
             x=pedido.x,

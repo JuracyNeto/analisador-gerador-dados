@@ -10,7 +10,12 @@ from app.dominios.gerador import erros, textos
 from app.dominios.gerador.comparacao import MedidasPar
 from app.dominios.gerador.estrategias.base import EntradaEstrategia
 from app.dominios.gerador.parametros import DescricaoUnivariada, origem_coluna
-from app.dominios.gerador.pedidos import PedidoBivariado, PedidoUnivariado
+from app.dominios.gerador.pedidos import (
+    PedidoBivariado,
+    PedidoUnivariado,
+    ResumoOrigem,
+    ResumoOrigemPar,
+)
 from app.dominios.gerador.reescala import casas_decimais
 from app.dominios.gerador.resultados import OrigemGeracao
 from app.dominios.gerador.univariado import TIPOS_SO_PRESERVAR
@@ -219,4 +224,42 @@ def base_com_origem(
         original=medidas,
         pontos_originais=(tuple(float(v) for v in x), tuple(float(v) for v in y)),
         origem=origem,
+    )
+
+
+def resumo_origem(
+    coluna: str, tipo: TipoVariavel, valores: pd.Series, rotulos: tuple[str, str] | None
+) -> ResumoOrigem:
+    """Numéricas: média, desvio, mín e máx; binária: sucesso e chance; demais: só preservar."""
+    if tipo in TIPOS_NUMERICOS:
+        numeros = valores.to_numpy(dtype="float64")
+        desvio = float(numeros.std(ddof=1)) if len(numeros) > 1 else 0.0
+        return ResumoOrigem(
+            coluna,
+            tipo,
+            len(numeros),
+            media=float(numeros.mean()),
+            desvio=desvio,
+            minimo=float(numeros.min()),
+            maximo=float(numeros.max()),
+        )
+    if rotulos is None:
+        return ResumoOrigem(coluna, tipo, len(valores), so_preservar=True)
+    fracasso, sucesso = rotulos
+    chance = float((valores.astype(str) == sucesso).mean())
+    return ResumoOrigem(
+        coluna, tipo, len(valores), sucesso=sucesso, fracasso=fracasso, chance=chance
+    )
+
+
+def resumo_origem_par(x: str, y: str, medidas: MedidasPar) -> ResumoOrigemPar:
+    return ResumoOrigemPar(
+        x,
+        y,
+        medidas.n,
+        medidas.media_x,
+        medidas.media_y,
+        medidas.desvio_x,
+        medidas.desvio_y,
+        medidas.r,
     )

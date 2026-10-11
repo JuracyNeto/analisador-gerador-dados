@@ -90,6 +90,29 @@ def test_ponto_e_virgula_vence_a_virgula_decimal() -> None:
     assert detectado.motivo == "Aparece 2 vezes em todas as linhas."
 
 
+def _duas_colunas_decimais(cabecalho: str, linha: str, n: int = 30) -> str:
+    return "\n".join([cabecalho, *([linha] * n)]) + "\n"
+
+
+@pytest.mark.parametrize(
+    "texto",
+    [
+        _duas_colunas_decimais("x;y", "1,5;2,25"),
+        _duas_colunas_decimais("idade;altura_m", "47,806994589372316;1,668630221036087"),
+        _duas_colunas_decimais("a;b", "1.234,5;-4,25"),
+    ],
+    ids=["duas_decimais", "csv_do_gerador", "com_milhar"],
+)
+def test_ponto_e_virgula_vence_mesmo_com_mais_virgulas_decimais(texto: str) -> None:
+    """Duas colunas decimais: 2 vírgulas por linha contra 1 ponto e vírgula (CSV do gerador)."""
+    assert detectar_separador(linhas_amostra(texto)).valor == ";"
+
+
+def test_virgula_continua_separador_quando_nao_e_decimal() -> None:
+    texto = _duas_colunas_decimais("a,b,c;d", "x,y,z;w")
+    assert detectar_separador(linhas_amostra(texto)).valor == ","
+
+
 def test_sem_separador_le_uma_coluna() -> None:
     assert detectar_separador(["valor", "1", "2"]).valor is None
 

@@ -24,6 +24,32 @@ describe('interpretarSessao', () => {
   });
 });
 
+describe('última geração (M3.1)', () => {
+  const GERADO = { id: 'g1', descricao: 'peso_kg · 500 valores' };
+
+  it('lê a última geração junto do dataset', () => {
+    const texto = JSON.stringify({ dataset: DATASET, etapasVisitadas: [], ultimoGerado: GERADO });
+
+    expect(interpretarSessao(texto)).toEqual({
+      dataset: DATASET,
+      etapasVisitadas: [],
+      ultimoGerado: GERADO,
+    });
+  });
+
+  it('mantém a geração mesmo sem dataset (gerador com parâmetros manuais)', () => {
+    const texto = JSON.stringify({ dataset: null, ultimoGerado: GERADO });
+
+    expect(interpretarSessao(texto)).toEqual({ ...SESSAO_VAZIA, ultimoGerado: GERADO });
+  });
+
+  it('ignora uma geração fora do formato', () => {
+    const texto = JSON.stringify({ dataset: DATASET, ultimoGerado: { id: 3 } });
+
+    expect(interpretarSessao(texto).ultimoGerado).toBeUndefined();
+  });
+});
+
 describe('comEtapaVisitada', () => {
   it('acrescenta sem repetir', () => {
     const uma = comEtapaVisitada({ dataset: DATASET, etapasVisitadas: [] }, 2);
