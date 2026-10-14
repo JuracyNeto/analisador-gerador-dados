@@ -2,6 +2,7 @@ import numpy as np
 
 from app.compartilhado.tipos import Severidade
 from app.dominios.detector.regras.r01_bloco_alinhado import RegraBlocoAlinhado
+from app.dominios.detector.resultados import GraficoBlocos
 from tests.dominios.detector.apoio import tabela_numerica
 
 
@@ -44,6 +45,12 @@ def test_bloco_com_media_e_desvio_do_conjunto_dispara_alta() -> None:
     assert aviso.exemplo.texto.startswith("Linhas 181 a 200: média ")
     assert " · DP " in aviso.exemplo.texto
     assert "(geral " in aviso.exemplo.texto
+    grafico = aviso.grafico
+    assert isinstance(grafico, GraficoBlocos)
+    assert grafico.tamanho == 20
+    assert len(grafico.medias) == 20
+    assert grafico.linhas_do_meio[0] == 10.5
+    assert grafico.alinhado[:2] == (181, 200)
 
 
 def test_detalhes_trazem_a_simulacao() -> None:

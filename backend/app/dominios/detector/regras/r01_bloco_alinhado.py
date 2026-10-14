@@ -13,7 +13,7 @@ from app.compartilhado.tipos import Severidade
 from app.dominios.detector import blocos, textos_blocos
 from app.dominios.detector.exemplos import exemplo_de_valores
 from app.dominios.detector.regras import base
-from app.dominios.detector.resultados import ExemploAviso
+from app.dominios.detector.resultados import ExemploAviso, GraficoBlocos
 
 MINIMO_VALORES = 60
 MENOR_BLOCO = 10
@@ -106,6 +106,7 @@ class RegraBlocoAlinhado(base.RegraBase[base.AlvoColuna, MedicaoBloco]):
             detalhes=textos_blocos.r01_detalhes(
                 medicao.k, medicao.distancias, EMBARALHAMENTOS, medicao.proporcao or 0.0
             ),
+            grafico=_grafico(alvo, medicao),
         )
 
 
@@ -114,3 +115,20 @@ def _exemplo(alvo: base.AlvoColuna, medicao: MedicaoBloco) -> ExemploAviso:
     exemplo = exemplo_de_valores(alvo.linhas[medicao.posicoes], alvo.valores[medicao.posicoes])
     texto = textos_blocos.r01_texto_exemplo(exemplo.linhas, medicao.bloco, medicao.geral)
     return ExemploAviso(exemplo.linhas, exemplo.valores, texto)
+
+
+def _grafico(alvo: base.AlvoColuna, medicao: MedicaoBloco) -> GraficoBlocos:
+    """Média de cada bloco de k linhas seguidas (sem sobrepor) e o bloco alinhado (D123)."""
+    k = medicao.k
+    usados = alvo.n // k * k
+    medias = alvo.valores[:usados].reshape(-1, k).mean(axis=1)
+    linhas = alvo.linhas[:usados].reshape(-1, k)
+    alinhadas = alvo.linhas[medicao.posicoes]
+    return GraficoBlocos(
+        coluna=alvo.nome,
+        tamanho=k,
+        linhas_do_meio=tuple(float(meio) for meio in (linhas[:, 0] + linhas[:, -1]) / 2),
+        medias=tuple(float(media) for media in medias),
+        geral=medicao.geral,
+        alinhado=(int(alinhadas[0]), int(alinhadas[-1]), medicao.bloco[0]),
+    )

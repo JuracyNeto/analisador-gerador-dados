@@ -22,6 +22,9 @@ def test_um_digito_repetido_demais_dispara_atencao() -> None:
     assert aviso.regra == "R9"
     assert aviso.severidade == Severidade.ATENCAO
     assert aviso.titulo == "Último dígito repetido em idade"
+    assert aviso.grafico is not None
+    assert aviso.grafico.posicao == "ultimo"
+    assert aviso.grafico.esperadas == (0.1,) * 10
     assert aviso.resumo == (
         "O último dígito de idade não está bem distribuído: "
         "o 0 aparece 24% das vezes (esperado 10%)."

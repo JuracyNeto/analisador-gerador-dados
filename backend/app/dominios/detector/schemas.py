@@ -5,6 +5,7 @@ from typing import Literal
 from pydantic import BaseModel, ConfigDict, TypeAdapter
 
 from app.compartilhado.tipos import Severidade
+from app.core.esquemas import Figura
 
 type CodigoRegra = Literal["R1", "R2", "R3", "R4", "R5", "R6", "R7", "R8", "R9", "R10", "R11"]
 CODIGOS_REGRA = TypeAdapter(list[CodigoRegra])
@@ -31,7 +32,10 @@ class DetalhesAviso(Modelo):
 
 
 class AvisoDetector(Modelo):
-    """Um alerta em 8 partes (spec 16); `colunas` vazio = linhas inteiras (R5)."""
+    """Um alerta em 8 partes (spec 16); `colunas` vazio = linhas inteiras (R5, R6).
+
+    `figura`: gráfico dos detalhes técnicos em R1, R8 e R9 (spec 08, D123).
+    """
 
     regra: CodigoRegra
     nome_regra: str
@@ -44,6 +48,7 @@ class AvisoDetector(Modelo):
     pode_ser_normal: str
     o_que_fazer: str
     detalhes: DetalhesAviso
+    figura: Figura | None
 
 
 class RegraNaoAplicada(Modelo):

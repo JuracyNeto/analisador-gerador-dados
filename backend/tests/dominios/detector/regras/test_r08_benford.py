@@ -27,6 +27,9 @@ def test_primeiro_digito_uniforme_dispara_atencao() -> None:
     assert aviso.regra == "R8"
     assert aviso.severidade == Severidade.ATENCAO
     assert aviso.titulo == "Primeiros dígitos fora do padrão em valor_venda"
+    assert aviso.grafico is not None
+    assert aviso.grafico.posicao == "primeiro"
+    assert aviso.grafico.digitos == tuple(range(1, 10))
     assert aviso.resumo.startswith(
         "Os primeiros dígitos de valor_venda não seguem o padrão natural "
         "(Lei de Benford): o 9 abre "

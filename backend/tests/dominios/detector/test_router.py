@@ -74,3 +74,29 @@ def test_duplicatas_somem_depois_da_limpeza(cliente: TestClient) -> None:
     corpo = _detector(cliente, dataset_id).json()
 
     assert _avisos(corpo, "R5") == []
+
+
+def _importar(cliente: TestClient, nome: str, linhas: list[str]) -> str:
+    conteudo = "\n".join(linhas).encode("utf-8")
+    resposta = cliente.post("/api/datasets", files={"arquivo": (nome, conteudo, "text/plain")})
+    return str(resposta.json()["dataset_id"])
+
+
+def test_ultimo_digito_vem_com_a_figura(cliente: TestClient) -> None:
+    finais = [0] * 48 + [d for _ in range(19) for d in range(1, 10)][:152]
+    idades = [20 + 10 * (i % 6) + final for i, final in enumerate(finais)]
+    dataset_id = _importar(cliente, "idades.txt", ["idade"] + [str(v) for v in idades])
+
+    corpo = _detector(cliente, dataset_id, "?regras=R9").json()
+
+    (aviso,) = corpo["avisos"]
+    figura = aviso["figura"]
+    assert figura["id"] == "ultimo_digito"
+    assert figura["titulo"] == "Último dígito de idade"
+    assert [traco["meta"] for traco in figura["dados"]["data"]] == ["principal", "referencia"]
+
+
+def test_avisos_sem_grafico_vem_sem_figura(cliente: TestClient) -> None:
+    corpo = _detector(cliente, _exemplo(cliente), "?regras=R5,R7").json()
+
+    assert {aviso["figura"] is None for aviso in corpo["avisos"]} == {True}

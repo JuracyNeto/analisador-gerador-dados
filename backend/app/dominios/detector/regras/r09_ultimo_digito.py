@@ -1,5 +1,7 @@
 """R9 — Último dígito: qui-quadrado de uniformidade dos dígitos finais (spec 12, D119)."""
 
+from dataclasses import replace
+
 import numpy as np
 
 from app.dominios.detector import digitos, textos
@@ -31,9 +33,10 @@ class RegraUltimoDigito(base.RegraBase[base.AlvoColuna, FrequenciaDigitos]):
     ) -> base.ConteudoAviso:
         digito = medicao.mais_acima
         proporcao = float(medicao.proporcoes[medicao.indice_mais_acima])
-        return base.conteudo_da_coluna(
+        conteudo = base.conteudo_da_coluna(
             alvo,
             textos.r09_textos(alvo.nome, digito, proporcao),
             textos.r09_detalhes(digito, proporcao, medicao.teste.p_valor),
             medicao.observados == digito,
         )
+        return replace(conteudo, grafico=medicao.grafico(alvo.nome, "ultimo"))

@@ -20,6 +20,7 @@ from app.dominios.detector.resultados import (
     Aviso,
     DetalhesAviso,
     ExemploAviso,
+    Grafico,
     RegraNaoAplicada,
     TextosAviso,
 )
@@ -183,6 +184,7 @@ class ConteudoAviso:
     textos: TextosAviso
     exemplo: ExemploAviso | None
     detalhes: DetalhesAviso
+    grafico: Grafico | None = None
 
 
 def conteudo_da_coluna(
@@ -277,6 +279,7 @@ class RegraBase[A: Alvo, M](ABC):
             pode_ser_normal=escrito.pode_ser_normal,
             o_que_fazer=escrito.o_que_fazer,
             detalhes=conteudo.detalhes,
+            grafico=conteudo.grafico,
         )
 
     def nao_aplicada(
