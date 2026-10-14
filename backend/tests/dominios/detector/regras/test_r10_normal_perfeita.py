@@ -28,6 +28,7 @@ def test_quantis_da_normal_disparam_informativo() -> None:
         "cintura_cm parece uma curva Normal perfeita demais (assimetria "
     )
     assert aviso.exemplo is None
+    assert aviso.resumo.endswith("(assimetria 0,000, curtose −0,022).")
     assert aviso.detalhes.teste == "Shapiro-Wilk"
     assert aviso.detalhes.p_valor is not None
     assert aviso.detalhes.p_valor > 0.99

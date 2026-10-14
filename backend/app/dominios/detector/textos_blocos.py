@@ -18,6 +18,7 @@ from app.dominios.detector.resultados import DetalhesAviso, TextosAviso
 MENOR_PERCENTUAL = 0.01
 """Abaixo de 0,01%, a diferença aparece como "menos de 0,01%"."""
 ALGARISMOS_PERCENTUAL = 2
+CASAS_DISTANCIA = 6
 
 
 def diferenca_percentual(fracao: float) -> str:
@@ -59,6 +60,11 @@ def r01_texto_exemplo(
     )
 
 
+def distancia(valor: float) -> str:
+    """dᵤ ou dₛ sem o ruído das contas: abaixo de 0,000001 vira 0."""
+    return textos.numero(round(valor, CASAS_DISTANCIA))
+
+
 def r01_detalhes(
     k: int, distancias: tuple[float, float], simulacoes: int, p: float
 ) -> DetalhesAviso:
@@ -69,7 +75,7 @@ def r01_detalhes(
             f"Janelas de {k} linhas seguidas: diferença de média (dᵤ) e de desvio (dₛ) "
             "para o conjunto todo, em desvios padrão"
         ),
-        valor=f"dᵤ = {textos.numero(distancias[0])} · dₛ = {textos.numero(distancias[1])}",
+        valor=f"dᵤ = {distancia(distancias[0])} · dₛ = {distancia(distancias[1])}",
         limiar="dᵤ e dₛ < 0,01 e menos de 1% dos embaralhamentos com uma janela tão parecida",
         teste=f"Simulação: {embaralhamentos} da coluna (semente fixa)",
         formula="dᵤ = |x̄_bloco − x̄| / s · dₛ = |s_bloco − s| / s",
@@ -235,6 +241,13 @@ def r06_detalhes_copias(copias: int, novas: int, acaso: float, p: float) -> Deta
 
 # R10 — Normal perfeita demais ---------------------------------------------------------------
 
+CASAS_FORMA = 3
+
+
+def medida_de_forma(valor: float) -> str:
+    """G₁ e G₂ com 3 casas: 0,009 · −0,045 (somar 0,0 tira o "−0,000")."""
+    return com_sinal_de_menos(formatar_fixo(round(valor, CASAS_FORMA) + 0.0, CASAS_FORMA))
+
 
 def r10_textos(coluna: str, assimetria: float, curtose: float) -> TextosAviso:
     """ "{col} parece uma curva Normal perfeita demais (assimetria {g1}, curtose {g2})."."""
@@ -242,7 +255,7 @@ def r10_textos(coluna: str, assimetria: float, curtose: float) -> TextosAviso:
         titulo=f"Curva Normal perfeita demais em {coluna}",
         resumo=(
             f"{coluna} parece uma curva Normal perfeita demais (assimetria "
-            f"{textos.numero(assimetria)}, curtose {textos.numero(curtose)})."
+            f"{medida_de_forma(assimetria)}, curtose {medida_de_forma(curtose)})."
         ),
         por_que=(
             "Dados reais quase nunca são tão perfeitos; "
@@ -258,7 +271,7 @@ def r10_detalhes(assimetria: float, curtose: float, teste: str, p: float) -> Det
     return DetalhesAviso(
         medida="Assimetria (G₁), curtose (G₂) e aderência à Normal",
         valor=(
-            f"G₁ = {textos.numero(assimetria)} · G₂ = {textos.numero(curtose)} · "
+            f"G₁ = {medida_de_forma(assimetria)} · G₂ = {medida_de_forma(curtose)} · "
             f"p = {formatar_numero(p, 3)}"
         ),
         limiar="|G₁| < 0,05, |G₂| < 0,1 e p > 0,99",
