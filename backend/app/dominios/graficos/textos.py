@@ -21,6 +21,9 @@ ROTULOS = {
     "residuos": "Resíduos",
     "matriz": "Matriz",
     "sobreposicao": "Sobreposição",
+    "blocos": "Média por bloco",
+    "benford": "Benford",
+    "ultimo_digito": "Último dígito",
 }
 
 PORQUE = {
@@ -67,6 +70,18 @@ PORQUE = {
         "mais parecidas são as distribuições."
     ),
     "pares_gerados": "Cada ponto é um par gerado; a nuvem mostra a correlação obtida.",
+    "blocos": (
+        "Cada ponto é a média de um bloco de linhas seguidas; em dados reais elas sobem e "
+        "descem em volta da média geral, e um bloco exatamente em cima dela chama atenção."
+    ),
+    "benford": (
+        "Compara quantas vezes cada dígito abre os valores com o que a Lei de Benford prevê "
+        "para dados naturais."
+    ),
+    "ultimo_digito": (
+        "Em medições reais, cada último dígito aparece perto de 10% das vezes; barras muito "
+        "acima ou abaixo da linha chamam atenção."
+    ),
 }
 
 
@@ -220,3 +235,53 @@ def resumo_pares_gerados(r: float, n: int, mostrados: int) -> str:
     if mostrados < n:
         resumo += f" Mostramos {formatar_numero(mostrados)} dos {formatar_numero(n)} pontos."
     return resumo
+
+
+ALGARISMOS_PERCENTUAL = 2
+NOME_BENFORD = "Lei de Benford"
+
+
+def percentual_curto(fracao: float) -> str:
+    """0,24 → "24%"; 0,0458 → "4,6%" (2 algarismos)."""
+    return f"{formatar_numero(fracao * 100, ALGARISMOS_PERCENTUAL)}%"
+
+
+def titulo_blocos(coluna: str, k: int) -> str:
+    return f"Média de {coluna} por bloco de {k} linhas"
+
+
+def resumo_blocos(linhas: tuple[int, int], media: float) -> str:
+    return (
+        f"A média das linhas {linhas[0]}–{linhas[1]} fica em cima da média geral "
+        f"({formatar_com_sinal(media)})."
+    )
+
+
+def nome_bloco_destacado(linhas: tuple[int, int]) -> str:
+    return f"Bloco alinhado (linhas {linhas[0]}–{linhas[1]})"
+
+
+def titulo_benford(coluna: str) -> str:
+    return f"1º dígito de {coluna}: observado × Benford"
+
+
+def resumo_benford(digito: int, observada: float, esperada: float) -> str:
+    return (
+        f"O {digito} abre {percentual_curto(observada)} dos valores; "
+        f"pela Lei de Benford seriam {percentual_curto(esperada)}."
+    )
+
+
+def titulo_ultimo_digito(coluna: str) -> str:
+    return f"Último dígito de {coluna}"
+
+
+def resumo_ultimo_digito(digito: int, observada: float, esperada: float) -> str:
+    return (
+        f"O {digito} aparece em {percentual_curto(observada)} dos valores; "
+        f"o esperado é {percentual_curto(esperada)}."
+    )
+
+
+def nome_esperado(esperada: float) -> str:
+    return f"Esperado ({percentual_curto(esperada)})"

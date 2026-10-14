@@ -38,6 +38,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/datasets/exemplos": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Arquivos de demonstração que dá para carregar */
+        get: operations["listar_exemplos_api_datasets_exemplos_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/datasets/exemplo": {
         parameters: {
             query?: never;
@@ -47,7 +64,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Importa o arquivo de exemplo (pesquisa_saude.txt) */
+        /** Importa um arquivo de demonstração (sem arquivo, pesquisa_saude.txt) */
         post: operations["importar_exemplo_api_datasets_exemplo_post"];
         delete?: never;
         options?: never;
@@ -516,6 +533,16 @@ export interface components {
             /** Figuras */
             figuras: components["schemas"]["Figura"][];
         };
+        /**
+         * ArquivoExemplo
+         * @description Arquivo de demonstração que dá para carregar com `POST /datasets/exemplo?arquivo=`.
+         */
+        ArquivoExemplo: {
+            /** Arquivo */
+            arquivo: string;
+            /** Descricao */
+            descricao: string;
+        };
         /** Aviso */
         Aviso: {
             /** Codigo */
@@ -525,7 +552,9 @@ export interface components {
         };
         /**
          * AvisoDetector
-         * @description Um alerta em 8 partes (spec 16); `colunas` vazio = linhas inteiras (R5).
+         * @description Um alerta em 8 partes (spec 16); `colunas` vazio = linhas inteiras (R5, R6).
+         *
+         *     `figura`: gráfico dos detalhes técnicos em R1, R8 e R9 (spec 08, D123).
          */
         AvisoDetector: {
             regra: components["schemas"]["CodigoRegra"];
@@ -546,6 +575,7 @@ export interface components {
             /** O Que Fazer */
             o_que_fazer: string;
             detalhes: components["schemas"]["DetalhesAviso"];
+            figura: components["schemas"]["Figura"] | null;
         };
         /** Bivariada */
         Bivariada: {
@@ -1515,9 +1545,32 @@ export interface operations {
             };
         };
     };
-    importar_exemplo_api_datasets_exemplo_post: {
+    listar_exemplos_api_datasets_exemplos_get: {
         parameters: {
             query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ArquivoExemplo"][];
+                };
+            };
+        };
+    };
+    importar_exemplo_api_datasets_exemplo_post: {
+        parameters: {
+            query?: {
+                /** @description Um dos arquivos de GET /datasets/exemplos */
+                arquivo?: string | null;
+            };
             header?: never;
             path?: never;
             cookie?: never;
@@ -1531,6 +1584,15 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["DatasetCriado"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
                 };
             };
         };

@@ -1,5 +1,7 @@
 """R8 — Lei de Benford: 1º dígito × log₁₀(1 + 1/d), χ² (gl = 8) e MAD de Nigrini (spec 12)."""
 
+from dataclasses import replace
+
 import numpy as np
 
 from app.dominios.detector import digitos, textos
@@ -50,7 +52,7 @@ class RegraBenford(base.RegraBase[base.AlvoColuna, FrequenciaDigitos]):
         indice = medicao.indice_mais_acima
         marcas = np.zeros(alvo.n, dtype=bool)
         marcas[alvo.valores > 0] = medicao.observados == medicao.mais_acima
-        return base.conteudo_da_coluna(
+        conteudo = base.conteudo_da_coluna(
             alvo,
             textos.r08_textos(
                 alvo.nome,
@@ -61,3 +63,4 @@ class RegraBenford(base.RegraBase[base.AlvoColuna, FrequenciaDigitos]):
             textos.r08_detalhes(medicao.mad, medicao.teste.p_valor),
             marcas,
         )
+        return replace(conteudo, grafico=medicao.grafico(alvo.nome, "primeiro"))

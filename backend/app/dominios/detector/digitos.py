@@ -9,6 +9,7 @@ from app.compartilhado import estatistica
 from app.compartilhado.estatistica import ResultadoQuiQuadrado
 from app.compartilhado.series import casas_decimais
 from app.dominios.detector import textos
+from app.dominios.detector.resultados import GraficoDigitos, PosicaoDigito
 
 MIN_PASSOS_CENTRAIS = 10
 """A metade central precisa cobrir 10 passos da resolução para o último dígito variar à toa."""
@@ -71,6 +72,16 @@ class FrequenciaDigitos:
     @property
     def mais_acima(self) -> int:
         return int(self.possiveis[self.indice_mais_acima])
+
+    def grafico(self, coluna: str, posicao: PosicaoDigito) -> GraficoDigitos:
+        """Dados da figura observado × esperado (R8, R9; D123)."""
+        return GraficoDigitos(
+            coluna,
+            posicao,
+            tuple(int(digito) for digito in self.possiveis),
+            tuple(float(proporcao) for proporcao in self.proporcoes),
+            tuple(float(esperada) for esperada in self.esperadas),
+        )
 
     @property
     def mad(self) -> float:

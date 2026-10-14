@@ -9,15 +9,26 @@ import pandas as pd
 from app.compartilhado.tipos import TIPOS_NUMERICOS, TipoVariavel
 
 
+@dataclass(frozen=True, slots=True)
+class FormaColuna:
+    """G₁, G₂ e o teste de normalidade da aba Forma, calculados pelo serviço (R10; D108)."""
+
+    assimetria: float
+    curtose: float
+    teste: str
+    p_normalidade: float
+
+
 @dataclass(frozen=True, slots=True, eq=False)
 class ColunaDetector:
-    """Uma coluna na ordem das linhas: números (NaN nos faltantes), textos e datas."""
+    """Uma coluna na ordem das linhas: números (NaN nos faltantes), textos, datas e forma."""
 
     nome: str
     tipo: TipoVariavel
     numeros: np.ndarray | None
     textos: tuple[str | None, ...]
     datas: np.ndarray | None = None
+    forma: FormaColuna | None = None
 
 
 @dataclass(frozen=True, slots=True, eq=False)
@@ -34,12 +45,17 @@ class TabelaDetector:
     def numericas(self) -> tuple[ColunaDetector, ...]:
         return self.do_tipo(TIPOS_NUMERICOS)
 
+    def numeros(self, coluna: ColunaDetector) -> np.ndarray:
+        """Números da coluna na ordem das linhas; sem números, tudo NaN."""
+        if coluna.numeros is None:
+            return np.full(self.n_linhas, np.nan)
+        return coluna.numeros
+
     def valores_validos(self, coluna: ColunaDetector) -> tuple[np.ndarray, np.ndarray]:
         """Números das linhas com valor e os valores, na ordem do arquivo."""
-        if coluna.numeros is None:
-            return np.array([], dtype="int64"), np.array([], dtype="float64")
-        validos = ~np.isnan(coluna.numeros)
-        return self.linhas[validos], coluna.numeros[validos]
+        numeros = self.numeros(coluna)
+        validos = ~np.isnan(numeros)
+        return self.linhas[validos], numeros[validos]
 
 
 def _textos(textos: pd.Series) -> tuple[str | None, ...]:

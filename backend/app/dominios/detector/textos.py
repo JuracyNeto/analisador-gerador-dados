@@ -100,6 +100,7 @@ def poucos_valores(minimo: int, n: int) -> str:
 
 SEM_NUMERICAS = "o arquivo não tem colunas numéricas"
 SEM_CONTINUAS = "o arquivo não tem colunas contínuas"
+SEM_PAR_NUMERICO = "o arquivo não tem duas colunas numéricas"
 VALORES_IGUAIS = "todos os valores são iguais"
 DIGITO_CONSTANTE = "o último dígito é sempre o mesmo"
 POUCA_VARIACAO = "os valores variam pouco para o último dígito ser aleatório"
@@ -136,8 +137,8 @@ def r07_detalhes(moderados: int, extremos: int, cercas: tuple[float, ...]) -> De
             f"{quantidade(extremos, 'extremo', 'extremos')}"
         ),
         limiar=(
-            f"Moderado: fora de {baixo} a {alto} (1,5·IQR) · "
-            f"extremo: fora de {baixo_extremo} a {alto_extremo} (3·IQR) ou |z| > 3"
+            f"Moderado: fora de {baixo} a {alto} (1,5·IQR) ou |z| > 3 · "
+            f"extremo: fora de {baixo_extremo} a {alto_extremo} (3·IQR)"
         ),
         formula="IQR = Q3 − Q1 · z = (x − x̄) / s",
     )

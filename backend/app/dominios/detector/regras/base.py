@@ -6,8 +6,9 @@ medir, dispara e o conteúdo do aviso são os passos de cada regra. Textos vêm 
 """
 
 from abc import ABC, abstractmethod
-from collections.abc import Collection
+from collections.abc import Collection, Sequence
 from dataclasses import dataclass
+from itertools import combinations
 from typing import Protocol
 
 import numpy as np
@@ -19,17 +20,18 @@ from app.dominios.detector.resultados import (
     Aviso,
     DetalhesAviso,
     ExemploAviso,
+    Grafico,
     RegraNaoAplicada,
     TextosAviso,
 )
-from app.dominios.detector.tabela import TabelaDetector
+from app.dominios.detector.tabela import ColunaDetector, FormaColuna, TabelaDetector
 
 LIMIAR_P = 0.01
 """Nível de significância das regras do detector (spec 12)."""
 
 
 class Alvo(Protocol):
-    """O que a regra examina: uma coluna, um par (M3.3) ou o arquivo todo."""
+    """O que a regra examina: uma coluna, um par ou o arquivo todo."""
 
     @property
     def rotulo(self) -> str | None: ...
@@ -43,6 +45,7 @@ class AlvoColuna:
     tipo: TipoVariavel
     linhas: np.ndarray
     valores: np.ndarray
+    forma: FormaColuna | None = None
 
     @property
     def rotulo(self) -> str:
@@ -51,6 +54,25 @@ class AlvoColuna:
     @property
     def n(self) -> int:
         return len(self.valores)
+
+
+@dataclass(frozen=True, slots=True, eq=False)
+class AlvoPar:
+    """Duas colunas numéricas: números das linhas com os dois valores e os valores, em ordem."""
+
+    x: str
+    y: str
+    linhas: np.ndarray
+    valores_x: np.ndarray
+    valores_y: np.ndarray
+
+    @property
+    def rotulo(self) -> str:
+        return f"{self.x} e {self.y}"
+
+    @property
+    def n(self) -> int:
+        return len(self.linhas)
 
 
 # Seletores (passo "alvos") ------------------------------------------------------------------
@@ -74,13 +96,33 @@ class ColunasDoTipo:
 
     def __call__(self, tabela: TabelaDetector) -> tuple[AlvoColuna, ...]:
         return tuple(
-            AlvoColuna(coluna.nome, coluna.tipo, *tabela.valores_validos(coluna))
+            AlvoColuna(coluna.nome, coluna.tipo, *tabela.valores_validos(coluna), coluna.forma)
             for coluna in tabela.do_tipo(self.tipos)
         )
 
 
 COLUNAS_NUMERICAS = ColunasDoTipo(TIPOS_NUMERICOS, textos.SEM_NUMERICAS)
 COLUNAS_CONTINUAS = ColunasDoTipo(frozenset({TipoVariavel.CONTINUA}), textos.SEM_CONTINUAS)
+
+
+def _par(tabela: TabelaDetector, x: ColunaDetector, y: ColunaDetector) -> AlvoPar:
+    """O par só com as linhas em que as duas colunas têm valor."""
+    numeros_x, numeros_y = tabela.numeros(x), tabela.numeros(y)
+    validos = ~(np.isnan(numeros_x) | np.isnan(numeros_y))
+    return AlvoPar(x.nome, y.nome, tabela.linhas[validos], numeros_x[validos], numeros_y[validos])
+
+
+@dataclass(frozen=True, slots=True)
+class ParesNumericos:
+    """Cada par de colunas numéricas (na ordem do arquivo) vira um alvo."""
+
+    motivo_sem_alvos: str = textos.SEM_PAR_NUMERICO
+
+    def __call__(self, tabela: TabelaDetector) -> tuple[AlvoPar, ...]:
+        return tuple(_par(tabela, x, y) for x, y in combinations(tabela.numericas(), 2))
+
+
+PARES_NUMERICOS = ParesNumericos()
 
 
 # Requisitos (passo "aplicável?") ------------------------------------------------------------
@@ -92,12 +134,22 @@ class Requisito[A](Protocol):
     def __call__(self, alvo: A) -> str | None: ...
 
 
+class AlvoContado(Alvo, Protocol):
+    @property
+    def n(self) -> int: ...
+
+
 @dataclass(frozen=True, slots=True)
 class MinimoDeValores:
     minimo: int
 
-    def __call__(self, alvo: AlvoColuna) -> str | None:
+    def __call__(self, alvo: AlvoContado) -> str | None:
         return textos.poucos_valores(self.minimo, alvo.n) if alvo.n < self.minimo else None
+
+
+def valores_variam(alvo: AlvoColuna) -> str | None:
+    """A coluna precisa ter valores diferentes entre si (depois do mínimo de valores)."""
+    return textos.VALORES_IGUAIS if np.ptp(alvo.valores) == 0 else None
 
 
 @dataclass(frozen=True, slots=True)
@@ -132,6 +184,7 @@ class ConteudoAviso:
     textos: TextosAviso
     exemplo: ExemploAviso | None
     detalhes: DetalhesAviso
+    grafico: Grafico | None = None
 
 
 def conteudo_da_coluna(
@@ -161,6 +214,19 @@ class Regra(Protocol):
     nome: str
 
     def executar(self, tabela: TabelaDetector) -> ResultadoRegra: ...
+
+
+def executar_em_partes(partes: Sequence[Regra], tabela: TabelaDetector) -> ResultadoRegra:
+    """Uma regra feita de partes com alvos diferentes (mesmo código e nome, ex.: R6).
+
+    O motivo repetido por todas as partes (ex.: "sem coluna de data") aparece uma vez só.
+    """
+    resultados = [parte.executar(tabela) for parte in partes]
+    return ResultadoRegra(
+        avisos=tuple(aviso for r in resultados for aviso in r.avisos),
+        nao_aplicadas=tuple(dict.fromkeys(item for r in resultados for item in r.nao_aplicadas)),
+        verificada=any(r.verificada for r in resultados),
+    )
 
 
 @dataclass(frozen=True, slots=True)
@@ -213,6 +279,7 @@ class RegraBase[A: Alvo, M](ABC):
             pode_ser_normal=escrito.pode_ser_normal,
             o_que_fazer=escrito.o_que_fazer,
             detalhes=conteudo.detalhes,
+            grafico=conteudo.grafico,
         )
 
     def nao_aplicada(

@@ -1,6 +1,8 @@
 """Value objects do detector: aviso em 8 partes, não aplicadas e resumo (spec 12, spec 16)."""
 
+from collections.abc import Mapping
 from dataclasses import dataclass
+from typing import Any, Literal, Protocol
 
 from app.compartilhado.tipos import Severidade
 
@@ -39,8 +41,52 @@ class TextosAviso:
 
 
 @dataclass(frozen=True, slots=True)
+class GraficoBlocos:
+    """Média de cada bloco de k linhas e o bloco alinhado (R1); a figura sai no serviço (D123)."""
+
+    coluna: str
+    tamanho: int
+    linhas_do_meio: tuple[float, ...]
+    medias: tuple[float, ...]
+    geral: tuple[float, float]
+    """(média, DP) do conjunto."""
+    alinhado: tuple[int, int, float]
+    """(primeira linha, última linha, média) do bloco alinhado."""
+
+
+type PosicaoDigito = Literal["primeiro", "ultimo"]
+
+
+@dataclass(frozen=True, slots=True)
+class GraficoDigitos:
+    """Proporção de cada dígito, observada × esperada (R8: primeiro; R9: último)."""
+
+    coluna: str
+    posicao: PosicaoDigito
+    digitos: tuple[int, ...]
+    observadas: tuple[float, ...]
+    esperadas: tuple[float, ...]
+
+
+type Grafico = GraficoBlocos | GraficoDigitos
+
+
+class FiguraPronta(Protocol):
+    """Figura montada pelo domínio graficos; o serviço a põe no aviso (D123)."""
+
+    @property
+    def id(self) -> str: ...
+
+    @property
+    def titulo(self) -> str: ...
+
+    @property
+    def dados(self) -> Mapping[str, Any]: ...
+
+
+@dataclass(frozen=True, slots=True)
 class Aviso:
-    """Um alerta com as 8 partes da spec 16."""
+    """Um alerta com as 8 partes da spec 16 e, em R1, R8 e R9, os dados do gráfico."""
 
     regra: str
     nome_regra: str
@@ -53,6 +99,8 @@ class Aviso:
     pode_ser_normal: str
     o_que_fazer: str
     detalhes: DetalhesAviso
+    grafico: Grafico | None = None
+    figura: FiguraPronta | None = None
 
 
 @dataclass(frozen=True, slots=True)

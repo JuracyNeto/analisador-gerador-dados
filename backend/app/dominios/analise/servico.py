@@ -9,6 +9,7 @@ from app.compartilhado.tipos import TIPOS_AUXILIARES, TIPOS_NUMERICOS
 from app.dominios.analise import erros
 from app.dominios.analise.bivariada import analisar_par, montar_par, prever_no_par
 from app.dominios.analise.correlacao import matriz_correlacao
+from app.dominios.analise.distribuicoes import teste_normalidade
 from app.dominios.analise.formulas import CHAVES_FORMA
 from app.dominios.analise.pontos_forma import PontosForma, pontos_da_forma
 from app.dominios.analise.posicao import calcular_posicao
@@ -23,6 +24,7 @@ from app.dominios.analise.resultados import (
     Posicao,
     ResumoNumerico,
     TabelaFrequencia,
+    TesteAderencia,
     TipoSeparatriz,
 )
 from app.dominios.analise.resultados_bivariada import Bivariada, MatrizCorrelacao, Par, Previsao
@@ -63,6 +65,7 @@ __all__ = [
     "Previsao",
     "ResumoNumerico",
     "ServicoAnalise",
+    "TesteAderencia",
     "TipoSeparatriz",
 ]
 
@@ -180,6 +183,11 @@ class ServicoAnalise:
     def resumo_numerico(valores: np.ndarray) -> ResumoNumerico:
         """Média, DP, G₁ e G₂ de um vetor qualquer, com as fórmulas da análise (D108)."""
         return resumo_numerico(valores)
+
+    @staticmethod
+    def teste_normalidade(valores: np.ndarray) -> TesteAderencia:
+        """Shapiro-Wilk até 5.000 valores; acima, D'Agostino-Pearson (o teste da aba Forma)."""
+        return teste_normalidade(valores)
 
     @staticmethod
     def sucesso_padrao(valores: pd.Series) -> str:

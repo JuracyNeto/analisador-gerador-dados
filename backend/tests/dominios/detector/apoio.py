@@ -1,10 +1,12 @@
 """Montagem de tabelas do detector para os testes (linhas numeradas a partir de 1)."""
 
 from collections.abc import Mapping, Sequence
+from dataclasses import replace
 
 import pandas as pd
 
 from app.compartilhado.tipos import TIPOS_NUMERICOS, TipoVariavel
+from app.dominios.detector.servico import forma_da_coluna
 from app.dominios.detector.tabela import TabelaDetector, coluna_detector, montar_tabela
 
 
@@ -13,13 +15,17 @@ def _textos(serie: pd.Series) -> pd.Series:
 
 
 def tabela_de(dados: pd.DataFrame, tipos: Mapping[str, TipoVariavel]) -> TabelaDetector:
-    """Tabela a partir de um DataFrame; as linhas viram 1, 2, 3…"""
+    """Tabela a partir de um DataFrame, como o serviço monta; as linhas viram 1, 2, 3…"""
     numerado = dados.set_axis(pd.RangeIndex(1, len(dados) + 1), axis="index")
     colunas = []
     for nome, tipo in tipos.items():
         serie = numerado[nome]
         numeros = pd.to_numeric(serie, errors="coerce") if tipo in TIPOS_NUMERICOS else None
-        colunas.append(coluna_detector(nome, tipo, numeros, _textos(serie)))
+        datas = pd.to_datetime(serie, errors="coerce") if tipo == TipoVariavel.DATA else None
+        coluna = coluna_detector(nome, tipo, numeros, _textos(serie), datas)
+        if tipo == TipoVariavel.CONTINUA and numeros is not None:
+            coluna = replace(coluna, forma=forma_da_coluna(numeros))
+        colunas.append(coluna)
     return montar_tabela(numerado.index, colunas)
 
 
