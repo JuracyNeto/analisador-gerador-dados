@@ -256,3 +256,40 @@ def r08_detalhes(mad: float, p: float) -> DetalhesAviso:
         p_valor=p,
         p_em_palavras=p_em_palavras(p),
     )
+
+
+# R3 — Formato numérico ----------------------------------------------------------------------
+
+
+def _onde_inteiros(passo: int) -> str:
+    return "aparecem juntos" if passo == 1 else f"aparecem a cada {passo} linhas"
+
+
+def r03_textos(
+    coluna: str, proporcao: float, k: int, passo: int, linhas: tuple[int, int]
+) -> TextosAviso:
+    """ "Em {col}, {pct}% dos valores têm casas decimais, mas {k} inteiros…" (spec 16)."""
+    return TextosAviso(
+        titulo=f"Inteiros no meio de decimais em {coluna}",
+        resumo=(
+            f"Em {coluna}, {percentual(proporcao)} dos valores têm casas decimais, "
+            f"mas {formatar_inteiro(k)} inteiros {_onde_inteiros(passo)} "
+            f"(linhas {linhas[0]}–{linhas[1]})."
+        ),
+        por_que="Uma mudança de formato no meio dos dados pode indicar outra origem.",
+        pode_ser_normal="…parte dos dados veio de outro instrumento.",
+        o_que_fazer="Confira de onde vieram essas linhas.",
+    )
+
+
+def r03_detalhes(proporcao: float, k: int, passo: int) -> DetalhesAviso:
+    return DetalhesAviso(
+        medida="Valores com casas decimais e posição dos inteiros",
+        valor=(
+            f"{percentual(proporcao)} com decimais · "
+            f"{formatar_inteiro(k)} inteiros {_onde_inteiros(passo)}"
+        ),
+        limiar=(
+            "≥ 80% com decimais e ≥ 5 inteiros seguidos ou a passo constante (4 repetições ou mais)"
+        ),
+    )
