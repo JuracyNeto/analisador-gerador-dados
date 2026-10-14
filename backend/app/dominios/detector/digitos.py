@@ -1,8 +1,12 @@
 """Dígitos final e inicial dos valores (R4, R8, R9; D119)."""
 
+from dataclasses import dataclass
+
 import numpy as np
 import pandas as pd
 
+from app.compartilhado import estatistica
+from app.compartilhado.estatistica import ResultadoQuiQuadrado
 from app.compartilhado.series import casas_decimais
 from app.dominios.detector import textos
 
@@ -47,3 +51,38 @@ def motivo_digito_final(valores: np.ndarray, minimo: int) -> str | None:
     if passos_centrais(valores, casas) < MIN_PASSOS_CENTRAIS:
         return textos.POUCA_VARIACAO
     return None
+
+
+@dataclass(frozen=True, slots=True, eq=False)
+class FrequenciaDigitos:
+    """Dígito de cada valor e as proporções observadas × esperadas, com o qui-quadrado."""
+
+    observados: np.ndarray
+    possiveis: np.ndarray
+    proporcoes: np.ndarray
+    esperadas: np.ndarray
+    teste: ResultadoQuiQuadrado
+
+    @property
+    def indice_mais_acima(self) -> int:
+        """Posição do dígito que mais passa do esperado."""
+        return int(np.argmax(self.proporcoes - self.esperadas))
+
+    @property
+    def mais_acima(self) -> int:
+        return int(self.possiveis[self.indice_mais_acima])
+
+    @property
+    def mad(self) -> float:
+        """Desvio absoluto médio: média de |observado − esperado| (Nigrini)."""
+        return float(np.mean(np.abs(self.proporcoes - self.esperadas)))
+
+
+def comparar_frequencias(
+    observados: np.ndarray, possiveis: np.ndarray, esperadas: np.ndarray
+) -> FrequenciaDigitos:
+    """χ² das contagens de cada dígito possível contra as proporções esperadas."""
+    contagens = np.bincount(observados, minlength=int(possiveis.max()) + 1)[possiveis]
+    n = len(observados)
+    teste = estatistica.teste_qui_quadrado(contagens, n * esperadas)
+    return FrequenciaDigitos(observados, possiveis, contagens / n, esperadas, teste)

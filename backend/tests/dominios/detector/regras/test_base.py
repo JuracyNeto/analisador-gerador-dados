@@ -1,5 +1,6 @@
 """Ordem dos passos do Template Method com uma regra de teste."""
 
+from collections.abc import Callable
 from dataclasses import dataclass, field
 
 import pandas as pd
@@ -9,7 +10,9 @@ from app.dominios.detector.regras.base import (
     COLUNAS_CONTINUAS,
     AlvoColuna,
     ConteudoAviso,
+    MinimoDeValores,
     RegraBase,
+    Todos,
 )
 from app.dominios.detector.resultados import DetalhesAviso, TextosAviso
 from tests.dominios.detector.apoio import tabela_de, tabela_numerica
@@ -24,12 +27,9 @@ class RegraDeTeste(RegraBase[AlvoColuna, float]):
 
     codigo = "R0"
     nome = "Regra de teste"
-    motivo_sem_alvos = "o arquivo não tem colunas numéricas"
     seletor = COLUNAS_CONTINUAS
+    requisito = MinimoDeValores(MINIMO)
     medidas: list[str] = field(default_factory=list)
-
-    def motivo_nao_aplicavel(self, alvo: AlvoColuna) -> str | None:
-        return "poucos valores" if alvo.n < MINIMO else None
 
     def medir(self, alvo: AlvoColuna) -> float:
         self.medidas.append(alvo.nome)
@@ -76,8 +76,10 @@ def test_alvo_nao_aplicavel_nao_e_medido() -> None:
     assert regra.medidas == ["b"]
     (nao_aplicada,) = resultado.nao_aplicadas
     assert nao_aplicada.coluna == "a"
-    assert nao_aplicada.motivo == "poucos valores"
-    assert nao_aplicada.frase == "Regra de teste não verificada em a: poucos valores."
+    assert nao_aplicada.motivo == "precisa de 3 valores ou mais; a coluna tem 1"
+    assert nao_aplicada.frase == (
+        "Regra de teste não verificada em a: precisa de 3 valores ou mais; a coluna tem 1."
+    )
     assert resultado.verificada
 
 
@@ -94,7 +96,20 @@ def test_sem_alvos_a_regra_diz_o_motivo_sem_coluna() -> None:
 
     (nao_aplicada,) = resultado.nao_aplicadas
     assert nao_aplicada.coluna is None
-    assert (
-        nao_aplicada.frase == "Regra de teste não verificada: o arquivo não tem colunas numéricas."
+    assert nao_aplicada.frase == (
+        "Regra de teste não verificada: o arquivo não tem colunas contínuas."
     )
     assert not resultado.verificada
+
+
+def _sempre(motivo: str | None) -> Callable[[AlvoColuna], str | None]:
+    return lambda _alvo: motivo
+
+
+def test_todos_devolve_o_motivo_do_primeiro_requisito_que_falha() -> None:
+    (alvo,) = COLUNAS_CONTINUAS(tabela_numerica([1.0, 2.0]))
+
+    requisito = Todos((_sempre(None), _sempre("primeiro"), _sempre("segundo")))
+
+    assert requisito(alvo) == "primeiro"
+    assert Todos((_sempre(None),))(alvo) is None

@@ -13,7 +13,7 @@ from app.dominios.detector.duplicatas import (
     repetidos_ou_quase,
 )
 from app.dominios.detector.exemplos import MAX_LINHAS_EXEMPLO
-from app.dominios.detector.regras.base import ConteudoAviso, RegraBase, ResultadoRegra
+from app.dominios.detector.regras import base
 from app.dominios.detector.resultados import ExemploAviso
 from app.dominios.detector.tabela import ColunaDetector, TabelaDetector
 
@@ -55,6 +55,8 @@ class AlvoArquivo:
 class ArquivoTodo:
     """Seletor da R5: um alvo só, com as colunas que não são identificadores."""
 
+    motivo_sem_alvos: str = textos.SO_IDENTIFICADORES
+
     def __call__(self, tabela: TabelaDetector) -> tuple[AlvoArquivo, ...]:
         colunas = tuple(
             coluna
@@ -82,6 +84,14 @@ class MedicaoDuplicatas:
         return max(self.grupos, key=lambda g: (len(g.maior_sequencia), len(g.posicoes)))
 
 
+def _colunas_suficientes(alvo: AlvoArquivo) -> str | None:
+    return textos.POUCAS_COLUNAS if len(alvo.colunas) < MINIMO_COLUNAS else None
+
+
+def _linhas_suficientes(alvo: AlvoArquivo) -> str | None:
+    return textos.poucas_linhas(MINIMO_LINHAS, alvo.n) if alvo.n < MINIMO_LINHAS else None
+
+
 def _exemplo(alvo: AlvoArquivo, grupo: GrupoRepetido) -> ExemploAviso:
     posicoes = grupo.posicoes[:MAX_LINHAS_EXEMPLO]
     linhas = tuple(int(linha) for linha in alvo.linhas[posicoes])
@@ -90,15 +100,15 @@ def _exemplo(alvo: AlvoArquivo, grupo: GrupoRepetido) -> ExemploAviso:
     return ExemploAviso(linhas, valores, escrever(linhas, valores[0]))
 
 
-class RegraDuplicatas(RegraBase[AlvoArquivo, MedicaoDuplicatas]):
+class RegraDuplicatas(base.RegraBase[AlvoArquivo, MedicaoDuplicatas]):
     """Qualquer cópia → atenção; 3 linhas iguais seguidas ou mais → suspeita alta."""
 
     codigo = "R5"
     nome = "Duplicatas"
-    motivo_sem_alvos = textos.SO_IDENTIFICADORES
     seletor = ArquivoTodo()
+    requisito = base.Todos((_colunas_suficientes, _linhas_suficientes))
 
-    def executar(self, tabela: TabelaDetector) -> ResultadoRegra:
+    def executar(self, tabela: TabelaDetector) -> base.ResultadoRegra:
         """Como na base; em arquivos grandes, avisa que as quase iguais ficaram de fora."""
         resultado = super().executar(tabela)
         if not resultado.verificada or tabela.n_linhas <= LIMITE_QUASE or not tabela.numericas():
@@ -106,13 +116,6 @@ class RegraDuplicatas(RegraBase[AlvoArquivo, MedicaoDuplicatas]):
         motivo, frase = textos.r05_ressalva(tabela.n_linhas, LIMITE_QUASE)
         ressalva = self.nao_aplicada(None, motivo, frase)
         return replace(resultado, nao_aplicadas=(*resultado.nao_aplicadas, ressalva))
-
-    def motivo_nao_aplicavel(self, alvo: AlvoArquivo) -> str | None:
-        if len(alvo.colunas) < MINIMO_COLUNAS:
-            return textos.POUCAS_COLUNAS
-        if alvo.n < MINIMO_LINHAS:
-            return textos.poucas_linhas(MINIMO_LINHAS, alvo.n)
-        return None
 
     def medir(self, alvo: AlvoArquivo) -> MedicaoDuplicatas:
         chaves = chaves_das_colunas(alvo.colunas)
@@ -123,7 +126,7 @@ class RegraDuplicatas(RegraBase[AlvoArquivo, MedicaoDuplicatas]):
     def dispara(self, medicao: MedicaoDuplicatas) -> bool:
         return bool(medicao.grupos)
 
-    def conteudo_aviso(self, alvo: AlvoArquivo, medicao: MedicaoDuplicatas) -> ConteudoAviso:
+    def conteudo_aviso(self, alvo: AlvoArquivo, medicao: MedicaoDuplicatas) -> base.ConteudoAviso:
         destaque = medicao.destaque
         sequencia = destaque.maior_sequencia
         seguidas = (
@@ -136,7 +139,7 @@ class RegraDuplicatas(RegraBase[AlvoArquivo, MedicaoDuplicatas]):
             if alvo.compara_quase_iguais
             else textos.R05_FORMULA_IDENTICAS
         )
-        return ConteudoAviso(
+        return base.ConteudoAviso(
             severidade=Severidade.ALTA if seguidas else Severidade.ATENCAO,
             colunas=(),
             textos=textos.r05_textos(medicao.copias, medicao.grupos_quase, seguidas),

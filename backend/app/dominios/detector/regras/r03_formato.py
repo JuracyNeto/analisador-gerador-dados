@@ -7,12 +7,7 @@ import numpy as np
 from app.compartilhado.tipos import Severidade
 from app.dominios.detector import textos
 from app.dominios.detector.exemplos import exemplo_de_valores
-from app.dominios.detector.regras.base import (
-    COLUNAS_CONTINUAS,
-    AlvoColuna,
-    ConteudoAviso,
-    RegraBase,
-)
+from app.dominios.detector.regras import base
 
 MINIMO_VALORES = 30
 MINIMO_DECIMAIS = 0.8
@@ -75,31 +70,26 @@ def padrao_dos_inteiros(inteiros: np.ndarray) -> PadraoInteiros:
     return max(candidatos, key=lambda p: (p.passo == 1, p.quantidade), default=SEM_PADRAO)
 
 
-class RegraFormato(RegraBase[AlvoColuna, MedicaoFormato]):
+class RegraFormato(base.RegraBase[base.AlvoColuna, MedicaoFormato]):
     """≥ 80% dos valores com decimais e inteiros agrupados ou em posições regulares."""
 
     codigo = "R3"
     nome = "Formato numérico"
-    motivo_sem_alvos = textos.SEM_CONTINUAS
-    seletor = COLUNAS_CONTINUAS
+    seletor = base.COLUNAS_CONTINUAS
+    requisito = base.MinimoDeValores(MINIMO_VALORES)
 
-    def motivo_nao_aplicavel(self, alvo: AlvoColuna) -> str | None:
-        if alvo.n < MINIMO_VALORES:
-            return textos.poucos_valores(MINIMO_VALORES, alvo.n)
-        return None
-
-    def medir(self, alvo: AlvoColuna) -> MedicaoFormato:
+    def medir(self, alvo: base.AlvoColuna) -> MedicaoFormato:
         inteiros = np.abs(alvo.valores - np.round(alvo.valores)) < TOLERANCIA
         return MedicaoFormato(1 - float(inteiros.mean()), padrao_dos_inteiros(inteiros))
 
     def dispara(self, medicao: MedicaoFormato) -> bool:
         return medicao.proporcao_decimais >= MINIMO_DECIMAIS and medicao.padrao.encontrado
 
-    def conteudo_aviso(self, alvo: AlvoColuna, medicao: MedicaoFormato) -> ConteudoAviso:
+    def conteudo_aviso(self, alvo: base.AlvoColuna, medicao: MedicaoFormato) -> base.ConteudoAviso:
         padrao = medicao.padrao
         posicoes = padrao.posicoes
         linhas = (int(alvo.linhas[padrao.inicio]), int(alvo.linhas[padrao.fim]))
-        return ConteudoAviso(
+        return base.ConteudoAviso(
             severidade=Severidade.ATENCAO,
             colunas=(alvo.nome,),
             textos=textos.r03_textos(

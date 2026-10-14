@@ -7,12 +7,7 @@ import numpy as np
 from app.compartilhado.tipos import Severidade
 from app.dominios.detector import textos
 from app.dominios.detector.exemplos import exemplo_de_valores
-from app.dominios.detector.regras.base import (
-    COLUNAS_NUMERICAS,
-    AlvoColuna,
-    ConteudoAviso,
-    RegraBase,
-)
+from app.dominios.detector.regras import base
 
 MINIMO_VALORES = 10
 FATOR_MODERADO = 1.5
@@ -54,23 +49,24 @@ def _quartis(valores: np.ndarray) -> tuple[float, float]:
     return float(q1), float(q3)
 
 
-class RegraOutliers(RegraBase[AlvoColuna, MedicaoDistantes]):
+def _valores_variam(alvo: base.AlvoColuna) -> str | None:
+    return textos.VALORES_IGUAIS if np.ptp(alvo.valores) == 0 else None
+
+
+def _centro_varia(alvo: base.AlvoColuna) -> str | None:
+    q1, q3 = _quartis(alvo.valores)
+    return textos.METADE_CENTRAL_IGUAL if q1 == q3 else None
+
+
+class RegraOutliers(base.RegraBase[base.AlvoColuna, MedicaoDistantes]):
     """Moderado (fora de 1,5·IQR) → informativo; extremo (3·IQR ou |z| > 3) → atenção."""
 
     codigo = "R7"
     nome = "Valores distantes"
-    motivo_sem_alvos = textos.SEM_NUMERICAS
-    seletor = COLUNAS_NUMERICAS
+    seletor = base.COLUNAS_NUMERICAS
+    requisito = base.Todos((base.MinimoDeValores(MINIMO_VALORES), _valores_variam, _centro_varia))
 
-    def motivo_nao_aplicavel(self, alvo: AlvoColuna) -> str | None:
-        if alvo.n < MINIMO_VALORES:
-            return textos.poucos_valores(MINIMO_VALORES, alvo.n)
-        if np.ptp(alvo.valores) == 0:
-            return textos.VALORES_IGUAIS
-        q1, q3 = _quartis(alvo.valores)
-        return textos.METADE_CENTRAL_IGUAL if q1 == q3 else None
-
-    def medir(self, alvo: AlvoColuna) -> MedicaoDistantes:
+    def medir(self, alvo: base.AlvoColuna) -> MedicaoDistantes:
         valores = alvo.valores
         q1, q3 = _quartis(valores)
         z = (valores - valores.mean()) / valores.std(ddof=1)
@@ -81,13 +77,15 @@ class RegraOutliers(RegraBase[AlvoColuna, MedicaoDistantes]):
     def dispara(self, medicao: MedicaoDistantes) -> bool:
         return bool(medicao.distantes.any())
 
-    def conteudo_aviso(self, alvo: AlvoColuna, medicao: MedicaoDistantes) -> ConteudoAviso:
+    def conteudo_aviso(
+        self, alvo: base.AlvoColuna, medicao: MedicaoDistantes
+    ) -> base.ConteudoAviso:
         distantes = medicao.distantes
         mais_longe = int(np.argmax(np.where(distantes, np.abs(medicao.z), -np.inf)))
         exemplo = float(alvo.valores[mais_longe])
         baixo, alto = medicao.cercas(FATOR_MODERADO)
         extremos = int(medicao.extremos.sum())
-        return ConteudoAviso(
+        return base.ConteudoAviso(
             severidade=Severidade.ATENCAO if extremos else Severidade.INFO,
             colunas=(alvo.nome,),
             textos=textos.r07_textos(

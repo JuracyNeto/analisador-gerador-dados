@@ -1,7 +1,8 @@
 """Regra base do detector (Template Method, D118).
 
-`executar` pega os alvos do seletor e faz, para cada um: aplicável? → medir → dispara? →
-aviso. As subclasses só implementam os passos; textos vêm de `detector/textos.py`.
+`executar` pega os alvos do seletor e faz, para cada um: requisito (aplicável?) → medir →
+dispara? → aviso. Seletor e requisito são objetos compostos (reaproveitados entre regras);
+medir, dispara e o conteúdo do aviso são os passos de cada regra. Textos vêm de `textos.py`.
 """
 
 from abc import ABC, abstractmethod
@@ -12,7 +13,7 @@ from typing import Protocol
 import numpy as np
 
 from app.compartilhado.tipos import TIPOS_NUMERICOS, Severidade, TipoVariavel
-from app.dominios.detector import textos
+from app.dominios.detector import digitos, textos
 from app.dominios.detector.exemplos import exemplo_do_trecho
 from app.dominios.detector.resultados import (
     Aviso,
@@ -52,8 +53,14 @@ class AlvoColuna:
         return len(self.valores)
 
 
+# Seletores (passo "alvos") ------------------------------------------------------------------
+
+
 class SeletorAlvos[A](Protocol):
-    """Escolhe na tabela o que a regra examina (passo "alvos" do Template Method)."""
+    """Escolhe na tabela o que a regra examina e diz o motivo quando não há nada."""
+
+    @property
+    def motivo_sem_alvos(self) -> str: ...
 
     def __call__(self, tabela: TabelaDetector) -> tuple[A, ...]: ...
 
@@ -63,6 +70,7 @@ class ColunasDoTipo:
     """Cada coluna numérica dos tipos dados vira um alvo, com os valores válidos."""
 
     tipos: Collection[TipoVariavel]
+    motivo_sem_alvos: str
 
     def __call__(self, tabela: TabelaDetector) -> tuple[AlvoColuna, ...]:
         return tuple(
@@ -71,8 +79,48 @@ class ColunasDoTipo:
         )
 
 
-COLUNAS_NUMERICAS = ColunasDoTipo(TIPOS_NUMERICOS)
-COLUNAS_CONTINUAS = ColunasDoTipo(frozenset({TipoVariavel.CONTINUA}))
+COLUNAS_NUMERICAS = ColunasDoTipo(TIPOS_NUMERICOS, textos.SEM_NUMERICAS)
+COLUNAS_CONTINUAS = ColunasDoTipo(frozenset({TipoVariavel.CONTINUA}), textos.SEM_CONTINUAS)
+
+
+# Requisitos (passo "aplicável?") ------------------------------------------------------------
+
+
+class Requisito[A](Protocol):
+    """Por que a regra não se aplica ao alvo, ou None se ela se aplica."""
+
+    def __call__(self, alvo: A) -> str | None: ...
+
+
+@dataclass(frozen=True, slots=True)
+class MinimoDeValores:
+    minimo: int
+
+    def __call__(self, alvo: AlvoColuna) -> str | None:
+        return textos.poucos_valores(self.minimo, alvo.n) if alvo.n < self.minimo else None
+
+
+@dataclass(frozen=True, slots=True)
+class DigitoFinalTestavel:
+    """n mínimo, último dígito variável e valores que variam o bastante (R4, R9; D119)."""
+
+    minimo: int
+
+    def __call__(self, alvo: AlvoColuna) -> str | None:
+        return digitos.motivo_digito_final(alvo.valores, self.minimo)
+
+
+@dataclass(frozen=True, slots=True)
+class Todos[A]:
+    """Os requisitos em ordem; vale o motivo do primeiro que falhar."""
+
+    requisitos: tuple[Requisito[A], ...]
+
+    def __call__(self, alvo: A) -> str | None:
+        return next((m for requisito in self.requisitos if (m := requisito(alvo))), None)
+
+
+# Aviso --------------------------------------------------------------------------------------
 
 
 @dataclass(frozen=True, slots=True)
@@ -123,18 +171,19 @@ class _Exame:
 
 
 class RegraBase[A: Alvo, M](ABC):
-    """Fluxo comum às regras; cada subclasse define código, nome, limiares e os passos."""
+    """Fluxo comum às regras; cada subclasse define código, nome, seletor, requisito e passos."""
 
     codigo: str
     nome: str
-    motivo_sem_alvos: str
     seletor: SeletorAlvos[A]
+    requisito: Requisito[A]
 
     def executar(self, tabela: TabelaDetector) -> ResultadoRegra:
         """Examina cada alvo e junta avisos e regras não aplicadas."""
         alvos = self.seletor(tabela)
         if not alvos:
-            return ResultadoRegra((), (self.nao_aplicada(None, self.motivo_sem_alvos),), False)
+            sem_alvos = self.nao_aplicada(None, self.seletor.motivo_sem_alvos)
+            return ResultadoRegra((), (sem_alvos,), verificada=False)
         exames = [self._examinar(alvo) for alvo in alvos]
         return ResultadoRegra(
             avisos=tuple(exame.aviso for exame in exames if exame.aviso is not None),
@@ -143,7 +192,7 @@ class RegraBase[A: Alvo, M](ABC):
         )
 
     def _examinar(self, alvo: A) -> _Exame:
-        motivo = self.motivo_nao_aplicavel(alvo)
+        motivo = self.requisito(alvo)
         if motivo is not None:
             return _Exame(nao_aplicadas=(self.nao_aplicada(alvo.rotulo, motivo),), aplicavel=False)
         medicao = self.medir(alvo)
@@ -172,10 +221,6 @@ class RegraBase[A: Alvo, M](ABC):
         """Regra não verificada num alvo; a frase padrão é a da spec 16."""
         texto = frase or textos.frase_nao_aplicada(self.nome, rotulo, motivo)
         return RegraNaoAplicada(self.codigo, self.nome, rotulo, motivo, texto)
-
-    @abstractmethod
-    def motivo_nao_aplicavel(self, alvo: A) -> str | None:
-        """Por que a regra não se aplica ao alvo, ou None se ela se aplica."""
 
     @abstractmethod
     def medir(self, alvo: A) -> M:

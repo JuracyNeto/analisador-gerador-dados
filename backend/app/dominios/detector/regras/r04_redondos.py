@@ -6,14 +6,7 @@ import numpy as np
 
 from app.compartilhado import estatistica
 from app.dominios.detector import digitos, textos
-from app.dominios.detector.regras.base import (
-    COLUNAS_NUMERICAS,
-    LIMIAR_P,
-    AlvoColuna,
-    ConteudoAviso,
-    RegraBase,
-    conteudo_da_coluna,
-)
+from app.dominios.detector.regras import base
 
 MINIMO_VALORES = 50
 RAZAO_MINIMA = 1.5
@@ -52,7 +45,7 @@ class MedicaoRedondos:
 
     @property
     def acima_do_esperado(self) -> bool:
-        return self.p_valor < LIMIAR_P and self.razao >= RAZAO_MINIMA
+        return self.p_valor < base.LIMIAR_P and self.razao >= RAZAO_MINIMA
 
 
 def _medir(finais: np.ndarray, casas: int, arredondamento: Arredondamento) -> MedicaoRedondos:
@@ -62,18 +55,15 @@ def _medir(finais: np.ndarray, casas: int, arredondamento: Arredondamento) -> Me
     return MedicaoRedondos(arredondamento, casas, redondos, p)
 
 
-class RegraRedondos(RegraBase[AlvoColuna, MedicaoRedondos]):
+class RegraRedondos(base.RegraBase[base.AlvoColuna, MedicaoRedondos]):
     """Binomial unilateral p < 0,01 e pelo menos 1,5× o esperado; avisa o mais forte."""
 
     codigo = "R4"
     nome = "Valores redondos"
-    motivo_sem_alvos = textos.SEM_NUMERICAS
-    seletor = COLUNAS_NUMERICAS
+    seletor = base.COLUNAS_NUMERICAS
+    requisito = base.DigitoFinalTestavel(MINIMO_VALORES)
 
-    def motivo_nao_aplicavel(self, alvo: AlvoColuna) -> str | None:
-        return digitos.motivo_digito_final(alvo.valores, MINIMO_VALORES)
-
-    def medir(self, alvo: AlvoColuna) -> MedicaoRedondos:
+    def medir(self, alvo: base.AlvoColuna) -> MedicaoRedondos:
         casas = digitos.resolucao(alvo.valores)
         finais = digitos.digitos_finais(alvo.valores, casas)
         medicoes = [_medir(finais, casas, tipo) for tipo in ARREDONDAMENTOS]
@@ -82,10 +72,10 @@ class RegraRedondos(RegraBase[AlvoColuna, MedicaoRedondos]):
     def dispara(self, medicao: MedicaoRedondos) -> bool:
         return medicao.acima_do_esperado
 
-    def conteudo_aviso(self, alvo: AlvoColuna, medicao: MedicaoRedondos) -> ConteudoAviso:
+    def conteudo_aviso(self, alvo: base.AlvoColuna, medicao: MedicaoRedondos) -> base.ConteudoAviso:
         tipo = medicao.arredondamento
         passo = tipo.multiplo / 10**medicao.casas
-        return conteudo_da_coluna(
+        return base.conteudo_da_coluna(
             alvo,
             textos.r04_textos(alvo.nome, medicao.proporcao, tipo.esperado, tipo.multiplo, passo),
             textos.r04_detalhes(tipo.multiplo, medicao.k, alvo.n, tipo.esperado, medicao.p_valor),
