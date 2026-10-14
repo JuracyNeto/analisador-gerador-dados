@@ -7,8 +7,9 @@ from app.dominios.detector.digitos import FrequenciaDigitos
 from app.dominios.detector.regras import base
 
 MINIMO_POSITIVOS = 100
-MINIMO_RAZAO_MAX_MIN = 100
-"""Duas ordens de grandeza entre o maior e o menor valor positivo."""
+MINIMO_RAZAO_ORDENS = 100
+"""Duas ordens de grandeza entre P99 e P1 dos positivos (robusto a valores digitados errado)."""
+PONTAS = (0.01, 0.99)
 LIMITE_MAD = 0.015
 PRIMEIROS_POSSIVEIS = np.arange(1, 10)
 BENFORD = np.log10(1 + 1 / PRIMEIROS_POSSIVEIS)
@@ -24,14 +25,12 @@ def _positivos_suficientes(alvo: base.AlvoColuna) -> str | None:
 
 
 def _varias_ordens(alvo: base.AlvoColuna) -> str | None:
-    positivos = alvo.valores[alvo.valores > 0]
-    return (
-        textos.POUCAS_ORDENS if positivos.max() < MINIMO_RAZAO_MAX_MIN * positivos.min() else None
-    )
+    baixo, alto = np.quantile(alvo.valores[alvo.valores > 0], PONTAS)
+    return textos.POUCAS_ORDENS if alto < MINIMO_RAZAO_ORDENS * baixo else None
 
 
 class RegraBenford(base.RegraBase[base.AlvoColuna, FrequenciaDigitos]):
-    """Não conformidade: p < 0,01 e MAD > 0,015 (só valores positivos, n ≥ 100)."""
+    """Não conformidade: p < 0,01 e MAD > 0,015 (positivos, n ≥ 100, P99/P1 ≥ 100; D119)."""
 
     codigo = "R8"
     nome = "Lei de Benford"

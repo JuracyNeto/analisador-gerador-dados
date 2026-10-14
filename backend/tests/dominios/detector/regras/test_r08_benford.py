@@ -7,10 +7,8 @@ from tests.dominios.detector.apoio import tabela_numerica
 
 
 def _uniformes() -> np.ndarray:
-    """Inteiros de 100 a 999 (1º dígito uniforme), com um 5 para cobrir duas ordens."""
-    valores = np.arange(100.0, 1000.0)
-    valores[0] = 5.0
-    return valores
+    """1º dígito uniforme (1 a 9) em quatro ordens de grandeza: 1,5 · 25 · 350 · 4.500…"""
+    return np.array([(d + 0.5) * 10.0**k for k in range(4) for d in range(1, 10)] * 30)
 
 
 def test_log_uniforme_segue_benford_e_nao_dispara() -> None:
@@ -38,6 +36,15 @@ def test_primeiro_digito_uniforme_dispara_atencao() -> None:
     assert aviso.detalhes.valor.startswith("MAD = 0,0")
     assert aviso.exemplo is not None
     assert all(valor.startswith("9") for valor in aviso.exemplo.valores[:1])
+
+
+def test_poucos_valores_muito_diferentes_nao_bastam_para_varias_ordens() -> None:
+    """Pesos com dois erros de digitação (6,8 e 712): a faixa real é estreita."""
+    valores = np.concatenate([np.linspace(45, 110, 225), [6.8, 712.0]])
+
+    (nao_aplicada,) = RegraBenford().executar(tabela_numerica(valores)).nao_aplicadas
+
+    assert nao_aplicada.motivo == "precisa de valores que variem em várias ordens de grandeza"
 
 
 def test_zeros_ficam_de_fora_e_nao_impedem_a_regra() -> None:

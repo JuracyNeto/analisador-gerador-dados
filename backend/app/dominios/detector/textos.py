@@ -10,10 +10,10 @@ from app.compartilhado.numeros import (
     formatar_com_sinal,
     formatar_fixo,
     formatar_inteiro,
-    formatar_p_valor,
     formatar_percentual,
 )
 from app.compartilhado.textos import juntar_lista, p_valor_em_palavras, pluralizar
+from app.dominios.detector.duplicatas import ContraOAcaso
 from app.dominios.detector.resultados import DetalhesAviso, TextosAviso
 
 MAX_ITENS_TEXTO = 8
@@ -54,10 +54,6 @@ def p_em_palavras(p: float) -> str:
     return f"chance de acontecer por acaso: {p_valor_em_palavras(p)}"
 
 
-def p_formatado(p: float) -> str:
-    return formatar_p_valor(p)
-
-
 # Exemplo e regras não aplicadas -------------------------------------------------------------
 
 
@@ -78,8 +74,10 @@ def faixa_de_linhas(linhas: Sequence[int]) -> str:
 
 
 def lista_de_valores(valores: Sequence[str]) -> str:
-    """Até 8 valores separados por vírgula, com "…" se houver mais."""
-    texto = ", ".join(valores[:MAX_ITENS_TEXTO])
+    """Até 8 valores, com "…" se houver mais; com decimais, "; " separa sem ambiguidade."""
+    mostrados = valores[:MAX_ITENS_TEXTO]
+    separador = "; " if any("," in valor for valor in mostrados) else ", "
+    texto = separador.join(mostrados)
     return texto + RETICENCIAS if len(valores) > MAX_ITENS_TEXTO else texto
 
 
@@ -360,19 +358,53 @@ def r05_textos(copias: int, grupos_quase: int, seguidas: tuple[int, int] | None)
 def r05_formula_quase(numericas: int) -> str:
     return (
         "Quase iguais: distância entre as linhas padronizadas < 0,01·√p "
-        f"(p = {numericas} colunas numéricas) e as demais colunas iguais"
+        f"(p = {numericas} colunas numéricas) e as demais colunas iguais; "
+        "contam quando passam do acaso, estimado pelos pares vizinhos na precisão de cada coluna"
     )
 
 
 R05_FORMULA_IDENTICAS = "Só linhas idênticas"
 
 
-def r05_detalhes(copias: int, grupos: int, formula: str) -> DetalhesAviso:
+R05_TESTES = {
+    "iguais": (
+        "Poisson: pares de linhas iguais × acaso (densidade local)",
+        "par igual",
+        "pares iguais",
+    ),
+    "quase": (
+        "Poisson: pares quase iguais × acaso (densidade local)",
+        "par quase igual",
+        "pares quase iguais",
+    ),
+    "seguidas": (
+        "Poisson: linhas iguais seguidas × acaso (ordem aleatória)",
+        "trinca seguida",
+        "trincas seguidas",
+    ),
+}
+
+
+def r05_detalhes(
+    copias: int, grupos: int, formula: str, tipo: str, acaso: ContraOAcaso
+) -> DetalhesAviso:
+    """Detalhes com a comparação com o acaso que justificou o aviso (D120)."""
+    teste, singular, plural = R05_TESTES[tipo]
     return DetalhesAviso(
         medida="Linhas iguais ou quase iguais em todas as colunas (fora os identificadores)",
-        valor=f"{quantidade(copias, 'cópia', 'cópias')} em {quantidade(grupos, 'grupo', 'grupos')}",
-        limiar="Qualquer cópia (atenção); 3 linhas iguais seguidas ou mais (suspeita alta)",
+        valor=(
+            f"{quantidade(copias, 'cópia', 'cópias')} em {quantidade(grupos, 'grupo', 'grupos')}"
+            f" · {quantidade(acaso.observados, singular, plural)} "
+            f"(o acaso daria {numero(acaso.esperados)})"
+        ),
+        limiar=(
+            "Repetições além do acaso, p < 0,01 (atenção); "
+            "3 linhas iguais seguidas, improváveis ao acaso (suspeita alta)"
+        ),
+        teste=teste,
         formula=formula,
+        p_valor=acaso.p_valor,
+        p_em_palavras=p_em_palavras(acaso.p_valor),
     )
 
 
@@ -380,3 +412,40 @@ def r05_ressalva(n: int, limite: int) -> tuple[str, str]:
     """(motivo, frase) das quase duplicatas não verificadas em arquivos grandes (D120)."""
     motivo = f"o arquivo tem {formatar_inteiro(n)} linhas e o limite é {formatar_inteiro(limite)}"
     return motivo, f"Quase duplicatas não verificadas: {motivo}."
+
+
+# Resumo -------------------------------------------------------------------------------------
+
+NENHUM_ALERTA = "Nenhum alerta"
+SEM_GARANTIA = (
+    "Isso não garante que os dados sejam reais, mas não vimos sinais comuns de dados artificiais."
+)
+
+
+def frase_resumo(total: int, colunas: int) -> str:
+    """ "Encontramos 5 alertas em 3 colunas" (tela 7)."""
+    if total == 0:
+        return NENHUM_ALERTA
+    onde = f" em {quantidade(colunas, 'coluna', 'colunas')}" if colunas else ""
+    return f"Encontramos {quantidade(total, 'alerta', 'alertas')}{onde}"
+
+
+def detalhe_resumo(colunas: Sequence[str], verificadas: int, nao_aplicadas: int) -> str:
+    """ "altura_m, peso_kg e idade · 9 regras verificadas, 2 não se aplicam a este arquivo"."""
+    regras = quantidade(verificadas, "regra verificada", "regras verificadas")
+    if nao_aplicadas:
+        verbo = pluralizar(nao_aplicadas, "se aplica", "se aplicam")
+        regras += f", {formatar_inteiro(nao_aplicadas)} não {verbo} a este arquivo"
+    return " · ".join([juntar_lista(list(colunas)), regras] if colunas else [regras])
+
+
+def vazio_resumo(regras: int, verificadas: int) -> str:
+    """Texto da spec 16 quando nenhuma regra encontra suspeitas."""
+    if verificadas == 0:
+        return (
+            "Nenhuma das regras se aplica a este arquivo; "
+            "os motivos estão em Regras não verificadas."
+        )
+    if regras == 1:
+        return f"A regra pedida não encontrou suspeitas. {SEM_GARANTIA}"
+    return f"Nenhuma das {regras} regras encontrou suspeitas. {SEM_GARANTIA}"

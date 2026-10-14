@@ -1,4 +1,4 @@
-"""R5 — Duplicatas: linhas iguais sempre; quase iguais até 5.000 linhas (spec 12, D120)."""
+"""R5 — Duplicatas: linhas iguais e quase iguais (até 5.000 linhas) além do acaso (D120)."""
 
 from dataclasses import dataclass, replace
 
@@ -7,21 +7,25 @@ import numpy as np
 from app.compartilhado.tipos import Severidade, TipoVariavel
 from app.dominios.detector import textos
 from app.dominios.detector.duplicatas import (
+    SEM_PARES,
+    TRINCA,
+    ContraOAcaso,
     GrupoRepetido,
+    acaso_das_repeticoes,
     chaves_das_colunas,
-    repetidos_exatos,
-    repetidos_ou_quase,
+    pares_quase_iguais,
+    repetidos,
+    seguidas_contra_o_acaso,
 )
 from app.dominios.detector.exemplos import MAX_LINHAS_EXEMPLO
 from app.dominios.detector.regras import base
-from app.dominios.detector.resultados import ExemploAviso
+from app.dominios.detector.resultados import DetalhesAviso, ExemploAviso
 from app.dominios.detector.tabela import ColunaDetector, TabelaDetector
 
 LIMITE_QUASE = 5_000
 """Acima disso, só linhas idênticas: a busca por quase iguais compara pares de linhas."""
 MINIMO_COLUNAS = 2
 MINIMO_LINHAS = 2
-MINIMO_SEGUIDAS = 3
 
 
 @dataclass(frozen=True, slots=True, eq=False)
@@ -68,20 +72,56 @@ class ArquivoTodo:
 
 @dataclass(frozen=True, slots=True, eq=False)
 class MedicaoDuplicatas:
+    """Grupos de linhas repetidas e as comparações com o acaso que decidem o aviso."""
+
     grupos: tuple[GrupoRepetido, ...]
+    iguais: ContraOAcaso
+    seguidas: ContraOAcaso
+    quase: ContraOAcaso | None
+    """None quando as quase iguais não foram procuradas (arquivo grande)."""
+
+    @property
+    def quase_alem_do_acaso(self) -> bool:
+        return self.quase is not None and self.quase.p_valor < base.LIMIAR_P
+
+    @property
+    def alem_do_acaso(self) -> bool:
+        return self.iguais.p_valor < base.LIMIAR_P or self.quase_alem_do_acaso
+
+    @property
+    def em_sequencia(self) -> bool:
+        return self.seguidas.p_valor < base.LIMIAR_P
+
+    @property
+    def avisados(self) -> tuple[GrupoRepetido, ...]:
+        """Todos os grupos se as repetições passam do acaso; senão, só os seguidos improváveis."""
+        if self.alem_do_acaso:
+            return self.grupos
+        if self.em_sequencia:
+            return tuple(g for g in self.grupos if len(g.maior_sequencia) >= TRINCA)
+        return ()
 
     @property
     def copias(self) -> int:
-        return sum(grupo.copias for grupo in self.grupos)
+        return sum(grupo.copias for grupo in self.avisados)
 
     @property
     def grupos_quase(self) -> int:
-        return sum(not grupo.exato for grupo in self.grupos)
+        return sum(not grupo.exato for grupo in self.avisados)
 
     @property
     def destaque(self) -> GrupoRepetido:
         """O grupo com mais linhas seguidas (e, no empate, com mais linhas)."""
-        return max(self.grupos, key=lambda g: (len(g.maior_sequencia), len(g.posicoes)))
+        return max(self.avisados, key=lambda g: (len(g.maior_sequencia), len(g.posicoes)))
+
+    @property
+    def teste(self) -> tuple[str, ContraOAcaso]:
+        """A comparação com o acaso que justificou o aviso (para os detalhes)."""
+        if self.iguais.p_valor < base.LIMIAR_P:
+            return "iguais", self.iguais
+        if self.quase is not None and self.quase_alem_do_acaso:
+            return "quase", self.quase
+        return "seguidas", self.seguidas
 
 
 def _colunas_suficientes(alvo: AlvoArquivo) -> str | None:
@@ -100,8 +140,18 @@ def _exemplo(alvo: AlvoArquivo, grupo: GrupoRepetido) -> ExemploAviso:
     return ExemploAviso(linhas, valores, escrever(linhas, valores[0]))
 
 
+def _detalhes(alvo: AlvoArquivo, medicao: MedicaoDuplicatas) -> DetalhesAviso:
+    formula = (
+        textos.r05_formula_quase(alvo.n_numericas)
+        if medicao.quase is not None
+        else textos.R05_FORMULA_IDENTICAS
+    )
+    tipo, acaso = medicao.teste
+    return textos.r05_detalhes(medicao.copias, len(medicao.avisados), formula, tipo, acaso)
+
+
 class RegraDuplicatas(base.RegraBase[AlvoArquivo, MedicaoDuplicatas]):
-    """Qualquer cópia → atenção; 3 linhas iguais seguidas ou mais → suspeita alta."""
+    """Repetições além do acaso → atenção; 3 iguais seguidas, improváveis ao acaso → alta."""
 
     codigo = "R5"
     nome = "Duplicatas"
@@ -119,30 +169,32 @@ class RegraDuplicatas(base.RegraBase[AlvoArquivo, MedicaoDuplicatas]):
 
     def medir(self, alvo: AlvoArquivo) -> MedicaoDuplicatas:
         chaves = chaves_das_colunas(alvo.colunas)
-        if alvo.compara_quase_iguais:
-            return MedicaoDuplicatas(repetidos_ou_quase(chaves))
-        return MedicaoDuplicatas(repetidos_exatos(chaves))
+        identicos = repetidos(chaves, SEM_PARES)
+        if not alvo.compara_quase_iguais:
+            acaso = acaso_das_repeticoes(chaves, identicos, SEM_PARES)
+            seguidas = seguidas_contra_o_acaso(identicos, alvo.n)
+            return MedicaoDuplicatas(identicos, acaso.iguais, seguidas, None)
+        quase = pares_quase_iguais(chaves)
+        acaso = acaso_das_repeticoes(chaves, identicos, quase)
+        grupos = repetidos(chaves, quase) if acaso.quase.p_valor < base.LIMIAR_P else identicos
+        seguidas = seguidas_contra_o_acaso(grupos, alvo.n)
+        return MedicaoDuplicatas(grupos, acaso.iguais, seguidas, acaso.quase)
 
     def dispara(self, medicao: MedicaoDuplicatas) -> bool:
-        return bool(medicao.grupos)
+        return bool(medicao.avisados)
 
     def conteudo_aviso(self, alvo: AlvoArquivo, medicao: MedicaoDuplicatas) -> base.ConteudoAviso:
         destaque = medicao.destaque
         sequencia = destaque.maior_sequencia
         seguidas = (
             (int(alvo.linhas[sequencia[0]]), int(alvo.linhas[sequencia[-1]]))
-            if len(sequencia) >= MINIMO_SEGUIDAS
+            if medicao.em_sequencia and len(sequencia) >= TRINCA
             else None
-        )
-        formula = (
-            textos.r05_formula_quase(alvo.n_numericas)
-            if alvo.compara_quase_iguais
-            else textos.R05_FORMULA_IDENTICAS
         )
         return base.ConteudoAviso(
             severidade=Severidade.ALTA if seguidas else Severidade.ATENCAO,
             colunas=(),
             textos=textos.r05_textos(medicao.copias, medicao.grupos_quase, seguidas),
             exemplo=_exemplo(alvo, destaque),
-            detalhes=textos.r05_detalhes(medicao.copias, len(medicao.grupos), formula),
+            detalhes=_detalhes(alvo, medicao),
         )

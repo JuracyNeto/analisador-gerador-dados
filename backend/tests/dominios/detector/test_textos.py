@@ -17,6 +17,12 @@ def test_exemplo_com_linhas_soltas_lista_as_linhas() -> None:
     assert textos.texto_exemplo((3, 9, 14), ("70", "75", "80")) == "Linhas 3, 9 e 14: 70, 75, 80"
 
 
+def test_valores_com_decimais_separados_por_ponto_e_virgula() -> None:
+    texto = textos.texto_exemplo((99, 160), ("6,8", "712"))
+
+    assert texto == "Linhas 99 e 160: 6,8; 712"
+
+
 def test_exemplo_de_uma_linha_so() -> None:
     assert textos.texto_exemplo((12,), ("94",)) == "Linha 12: 94"
 
