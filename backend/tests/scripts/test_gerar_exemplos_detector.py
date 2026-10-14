@@ -1,26 +1,15 @@
-import importlib.util
 from pathlib import Path
-from types import ModuleType
 
 import numpy as np
 
-RAIZ = Path(__file__).resolve().parents[3]
-SCRIPT = RAIZ / "backend" / "scripts" / "gerar_exemplos_detector.py"
+from tests.scripts.apoio import RAIZ, carregar_script
+
 EXEMPLOS = RAIZ / "dados-exemplo"
-
-
-def _script() -> ModuleType:
-    especificacao = importlib.util.spec_from_file_location("gerar_exemplos_detector", SCRIPT)
-    assert especificacao is not None
-    assert especificacao.loader is not None
-    modulo = importlib.util.module_from_spec(especificacao)
-    especificacao.loader.exec_module(modulo)
-    return modulo
 
 
 def test_script_gera_os_arquivos_versionados(tmp_path: Path) -> None:
     """Mesma semente → mesmos arquivos, byte a byte (LF, UTF-8, `;` e vírgula decimal)."""
-    caminhos = _script().gravar(tmp_path)
+    caminhos = carregar_script("gerar_exemplos_detector").gravar(tmp_path)
 
     assert sorted(caminho.name for caminho in caminhos) == [
         "alturas_plantadas.txt",
@@ -32,7 +21,7 @@ def test_script_gera_os_arquivos_versionados(tmp_path: Path) -> None:
 
 
 def test_bloco_alinhado_tem_a_media_e_o_desvio_do_conjunto() -> None:
-    script = _script()
+    script = carregar_script("gerar_exemplos_detector")
     resto, _ = script.pessoas(np.random.default_rng(1), 380)
     resto[0] += (19 - int(resto.sum()) % 19) % 19
 

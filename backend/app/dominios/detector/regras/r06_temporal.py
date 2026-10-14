@@ -92,7 +92,7 @@ def _colunas_de_datas(tabela: TabelaDetector) -> list[tuple[str, np.ndarray]]:
     ]
 
 
-def _periodos_da_tabela(tabela: TabelaDetector) -> Periodos | None:
+def linha_do_tempo(tabela: TabelaDetector) -> Periodos | None:
     """A coluna de data que mais acompanha a ordem das linhas (ρ ≥ 0,5); senão, a 1ª (D130).
 
     Num cadastro com nascimento e dia do registro, a linha do tempo é o dia, não a 1ª data.
@@ -147,7 +147,7 @@ class NumericasNoTempo:
     motivo_sem_alvos: str = textos.SEM_NUMERICAS
 
     def __call__(self, tabela: TabelaDetector) -> tuple[AlvoVariacao, ...]:
-        todos = _periodos_da_tabela(tabela)
+        todos = linha_do_tempo(tabela)
         if todos is None:
             return ()
         return tuple(_variacao(tabela, coluna, todos) for coluna in tabela.numericas())
@@ -231,7 +231,7 @@ class ArquivoNoTempo:
     motivo_sem_alvos: str = textos_blocos.SO_DATAS
 
     def __call__(self, tabela: TabelaDetector) -> tuple[AlvoCopias, ...]:
-        todos = _periodos_da_tabela(tabela)
+        todos = linha_do_tempo(tabela)
         colunas = tuple(c for c in tabela.colunas.values() if c.tipo not in TIPOS_AUXILIARES)
         if todos is None or not colunas:
             return ()
