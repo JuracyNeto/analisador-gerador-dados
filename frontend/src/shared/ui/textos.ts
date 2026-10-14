@@ -7,5 +7,6 @@ export const TEXTOS_UI = {
   valorAusente: '—',
   tentarDeNovo: 'Tentar de novo',
   fecharAviso: 'Fechar aviso',
+  fechar: 'Fechar',
   carregandoGrafico: 'Carregando o gráfico…',
 } as const;
