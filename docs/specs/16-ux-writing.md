@@ -33,18 +33,19 @@ Aplica-se a: avisos do detector, motivos de classificação, "não se aplica", i
 ## Modelos por regra (resumo → por que → pode ser normal)
 - **R1** "Um bloco de {k} linhas ({ini}–{fim}) tem média e desvio quase idênticos ao conjunto todo (diferença de {d}%)." → "Em dados reais, pedaços pequenos variam bastante; um bloco que 'bate' tudo pode ter sido colocado para alinhar as estatísticas." → "…o conjunto foi ordenado ou amostrado de forma sistemática."
 - **R2** "A correlação geral entre *{x}* e *{y}* é {r}, mas a média dos blocos é só {rb}." → "Se poucos dados novos fazem a correlação subir muito, eles podem ter sido adicionados para 'puxar' a relação." → "…os blocos têm faixas de valores muito diferentes."
-- **R3** "Em *{col}*, {pct}% dos valores têm casas decimais, mas {k} inteiros aparecem juntos (linhas {ini}–{fim})." → "Uma mudança de formato no meio dos dados pode indicar outra origem." → "…parte dos dados veio de outro instrumento."
-- **R4** (acima)
-- **R5** "Encontramos {k} linhas iguais (ou quase), {em_sequencia}." → "Cópias seguidas costumam surgir de 'copiar e colar'." → "…registros legítimos repetidos (ex.: mesma compra)."
+- **R3** "Em *{col}*, {pct}% dos valores têm casas decimais, mas {k} inteiros aparecem juntos (linhas {ini}–{fim})." (em posições regulares: "…aparecem a cada {passo} linhas (linhas {ini}–{fim})") → "Uma mudança de formato no meio dos dados pode indicar outra origem." → "…parte dos dados veio de outro instrumento."
+- **R4** (acima; só 0: "{pct}% dos valores terminam em 0; … cerca de 10% ({r}× mais).") → pode ser normal: "…o instrumento só mede de {passo} em {passo}." (5 em 5; 0,5 em 0,5 com uma casa)
+- **R5** "Encontramos {k} linhas iguais (ou quase iguais) a outras do arquivo; as linhas {ini} a {fim} são iguais e seguidas." (sem sequência, a frase termina em "do arquivo.") → seguidas: "Cópias seguidas costumam surgir de 'copiar e colar'."; demais: "Linhas repetidas podem ter sido copiadas de outras partes do arquivo." → "…são registros legítimos repetidos (ex.: a mesma compra)."
 - **R6** "Os dados depois de {data} {comportamento} em relação aos anteriores." → "Dados novos que copiam os antigos ou variam pouco demais podem ter sido inseridos." → "…houve mudança real no processo."
-- **R7** "{k} valores de *{col}* estão muito longe dos demais (ex.: {v})." → "Valores extremos podem ser erros de digitação ou casos especiais." → "…são casos raros, mas reais."
-- **R8** "Os primeiros dígitos de *{col}* não seguem o padrão natural (Lei de Benford)." → "Em muitos dados reais, o dígito 1 aparece no início ~30% das vezes; números inventados tendem a ser mais 'uniformes'." → "…os dados têm faixa limitada (ex.: idades, notas)."
+- **R7** título "{k} valores distantes dos demais em *{col}*"; "{k} valores de *{col}* estão muito longe dos demais (ex.: {v}); o limite usual seria {limite}." → "Valores extremos podem ser erros de digitação ou casos especiais." → "…são casos raros, mas reais."
+- **R8** "Os primeiros dígitos de *{col}* não seguem o padrão natural (Lei de Benford): o {d} abre {pct}% dos valores; o esperado seria cerca de {esp}%." → "Em muitos dados reais, o dígito 1 aparece no início cerca de 30% das vezes; números inventados tendem a ser mais 'uniformes'." → "…os dados têm faixa limitada (ex.: idades, notas)."
 - **R9** "O último dígito de *{col}* não está bem distribuído: o {d} aparece {pct}% das vezes (esperado 10%)." → "Medições reais têm o último dígito quase aleatório; pessoas evitam ou repetem certos dígitos." → "…o instrumento arredonda."
 - **R10** "*{col}* parece uma curva Normal perfeita demais (assimetria {g1}, curtose {g2})." → "Dados reais quase nunca são tão perfeitos; isso é típico de números gerados por computador." → "…a amostra é grande e o fenômeno é realmente Normal."
 - **R11** "A ordem dos valores de *{col}* segue um padrão ({padrao})." → "Em dados reais, a sequência costuma parecer aleatória." → "…os dados estão ordenados por tempo ou por outra coluna."
 
 ## Estado vazio e regras não aplicadas
-- Sem avisos: "Nenhuma das 11 regras encontrou suspeitas. Isso não garante que os dados sejam reais, mas não vimos sinais comuns de dados artificiais."
+- Sem avisos: "Nenhuma das 11 regras encontrou suspeitas. Isso não garante que os dados sejam reais, mas não vimos sinais comuns de dados artificiais." (o número é o de regras pedidas; com uma só: "A regra pedida não encontrou suspeitas. …"; se nenhuma se aplica: "Nenhuma das regras se aplica a este arquivo; os motivos estão em Regras não verificadas.")
+- Exemplo: até 8 valores, com "…" se houver mais; com decimais, separados por "; " ("Linhas 99 e 160: 6,8; 712").
 - Não aplicada: "{regra} não verificada em *{col}*: {motivo}." Ex.: "precisa de 100 valores ou mais; a coluna tem 48."
 
 ## Outros textos

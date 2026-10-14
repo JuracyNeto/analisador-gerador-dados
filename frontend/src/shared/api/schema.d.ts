@@ -90,6 +90,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/datasets/{dataset_id}/linhas": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Linhas da versão atual de “de” a “até” (no máximo 200) */
+        get: operations["obter_linhas_api_datasets__dataset_id__linhas_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/datasets/{dataset_id}/colunas": {
         parameters: {
             query?: never;
@@ -379,6 +396,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/datasets/{dataset_id}/detector": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Alertas de dados artificiais com explicação (spec 12) */
+        get: operations["detectar_api_datasets__dataset_id__detector_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/datasets/{dataset_id}/relatorio": {
         parameters: {
             query?: never;
@@ -489,6 +523,30 @@ export interface components {
             /** Mensagem */
             mensagem: string;
         };
+        /**
+         * AvisoDetector
+         * @description Um alerta em 8 partes (spec 16); `colunas` vazio = linhas inteiras (R5).
+         */
+        AvisoDetector: {
+            regra: components["schemas"]["CodigoRegra"];
+            /** Nome Regra */
+            nome_regra: string;
+            severidade: components["schemas"]["Severidade"];
+            /** Colunas */
+            colunas: string[];
+            /** Titulo */
+            titulo: string;
+            /** Resumo */
+            resumo: string;
+            /** Por Que */
+            por_que: string;
+            exemplo: components["schemas"]["ExemploAviso"] | null;
+            /** Pode Ser Normal */
+            pode_ser_normal: string;
+            /** O Que Fazer */
+            o_que_fazer: string;
+            detalhes: components["schemas"]["DetalhesAviso"];
+        };
         /** Bivariada */
         Bivariada: {
             /** X */
@@ -537,6 +595,8 @@ export interface components {
             linha_cabecalho?: number | null;
         };
         "Celula-Input": string | number | boolean | null;
+        /** @enum {string} */
+        CodigoRegra: "R1" | "R2" | "R3" | "R4" | "R5" | "R6" | "R7" | "R8" | "R9" | "R10" | "R11";
         /** DatasetCriado */
         DatasetCriado: {
             /** Dataset Id */
@@ -548,6 +608,23 @@ export interface components {
             previa: components["schemas"]["LinhaDados"][];
             /** Colunas */
             colunas: components["schemas"]["TipoColuna"][];
+        };
+        /** DetalhesAviso */
+        DetalhesAviso: {
+            /** Medida */
+            medida: string;
+            /** Valor */
+            valor: string;
+            /** Limiar */
+            limiar: string;
+            /** Teste */
+            teste: string | null;
+            /** P Valor */
+            p_valor: number | null;
+            /** P Em Palavras */
+            p_em_palavras: string | null;
+            /** Formula */
+            formula: string | null;
         };
         /** Diagnostico */
         Diagnostico: {
@@ -597,6 +674,15 @@ export interface components {
             quando: string;
             /** Frase */
             frase: string;
+        };
+        /** ExemploAviso */
+        ExemploAviso: {
+            /** Linhas */
+            linhas: number[];
+            /** Valores */
+            valores: string[];
+            /** Texto */
+            texto: string;
         };
         /** Faixa */
         Faixa: {
@@ -1047,6 +1133,15 @@ export interface components {
              */
             limitar_faixa: boolean;
         };
+        /** PorSeveridade */
+        PorSeveridade: {
+            /** Alta */
+            alta: number;
+            /** Atencao */
+            atencao: number;
+            /** Info */
+            info: number;
+        };
         /** Posicao */
         Posicao: {
             /** Valor */
@@ -1093,6 +1188,18 @@ export interface components {
         };
         /** @enum {string} */
         Problema: "faltantes" | "duplicados" | "fora_de_faixa" | "inconsistencia" | "tipo_misto";
+        /** RegraNaoAplicada */
+        RegraNaoAplicada: {
+            regra: components["schemas"]["CodigoRegra"];
+            /** Nome Regra */
+            nome_regra: string;
+            /** Coluna */
+            coluna: string | null;
+            /** Motivo */
+            motivo: string;
+            /** Frase */
+            frase: string;
+        };
         /** Regressao */
         Regressao: {
             /** A */
@@ -1104,6 +1211,14 @@ export interface components {
             reta: components["schemas"]["Medida"];
             r2: components["schemas"]["Medida"];
             se: components["schemas"]["Medida"];
+        };
+        /** ResultadoDetector */
+        ResultadoDetector: {
+            resumo: components["schemas"]["ResumoDetector"];
+            /** Avisos */
+            avisos: components["schemas"]["AvisoDetector"][];
+            /** Nao Aplicadas */
+            nao_aplicadas: components["schemas"]["RegraNaoAplicada"][];
         };
         /** ResultadoLimpeza */
         ResultadoLimpeza: {
@@ -1134,6 +1249,24 @@ export interface components {
             opcoes_leitura: components["schemas"]["PedidoLeitura"];
             /** Tem Ajustes */
             tem_ajustes: boolean;
+        };
+        /** ResumoDetector */
+        ResumoDetector: {
+            /** Total */
+            total: number;
+            por_severidade: components["schemas"]["PorSeveridade"];
+            /** Colunas Afetadas */
+            colunas_afetadas: string[];
+            /** Regras Verificadas */
+            regras_verificadas: number;
+            /** Regras Nao Aplicadas */
+            regras_nao_aplicadas: number;
+            /** Frase */
+            frase: string;
+            /** Detalhe */
+            detalhe: string;
+            /** Vazio */
+            vazio: string | null;
         };
         /** ResumoOrigem */
         ResumoOrigem: {
@@ -1202,6 +1335,12 @@ export interface components {
             /** Destaques */
             destaques: string[];
         };
+        /**
+         * Severidade
+         * @description Severidade de um alerta do detector (spec 12, spec 16).
+         * @enum {string}
+         */
+        Severidade: "info" | "atencao" | "alta";
         /** TabelaFrequencia */
         TabelaFrequencia: {
             tipo: components["schemas"]["TipoVariavel"];
@@ -1483,6 +1622,40 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    obter_linhas_api_datasets__dataset_id__linhas_get: {
+        parameters: {
+            query: {
+                de: number;
+                ate: number;
+            };
+            header?: never;
+            path: {
+                dataset_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LinhaDados"][];
+                };
             };
             /** @description Validation Error */
             422: {
@@ -2052,6 +2225,40 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Adotado"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    detectar_api_datasets__dataset_id__detector_get: {
+        parameters: {
+            query?: {
+                /** @description Códigos separados por vírgula (R1…R11); sem o campo, todas as regras */
+                regras?: string | null;
+            };
+            header?: never;
+            path: {
+                dataset_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ResultadoDetector"];
                 };
             };
             /** @description Validation Error */

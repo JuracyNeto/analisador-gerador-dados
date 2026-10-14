@@ -29,7 +29,7 @@
 ### Regras
 - **Topo:** título "Detector de dados artificiais", ajuda "Aplicamos 11 regras que procuram sinais comuns de dados inseridos ou gerados. Um alerta pede conferência, não é uma conclusão."; ação secundária "Analisar de novo" (`refresh`, refaz a consulta).
 - **Resumo** (print 7a): "Encontramos 5 alertas em 3 colunas" + detalhe da API; contadores mono 28 na cor da severidade com ícone preenchido e palavra (Suspeita alta `report` · Atenção `warning` · Informativo `info`). Carregando: skeleton + "Aplicando as 11 regras em {arquivo}…".
-- **Filtros:** "Mostrar" + `ChipFiltro` por severidade ("Suspeita alta (2)", marcado com `check`, borda/texto da severidade); Segmented "Agrupar por" Coluna/Regra. Estado na URL (`?sev=alta,atencao&agrupar=regra`, padrão: todas e coluna; D124). Sem nenhum chip marcado: "Marque ao menos uma severidade para ver os alertas.".
+- **Filtros:** "Mostrar" + `ChipFiltro` por severidade ("Suspeita alta (2)", marcado com `check`, borda/texto da severidade); Segmented "Agrupar por" Coluna/Regra. Estado na URL (`?sev=alta,atencao&agrupar=regra`, padrão: todas e coluna; D125). Sem nenhum chip marcado: "Marque ao menos uma severidade para ver os alertas.".
 - **Lista:** grupos (coluna mono 15/600 ou "R4 · Valores redondos") com "2 alertas"; dentro, ordem da API; aviso de par (R2) entra no grupo "altura_m × peso_kg". O 1º alerta de cada grupo aberto, os demais recolhidos ("Ver explicação" / "Ocultar explicação").
 - **CartaoAlerta** (8 partes, `componentes.md`): topo com badge · "R4 · Valores redondos" · coluna(s) mono; título h3; resumo; grid "POR QUE CHAMA ATENÇÃO" / "PODE SER NORMAL SE…"; exemplo com "Ver na tabela" (`table_view`) quando há linhas; "O que fazer:"; Accordion "Detalhes técnicos" com `<dl>` (Medida, Valor, Limiar, Teste, p-valor + tradução, Fórmula) e a figura (`Grafico`, sob demanda) quando houver.
 - **Drawer** (print 7b, 600 px): badge, título do aviso, "Linhas 120 a 138 · peso_kg", frase "{k} linhas destacadas" (+ o complemento da regra quando a API mandar); tabela com ±3 linhas de contexto (`GET /linhas?de=&ate=`; contexto limitado ao início/fim), linhas do exemplo destacadas e a coluna afetada no cabeçalho na cor da severidade; rodapé com a contagem e "Exportar estas linhas" (CSV gerado no navegador com `;` e vírgula decimal, `baixarArquivo`; nome `linhas-R4-peso_kg.csv`).
@@ -100,7 +100,7 @@ Componente ≤ 150 linhas (subcomponentes `TopoAlerta`, `ExemploAlerta`, `Detalh
 **Commit:** `feat(importar): exemplos de demonstração`
 
 ### Tarefa 10: documentação
-Spec 15 (tela 7: filtros na URL, drawer, exemplos na tela 1), `telas.md` (nota "Implementação do M3"), `decisions.md` (D124 e as que surgirem), CHANGELOG › Adicionado: "Etapa 7 Detector: resumo por severidade, filtros, agrupamento por coluna ou regra, alertas explicados em linguagem simples com detalhes técnicos, linhas na tabela e regras não verificadas; exemplos de demonstração na tela Importar." › Alterado: navegação Gerador → Detector → Relatório.
+Spec 15 (tela 7: filtros na URL, drawer, exemplos na tela 1), `telas.md` (nota "Implementação do M3"), `decisions.md` (D125 e as que surgirem), CHANGELOG › Adicionado: "Etapa 7 Detector: resumo por severidade, filtros, agrupamento por coluna ou regra, alertas explicados em linguagem simples com detalhes técnicos, linhas na tabela e regras não verificadas; exemplos de demonstração na tela Importar." › Alterado: navegação Gerador → Detector → Relatório.
 
 **Commit:** `docs: tela Detector (spec 15, telas, decisões)`
 
