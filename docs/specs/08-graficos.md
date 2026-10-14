@@ -11,7 +11,7 @@ Domínio: `app/dominios/graficos/` (`fabrica.py` + `tema.py`) · ADR 0003
 | Contínua | **Histograma** (classes da spec 04) | Boxplot, ogiva (Frᵢ); na aba Forma: histograma + curva Normal e QQ-plot (D56, D94) | Mostra forma, caudas e aderência |
 | Par numérico | **Dispersão** com reta de regressão (até 5.000 pontos, D101) | Resíduos × X com linha zero tracejada (D102); heatmap da matriz com escala divergente (D103) | Spec 10 |
 | Separatriz | Régua com marcas e marcador do valor | — | Spec 06 |
-| Detector | Gráficos específicos por regra (Benford: barras observado × esperado; último dígito: barras; blocos: linha da média por bloco com faixa total) | — | Spec 12 |
+| Detector | Nos detalhes técnicos do alerta (D123): R1 linha da média de cada bloco de k linhas, com a média geral, a faixa x̄ ± s tracejada e o bloco alinhado em destaque; R8 barras do 1º dígito × Lei de Benford; R9 barras do último dígito × esperado (10%) | — | Spec 12; só valores agregados (uma média por bloco, uma barra por dígito) |
 
 ## Regras visuais
 - Template Plotly único `analisador_tema` (cores/fontes alinhadas aos tokens do design; ver `docs/design/`).

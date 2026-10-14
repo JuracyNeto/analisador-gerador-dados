@@ -58,7 +58,7 @@ Execução prevista (um bloco por vez): M3.0 → M3.1 → M3.2 → M3.3 → M3.4
 - **pandas 3**: nunca comparar `dtype == object`. O `to_excel` do pandas grava horários como texto (use o openpyxl direto nos testes). Arquivos escritos por script: LF, UTF-8.
 - Números exibidos com o sinal de menos (−) (`formatar_com_sinal`, D107).
 - Aleatoriedade sempre com `np.random.default_rng(semente)`; nada de `np.random.seed` global. Testes com semente fixa.
-- Toda decisão nova vai para `docs/decisions.md` com o **próximo número livre** (D108–D114 no M3.0, D115–D117 no M3.1, D118–D121 no M3.2; próxima D122); os números abaixo são os previstos na ordem dos blocos. Toda entrega vai para `CHANGELOG.md` › *Não lançado*.
+- Toda decisão nova vai para `docs/decisions.md` com o **próximo número livre** (D108–D114 no M3.0, D115–D117 no M3.1, D118–D121 no M3.2, D122–D129 no M3.3; próxima D130); os números abaixo são os previstos na ordem dos blocos. Toda entrega vai para `CHANGELOG.md` › *Não lançado*.
 - Teste manual no preview (`.claude/launch.json`: `backend` 8000, `frontend` 5173) antes do push de cada bloco com tela; viewport fixa com `resize_window` e conferência pelo DOM. Depois de editar o backend, o `--reload` apaga os datasets: recarregue o exemplo antes de testar.
 - PR, merge e release só com o ok do usuário; merge só com os 3 checks verdes (`gh pr merge N --merge`).
 
@@ -196,11 +196,16 @@ ResultadoDetector {resumo: ResumoDetector, avisos: [Aviso], nao_aplicadas: [Regr
 | D119 | Dígitos (R4, R8, R9): dígito final na precisão da coluna; R4/R9 não se aplicam se ele é constante ou se a metade central cobre < 10 passos; R8 com P99/P1 ≥ 100 (robusto a erros de digitação) | M3.2 |
 | D120 | R5: iguais e quase iguais (estas até 5.000 linhas) contam quando passam do acaso (densidade local na precisão; colunas independentes para as não numéricas; Poisson p < 0,01); 3 iguais seguidas improváveis em ordem aleatória → alta; `colunas` vazio | M3.2 |
 | D121 | Limiares sem spec (R3 n ≥ 30 e padrão improvável ao acaso, R7 n ≥ 10), exemplo no trecho concentrado (até 20 linhas, "; " com decimais), `?regras=R4,R7`, `/linhas` até 200 (`INTERVALO_INVALIDO`), schema `AvisoDetector` | M3.2 |
-| D122 | R1: referência por simulação com semente fixa e somas acumuladas (vetorizado); R2 em todos os pares de numéricas | M3.3 |
-| D123 | Figuras do detector (R1 média por bloco, R8 Benford, R9 último dígito) dentro dos detalhes técnicos (spec 08; os prints não mostram gráficos) | M3.3 |
-| D124 | Datasets plantados gerados por `backend/scripts/gerar_exemplos_detector.py` (semente fixa, reprodutível); `vendas_correlacao_puxada.txt` ganha coluna `data` para demonstrar também a R6; exemplos escolhíveis em `POST /datasets/exemplo?arquivo=` | M3.3 |
-| D125 | Tela 7: filtros e agrupamento na URL; 1º alerta de cada grupo aberto; drawer com ±3 linhas de contexto; "Exportar estas linhas" gera o CSV no navegador | M3.4 |
-| D126 | Relatório com `gerador` (via `?gerado=`) e `detector` já no M3 (escolha do usuário em 10/10/2026); padrão = 8 seções | M3.5 |
+| D122 | R1: candidata = janela mais parecida; referência = melhor janela de 1.000 embaralhamentos (semente fixa, somas acumuladas); R2 em todos os pares de numéricas, comparando em módulo | M3.3 |
+| D123 | Figuras do detector (R1 média por bloco, R8 Benford, R9 último dígito) dentro dos detalhes técnicos: a regra deixa os dados no aviso e o serviço pede a figura ao `graficos` | M3.3 |
+| D124 | Arquivos de demonstração por `backend/scripts/gerar_exemplos_detector.py` (semente fixa); `vendas_correlacao_puxada.txt` com coluna `data` (R6); `cintura_cm` perfeita em `alturas_plantadas.txt` (R10); exemplos escolhíveis em `GET /datasets/exemplos` e `POST /datasets/exemplo?arquivo=` | M3.3 |
+| D125 | R6 em duas partes (variação de cada numérica e linhas copiadas), ambas contra o acaso | M3.3 |
+| D126 | R10 com Shapiro p > 0,99 (com 0,9, 3,7% das Normais disparavam); forma vinda da análise | M3.3 |
+| D127 | R11: padrão mais específico primeiro; progressões contra o acaso | M3.3 |
+| D128 | R7: extremo só fora de 3·IQR; \|z\| > 3 sozinho é moderado (escolha do usuário em 14/10/2026) | M3.3 |
+| D129 | Teste de falsos positivos: regras de coluna na amostra sozinha; R2, R5 e R6 numa tabela com data e 2ª amostra | M3.3 |
+| D130 | Tela 7: filtros e agrupamento na URL; 1º alerta de cada grupo aberto; drawer com ±3 linhas de contexto; "Exportar estas linhas" gera o CSV no navegador | M3.4 |
+| D131 | Relatório com `gerador` (via `?gerado=`) e `detector` já no M3 (escolha do usuário em 10/10/2026); padrão = 8 seções | M3.5 |
 
 ## Dependências novas
 - Nenhuma: `numpy` e `scipy` (KDE, Poisson, testes) já estão no backend; o frontend usa só componentes próprios.

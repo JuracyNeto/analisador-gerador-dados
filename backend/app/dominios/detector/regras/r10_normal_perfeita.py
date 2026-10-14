@@ -1,4 +1,4 @@
-"""R10 — Normal perfeita demais: |G₁| < 0,05, |G₂| < 0,1 e p > 0,99 (spec 12, D122).
+"""R10 — Normal perfeita demais: |G₁| < 0,05, |G₂| < 0,1 e p > 0,99 (spec 12, D126).
 
 G₁, G₂ e o p (Shapiro-Wilk até 5.000 valores; acima, D'Agostino) vêm da análise, calculados
 pelo serviço na tabela (D108). Com p > 0,9 (spec), 3,7% das amostras Normais sorteadas

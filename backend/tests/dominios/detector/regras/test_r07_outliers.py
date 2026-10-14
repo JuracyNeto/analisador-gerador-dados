@@ -40,7 +40,7 @@ def test_so_moderados_disparam_informativo() -> None:
 
 
 def test_z_acima_de_3_dentro_das_cercas_extremas_e_so_informativo() -> None:
-    """Numa Normal de 1.000 valores, |z| > 3 é comum; extremo é só fora de 3·IQR (D122)."""
+    """Numa Normal de 1.000 valores, |z| > 3 é comum; extremo é só fora de 3·IQR (D128)."""
     valores = _normal(1000)
 
     (aviso,) = RegraOutliers().executar(tabela_numerica(valores)).avisos

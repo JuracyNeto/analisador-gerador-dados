@@ -1,4 +1,4 @@
-"""R7 — Valores distantes: cercas de Tukey (1,5·IQR e 3·IQR) e escore z (spec 12, D122).
+"""R7 — Valores distantes: cercas de Tukey (1,5·IQR e 3·IQR) e escore z (spec 12, D128).
 
 Moderado = fora de 1,5·IQR ou |z| > 3 (informativo); extremo = fora de 3·IQR (atenção).
 """

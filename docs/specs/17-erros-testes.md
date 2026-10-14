@@ -17,7 +17,7 @@
 | distribuicoes | amostra Normal → aderente; Exponencial → não aderente; Binomial conhecida |
 | correlacao | r = 1, r = −1, r ≈ 0; extrapolação |
 | gerador | tolerâncias da spec 11 (média/DP exatos com reescala, \|r − ρ\| < 1e-9 com ajuste exato, < 0,03 sem ajuste com n = 10.000); mesma semente → mesmo resultado; figura leve com 1.000.000 de valores; adotar novo/anexar e desfazer |
-| detector | falsos positivos < 5% (spec 12); cada dataset plantado dispara a regra esperada |
+| detector | falsos positivos < 5% por regra e família (spec 12, D129: regras de coluna na amostra sozinha; R2, R5 e R6 numa tabela com data e 2ª amostra; ~20 s no CI); cada arquivo plantado dispara a regra esperada e `alturas_reais.txt` não tem alertas de atenção ou alta; o script dos arquivos de demonstração refaz os versionados |
 | api | `TestClient`: fluxo feliz por endpoint + 404 + arquivo inválido |
 
 Frontend: Vitest para formatadores (número pt-BR, p-valor traduzido). Checklist manual por tela antes de cada tag.

@@ -5,6 +5,7 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e
 ## [Não lançado]
 
 ### Adicionado
+- Detector completo com as 11 regras (bloco alinhado, correlação por blocos, comparação temporal, Normal perfeita demais e sequência), gráficos nos detalhes técnicos (média por bloco, Lei de Benford e último dígito) e três arquivos de demonstração com dados plantados, escolhíveis entre os exemplos (`GET /datasets/exemplos` e `POST /datasets/exemplo?arquivo=`).
 - API do detector com resumo e as regras de formato numérico, valores redondos, duplicatas, valores distantes, Lei de Benford e último dígito, cada alerta com explicação em linguagem simples, exemplo com as linhas e detalhes técnicos; as regras que não se aplicam vêm com o motivo. Repetições de linhas só viram alerta quando passam do que o acaso produziria.
 - Linhas da versão atual por intervalo (`GET /datasets/{id}/linhas?de=&ate=`, até 200), para mostrar o exemplo de um alerta na tabela.
 - Etapa 6 Gerador: dados univariados e bivariados (pela coluna ou par do dataset, ou com parâmetros manuais) com a tabela Original × Gerado, gráfico, explicação do método, Baixar CSV, Anexar ao dataset atual e Usar como novo dataset.
@@ -12,6 +13,7 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e
 
 ### Alterado
 - A Bivariada continua para o Gerador, e o Relatório volta para ele.
+- Valores distantes: só os que passam de 3·IQR dão "atenção"; |z| > 3 sozinho fica informativo (antes, quase toda amostra Normal grande recebia "atenção").
 
 ### Corrigido
 - Arquivos com `;` e duas ou mais colunas com vírgula decimal (ex.: `1,5;2,25`) eram lidos com a vírgula como separador.
