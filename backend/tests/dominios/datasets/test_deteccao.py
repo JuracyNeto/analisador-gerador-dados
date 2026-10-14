@@ -124,6 +124,8 @@ def test_sem_separador_le_uma_coluna() -> None:
         (["a,b", "1.62,58.2"], ",", "."),
         (["a;b", "1;2"], ";", ","),
         (["a,b", "1,2"], ",", "."),
+        (["a\tb", "1\tR$ 1.234,56", "2\t−R$ 7,25"], "\t", ","),
+        (["a\tb", "1\t12,5%", "2\t7,5 %"], "\t", ","),
     ],
 )
 def test_decimal_detectado(linhas: list[str], separador: str, decimal: str) -> None:
@@ -134,6 +136,12 @@ def test_motivo_do_decimal_mostra_exemplos() -> None:
     detectado = detectar_decimal(["a;b", "1,72;68,4"], ";")
 
     assert detectado.motivo == "Valores como 1,72 e 68,4."
+
+
+def test_motivo_do_decimal_mostra_os_valores_como_no_arquivo() -> None:
+    detectado = detectar_decimal(["a\tb", "1\tR$ 10,50", "2\t12,5%"], "\t")
+
+    assert detectado.motivo == "Valores como R$ 10,50 e 12,5%."
 
 
 def _numeradas(*linhas: str) -> list[tuple[int, list[str]]]:
@@ -153,6 +161,7 @@ def _numeradas(*linhas: str) -> list[tuple[int, list[str]]]:
         (_numeradas("Relatório;;", "nome;idade;nota", "Ana;34;8,5", "Beto;41;7"), 2),
         (_numeradas("nome;idade;", "Ana;34;", "Beto;41;"), 1),
         (_numeradas("10;20", "a;b", "1;2"), 0),
+        (_numeradas("Ana;R$ 10,50", "Bia;12,5%"), 0),
     ],
 )
 def test_linha_do_cabecalho_detectada(

@@ -6,6 +6,7 @@ from collections.abc import Sequence
 from dataclasses import dataclass
 from pathlib import PurePath
 
+from app.compartilhado.series import sem_unidade
 from app.dominios.datasets import erros
 
 FORMATOS = {".txt": "txt", ".csv": "csv", ".tsv": "tsv", ".xlsx": "xlsx", ".json": "json"}
@@ -132,9 +133,18 @@ def detectar_separador(linhas: list[str]) -> Deteccao[str | None]:
     return next((d for d in deteccoes if d.valor is not None), _separador_constante(linhas))
 
 
-def _tokens_decimais(linhas: list[str], separador: str | None) -> list[str]:
+@dataclass(frozen=True, slots=True)
+class _Token:
+    """Célula com número decimal: o texto como no arquivo e o número sem R$ e %."""
+
+    celula: str
+    numero: str
+
+
+def _tokens_decimais(linhas: list[str], separador: str | None) -> list[_Token]:
     celulas = (c.strip() for linha in linhas for c in quebrar(linha, separador))
-    return [c for c in celulas if _NUMERO.match(c) and ("," in c or "." in c)]
+    tokens = (_Token(c, sem_unidade(c)) for c in celulas)
+    return [t for t in tokens if _NUMERO.match(t.numero) and ("," in t.numero or "." in t.numero)]
 
 
 def detectar_decimal(linhas: list[str], separador: str | None) -> Deteccao[str]:
@@ -143,14 +153,16 @@ def detectar_decimal(linhas: list[str], separador: str | None) -> Deteccao[str]:
     if not tokens:
         decimal = "," if separador == ";" else "."
         return Deteccao(decimal, "Não há números com casas decimais.")
-    com_virgula = [t for t in tokens if _NUMERO_VIRGULA.match(t)]
+    com_virgula = [t for t in tokens if _NUMERO_VIRGULA.match(t.numero)]
     decimal = "," if len(com_virgula) >= FRACAO_DECIMAL_VIRGULA * len(tokens) else "."
-    exemplos = [t for t in tokens if decimal in t][:2] or tokens[:2]
+    exemplos = [t.celula for t in tokens if decimal in t.numero][:2] or [
+        t.celula for t in tokens[:2]
+    ]
     return Deteccao(decimal, f"Valores como {' e '.join(exemplos)}.")
 
 
 def _eh_numero(celula: str) -> bool:
-    return bool(_NUMERO.match(celula.strip()))
+    return bool(_NUMERO.match(sem_unidade(celula)))
 
 
 def _so_nomes_unicos(celulas: list[str]) -> bool:
