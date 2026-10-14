@@ -6,7 +6,7 @@ import numpy as np
 
 from app.compartilhado import estatistica
 from app.compartilhado.tipos import Severidade
-from app.dominios.detector import textos
+from app.dominios.detector import blocos, textos
 from app.dominios.detector.exemplos import exemplo_de_valores
 from app.dominios.detector.regras import base
 
@@ -52,15 +52,6 @@ class MedicaoFormato:
         return estatistica.teste_poisson_unilateral(1, self.padrao.esperados)
 
 
-def _sequencias_iguais(valores: np.ndarray) -> list[tuple[int, int, int]]:
-    """(início, tamanho, valor) de cada sequência de valores iguais seguidos."""
-    if len(valores) == 0:
-        return []
-    inicios = np.concatenate(([0], np.flatnonzero(np.diff(valores) != 0) + 1))
-    tamanhos = np.diff(np.concatenate((inicios, [len(valores)])))
-    return [(int(i), int(t), int(valores[i])) for i, t in zip(inicios, tamanhos, strict=True)]
-
-
 def _forma_padrao(passo: int, repeticoes: int) -> bool:
     if passo == 1:
         return repeticoes + 1 >= MINIMO_SEGUIDOS
@@ -76,6 +67,11 @@ def padrao_dos_inteiros(inteiros: np.ndarray) -> PadraoInteiros:
     """O grupo de inteiros seguidos ou a passo constante mais improvável ao acaso."""
     posicoes = np.flatnonzero(inteiros)
     chance = float(inteiros.mean())
+    intervalos = np.diff(posicoes)
+    inicios, tamanhos = blocos.trechos_iguais(intervalos)
+    trechos = [
+        (i, t, int(intervalos[i])) for i, t in zip(inicios.tolist(), tamanhos.tolist(), strict=True)
+    ]
     candidatos = [
         PadraoInteiros(
             int(posicoes[i]),
@@ -84,7 +80,7 @@ def padrao_dos_inteiros(inteiros: np.ndarray) -> PadraoInteiros:
             passo,
             _esperados(len(posicoes), chance, passo, t),
         )
-        for i, t, passo in _sequencias_iguais(np.diff(posicoes))
+        for i, t, passo in trechos
         if _forma_padrao(passo, t)
     ]
     return min(candidatos, key=lambda p: p.esperados, default=SEM_PADRAO)

@@ -13,6 +13,7 @@ from app.dominios.detector.regras.r07_outliers import RegraOutliers
 from app.dominios.detector.regras.r08_benford import RegraBenford
 from app.dominios.detector.regras.r09_ultimo_digito import RegraUltimoDigito
 from app.dominios.detector.regras.r10_normal_perfeita import RegraNormalPerfeita
+from app.dominios.detector.regras.r11_sequencia import RegraSequencia
 
 REGRAS: tuple[Regra, ...] = (
     RegraBlocoAlinhado(),
@@ -25,6 +26,7 @@ REGRAS: tuple[Regra, ...] = (
     RegraBenford(),
     RegraUltimoDigito(),
     RegraNormalPerfeita(),
+    RegraSequencia(),
 )
 
 

@@ -1,4 +1,4 @@
-"""Blocos de linhas seguidas (R1, R2; D122).
+"""Blocos e trechos de linhas seguidas (R1, R2, R3, R11; D122).
 
 Janelas de k valores seguidos saem de somas acumuladas de x e x² (O(n) para todas as janelas),
 o que deixa a simulação da R1 — a melhor janela de cada embaralhamento da coluna — vetorizada.
@@ -71,3 +71,11 @@ def dividir_em_blocos(n: int, partes: int = PARTES) -> tuple[slice, ...]:
     """Partes seguidas de tamanhos quase iguais (as primeiras ficam com a sobra)."""
     bordas = np.cumsum([0] + [n // partes + (i < n % partes) for i in range(partes)])
     return tuple(slice(int(a), int(b)) for a, b in pairwise(bordas))
+
+
+def trechos_iguais(valores: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
+    """Início e tamanho de cada trecho de valores iguais seguidos."""
+    if len(valores) == 0:
+        return np.array([], dtype="int64"), np.array([], dtype="int64")
+    inicios = np.concatenate(([0], np.flatnonzero(np.diff(valores) != 0) + 1))
+    return inicios, np.diff(np.concatenate((inicios, [len(valores)])))

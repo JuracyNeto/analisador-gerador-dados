@@ -270,3 +270,63 @@ def r10_detalhes(assimetria: float, curtose: float, teste: str, p: float) -> Det
             f"{p_valor_em_palavras(1 - p)}"
         ),
     )
+
+
+# R11 — Sequência ----------------------------------------------------------------------------
+
+R11_PADROES = {
+    "parecidos": "cada valor é muito parecido com o anterior",
+    "alterna": "valores alternam acima e abaixo do meio com regularidade",
+    "sequencias": "valores acima e abaixo do meio aparecem em sequências longas",
+}
+R11_TESTES = {
+    "progressao": "Poisson: progressões × acaso",
+    "alterna": "Runs de Wald-Wolfowitz",
+    "sequencias": "Runs de Wald-Wolfowitz",
+}
+
+
+def r11_padrao(padrao: str, linhas: tuple[int, int]) -> str:
+    """O padrão em palavras; a progressão diz onde está."""
+    if padrao == "progressao":
+        return f"progressão aritmética nas linhas {linhas[0]}–{linhas[1]}"
+    return R11_PADROES[padrao]
+
+
+def r11_textos(coluna: str, padrao: str) -> TextosAviso:
+    """ "A ordem dos valores de {col} segue um padrão ({padrao})." (spec 16)."""
+    return TextosAviso(
+        titulo=f"Ordem dos valores segue um padrão em {coluna}",
+        resumo=f"A ordem dos valores de {coluna} segue um padrão ({padrao}).",
+        por_que="Em dados reais, a sequência costuma parecer aleatória.",
+        pode_ser_normal="…os dados estão ordenados por tempo ou por outra coluna.",
+        o_que_fazer=(
+            "Confira se o arquivo foi ordenado ou se esses valores foram digitados em sequência."
+        ),
+    )
+
+
+def r11_detalhes(
+    medidas: tuple[int, float, float, int], padrao: str, p: float | None
+) -> DetalhesAviso:
+    """medidas = (sequências do runs, z, ρ₁, progressões)."""
+    runs, z, autocorrelacao, progressoes = medidas
+    return DetalhesAviso(
+        medida=(
+            "Ordem dos valores: sequências acima e abaixo da mediana (runs), "
+            "progressões aritméticas e autocorrelação"
+        ),
+        valor=(
+            f"{textos.quantidade(runs, 'sequência', 'sequências')} (z = {textos.numero(z)}) · "
+            f"ρ₁ = {textos.numero(autocorrelacao)} · "
+            f"{textos.quantidade(progressoes, 'progressão', 'progressões')}"
+        ),
+        limiar=(
+            "Runs com p < 0,01, progressão de 6 valores ou mais improvável ao acaso "
+            "(p < 0,01) ou |ρ₁| > 0,8"
+        ),
+        teste=R11_TESTES.get(padrao),
+        formula="Z = (R − μ_R) / σ_R · ρ₁ = Σ(xₜ − x̄)(xₜ₊₁ − x̄) / Σ(xₜ − x̄)²",
+        p_valor=p,
+        p_em_palavras=None if p is None else textos.p_em_palavras(p),
+    )
