@@ -16,6 +16,7 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e
 - Valores distantes: só os que passam de 3·IQR dão "atenção"; |z| > 3 sozinho fica informativo (antes, quase toda amostra Normal grande recebia "atenção").
 
 ### Corrigido
+- Valores em reais (`R$ 1.234,56`, `−R$ 10,00`) e percentuais (`12,5%`) viram número (antes, código ou categorias); o percentual fica na escala do arquivo (12,5), o motivo diz a unidade ("Valores em reais (ex.: R$ 1.234,56).") e a prévia mostra as células como no arquivo.
 - Arquivos com `;` e duas ou mais colunas com vírgula decimal (ex.: `1,5;2,25`) eram lidos com a vírgula como separador.
 
 ## [0.2.0] - 2026-10-10
