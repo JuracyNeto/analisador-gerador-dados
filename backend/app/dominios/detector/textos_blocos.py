@@ -155,6 +155,11 @@ POR_QUE_R6 = "Dados novos que copiam os antigos ou variam pouco demais podem ter
 PODE_SER_NORMAL_R6 = "…houve mudança real no processo."
 
 
+def data_do_meio(data: str, coluna: str) -> str:
+    """ "14/12/2026 (data do meio de dia)": a data e a coluna de data usada (D130)."""
+    return f"{data} (data do meio de {coluna})"
+
+
 def poucas_linhas_por_periodo(minimo: int) -> str:
     return f"precisa de {formatar_inteiro(minimo)} linhas ou mais antes e depois da data do meio"
 
@@ -175,11 +180,11 @@ def r06_textos_variacao(coluna: str, data: str, desvios: tuple[float, float]) ->
 
 
 def r06_detalhes_variacao(
-    data: str, desvios: tuple[float, float], linhas: tuple[int, int], p: float
+    referencia: str, desvios: tuple[float, float], linhas: tuple[int, int], p: float
 ) -> DetalhesAviso:
     antes, depois = desvios
     return DetalhesAviso(
-        medida=f"Desvio padrão antes e depois da data do meio ({data})",
+        medida=f"Desvio padrão antes e depois de {referencia}",
         valor=(
             f"antes: {textos.numero(antes)} ({textos.quantidade(linhas[0], 'linha', 'linhas')}) · "
             f"depois: {textos.numero(depois)} "
@@ -220,10 +225,14 @@ def r06_textos_copias(data: str, copias: int, novas: int) -> TextosAviso:
     )
 
 
-def r06_detalhes_copias(copias: int, novas: int, acaso: float, p: float) -> DetalhesAviso:
+def r06_detalhes_copias(
+    referencia: str, contagem: tuple[int, int], acaso: float, p: float
+) -> DetalhesAviso:
+    """contagem = (linhas novas iguais a antigas, linhas novas)."""
+    copias, novas = contagem
     return DetalhesAviso(
         medida=(
-            "Linhas depois da data do meio iguais a alguma linha de antes "
+            f"Linhas depois de {referencia} iguais a alguma linha de antes "
             "(fora as datas e os identificadores)"
         ),
         valor=(

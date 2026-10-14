@@ -1,6 +1,7 @@
 """R6 — Comparação temporal: antes × depois da data do meio (spec 12).
 
-Ordena pela 1ª coluna de data e divide na data do meio (a mediana, uma data do arquivo). Duas
+Ordena pela coluna de data que acompanha a ordem das linhas (a linha do tempo do arquivo; sem
+nenhuma assim, a 1ª, D130) e divide na data do meio (a mediana, uma data do arquivo). Duas
 partes com o mesmo código: a variação de cada numérica (DP depois < 0,5 × DP antes, com F
 unilateral p < 0,01) e as linhas novas iguais a antigas fora a data (≥ 10% e acima do que as
 antigas se repetem entre si, binomial p < 0,01) — as duas contra o acaso, como a R5 (D120).
@@ -28,12 +29,16 @@ MINIMO_LINHAS = 40
 MINIMO_POR_PERIODO = 10
 RAZAO_DESVIO = 0.5
 MINIMO_COPIAS = 0.1
+MINIMO_ACOMPANHA = 0.5
+"""ρ de Spearman mínimo entre a data e o número da linha para ela ser a linha do tempo."""
+MINIMO_DATAS = 2
 
 
 @dataclass(frozen=True, slots=True, eq=False)
 class Periodos:
     """Posições das linhas com data, em ordem de data, e quantas ficam até a data do meio."""
 
+    coluna: str
     posicoes: np.ndarray
     datas: np.ndarray
     corte: int
@@ -46,30 +51,59 @@ class Periodos:
     def data_do_meio(self) -> str:
         return formatar_data(pd.Timestamp(self.datas[self.corte - 1]).to_pydatetime())
 
+    @property
+    def referencia(self) -> str:
+        """ "14/12/2026 (data do meio de dia)", para os detalhes técnicos."""
+        return textos_blocos.data_do_meio(self.data_do_meio, self.coluna)
+
     def so_com(self, validos: np.ndarray) -> "Periodos":
         """Só as linhas marcadas em `validos` (na ordem da tabela), com a mesma data do meio."""
         manter = validos[self.posicoes]
-        return Periodos(self.posicoes[manter], self.datas[manter], int(manter[: self.corte].sum()))
+        corte = int(manter[: self.corte].sum())
+        return Periodos(self.coluna, self.posicoes[manter], self.datas[manter], corte)
 
 
-def periodos(datas: np.ndarray) -> Periodos:
+def periodos(coluna: str, datas: np.ndarray) -> Periodos:
     """Linhas ordenadas pela data; antes = até a data do meio (mediana inferior), inclusive."""
     posicoes = np.flatnonzero(~np.isnat(datas))
     ordem = posicoes[np.argsort(datas[posicoes], kind="stable")]
     ordenadas = datas[ordem]
     if len(ordenadas) == 0:
-        return Periodos(ordem, ordenadas, 0)
+        return Periodos(coluna, ordem, ordenadas, 0)
     meio = ordenadas[(len(ordenadas) - 1) // 2]
-    return Periodos(ordem, ordenadas, int(np.searchsorted(ordenadas, meio, side="right")))
+    corte = int(np.searchsorted(ordenadas, meio, side="right"))
+    return Periodos(coluna, ordem, ordenadas, corte)
 
 
-def _coluna_de_datas(tabela: TabelaDetector) -> ColunaDetector | None:
-    return next((c for c in tabela.do_tipo({TipoVariavel.DATA}) if c.datas is not None), None)
+def acompanha_as_linhas(datas: np.ndarray) -> float:
+    """ρ de Spearman entre as datas e o número da linha (só as linhas com data)."""
+    validas = ~np.isnat(datas)
+    valores = datas[validas].astype("int64")
+    if len(valores) < MINIMO_DATAS or np.ptp(valores) == 0:
+        return 0.0
+    return float(stats.spearmanr(np.flatnonzero(validas), valores).statistic)
+
+
+def _colunas_de_datas(tabela: TabelaDetector) -> list[tuple[str, np.ndarray]]:
+    return [
+        (coluna.nome, coluna.datas)
+        for coluna in tabela.do_tipo({TipoVariavel.DATA})
+        if coluna.datas is not None
+    ]
 
 
 def _periodos_da_tabela(tabela: TabelaDetector) -> Periodos | None:
-    coluna = _coluna_de_datas(tabela)
-    return None if coluna is None or coluna.datas is None else periodos(coluna.datas)
+    """A coluna de data que mais acompanha a ordem das linhas (ρ ≥ 0,5); senão, a 1ª (D130).
+
+    Num cadastro com nascimento e dia do registro, a linha do tempo é o dia, não a 1ª data.
+    """
+    colunas = _colunas_de_datas(tabela)
+    if not colunas:
+        return None
+    acompanham = [acompanha_as_linhas(datas) for _, datas in colunas]
+    melhor = int(np.argmax(acompanham))
+    nome, datas = colunas[melhor] if acompanham[melhor] >= MINIMO_ACOMPANHA else colunas[0]
+    return periodos(nome, datas)
 
 
 def _dois_periodos(alvo: "AlvoVariacao | AlvoCopias") -> str | None:
@@ -155,14 +189,16 @@ class VariacaoTemporal(base.RegraBase[AlvoVariacao, MedicaoVariacao]):
     def conteudo_aviso(self, alvo: AlvoVariacao, medicao: MedicaoVariacao) -> base.ConteudoAviso:
         corte = alvo.periodos.corte
         depois = slice(corte, corte + MAX_LINHAS_EXEMPLO)
-        data = alvo.periodos.data_do_meio
+        periodos = alvo.periodos
         return base.ConteudoAviso(
             severidade=Severidade.ALTA,
             colunas=(alvo.nome,),
-            textos=textos_blocos.r06_textos_variacao(alvo.nome, data, medicao.desvios),
+            textos=textos_blocos.r06_textos_variacao(
+                alvo.nome, periodos.data_do_meio, medicao.desvios
+            ),
             exemplo=exemplo_de_valores(alvo.linhas[depois], alvo.valores[depois]),
             detalhes=textos_blocos.r06_detalhes_variacao(
-                data, medicao.desvios, (corte, alvo.n - corte), medicao.p_valor
+                periodos.referencia, medicao.desvios, (corte, alvo.n - corte), medicao.p_valor
             ),
         )
 
@@ -251,15 +287,14 @@ class CopiasTemporais(base.RegraBase[AlvoCopias, MedicaoCopias]):
         return medicao.proporcao >= MINIMO_COPIAS and medicao.p_valor < base.LIMIAR_P
 
     def conteudo_aviso(self, alvo: AlvoCopias, medicao: MedicaoCopias) -> base.ConteudoAviso:
-        data = alvo.periodos.data_do_meio
-        copias = len(medicao.novas)
+        contagem = (len(medicao.novas), medicao.total_novas)
         return base.ConteudoAviso(
             severidade=Severidade.ALTA,
             colunas=(),
-            textos=textos_blocos.r06_textos_copias(data, copias, medicao.total_novas),
+            textos=textos_blocos.r06_textos_copias(alvo.periodos.data_do_meio, *contagem),
             exemplo=_exemplo_copias(alvo, medicao),
             detalhes=textos_blocos.r06_detalhes_copias(
-                copias, medicao.total_novas, medicao.acaso, medicao.p_valor
+                alvo.periodos.referencia, contagem, medicao.acaso, medicao.p_valor
             ),
         )
 
@@ -283,7 +318,7 @@ class RegraTemporal:
     partes = (VariacaoTemporal(), CopiasTemporais())
 
     def executar(self, tabela: TabelaDetector) -> base.ResultadoRegra:
-        if _coluna_de_datas(tabela) is None:
+        if not _colunas_de_datas(tabela):
             motivo = textos_blocos.SEM_DATA
             frase = textos.frase_nao_aplicada(NOME, None, motivo)
             sem_data = RegraNaoAplicada(CODIGO, NOME, None, motivo, frase)

@@ -125,3 +125,42 @@ def test_datas_que_nao_se_dividem_em_dois_periodos_nao_se_aplicam() -> None:
     assert {n.motivo for n in nao_aplicadas} == {
         "precisa de 10 linhas ou mais antes e depois da data do meio"
     }
+
+
+def _duas_datas(primeira: pd.DatetimeIndex, segunda: pd.DatetimeIndex, x: np.ndarray) -> object:
+    dados = pd.DataFrame({"nascimento": primeira, "dia": segunda, "x": np.round(x, 2)})
+    tipos = {
+        "nascimento": TipoVariavel.DATA,
+        "dia": TipoVariavel.DATA,
+        "x": TipoVariavel.CONTINUA,
+    }
+    return tabela_de(dados, tipos)
+
+
+def test_usa_a_coluna_de_data_que_acompanha_a_ordem_das_linhas() -> None:
+    """Num cadastro com nascimento e dia do registro, a linha do tempo é o dia (D130)."""
+    x, _ = _normais()
+    x[50:] = 50 + (x[50:] - 50) * 0.3
+    nascimentos = pd.DatetimeIndex(
+        np.random.default_rng(5).permutation(pd.date_range("1960-01-01", periods=100, freq="90D"))
+    )
+
+    (aviso,) = RegraTemporal().executar(_duas_datas(nascimentos, _semanas(), x)).avisos
+
+    assert aviso.titulo == "Variação menor depois de 14/12/2026 em x"
+    assert aviso.detalhes.medida == (
+        "Desvio padrão antes e depois de 14/12/2026 (data do meio de dia)"
+    )
+
+
+def test_sem_data_que_acompanhe_as_linhas_usa_a_primeira() -> None:
+    rng = np.random.default_rng(6)
+    ordem = rng.permutation(100)
+    primeira = _semanas()[ordem]
+    x, _ = _normais()
+    x[ordem >= 50] = 50 + (x[ordem >= 50] - 50) * 0.3
+    segunda = pd.DatetimeIndex(rng.permutation(_semanas()))
+
+    (aviso,) = RegraTemporal().executar(_duas_datas(primeira, segunda, x)).avisos
+
+    assert aviso.detalhes.medida.endswith("(data do meio de nascimento)")
