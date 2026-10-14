@@ -15,11 +15,11 @@ from dataclasses import dataclass
 
 import numpy as np
 import pandas as pd
-from scipy import stats
 from scipy.sparse import coo_matrix
 from scipy.sparse.csgraph import connected_components
 from scipy.spatial import cKDTree
 
+from app.compartilhado import estatistica
 from app.compartilhado.series import casas_decimais
 from app.dominios.detector.tabela import ColunaDetector
 
@@ -28,6 +28,9 @@ VIZINHANCA = 3
 """A caixa de referência vai a 3 raios das quase iguais em cada coluna (e a 1 passo, no mínimo)."""
 MAX_POSICOES_CONTADAS = 200_000
 FOLGA = 1e-6
+AMOSTRA_ACASO = 20_000
+"""Acima disso, o acaso das iguais vem de uma amostra (contar vizinhos cresce com n)."""
+SEMENTE_AMOSTRA = 0
 SEM_PARES = np.empty((0, 2), dtype="int64")
 TRINCA = 3
 """3 linhas iguais seguidas ou mais: o padrão de "copiar e colar" (suspeita alta)."""
@@ -60,11 +63,7 @@ class ContraOAcaso:
     @property
     def p_valor(self) -> float:
         """P(X ≥ observados), X ~ Poisson(esperados)."""
-        if self.observados == 0:
-            return 1.0
-        if self.esperados == 0:
-            return 0.0
-        return float(stats.poisson.sf(self.observados - 1, self.esperados))
+        return estatistica.teste_poisson_unilateral(self.observados, self.esperados)
 
 
 @dataclass(frozen=True, slots=True)
@@ -79,6 +78,8 @@ class GrupoRepetido:
 
     posicoes: np.ndarray
     exato: bool
+    sequencia: tuple[int, int]
+    """(primeira posição, tamanho) do maior trecho de linhas seguidas do grupo."""
 
     @property
     def copias(self) -> int:
@@ -86,9 +87,8 @@ class GrupoRepetido:
 
     @property
     def maior_sequencia(self) -> np.ndarray:
-        """Posições do maior trecho de linhas seguidas do grupo."""
-        quebras = np.flatnonzero(np.diff(self.posicoes) != 1) + 1
-        return max(np.split(self.posicoes, quebras), key=len)
+        inicio, tamanho = self.sequencia
+        return np.arange(inicio, inicio + tamanho)
 
 
 def chaves_das_colunas(colunas: Sequence[ColunaDetector]) -> ColunasComparaveis:
@@ -110,8 +110,9 @@ def chaves_das_colunas(colunas: Sequence[ColunaDetector]) -> ColunasComparaveis:
 
 
 def _ids(linhas: np.ndarray) -> np.ndarray:
-    """Mesmo número para linhas iguais da matriz."""
-    return np.asarray(np.unique(linhas, axis=0, return_inverse=True)[1]).ravel()
+    """Mesmo número para linhas iguais da matriz (agrupamento por hash, rápido em n grande)."""
+    tabela = pd.DataFrame(linhas)
+    return tabela.groupby(list(tabela.columns), sort=False).ngroup().to_numpy(dtype="int64")
 
 
 def _ids_exatos(chaves: ColunasComparaveis) -> np.ndarray:
@@ -138,25 +139,49 @@ def _grupos_por_id(ids: np.ndarray) -> list[np.ndarray]:
     return [grupo for grupo in np.split(ordem, fronteiras) if len(grupo) > 1]
 
 
-def _componentes(pares: np.ndarray) -> list[np.ndarray]:
-    """Grupos de linhas ligadas pelos pares, cada um com as posições em ordem."""
+def _componentes(pares: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
+    """(posições, rótulo do grupo) das linhas ligadas pelos pares, por grupo e posição."""
     if len(pares) == 0:
-        return []
+        return np.empty(0, dtype="int64"), np.empty(0, dtype="int64")
     nos, locais = np.unique(pares, return_inverse=True)
     locais = locais.reshape(pares.shape)
     grafo = coo_matrix((np.ones(len(pares)), (locais[:, 0], locais[:, 1])), (len(nos),) * 2)
     _, rotulos = connected_components(grafo, directed=False)
-    return [np.sort(nos[grupo]) for grupo in _grupos_por_id(rotulos)]
+    ordem = np.lexsort((nos, rotulos))
+    return nos[ordem], np.asarray(rotulos[ordem], dtype="int64")
+
+
+def _maiores_sequencias(
+    posicoes: np.ndarray, rotulos: np.ndarray, inicios: np.ndarray
+) -> tuple[np.ndarray, np.ndarray]:
+    """Primeira posição e tamanho do maior trecho de linhas seguidas de cada grupo."""
+    quebra = np.r_[True, (np.diff(posicoes) != 1) | (np.diff(rotulos) != 0)]
+    trechos = np.flatnonzero(quebra)
+    tamanhos = np.diff(np.r_[trechos, len(posicoes)])
+    grupo = np.searchsorted(inicios, trechos, side="right") - 1
+    ordem = np.lexsort((-tamanhos, grupo))
+    melhores = ordem[np.r_[True, np.diff(grupo[ordem]) != 0]]
+    return posicoes[trechos[melhores]], tamanhos[melhores]
 
 
 def repetidos(chaves: ColunasComparaveis, quase: np.ndarray) -> tuple[GrupoRepetido, ...]:
     """Grupos de linhas idênticas, ligados também pelos pares quase iguais dados."""
     ids = _ids_exatos(chaves)
-    pares = np.concatenate([_pares_de_mesmo_id(ids), quase])
-    grupos = (
-        GrupoRepetido(posicoes, bool(np.unique(ids[posicoes]).size == 1))
-        for posicoes in _componentes(pares)
+    posicoes, rotulos = _componentes(np.concatenate([_pares_de_mesmo_id(ids), quase]))
+    if len(posicoes) == 0:
+        return ()
+    inicios = np.flatnonzero(np.r_[True, np.diff(rotulos) != 0])
+    ids_dos_grupos = ids[posicoes]
+    exatos = np.minimum.reduceat(ids_dos_grupos, inicios) == np.maximum.reduceat(
+        ids_dos_grupos, inicios
     )
+    comecos, tamanhos = _maiores_sequencias(posicoes, rotulos, inicios)
+    grupos = [
+        GrupoRepetido(parte, bool(exato), (int(comeco), int(tamanho)))
+        for parte, exato, comeco, tamanho in zip(
+            np.split(posicoes, inicios[1:]), exatos, comecos, tamanhos, strict=True
+        )
+    ]
     return tuple(sorted(grupos, key=lambda grupo: int(grupo.posicoes[0])))
 
 
@@ -195,9 +220,9 @@ def pares_quase_iguais(chaves: ColunasComparaveis) -> np.ndarray:
 
 
 def _passos(numeros: np.ndarray) -> np.ndarray:
-    """Passo da precisão de cada coluna em desvios padrão (0,01 m com DP 0,09 m → 0,11)."""
+    """Passo da precisão de cada coluna, na unidade dela (0,01 com 2 casas)."""
     casas = [casas_decimais(pd.Series(coluna)) for coluna in numeros.T]
-    return np.asarray(np.array([10.0**-c for c in casas]) / _desvios(numeros), dtype="float64")
+    return np.array([10.0**-c for c in casas], dtype="float64")
 
 
 def _posicoes_no_raio(passos: np.ndarray, raio: float) -> float:
@@ -212,13 +237,48 @@ def _posicoes_no_raio(passos: np.ndarray, raio: float) -> float:
 
 
 def _pares_na_caixa(chaves: ColunasComparaveis, meia_caixa: np.ndarray) -> int:
-    """Pares com as demais colunas iguais e cada número a até `meia_caixa` (em DP)."""
-    pontos = _padronizados(chaves.numeros) / meia_caixa
+    """Pares com as demais colunas iguais e cada número a até `meia_caixa` (na unidade dele)."""
+    pontos = np.nan_to_num(chaves.numeros / meia_caixa)
     total = 0
     for posicoes in _grupos_por_id(_ids_sem_numeros(chaves)):
         arvore = cKDTree(pontos[posicoes])
         total += (int(arvore.count_neighbors(arvore, 1 + FOLGA, p=np.inf)) - len(posicoes)) // 2
     return total
+
+
+def _pares_identicos(chaves: ColunasComparaveis) -> int:
+    _, contagens = np.unique(_ids_exatos(chaves), return_counts=True)
+    return int(np.sum(contagens * (contagens - 1) // 2))
+
+
+def _amostra(chaves: ColunasComparaveis) -> ColunasComparaveis:
+    """Linhas sorteadas com semente fixa: o acaso de arquivos grandes sai delas."""
+    rng = np.random.default_rng(SEMENTE_AMOSTRA)
+    escolhidas = np.sort(rng.choice(chaves.n, AMOSTRA_ACASO, replace=False))
+    return ColunasComparaveis(chaves.numeros[escolhidas], chaves.codigos[escolhidas])
+
+
+@dataclass(frozen=True, slots=True)
+class _Caixa:
+    """Vizinhança de referência: até 3 raios (ou 1 passo) em cada numérica."""
+
+    meia: np.ndarray
+    posicoes: float
+    """Posições da grade na caixa, fora a origem e as do raio das quase iguais."""
+
+
+def _por_posicao(chaves: ColunasComparaveis, caixa: _Caixa, ja_contados: int) -> float:
+    """Pares por posição da grade, contados na caixa fora os iguais e quase iguais."""
+    return max(_pares_na_caixa(chaves, caixa.meia) - ja_contados, 0) / caixa.posicoes
+
+
+def _por_posicao_no_arquivo(chaves: ColunasComparaveis, caixa: _Caixa, ja_contados: int) -> float:
+    """Até 20.000 linhas, conta tudo; acima, conta na amostra e escala por n(n−1)/(m(m−1))."""
+    if chaves.n <= AMOSTRA_ACASO:
+        return _por_posicao(chaves, caixa, ja_contados)
+    amostra = _amostra(chaves)
+    escala = chaves.n * (chaves.n - 1) / (amostra.n * (amostra.n - 1))
+    return _por_posicao(amostra, caixa, _pares_identicos(amostra)) * escala
 
 
 def _coincidencia(coluna: np.ndarray) -> float:
@@ -243,11 +303,11 @@ def acaso_das_repeticoes(
     if chaves.p == 0:
         return AcasoDasRepeticoes(ContraOAcaso(iguais, independentes), ContraOAcaso(0, 0.0))
     passos = _passos(chaves.numeros)
-    alcance = np.maximum(np.ceil(VIZINHANCA * _raio(chaves) / passos), 1)
-    no_raio = _posicoes_no_raio(passos, _raio(chaves))
-    na_caixa = float(np.prod(2 * alcance + 1)) - 1 - no_raio
-    vizinhos = _pares_na_caixa(chaves, alcance * passos) - iguais - len(quase)
-    por_posicao = max(vizinhos, 0) / na_caixa
+    passos_z = passos / _desvios(chaves.numeros)
+    alcance = np.maximum(np.ceil(VIZINHANCA * _raio(chaves) / passos_z), 1)
+    no_raio = _posicoes_no_raio(passos_z, _raio(chaves))
+    caixa = _Caixa(alcance * passos, float(np.prod(2 * alcance + 1)) - 1 - no_raio)
+    por_posicao = _por_posicao_no_arquivo(chaves, caixa, iguais + len(quase))
     return AcasoDasRepeticoes(
         ContraOAcaso(iguais, max(por_posicao, independentes)),
         ContraOAcaso(len(quase), por_posicao * no_raio),

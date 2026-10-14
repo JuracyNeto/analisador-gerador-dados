@@ -81,3 +81,18 @@ def test_poucos_valores_nao_se_aplica() -> None:
     (nao_aplicada,) = RegraFormato().executar(tabela_numerica(_decimais(20))).nao_aplicadas
 
     assert nao_aplicada.motivo == "precisa de 30 valores ou mais; a coluna tem 20"
+
+
+def test_inteiros_espalhados_ao_acaso_num_arquivo_grande_nao_disparam() -> None:
+    """Com 1 casa, ~10% dos valores são inteiros: em 100 mil, sequências curtas surgem sozinhas."""
+    valores = np.round(np.random.default_rng(0).normal(70, 10, 100_000), 1)
+
+    assert RegraFormato().executar(tabela_numerica(valores)).avisos == ()
+
+
+def test_detalhes_trazem_a_chance_do_padrao() -> None:
+    (aviso,) = RegraFormato().executar(tabela_numerica(_com_inteiros(np.arange(39, 49)))).avisos
+
+    assert aviso.detalhes.teste == "Poisson: padrão × inteiros espalhados ao acaso"
+    assert aviso.detalhes.p_valor is not None
+    assert aviso.detalhes.p_valor < 1e-6

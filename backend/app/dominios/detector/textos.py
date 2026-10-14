@@ -280,7 +280,7 @@ def r03_textos(
     )
 
 
-def r03_detalhes(proporcao: float, k: int, passo: int) -> DetalhesAviso:
+def r03_detalhes(proporcao: float, k: int, passo: int, p: float) -> DetalhesAviso:
     return DetalhesAviso(
         medida="Valores com casas decimais e posição dos inteiros",
         valor=(
@@ -288,8 +288,13 @@ def r03_detalhes(proporcao: float, k: int, passo: int) -> DetalhesAviso:
             f"{formatar_inteiro(k)} inteiros {_onde_inteiros(passo)}"
         ),
         limiar=(
-            "≥ 80% com decimais e ≥ 5 inteiros seguidos ou a passo constante (4 repetições ou mais)"
+            "≥ 80% com decimais e ≥ 5 inteiros seguidos ou a passo constante "
+            "(4 repetições ou mais), improváveis ao acaso (p < 0,01)"
         ),
+        teste="Poisson: padrão × inteiros espalhados ao acaso",
+        formula="Esperados = nº de inteiros · P(intervalo = passo)^repetições",
+        p_valor=p,
+        p_em_palavras=p_em_palavras(p),
     )
 
 

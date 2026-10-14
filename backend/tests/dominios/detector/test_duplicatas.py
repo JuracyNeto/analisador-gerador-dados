@@ -130,7 +130,7 @@ def test_p_valor_do_poisson() -> None:
 
 
 def test_tres_seguidas_sao_improvaveis_com_poucas_repeticoes() -> None:
-    grupos = (GrupoRepetido(np.array([10, 11, 12]), exato=True),)
+    grupos = (GrupoRepetido(np.array([10, 11, 12]), exato=True, sequencia=(10, 3)),)
 
     acaso = seguidas_contra_o_acaso(grupos, 200)
 
@@ -140,7 +140,12 @@ def test_tres_seguidas_sao_improvaveis_com_poucas_repeticoes() -> None:
 
 
 def test_maior_sequencia_de_linhas_seguidas() -> None:
-    grupo = GrupoRepetido(np.array([2, 10, 11, 12, 30]), exato=True)
+    a: list[float | str | None] = [float(v) for v in range(40)]
+    for posicao in (2, 10, 11, 12, 30, 35, 36):
+        a[posicao] = 99.0 if posicao < 35 else 77.0
 
-    assert grupo.maior_sequencia.tolist() == [10, 11, 12]
-    assert grupo.copias == 4
+    grupos = repetidos(_chaves({"a": a, "b": ["x"] * 40}), SEM_PARES)
+
+    assert [g.posicoes.tolist() for g in grupos] == [[2, 10, 11, 12, 30], [35, 36]]
+    assert [g.maior_sequencia.tolist() for g in grupos] == [[10, 11, 12], [35, 36]]
+    assert [g.copias for g in grupos] == [4, 1]

@@ -84,3 +84,13 @@ def test_autocorrelacao_de_valores_alternados_e_negativa() -> None:
 
 def test_autocorrelacao_de_valores_constantes_e_zero() -> None:
     assert estatistica.autocorrelacao_lag1(np.full(10, 3.0)) == 0
+
+
+def test_poisson_unilateral_e_a_cauda_superior() -> None:
+    assert estatistica.teste_poisson_unilateral(1, 0.5) == pytest.approx(1 - np.exp(-0.5))
+    assert estatistica.teste_poisson_unilateral(3, 2.0) == pytest.approx(stats.poisson.sf(2, 2.0))
+
+
+def test_poisson_unilateral_sem_casos_ou_sem_media() -> None:
+    assert estatistica.teste_poisson_unilateral(0, 2.0) == 1
+    assert estatistica.teste_poisson_unilateral(2, 0.0) == 0

@@ -93,3 +93,12 @@ def autocorrelacao_lag1(valores: np.ndarray) -> float:
     if denominador == 0:
         return 0.0
     return float(np.sum(desvios[:-1] * desvios[1:])) / denominador
+
+
+def teste_poisson_unilateral(k: int, media: float) -> float:
+    """P(X ≥ k) com X ~ Poisson(média): chance de ver k casos ou mais por acaso."""
+    if k <= 0:
+        return 1.0
+    if media <= 0:
+        return 0.0
+    return float(stats.poisson.sf(k - 1, media))
