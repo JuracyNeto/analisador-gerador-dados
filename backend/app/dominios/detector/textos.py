@@ -293,3 +293,90 @@ def r03_detalhes(proporcao: float, k: int, passo: int) -> DetalhesAviso:
             "≥ 80% com decimais e ≥ 5 inteiros seguidos ou a passo constante (4 repetições ou mais)"
         ),
     )
+
+
+# R5 — Duplicatas ----------------------------------------------------------------------------
+
+SO_IDENTIFICADORES = "o arquivo só tem identificadores"
+POUCAS_COLUNAS = "precisa de 2 colunas ou mais (fora os identificadores)"
+SEM_VALOR = "—"
+SEPARADOR_CELULAS = " · "
+
+
+def poucas_linhas(minimo: int, n: int) -> str:
+    return (
+        f"precisa de {formatar_inteiro(minimo)} linhas ou mais; o arquivo tem {formatar_inteiro(n)}"
+    )
+
+
+def linha_como_texto(celulas: Sequence[str | None]) -> str:
+    """Uma linha do arquivo: "F · 34 · 1,62 · 58,2"."""
+    return SEPARADOR_CELULAS.join(SEM_VALOR if celula is None else celula for celula in celulas)
+
+
+def r05_texto_exemplo(linhas: Sequence[int], primeira: str) -> str:
+    """ "Linhas 44 a 47: F · 34 · …" (as linhas são iguais: mostra uma só)."""
+    return f"{faixa_de_linhas(linhas)}: {primeira}"
+
+
+def r05_texto_exemplo_quase(linhas: Sequence[int], primeira: str) -> str:
+    return f"{faixa_de_linhas(linhas)} (quase iguais): {primeira}"
+
+
+def _iguais(k: int, grupos_quase: int) -> str:
+    """ "iguais" ou, se algum grupo só é quase igual, "iguais ou quase iguais"."""
+    igual = pluralizar(k, "igual", "iguais")
+    return f"{igual} ou quase {igual}" if grupos_quase else igual
+
+
+def r05_textos(copias: int, grupos_quase: int, seguidas: tuple[int, int] | None) -> TextosAviso:
+    """ "Encontramos {k} linhas iguais (ou quase), {em_sequencia}." (spec 16)."""
+    linhas = quantidade(copias, "linha", "linhas")
+    outras = pluralizar(copias, "outra", "outras")
+    sequencia = (
+        f"; as linhas {seguidas[0]} a {seguidas[1]} são {_iguais(2, grupos_quase)} e seguidas"
+        if seguidas
+        else ""
+    )
+    return TextosAviso(
+        titulo="Linhas iguais em sequência" if seguidas else "Linhas repetidas no arquivo",
+        resumo=(
+            f"Encontramos {linhas} {_iguais(copias, grupos_quase)} a {outras} do arquivo"
+            f"{sequencia}."
+        ),
+        por_que=(
+            "Cópias seguidas costumam surgir de 'copiar e colar'."
+            if seguidas
+            else "Linhas repetidas podem ter sido copiadas de outras partes do arquivo."
+        ),
+        pode_ser_normal="…são registros legítimos repetidos (ex.: a mesma compra).",
+        o_que_fazer=(
+            "Confira se essas linhas são registros diferentes; "
+            "se forem cópias, remova os duplicados na etapa Limpeza."
+        ),
+    )
+
+
+def r05_formula_quase(numericas: int) -> str:
+    return (
+        "Quase iguais: distância entre as linhas padronizadas < 0,01·√p "
+        f"(p = {numericas} colunas numéricas) e as demais colunas iguais"
+    )
+
+
+R05_FORMULA_IDENTICAS = "Só linhas idênticas"
+
+
+def r05_detalhes(copias: int, grupos: int, formula: str) -> DetalhesAviso:
+    return DetalhesAviso(
+        medida="Linhas iguais ou quase iguais em todas as colunas (fora os identificadores)",
+        valor=f"{quantidade(copias, 'cópia', 'cópias')} em {quantidade(grupos, 'grupo', 'grupos')}",
+        limiar="Qualquer cópia (atenção); 3 linhas iguais seguidas ou mais (suspeita alta)",
+        formula=formula,
+    )
+
+
+def r05_ressalva(n: int, limite: int) -> tuple[str, str]:
+    """(motivo, frase) das quase duplicatas não verificadas em arquivos grandes (D120)."""
+    motivo = f"o arquivo tem {formatar_inteiro(n)} linhas e o limite é {formatar_inteiro(limite)}"
+    return motivo, f"Quase duplicatas não verificadas: {motivo}."
