@@ -35,6 +35,9 @@ def test_bloco_alinhado_nas_alturas(plantadas: dict[Any, dict[str, Any]]) -> Non
 
     assert aviso["severidade"] == "alta"
     assert aviso["exemplo"]["linhas"] == list(range(181, 201))
+    # O bloco tem a média exata do restante (1,7015): os dois lados aparecem iguais (D142).
+    assert aviso["exemplo"]["texto"].startswith("Linhas 181 a 200: média 1,702 (resto 1,702) ·")
+    assert aviso["detalhes"]["valor"].startswith("dᵤ = 0 · ")
     assert aviso["figura"]["id"] == "blocos"
 
 

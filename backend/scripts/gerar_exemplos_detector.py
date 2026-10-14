@@ -4,7 +4,7 @@ O que cada arquivo dispara (spec 12):
 - alturas_reais.txt — id;altura_m;peso_kg, 400 pessoas sem manipulação: nenhum alerta de
   atenção ou de suspeita alta (a R7 pode dar um informativo).
 - alturas_plantadas.txt — o mesmo conjunto com dados plantados e a coluna cintura_cm:
-  linhas 181–200 com alturas de um bloco gerado com a média e o DP do conjunto (R1);
+  linhas 181–200 com alturas de um bloco gerado com a média e o DP do restante (R1);
   linhas 61–70 com pesos inteiros no meio de pesos com decimais (R3);
   linhas 301–380 com alturas de 5 em 5 cm (R4; o último dígito também sai do padrão, R9);
   a mesma linha 4 vezes seguidas entre as linhas 250 e 299 (R5, suspeita alta);
@@ -94,20 +94,18 @@ def _melhor_troca(bloco: np.ndarray, falta: float) -> tuple[int, int, float]:
 
 
 def bloco_alinhado(resto: np.ndarray, k: int, semente: int) -> np.ndarray:
-    """k valores inteiros (cm) com a média e o DP do conjunto final (resto + bloco).
+    """k valores inteiros (cm) com a média e o DP do restante das linhas (R1 compara com ele, D142).
 
-    Com n = partes · k: média do bloco = média do conjunto ⇔ soma = soma do resto /
-    (partes − 1); DP igual ⇔ SQ do bloco = SQ do resto / partes. Começa pelo gerador do app
-    e acerta Σx² trocando 1 cm entre dois valores.
+    Média igual ⇔ soma do bloco = k · soma do resto / (n − k) (em cm, só quando a conta é exata);
+    DP igual ⇔ Σx² do bloco = (k − 1) · s²_resto + soma² / k. Começa pelo gerador do app e acerta
+    Σx² trocando 1 cm entre dois valores.
     """
-    partes = (len(resto) + k) // k
-    soma = int(resto.sum()) // (partes - 1)
-    quadrados_resto = float(np.sum((resto - resto.mean()) ** 2))
-    desvio = np.sqrt(quadrados_resto / partes / (k - 1))
+    soma = k * int(resto.sum()) // len(resto)
+    desvio = float(resto.std(ddof=1))
     bloco = np.round(_gerar_exato(k, soma / k, desvio, semente)).astype("int64")
     diferenca = soma - int(bloco.sum())
     bloco[np.arange(abs(diferenca)) % k] += np.sign(diferenca)
-    falta = quadrados_resto / partes + soma**2 / k - float(np.sum(bloco**2))
+    falta = (k - 1) * desvio**2 + soma**2 / k - float(np.sum(bloco**2))
     while True:
         i, j, variacao = _melhor_troca(bloco, falta)
         if abs(falta - variacao) >= abs(falta):
@@ -122,9 +120,9 @@ def _copias(origem: int) -> slice:
 
 
 def _media_exata_possivel(alturas: np.ndarray, posicoes_bloco: np.ndarray) -> bool:
-    """Em cm inteiros, o bloco só tem a média exata se a soma do resto divide por partes − 1."""
-    partes = len(alturas) // len(posicoes_bloco)
-    return int(np.delete(alturas, posicoes_bloco).sum()) % (partes - 1) == 0
+    """Em cm inteiros, o bloco só tem a média exata se k · soma do resto divide por n − k."""
+    resto = np.delete(alturas, posicoes_bloco)
+    return len(posicoes_bloco) * int(resto.sum()) % len(resto) == 0
 
 
 def _origem_das_copias(alturas: np.ndarray, posicoes_bloco: np.ndarray) -> int:

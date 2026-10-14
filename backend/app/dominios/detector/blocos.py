@@ -1,7 +1,8 @@
 """Blocos e trechos de linhas seguidas (R1, R2, R3, R11; D122).
 
-Janelas de k valores seguidos saem de somas acumuladas de x e x² (O(n) para todas as janelas),
-o que deixa a simulação da R1 — a melhor janela de cada embaralhamento da coluna — vetorizada.
+Janelas de k valores seguidos e o restante de cada uma saem de somas acumuladas de x e x² (O(n)
+para todas as janelas), o que deixa a simulação da R1 — a melhor janela de cada embaralhamento da
+coluna — vetorizada.
 """
 
 from collections.abc import Iterator
@@ -21,36 +22,33 @@ def _acumulada(matriz: np.ndarray) -> np.ndarray:
     return acumulada
 
 
-def _janelas_centradas(centrados: np.ndarray, k: int) -> tuple[np.ndarray, np.ndarray]:
-    """Σ(x − c) e DP amostral de cada janela de k colunas seguidas, em cada linha."""
-    acumulada = _acumulada(centrados)
-    quadrados = _acumulada(centrados * centrados)
-    soma = acumulada[:, k:] - acumulada[:, :-k]
-    variancias = (quadrados[:, k:] - quadrados[:, :-k] - soma * soma / k) / (k - 1)
-    return soma, np.sqrt(np.clip(variancias, 0, None))
+def _desvios(somas: np.ndarray, quadrados: np.ndarray, tamanho: int) -> np.ndarray:
+    """DP amostral de `tamanho` valores a partir de Σ(x − c) e Σ(x − c)²."""
+    variancias = (quadrados - somas * somas / tamanho) / (tamanho - 1)
+    return np.asarray(np.sqrt(np.clip(variancias, 0, None)), dtype="float64")
 
 
-def janelas(valores: np.ndarray, k: int) -> tuple[np.ndarray, np.ndarray]:
-    """Média e DP amostral de cada janela de k valores seguidos (n − k + 1 janelas)."""
-    numeros = np.asarray(valores, dtype="float64")
-    centro = float(numeros.mean())
+def afastamentos_do_resto(matriz: np.ndarray, k: int) -> np.ndarray:
+    """max(dᵤ, dₛ) de cada janela de k colunas seguidas contra o restante da linha.
+
+    dᵤ = |x̄_janela − x̄_resto| / s_resto e dₛ = |s_janela − s_resto| / s_resto. O resto sai do
+    total menos a janela. Com o resto constante (s_resto = 0), a janela fica infinitamente longe.
+    """
+    numeros = np.asarray(matriz, dtype="float64")
     # Centrar na média geral evita perder precisão nas somas dos quadrados.
-    soma, desvios = _janelas_centradas((numeros - centro)[np.newaxis, :], k)
-    return soma[0] / k + centro, desvios[0]
-
-
-def afastamento(medias: np.ndarray, desvios: np.ndarray, media: float, desvio: float) -> np.ndarray:
-    """max(dᵤ, dₛ): dᵤ = |x̄_bloco − x̄| / s e dₛ = |s_bloco − s| / s."""
-    return np.asarray(
-        np.maximum(np.abs(medias - media), np.abs(desvios - desvio)) / desvio, dtype="float64"
+    centrados = numeros - numeros.mean()
+    acumulada, quadrados = _acumulada(centrados), _acumulada(centrados * centrados)
+    soma, quadrado = acumulada[:, k:] - acumulada[:, :-k], quadrados[:, k:] - quadrados[:, :-k]
+    resto = numeros.shape[1] - k
+    soma_resto, quadrado_resto = acumulada[:, -1:] - soma, quadrados[:, -1:] - quadrado
+    desvio_resto = _desvios(soma_resto, quadrado_resto, resto)
+    diferencas = np.maximum(
+        np.abs(soma / k - soma_resto / resto),
+        np.abs(_desvios(soma, quadrado, k) - desvio_resto),
     )
-
-
-def menor_afastamento(matriz: np.ndarray, k: int, media: float, desvio: float) -> np.ndarray:
-    """Para cada linha da matriz, o afastamento da janela mais parecida com o conjunto."""
-    soma, desvios = _janelas_centradas(np.asarray(matriz, dtype="float64") - media, k)
-    maiores = np.maximum(np.abs(soma) / k, np.abs(desvios - desvio))
-    return np.asarray(maiores.min(axis=1) / desvio, dtype="float64")
+    afastamentos = np.full(diferencas.shape, np.inf)
+    np.divide(diferencas, desvio_resto, out=afastamentos, where=desvio_resto > 0)
+    return afastamentos
 
 
 def embaralhados(
