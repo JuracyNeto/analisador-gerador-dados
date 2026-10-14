@@ -45,6 +45,11 @@ class Pagina:
     total_paginas: int
 
 
+def intervalo(dados: pd.DataFrame, de: int, ate: int) -> tuple[LinhaDados, ...]:
+    """Linhas cujo número (o da prévia) está entre `de` e `ate`, inclusive."""
+    return linhas_dados(dados[(dados.index >= de) & (dados.index <= ate)])
+
+
 def paginar(dados: pd.DataFrame, pagina: int, tamanho: int) -> Pagina:
     """Recorte das linhas da página pedida (a 1ª página é 1)."""
     total_paginas = max(1, math.ceil(len(dados) / tamanho))

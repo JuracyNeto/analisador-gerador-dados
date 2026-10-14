@@ -11,6 +11,7 @@ from app.dominios.datasets.schemas import (
     AlteracaoTipo,
     DatasetCriado,
     Diagnostico,
+    LinhaDados,
     PaginaDataset,
     PedidoLeitura,
     PedidoLimpeza,
@@ -83,6 +84,13 @@ def obter_pagina(
 def remover(servico: Servico, dataset_id: str) -> Response:
     servico.remover(dataset_id)
     return Response(status_code=status.HTTP_204_NO_CONTENT)
+
+
+@router.get(
+    "/{dataset_id}/linhas", summary="Linhas da versão atual de “de” a “até” (no máximo 200)"
+)
+def obter_linhas(servico: Servico, dataset_id: str, de: int, ate: int) -> list[LinhaDados]:
+    return [LinhaDados.model_validate(linha) for linha in servico.linhas(dataset_id, de, ate)]
 
 
 @router.get("/{dataset_id}/colunas", summary="Tipo de cada coluna, com o motivo")

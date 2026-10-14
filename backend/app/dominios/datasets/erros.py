@@ -97,3 +97,11 @@ def colunas_incompativeis(coluna: str) -> EntradaInvalida:
         f"O dataset não tem a coluna {coluna}.",
         'Use "Usar como novo dataset".',
     )
+
+
+def intervalo_invalido(maximo: int) -> EntradaInvalida:
+    return EntradaInvalida(
+        "INTERVALO_INVALIDO",
+        f'Peça no máximo {maximo} linhas, com "de" menor ou igual a "até".',
+        "Ajuste o intervalo e tente de novo.",
+    )

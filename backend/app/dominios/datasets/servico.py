@@ -35,7 +35,7 @@ from app.dominios.datasets.modelos import (
     TipoColuna,
 )
 from app.dominios.datasets.repositorio import RepositorioDatasets
-from app.dominios.datasets.tabela import linhas_dados, paginar
+from app.dominios.datasets.tabela import intervalo, linhas_dados, paginar
 
 __all__ = [
     "AcaoLimpeza",
@@ -52,6 +52,9 @@ __all__ = [
 ]
 
 type Versao = Literal["atual", "original"]
+
+MAX_LINHAS_INTERVALO = 200
+"""Linhas por pedido em `linhas` (drawer "Ver na tabela" da tela 7)."""
 
 
 @dataclass(frozen=True, slots=True)
@@ -188,6 +191,12 @@ class ServicoDatasets:
         return PaginaDataset(
             self.resumo(dataset_id), versao, pagina, tamanho, recorte.total_paginas, recorte.linhas
         )
+
+    def linhas(self, dataset_id: str, de: int, ate: int) -> tuple[LinhaDados, ...]:
+        """Linhas da versão atual com número entre `de` e `ate` (no máximo 200)."""
+        if de > ate or ate - de + 1 > MAX_LINHAS_INTERVALO:
+            raise erros.intervalo_invalido(MAX_LINHAS_INTERVALO)
+        return intervalo(self.obter(dataset_id).atual, de, ate)
 
     def colunas(self, dataset_id: str) -> list[TipoColuna]:
         return list(self.obter(dataset_id).tipos.values())
