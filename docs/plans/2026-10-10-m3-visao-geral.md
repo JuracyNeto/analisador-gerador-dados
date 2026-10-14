@@ -58,7 +58,7 @@ Execução prevista (um bloco por vez): M3.0 → M3.1 → M3.2 → M3.3 → M3.4
 - **pandas 3**: nunca comparar `dtype == object`. O `to_excel` do pandas grava horários como texto (use o openpyxl direto nos testes). Arquivos escritos por script: LF, UTF-8.
 - Números exibidos com o sinal de menos (−) (`formatar_com_sinal`, D107).
 - Aleatoriedade sempre com `np.random.default_rng(semente)`; nada de `np.random.seed` global. Testes com semente fixa.
-- Toda decisão nova vai para `docs/decisions.md` com o **próximo número livre** (D108–D114 no M3.0, D115–D117 no M3.1, D118–D121 no M3.2, D122–D129 no M3.3; próxima D130); os números abaixo são os previstos na ordem dos blocos. Toda entrega vai para `CHANGELOG.md` › *Não lançado*.
+- Toda decisão nova vai para `docs/decisions.md` com o **próximo número livre** (D108–D114 no M3.0, D115–D117 no M3.1, D118–D121 no M3.2, D122–D131 no M3.3; próxima D132); os números abaixo são os previstos na ordem dos blocos. Toda entrega vai para `CHANGELOG.md` › *Não lançado*.
 - Teste manual no preview (`.claude/launch.json`: `backend` 8000, `frontend` 5173) antes do push de cada bloco com tela; viewport fixa com `resize_window` e conferência pelo DOM. Depois de editar o backend, o `--reload` apaga os datasets: recarregue o exemplo antes de testar.
 - PR, merge e release só com o ok do usuário; merge só com os 3 checks verdes (`gh pr merge N --merge`).
 
@@ -204,8 +204,10 @@ ResultadoDetector {resumo: ResumoDetector, avisos: [Aviso], nao_aplicadas: [Regr
 | D127 | R11: padrão mais específico primeiro; progressões contra o acaso | M3.3 |
 | D128 | R7: extremo só fora de 3·IQR; \|z\| > 3 sozinho é moderado (escolha do usuário em 14/10/2026) | M3.3 |
 | D129 | Teste de falsos positivos: regras de coluna na amostra sozinha; R2, R5 e R6 numa tabela com data e 2ª amostra | M3.3 |
-| D130 | Tela 7: filtros e agrupamento na URL; 1º alerta de cada grupo aberto; drawer com ±3 linhas de contexto; "Exportar estas linhas" gera o CSV no navegador | M3.4 |
-| D131 | Relatório com `gerador` (via `?gerado=`) e `detector` já no M3 (escolha do usuário em 10/10/2026); padrão = 8 seções | M3.5 |
+| D130 | R6 usa a coluna de data que acompanha a ordem das linhas (sem nenhuma, a 1ª) | M3.3 |
+| D131 | Cadastro com tipos de dado variados como fixture de testes (pedido do usuário em 14/10/2026) | M3.3 |
+| D132 | Tela 7: filtros e agrupamento na URL; 1º alerta de cada grupo aberto; drawer com ±3 linhas de contexto; "Exportar estas linhas" gera o CSV no navegador | M3.4 |
+| D133 | Relatório com `gerador` (via `?gerado=`) e `detector` já no M3 (escolha do usuário em 10/10/2026); padrão = 8 seções | M3.5 |
 
 ## Dependências novas
 - Nenhuma: `numpy` e `scipy` (KDE, Poisson, testes) já estão no backend; o frontend usa só componentes próprios.
