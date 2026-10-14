@@ -1,7 +1,7 @@
 """Regra base do detector (Template Method, D118).
 
-`executar` faz, para cada alvo: aplicável? → medir → dispara? → aviso. As subclasses só
-implementam os passos; textos vêm de `detector/textos.py`.
+`executar` pega os alvos do seletor e faz, para cada um: aplicável? → medir → dispara? →
+aviso. As subclasses só implementam os passos; textos vêm de `detector/textos.py`.
 """
 
 from abc import ABC, abstractmethod
@@ -11,8 +11,9 @@ from typing import Protocol
 
 import numpy as np
 
-from app.compartilhado.tipos import Severidade, TipoVariavel
+from app.compartilhado.tipos import TIPOS_NUMERICOS, Severidade, TipoVariavel
 from app.dominios.detector import textos
+from app.dominios.detector.exemplos import exemplo_do_trecho
 from app.dominios.detector.resultados import (
     Aviso,
     DetalhesAviso,
@@ -21,6 +22,9 @@ from app.dominios.detector.resultados import (
     TextosAviso,
 )
 from app.dominios.detector.tabela import TabelaDetector
+
+LIMIAR_P = 0.01
+"""Nível de significância das regras do detector (spec 12)."""
 
 
 class Alvo(Protocol):
@@ -48,14 +52,27 @@ class AlvoColuna:
         return len(self.valores)
 
 
-def alvos_por_tipo(
-    tabela: TabelaDetector, tipos: Collection[TipoVariavel]
-) -> tuple[AlvoColuna, ...]:
-    """Uma coluna numérica de cada tipo pedido, com os valores válidos."""
-    return tuple(
-        AlvoColuna(coluna.nome, coluna.tipo, *tabela.valores_validos(coluna))
-        for coluna in tabela.do_tipo(tipos)
-    )
+class SeletorAlvos[A](Protocol):
+    """Escolhe na tabela o que a regra examina (passo "alvos" do Template Method)."""
+
+    def __call__(self, tabela: TabelaDetector) -> tuple[A, ...]: ...
+
+
+@dataclass(frozen=True, slots=True)
+class ColunasDoTipo:
+    """Cada coluna numérica dos tipos dados vira um alvo, com os valores válidos."""
+
+    tipos: Collection[TipoVariavel]
+
+    def __call__(self, tabela: TabelaDetector) -> tuple[AlvoColuna, ...]:
+        return tuple(
+            AlvoColuna(coluna.nome, coluna.tipo, *tabela.valores_validos(coluna))
+            for coluna in tabela.do_tipo(self.tipos)
+        )
+
+
+COLUNAS_NUMERICAS = ColunasDoTipo(TIPOS_NUMERICOS)
+COLUNAS_CONTINUAS = ColunasDoTipo(frozenset({TipoVariavel.CONTINUA}))
 
 
 @dataclass(frozen=True, slots=True)
@@ -67,6 +84,18 @@ class ConteudoAviso:
     textos: TextosAviso
     exemplo: ExemploAviso | None
     detalhes: DetalhesAviso
+
+
+def conteudo_da_coluna(
+    alvo: AlvoColuna,
+    escrito: TextosAviso,
+    detalhes: DetalhesAviso,
+    marcas: np.ndarray,
+    severidade: Severidade = Severidade.ATENCAO,
+) -> ConteudoAviso:
+    """Aviso de uma coluna com o exemplo no trecho onde as marcas se concentram."""
+    exemplo = exemplo_do_trecho(alvo.linhas, alvo.valores, marcas)
+    return ConteudoAviso(severidade, (alvo.nome,), escrito, exemplo, detalhes)
 
 
 @dataclass(frozen=True, slots=True)
@@ -99,10 +128,11 @@ class RegraBase[A: Alvo, M](ABC):
     codigo: str
     nome: str
     motivo_sem_alvos: str
+    seletor: SeletorAlvos[A]
 
     def executar(self, tabela: TabelaDetector) -> ResultadoRegra:
         """Examina cada alvo e junta avisos e regras não aplicadas."""
-        alvos = self.alvos(tabela)
+        alvos = self.seletor(tabela)
         if not alvos:
             return ResultadoRegra((), (self.nao_aplicada(None, self.motivo_sem_alvos),), False)
         exames = [self._examinar(alvo) for alvo in alvos]
@@ -142,10 +172,6 @@ class RegraBase[A: Alvo, M](ABC):
         """Regra não verificada num alvo; a frase padrão é a da spec 16."""
         texto = frase or textos.frase_nao_aplicada(self.nome, rotulo, motivo)
         return RegraNaoAplicada(self.codigo, self.nome, rotulo, motivo, texto)
-
-    @abstractmethod
-    def alvos(self, tabela: TabelaDetector) -> tuple[A, ...]:
-        """Colunas (ou pares, ou o arquivo) que a regra examina."""
 
     @abstractmethod
     def motivo_nao_aplicavel(self, alvo: A) -> str | None:

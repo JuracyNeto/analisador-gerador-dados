@@ -143,3 +143,73 @@ def r07_detalhes(moderados: int, extremos: int, cercas: tuple[float, ...]) -> De
         ),
         formula="IQR = Q3 − Q1 · z = (x − x̄) / s",
     )
+
+
+# R4 — Valores redondos ----------------------------------------------------------------------
+
+TERMINACOES = {5: "terminam em 0 ou 5", 10: "terminam em 0"}
+
+
+def r04_textos(
+    coluna: str, proporcao: float, esperado: float, multiplo: int, passo: float
+) -> TextosAviso:
+    """ "46% dos valores terminam em 0 ou 5; … cerca de 20% (2,3× mais)" (spec 16)."""
+    return TextosAviso(
+        titulo=f"Muitos valores redondos em {coluna}",
+        resumo=(
+            f"{percentual(proporcao)} dos valores {TERMINACOES[multiplo]}; em medições reais "
+            f"o esperado seria cerca de {percentual(esperado)} "
+            f"({razao(proporcao / esperado)} mais)."
+        ),
+        por_que=(
+            "Quando números são inventados ou digitados de cabeça, as pessoas tendem a arredondar."
+        ),
+        pode_ser_normal=f"…o instrumento só mede de {valor(passo)} em {valor(passo)}.",
+        o_que_fazer="Confira a origem dessas linhas.",
+    )
+
+
+def r04_detalhes(multiplo: int, k: int, n: int, esperado: float, p: float) -> DetalhesAviso:
+    return DetalhesAviso(
+        medida=f"Valores que {TERMINACOES[multiplo]} (último dígito na precisão da coluna)",
+        valor=f"{percentual(k / n)} ({formatar_inteiro(k)} de {formatar_inteiro(n)})",
+        limiar=f"p < 0,01 e pelo menos 1,5× o esperado ({percentual(esperado)})",
+        teste="Binomial unilateral",
+        formula=(
+            f"P(X ≥ {formatar_inteiro(k)}), X ~ Binomial({formatar_inteiro(n)}; {numero(esperado)})"
+        ),
+        p_valor=p,
+        p_em_palavras=p_em_palavras(p),
+    )
+
+
+# R9 — Último dígito -------------------------------------------------------------------------
+
+
+def r09_textos(coluna: str, digito: int, proporcao: float) -> TextosAviso:
+    """ "O último dígito de {col} não está bem distribuído: o {d} aparece {pct}%…" (spec 16)."""
+    return TextosAviso(
+        titulo=f"Último dígito repetido em {coluna}",
+        resumo=(
+            f"O último dígito de {coluna} não está bem distribuído: o {digito} aparece "
+            f"{percentual(proporcao)} das vezes (esperado 10%)."
+        ),
+        por_que=(
+            "Medições reais têm o último dígito quase aleatório; "
+            "pessoas evitam ou repetem certos dígitos."
+        ),
+        pode_ser_normal="…o instrumento arredonda.",
+        o_que_fazer="Confira como esses valores foram medidos ou digitados.",
+    )
+
+
+def r09_detalhes(digito: int, proporcao: float, p: float) -> DetalhesAviso:
+    return DetalhesAviso(
+        medida="Frequência do último dígito (0 a 9)",
+        valor=f"o {digito} em {percentual(proporcao)} (esperado 10%)",
+        limiar="p < 0,01",
+        teste="Qui-quadrado de uniformidade (gl = 9)",
+        formula="χ² = Σ (Oᵢ − Eᵢ)² / Eᵢ, com Eᵢ = n / 10",
+        p_valor=p,
+        p_em_palavras=p_em_palavras(p),
+    )

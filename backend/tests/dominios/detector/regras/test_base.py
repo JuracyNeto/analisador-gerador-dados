@@ -6,13 +6,12 @@ import pandas as pd
 
 from app.compartilhado.tipos import Severidade, TipoVariavel
 from app.dominios.detector.regras.base import (
+    COLUNAS_CONTINUAS,
     AlvoColuna,
     ConteudoAviso,
     RegraBase,
-    alvos_por_tipo,
 )
 from app.dominios.detector.resultados import DetalhesAviso, TextosAviso
-from app.dominios.detector.tabela import TabelaDetector
 from tests.dominios.detector.apoio import tabela_de, tabela_numerica
 
 MINIMO = 3
@@ -26,10 +25,8 @@ class RegraDeTeste(RegraBase[AlvoColuna, float]):
     codigo = "R0"
     nome = "Regra de teste"
     motivo_sem_alvos = "o arquivo não tem colunas numéricas"
+    seletor = COLUNAS_CONTINUAS
     medidas: list[str] = field(default_factory=list)
-
-    def alvos(self, tabela: TabelaDetector) -> tuple[AlvoColuna, ...]:
-        return alvos_por_tipo(tabela, {TipoVariavel.CONTINUA})
 
     def motivo_nao_aplicavel(self, alvo: AlvoColuna) -> str | None:
         return "poucos valores" if alvo.n < MINIMO else None

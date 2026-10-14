@@ -4,11 +4,15 @@ from dataclasses import dataclass
 
 import numpy as np
 
-from app.compartilhado.tipos import TIPOS_NUMERICOS, Severidade
+from app.compartilhado.tipos import Severidade
 from app.dominios.detector import textos
 from app.dominios.detector.exemplos import exemplo_de_valores
-from app.dominios.detector.regras.base import AlvoColuna, ConteudoAviso, RegraBase, alvos_por_tipo
-from app.dominios.detector.tabela import TabelaDetector
+from app.dominios.detector.regras.base import (
+    COLUNAS_NUMERICAS,
+    AlvoColuna,
+    ConteudoAviso,
+    RegraBase,
+)
 
 MINIMO_VALORES = 10
 FATOR_MODERADO = 1.5
@@ -56,9 +60,7 @@ class RegraOutliers(RegraBase[AlvoColuna, MedicaoDistantes]):
     codigo = "R7"
     nome = "Valores distantes"
     motivo_sem_alvos = textos.SEM_NUMERICAS
-
-    def alvos(self, tabela: TabelaDetector) -> tuple[AlvoColuna, ...]:
-        return alvos_por_tipo(tabela, TIPOS_NUMERICOS)
+    seletor = COLUNAS_NUMERICAS
 
     def motivo_nao_aplicavel(self, alvo: AlvoColuna) -> str | None:
         if alvo.n < MINIMO_VALORES:
