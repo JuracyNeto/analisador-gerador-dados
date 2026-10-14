@@ -213,3 +213,46 @@ def r09_detalhes(digito: int, proporcao: float, p: float) -> DetalhesAviso:
         p_valor=p,
         p_em_palavras=p_em_palavras(p),
     )
+
+
+# R8 — Lei de Benford ------------------------------------------------------------------------
+
+VALORES_NEGATIVOS = "tem valores negativos"
+POUCAS_ORDENS = "precisa de valores que variem em várias ordens de grandeza"
+
+
+def poucos_positivos(minimo: int, n: int) -> str:
+    return (
+        f"precisa de {formatar_inteiro(minimo)} valores maiores que zero; "
+        f"a coluna tem {formatar_inteiro(n)}"
+    )
+
+
+def r08_textos(coluna: str, digito: int, proporcao: float, esperado: float) -> TextosAviso:
+    """ "Os primeiros dígitos de {col} não seguem o padrão natural (Lei de Benford)" (spec 16)."""
+    return TextosAviso(
+        titulo=f"Primeiros dígitos fora do padrão em {coluna}",
+        resumo=(
+            f"Os primeiros dígitos de {coluna} não seguem o padrão natural (Lei de Benford): "
+            f"o {digito} abre {percentual(proporcao)} dos valores; "
+            f"o esperado seria cerca de {percentual(esperado)}."
+        ),
+        por_que=(
+            "Em muitos dados reais, o dígito 1 aparece no início cerca de 30% das vezes; "
+            "números inventados tendem a ser mais 'uniformes'."
+        ),
+        pode_ser_normal="…os dados têm faixa limitada (ex.: idades, notas).",
+        o_que_fazer="Confira de onde vieram esses valores e se foram digitados à mão.",
+    )
+
+
+def r08_detalhes(mad: float, p: float) -> DetalhesAviso:
+    return DetalhesAviso(
+        medida="Frequência do primeiro dígito comparada à Lei de Benford",
+        valor=f"MAD = {numero(mad)}",
+        limiar="p < 0,01 e MAD > 0,015 (Nigrini: não conformidade)",
+        teste="Qui-quadrado (gl = 8)",
+        formula="P(d) = log₁₀(1 + 1/d) · MAD = média de |observado − esperado|",
+        p_valor=p,
+        p_em_palavras=p_em_palavras(p),
+    )
