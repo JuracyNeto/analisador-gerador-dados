@@ -34,12 +34,17 @@ class TabelaDetector:
     def numericas(self) -> tuple[ColunaDetector, ...]:
         return self.do_tipo(TIPOS_NUMERICOS)
 
+    def numeros(self, coluna: ColunaDetector) -> np.ndarray:
+        """Números da coluna na ordem das linhas; sem números, tudo NaN."""
+        if coluna.numeros is None:
+            return np.full(self.n_linhas, np.nan)
+        return coluna.numeros
+
     def valores_validos(self, coluna: ColunaDetector) -> tuple[np.ndarray, np.ndarray]:
         """Números das linhas com valor e os valores, na ordem do arquivo."""
-        if coluna.numeros is None:
-            return np.array([], dtype="int64"), np.array([], dtype="float64")
-        validos = ~np.isnan(coluna.numeros)
-        return self.linhas[validos], coluna.numeros[validos]
+        numeros = self.numeros(coluna)
+        validos = ~np.isnan(numeros)
+        return self.linhas[validos], numeros[validos]
 
 
 def _textos(textos: pd.Series) -> tuple[str | None, ...]:

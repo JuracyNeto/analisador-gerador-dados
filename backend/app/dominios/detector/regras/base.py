@@ -8,6 +8,7 @@ medir, dispara e o conteúdo do aviso são os passos de cada regra. Textos vêm 
 from abc import ABC, abstractmethod
 from collections.abc import Collection
 from dataclasses import dataclass
+from itertools import combinations
 from typing import Protocol
 
 import numpy as np
@@ -22,14 +23,14 @@ from app.dominios.detector.resultados import (
     RegraNaoAplicada,
     TextosAviso,
 )
-from app.dominios.detector.tabela import TabelaDetector
+from app.dominios.detector.tabela import ColunaDetector, TabelaDetector
 
 LIMIAR_P = 0.01
 """Nível de significância das regras do detector (spec 12)."""
 
 
 class Alvo(Protocol):
-    """O que a regra examina: uma coluna, um par (M3.3) ou o arquivo todo."""
+    """O que a regra examina: uma coluna, um par ou o arquivo todo."""
 
     @property
     def rotulo(self) -> str | None: ...
@@ -51,6 +52,25 @@ class AlvoColuna:
     @property
     def n(self) -> int:
         return len(self.valores)
+
+
+@dataclass(frozen=True, slots=True, eq=False)
+class AlvoPar:
+    """Duas colunas numéricas: números das linhas com os dois valores e os valores, em ordem."""
+
+    x: str
+    y: str
+    linhas: np.ndarray
+    valores_x: np.ndarray
+    valores_y: np.ndarray
+
+    @property
+    def rotulo(self) -> str:
+        return f"{self.x} e {self.y}"
+
+    @property
+    def n(self) -> int:
+        return len(self.linhas)
 
 
 # Seletores (passo "alvos") ------------------------------------------------------------------
@@ -81,6 +101,26 @@ class ColunasDoTipo:
 
 COLUNAS_NUMERICAS = ColunasDoTipo(TIPOS_NUMERICOS, textos.SEM_NUMERICAS)
 COLUNAS_CONTINUAS = ColunasDoTipo(frozenset({TipoVariavel.CONTINUA}), textos.SEM_CONTINUAS)
+
+
+def _par(tabela: TabelaDetector, x: ColunaDetector, y: ColunaDetector) -> AlvoPar:
+    """O par só com as linhas em que as duas colunas têm valor."""
+    numeros_x, numeros_y = tabela.numeros(x), tabela.numeros(y)
+    validos = ~(np.isnan(numeros_x) | np.isnan(numeros_y))
+    return AlvoPar(x.nome, y.nome, tabela.linhas[validos], numeros_x[validos], numeros_y[validos])
+
+
+@dataclass(frozen=True, slots=True)
+class ParesNumericos:
+    """Cada par de colunas numéricas (na ordem do arquivo) vira um alvo."""
+
+    motivo_sem_alvos: str = textos.SEM_PAR_NUMERICO
+
+    def __call__(self, tabela: TabelaDetector) -> tuple[AlvoPar, ...]:
+        return tuple(_par(tabela, x, y) for x, y in combinations(tabela.numericas(), 2))
+
+
+PARES_NUMERICOS = ParesNumericos()
 
 
 # Requisitos (passo "aplicável?") ------------------------------------------------------------

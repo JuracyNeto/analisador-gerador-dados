@@ -37,7 +37,7 @@ def test_resumo_bate_com_os_avisos(cliente: TestClient) -> None:
     assert resumo["total"] == len(corpo["avisos"])
     assert sum(resumo["por_severidade"].values()) == resumo["total"]
     assert resumo["frase"].startswith(f"Encontramos {resumo['total']} alertas")
-    assert resumo["regras_verificadas"] + resumo["regras_nao_aplicadas"] == 7
+    assert resumo["regras_verificadas"] + resumo["regras_nao_aplicadas"] == 8
     nao_aplicadas = {(n["regra"], n["coluna"]) for n in corpo["nao_aplicadas"]}
     assert ("R8", "idade") in nao_aplicadas
 

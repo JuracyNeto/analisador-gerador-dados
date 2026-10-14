@@ -100,6 +100,7 @@ def poucos_valores(minimo: int, n: int) -> str:
 
 SEM_NUMERICAS = "o arquivo não tem colunas numéricas"
 SEM_CONTINUAS = "o arquivo não tem colunas contínuas"
+SEM_PAR_NUMERICO = "o arquivo não tem duas colunas numéricas"
 VALORES_IGUAIS = "todos os valores são iguais"
 DIGITO_CONSTANTE = "o último dígito é sempre o mesmo"
 POUCA_VARIACAO = "os valores variam pouco para o último dígito ser aleatório"

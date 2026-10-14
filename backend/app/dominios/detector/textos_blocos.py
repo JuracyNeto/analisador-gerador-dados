@@ -5,7 +5,12 @@ Continua `textos.py` (que passaria de 500 linhas) com os mesmos formatadores.
 
 from collections.abc import Sequence
 
-from app.compartilhado.numeros import formatar_numero
+from app.compartilhado.numeros import (
+    com_sinal_de_menos,
+    formatar_fixo,
+    formatar_inteiro,
+    formatar_numero,
+)
 from app.dominios.detector import textos
 from app.dominios.detector.resultados import DetalhesAviso, TextosAviso
 
@@ -69,4 +74,67 @@ def r01_detalhes(
         formula="dᵤ = |x̄_bloco − x̄| / s · dₛ = |s_bloco − s| / s",
         p_valor=p,
         p_em_palavras=textos.p_em_palavras(p),
+    )
+
+
+# R2 — Correlação por blocos -----------------------------------------------------------------
+
+CASAS_CORRELACAO = 2
+BLOCO_SEM_VARIACAO = "os valores não variam em algum dos 5 blocos"
+
+
+def correlacao(r: float) -> str:
+    """r com 2 casas e o sinal de menos: −0,41."""
+    return com_sinal_de_menos(formatar_fixo(r, CASAS_CORRELACAO))
+
+
+def poucos_pares(minimo: int, n: int) -> str:
+    return f"precisa de {formatar_inteiro(minimo)} pares ou mais; o par tem {formatar_inteiro(n)}"
+
+
+def r02_textos(
+    par: tuple[str, str], r: float, media_blocos: float, sem_bloco: tuple[int, int, float] | None
+) -> TextosAviso:
+    """ "A correlação geral entre {x} e {y} é {r}, mas a média dos blocos é só {rb}." (spec 16).
+
+    Quando o que dispara é um bloco só, o resumo diz quanto r fica sem ele.
+    """
+    x, y = par
+    if sem_bloco is None:
+        contraste = f"a média dos blocos é só {correlacao(media_blocos)}"
+    else:
+        inicio, fim, sem = sem_bloco
+        contraste = f"sem as linhas {inicio}–{fim} ela fica em {correlacao(sem)}"
+    return TextosAviso(
+        titulo=f"Correlação puxada em {x} e {y}",
+        resumo=f"A correlação geral entre {x} e {y} é {correlacao(r)}, mas {contraste}.",
+        por_que=(
+            "Se poucos dados novos fazem a correlação subir muito, "
+            "eles podem ter sido adicionados para 'puxar' a relação."
+        ),
+        pode_ser_normal="…os blocos têm faixas de valores muito diferentes.",
+        o_que_fazer=(
+            "Compare os blocos e confira de onde vieram as linhas que mais mudam a correlação."
+        ),
+    )
+
+
+def r02_detalhes(
+    r: float, por_bloco: Sequence[float], sem_bloco: tuple[int, int, float]
+) -> DetalhesAviso:
+    """r geral, r de cada bloco e r sem o bloco que mais muda a correlação."""
+    blocos = "; ".join(correlacao(valor) for valor in por_bloco)
+    media = correlacao(sum(por_bloco) / len(por_bloco))
+    inicio, fim, sem = sem_bloco
+    return DetalhesAviso(
+        medida="Correlação de Pearson: geral, em cada um dos 5 blocos seguidos e sem cada bloco",
+        valor=(
+            f"r = {correlacao(r)} · blocos: {blocos} (média {media}) · "
+            f"sem as linhas {inicio}–{fim}: {correlacao(sem)}"
+        ),
+        limiar=(
+            "|r| passa |média dos blocos| em mais de 0,3, ou tirar um bloco baixa |r| "
+            "em mais de 0,3"
+        ),
+        formula="r = Σ(x − x̄)(y − ȳ) / √[Σ(x − x̄)² · Σ(y − ȳ)²]",
     )
