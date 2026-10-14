@@ -105,3 +105,11 @@ def intervalo_invalido(maximo: int) -> EntradaInvalida:
         f'Peça no máximo {maximo} linhas, com "de" menor ou igual a "até".',
         "Ajuste o intervalo e tente de novo.",
     )
+
+
+def exemplo_nao_encontrado(arquivo: str) -> NaoEncontrado:
+    return NaoEncontrado(
+        "EXEMPLO_NAO_ENCONTRADO",
+        f"Não encontramos o exemplo {arquivo}.",
+        "Escolha um dos exemplos da lista.",
+    )

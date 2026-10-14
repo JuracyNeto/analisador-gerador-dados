@@ -9,6 +9,7 @@ from pydantic import ValidationError
 from app.dominios.datasets import schemas
 from app.dominios.datasets.schemas import (
     AlteracaoTipo,
+    ArquivoExemplo,
     DatasetCriado,
     Diagnostico,
     LinhaDados,
@@ -52,13 +53,23 @@ def importar(servico: Servico, arquivo: UploadFile, opcoes: Opcoes) -> DatasetCr
     return DatasetCriado.model_validate(servico.importar(arquivo.file.read(), nome, opcoes))
 
 
+@router.get("/exemplos", summary="Arquivos de demonstração que dá para carregar")
+def listar_exemplos(servico: Servico) -> list[ArquivoExemplo]:
+    return [ArquivoExemplo.model_validate(exemplo) for exemplo in servico.exemplos()]
+
+
 @router.post(
     "/exemplo",
     status_code=status.HTTP_201_CREATED,
-    summary="Importa o arquivo de exemplo (pesquisa_saude.txt)",
+    summary="Importa um arquivo de demonstração (sem arquivo, pesquisa_saude.txt)",
 )
-def importar_exemplo(servico: Servico) -> DatasetCriado:
-    return DatasetCriado.model_validate(servico.importar_exemplo())
+def importar_exemplo(
+    servico: Servico,
+    arquivo: Annotated[
+        str | None, Query(description="Um dos arquivos de GET /datasets/exemplos")
+    ] = None,
+) -> DatasetCriado:
+    return DatasetCriado.model_validate(servico.importar_exemplo(arquivo))
 
 
 @router.post("/{dataset_id}/leitura", summary="Lê de novo o arquivo com outras opções")

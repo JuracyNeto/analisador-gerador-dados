@@ -10,7 +10,7 @@ from typing import Literal
 import pandas as pd
 
 from app.compartilhado.tipos import TIPOS_NUMERICOS, OrigemTipo, TipoVariavel
-from app.core.config import Configuracao, obter_configuracao
+from app.core.config import Configuracao, Exemplo, obter_configuracao
 from app.core.erros import ErroAplicacao
 from app.dominios.datasets import erros
 from app.dominios.datasets.ajuste_tipo import ajustar_tipo
@@ -158,9 +158,19 @@ class ServicoDatasets:
         anterior = self.obter(dataset_id)
         return self._ler(anterior.id, anterior.conteudo, anterior.nome_arquivo, opcoes)
 
-    def importar_exemplo(self) -> Importacao:
-        """Importa o arquivo de demonstração de dados-exemplo/ (D52)."""
-        caminho = self._config.pasta_exemplos / self._config.arquivo_exemplo
+    def exemplos(self) -> tuple[Exemplo, ...]:
+        """Arquivos de demonstração que o usuário pode carregar (D124)."""
+        return self._config.exemplos
+
+    def importar_exemplo(self, arquivo: str | None = None) -> Importacao:
+        """Importa um arquivo de demonstração (sem nome, o da pesquisa de saúde; D52, D124).
+
+        Só os arquivos da lista: o nome nunca vira caminho livre.
+        """
+        nome = arquivo or self._config.arquivo_exemplo
+        if nome not in {exemplo.arquivo for exemplo in self._config.exemplos}:
+            raise erros.exemplo_nao_encontrado(nome)
+        caminho = self._config.pasta_exemplos / nome
         return self.importar(caminho.read_bytes(), caminho.name, OpcoesLeitura())
 
     def obter(self, dataset_id: str) -> Dataset:

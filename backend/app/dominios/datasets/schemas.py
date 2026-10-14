@@ -58,6 +58,13 @@ class LinhaDados(Modelo):
     valores: dict[str, Celula]
 
 
+class ArquivoExemplo(Modelo):
+    """Arquivo de demonstração que dá para carregar com `POST /datasets/exemplo?arquivo=`."""
+
+    arquivo: str
+    descricao: str
+
+
 class DatasetCriado(Modelo):
     dataset_id: str
     nome_arquivo: str
