@@ -27,7 +27,7 @@ def _decidir(nome: str, estatistica: float, gl: int | None, p: float) -> TesteAd
     return TesteAderencia(nome, float(estatistica), gl, float(p), compativel=p >= ALFA)
 
 
-def _teste_normalidade(valores: np.ndarray) -> TesteAderencia:
+def teste_normalidade(valores: np.ndarray) -> TesteAderencia:
     """Shapiro-Wilk até 5.000 valores; acima, D'Agostino-Pearson K² (D97)."""
     if len(valores) <= LIMITE_SHAPIRO:
         resultado = stats.shapiro(valores)
@@ -86,7 +86,7 @@ def ajuste_normal(valores: np.ndarray, classes: TabelaFrequencia | None) -> Ajus
     if motivo:
         return ajuste_nao_aplicavel("normal", motivo)
     media, desvio = float(valores.mean()), float(valores.std(ddof=1))
-    teste = _teste_normalidade(valores)
+    teste = teste_normalidade(valores)
     complementar = _complementar(valores, classes, media, desvio)
     return Ajuste(
         "normal",

@@ -23,7 +23,7 @@ from app.dominios.detector.resultados import (
     RegraNaoAplicada,
     TextosAviso,
 )
-from app.dominios.detector.tabela import ColunaDetector, TabelaDetector
+from app.dominios.detector.tabela import ColunaDetector, FormaColuna, TabelaDetector
 
 LIMIAR_P = 0.01
 """Nível de significância das regras do detector (spec 12)."""
@@ -44,6 +44,7 @@ class AlvoColuna:
     tipo: TipoVariavel
     linhas: np.ndarray
     valores: np.ndarray
+    forma: FormaColuna | None = None
 
     @property
     def rotulo(self) -> str:
@@ -94,7 +95,7 @@ class ColunasDoTipo:
 
     def __call__(self, tabela: TabelaDetector) -> tuple[AlvoColuna, ...]:
         return tuple(
-            AlvoColuna(coluna.nome, coluna.tipo, *tabela.valores_validos(coluna))
+            AlvoColuna(coluna.nome, coluna.tipo, *tabela.valores_validos(coluna), coluna.forma)
             for coluna in tabela.do_tipo(self.tipos)
         )
 

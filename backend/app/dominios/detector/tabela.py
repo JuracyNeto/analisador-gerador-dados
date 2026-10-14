@@ -9,15 +9,26 @@ import pandas as pd
 from app.compartilhado.tipos import TIPOS_NUMERICOS, TipoVariavel
 
 
+@dataclass(frozen=True, slots=True)
+class FormaColuna:
+    """G₁, G₂ e o teste de normalidade da aba Forma, calculados pelo serviço (R10; D108)."""
+
+    assimetria: float
+    curtose: float
+    teste: str
+    p_normalidade: float
+
+
 @dataclass(frozen=True, slots=True, eq=False)
 class ColunaDetector:
-    """Uma coluna na ordem das linhas: números (NaN nos faltantes), textos e datas."""
+    """Uma coluna na ordem das linhas: números (NaN nos faltantes), textos, datas e forma."""
 
     nome: str
     tipo: TipoVariavel
     numeros: np.ndarray | None
     textos: tuple[str | None, ...]
     datas: np.ndarray | None = None
+    forma: FormaColuna | None = None
 
 
 @dataclass(frozen=True, slots=True, eq=False)

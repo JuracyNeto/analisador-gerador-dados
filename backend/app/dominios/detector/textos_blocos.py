@@ -11,7 +11,7 @@ from app.compartilhado.numeros import (
     formatar_inteiro,
     formatar_numero,
 )
-from app.compartilhado.textos import pluralizar
+from app.compartilhado.textos import p_valor_em_palavras, pluralizar
 from app.dominios.detector import textos
 from app.dominios.detector.resultados import DetalhesAviso, TextosAviso
 
@@ -230,4 +230,43 @@ def r06_detalhes_copias(copias: int, novas: int, acaso: float, p: float) -> Deta
         formula="P(X ≥ k), X ~ Binomial(linhas novas; fração das antigas que se repetem)",
         p_valor=p,
         p_em_palavras=textos.p_em_palavras(p),
+    )
+
+
+# R10 — Normal perfeita demais ---------------------------------------------------------------
+
+
+def r10_textos(coluna: str, assimetria: float, curtose: float) -> TextosAviso:
+    """ "{col} parece uma curva Normal perfeita demais (assimetria {g1}, curtose {g2})."."""
+    return TextosAviso(
+        titulo=f"Curva Normal perfeita demais em {coluna}",
+        resumo=(
+            f"{coluna} parece uma curva Normal perfeita demais (assimetria "
+            f"{textos.numero(assimetria)}, curtose {textos.numero(curtose)})."
+        ),
+        por_que=(
+            "Dados reais quase nunca são tão perfeitos; "
+            "isso é típico de números gerados por computador."
+        ),
+        pode_ser_normal="…a amostra é grande e o fenômeno é realmente Normal.",
+        o_que_fazer="Confira se essa coluna foi medida ou gerada por um programa.",
+    )
+
+
+def r10_detalhes(assimetria: float, curtose: float, teste: str, p: float) -> DetalhesAviso:
+    """Com p alto, a chance que importa é a de uma Normal de verdade ajustar tão bem: 1 − p."""
+    return DetalhesAviso(
+        medida="Assimetria (G₁), curtose (G₂) e aderência à Normal",
+        valor=(
+            f"G₁ = {textos.numero(assimetria)} · G₂ = {textos.numero(curtose)} · "
+            f"p = {formatar_numero(p, 3)}"
+        ),
+        limiar="|G₁| < 0,05, |G₂| < 0,1 e p > 0,99",
+        teste=teste,
+        formula="G₁ e G₂ amostrais, como na aba Forma; p do teste de aderência à Normal",
+        p_valor=p,
+        p_em_palavras=(
+            "chance de dados Normais de verdade ficarem tão perto da curva: "
+            f"{p_valor_em_palavras(1 - p)}"
+        ),
     )
