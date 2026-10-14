@@ -14,6 +14,7 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e
 ### Alterado
 - A Bivariada continua para o Gerador, e o Relatório volta para ele.
 - Valores distantes: só os que passam de 3·IQR dão "atenção"; |z| > 3 sozinho fica informativo (antes, quase toda amostra Normal grande recebia "atenção").
+- Bloco alinhado: cada bloco de linhas seguidas é comparado com o restante dos dados (antes, com o conjunto todo); valores gerados com a média e o desvio de uma coluna e anexados a ela passam a ser encontrados sempre (antes, em cerca de metade das vezes). O exemplo mostra a média e o desvio do bloco ao lado dos do restante.
 
 ### Corrigido
 - Valores em reais (`R$ 1.234,56`, `−R$ 10,00`) e percentuais (`12,5%`) viram número (antes, código ou categorias); o percentual fica na escala do arquivo (12,5), o motivo diz a unidade ("Valores em reais (ex.: R$ 1.234,56).") e a prévia mostra as células como no arquivo.
