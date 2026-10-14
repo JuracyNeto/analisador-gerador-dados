@@ -7,6 +7,11 @@ export const TEXTOS_DETECTOR = {
     'Aplicamos 11 regras que procuram sinais comuns de dados inseridos ou gerados. Um alerta pede conferência, não é uma conclusão.',
   semDataset: 'Importe um arquivo para procurar sinais de dados inseridos ou gerados.',
   navegacao: { voltar: 'Voltar para Gerador', continuar: 'Continuar para Relatório' },
+  alertasPorSeveridade: 'Alertas por severidade',
+  mostrar: 'Mostrar',
+  agruparPor: 'Agrupar por',
+  agrupamentos: { coluna: 'Coluna', regra: 'Regra' },
+  chip: (palavra: string, quantidade: number): string => `${palavra} (${String(quantidade)})`,
   linhasInteiras: 'Linhas inteiras',
   separadorPar: ' × ',
   regra: (aviso: Pick<Aviso, 'regra' | 'nome_regra'>): string =>
