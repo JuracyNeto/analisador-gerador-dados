@@ -1,9 +1,28 @@
 """Utilitários estatísticos sem regra de negócio, usados por mais de um domínio (padroes §2)."""
 
+import math
 from collections.abc import Sequence
+from dataclasses import dataclass
+
+import numpy as np
+from scipy import stats
 
 ALFA = 0.05  # nível de significância padrão (00-visao-geral.md)
 MINIMO_ESPERADO = 5.0
+
+
+@dataclass(frozen=True, slots=True)
+class ResultadoQuiQuadrado:
+    estatistica: float
+    gl: int
+    p_valor: float
+
+
+@dataclass(frozen=True, slots=True)
+class ResultadoRuns:
+    runs: int
+    z: float
+    p_valor: float
 
 
 def _juntar(observados: list[float], esperados: list[float], i: int, j: int) -> None:
@@ -36,3 +55,41 @@ def agrupar_esperados_pequenos(
         vizinho = _vizinho_menor(esp, i)
         _juntar(obs, esp, min(i, vizinho), max(i, vizinho))
     return obs, esp
+
+
+def teste_binomial_unilateral(k: int, n: int, p0: float) -> float:
+    """P(X ≥ k) com X ~ Binomial(n, p₀): chance de ver k ou mais sucessos por acaso."""
+    return float(stats.binom.sf(k - 1, n, p0))
+
+
+def teste_qui_quadrado(observados: np.ndarray, esperados: np.ndarray) -> ResultadoQuiQuadrado:
+    """χ² = Σ (Oᵢ − Eᵢ)² / Eᵢ com gl = k − 1 (esperados na mesma escala dos observados)."""
+    obs = np.asarray(observados, dtype="float64")
+    esp = np.asarray(esperados, dtype="float64")
+    estatistica = float(np.sum((obs - esp) ** 2 / esp))
+    gl = len(obs) - 1
+    return ResultadoQuiQuadrado(estatistica, gl, float(stats.chi2.sf(estatistica, gl)))
+
+
+def teste_runs(acima: np.ndarray) -> ResultadoRuns:
+    """Runs de Wald-Wolfowitz: Z = (R − μ_R)/σ_R e p bilateral (spec 12)."""
+    marcas = np.asarray(acima, dtype=bool)
+    runs = int(np.count_nonzero(marcas[1:] != marcas[:-1])) + 1 if len(marcas) else 0
+    n1 = int(np.count_nonzero(marcas))
+    n2 = len(marcas) - n1
+    soma = n1 + n2
+    variancia = 2 * n1 * n2 * (2 * n1 * n2 - soma) / (soma**2 * (soma - 1)) if soma > 1 else 0
+    if variancia <= 0:
+        return ResultadoRuns(runs, 0.0, 1.0)
+    media = 2 * n1 * n2 / soma + 1
+    z = (runs - media) / math.sqrt(variancia)
+    return ResultadoRuns(runs, z, float(2 * stats.norm.sf(abs(z))))
+
+
+def autocorrelacao_lag1(valores: np.ndarray) -> float:
+    """ρ₁ = Σ(xₜ − x̄)(xₜ₊₁ − x̄) / Σ(xₜ − x̄)²; valores constantes → 0."""
+    desvios = np.asarray(valores, dtype="float64") - float(np.mean(valores))
+    denominador = float(np.sum(desvios**2))
+    if denominador == 0:
+        return 0.0
+    return float(np.sum(desvios[:-1] * desvios[1:])) / denominador
