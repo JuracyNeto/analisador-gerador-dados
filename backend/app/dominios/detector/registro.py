@@ -3,8 +3,9 @@
 from collections.abc import Collection
 
 from app.dominios.detector.regras.base import Regra
+from app.dominios.detector.regras.r07_outliers import RegraOutliers
 
-REGRAS: tuple[Regra, ...] = ()
+REGRAS: tuple[Regra, ...] = (RegraOutliers(),)
 
 
 def regras_pedidas(codigos: Collection[str] | None) -> tuple[Regra, ...]:

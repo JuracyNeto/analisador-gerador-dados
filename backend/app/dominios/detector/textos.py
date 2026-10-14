@@ -14,6 +14,7 @@ from app.compartilhado.numeros import (
     formatar_percentual,
 )
 from app.compartilhado.textos import juntar_lista, p_valor_em_palavras, pluralizar
+from app.dominios.detector.resultados import DetalhesAviso, TextosAviso
 
 MAX_ITENS_TEXTO = 8
 MIN_LINHAS_FAIXA = 3
@@ -104,3 +105,41 @@ SEM_CONTINUAS = "o arquivo não tem colunas contínuas"
 VALORES_IGUAIS = "todos os valores são iguais"
 DIGITO_CONSTANTE = "o último dígito é sempre o mesmo"
 POUCA_VARIACAO = "os valores variam pouco para o último dígito ser aleatório"
+METADE_CENTRAL_IGUAL = "a metade central dos valores é toda igual"
+
+
+# R7 — Valores distantes ---------------------------------------------------------------------
+
+
+def r07_textos(coluna: str, k: int, exemplo: float, limite: float) -> TextosAviso:
+    """ "{k} valores de {col} estão muito longe dos demais (ex.: {v})" (spec 16)."""
+    longe = f"{pluralizar(k, 'está', 'estão')} muito longe dos demais"
+    return TextosAviso(
+        titulo=f"{quantidade(k, 'valor distante', 'valores distantes')} dos demais em {coluna}",
+        resumo=(
+            f"{quantidade(k, 'valor', 'valores')} de {coluna} {longe} (ex.: {valor(exemplo)}); "
+            f"o limite usual seria {numero(limite)}."
+        ),
+        por_que="Valores extremos podem ser erros de digitação ou casos especiais.",
+        pode_ser_normal="…são casos raros, mas reais.",
+        o_que_fazer=(
+            "Confira esses valores na fonte; se forem erros de digitação, corrija na etapa Limpeza."
+        ),
+    )
+
+
+def r07_detalhes(moderados: int, extremos: int, cercas: tuple[float, ...]) -> DetalhesAviso:
+    """Cercas: (Q1 − 1,5·IQR, Q3 + 1,5·IQR, Q1 − 3·IQR, Q3 + 3·IQR)."""
+    baixo, alto, baixo_extremo, alto_extremo = (numero(c) for c in cercas)
+    return DetalhesAviso(
+        medida="Valores fora das cercas de Tukey ou com |z| > 3",
+        valor=(
+            f"{quantidade(moderados, 'moderado', 'moderados')} e "
+            f"{quantidade(extremos, 'extremo', 'extremos')}"
+        ),
+        limiar=(
+            f"Moderado: fora de {baixo} a {alto} (1,5·IQR) · "
+            f"extremo: fora de {baixo_extremo} a {alto_extremo} (3·IQR) ou |z| > 3"
+        ),
+        formula="IQR = Q3 − Q1 · z = (x − x̄) / s",
+    )

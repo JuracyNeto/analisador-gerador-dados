@@ -1,0 +1,100 @@
+"""R7 — Valores distantes: cercas de Tukey (1,5·IQR e 3·IQR) e escore z (spec 12)."""
+
+from dataclasses import dataclass
+
+import numpy as np
+
+from app.compartilhado.tipos import TIPOS_NUMERICOS, Severidade
+from app.dominios.detector import textos
+from app.dominios.detector.exemplos import exemplo_de_valores
+from app.dominios.detector.regras.base import AlvoColuna, ConteudoAviso, RegraBase, alvos_por_tipo
+from app.dominios.detector.tabela import TabelaDetector
+
+MINIMO_VALORES = 10
+FATOR_MODERADO = 1.5
+FATOR_EXTREMO = 3.0
+Z_EXTREMO = 3.0
+QUARTIS = (0.25, 0.75)
+
+
+@dataclass(frozen=True, slots=True, eq=False)
+class MedicaoDistantes:
+    """Quartis, máscaras de moderados e extremos e o escore z de cada valor."""
+
+    q1: float
+    q3: float
+    z: np.ndarray
+    moderados: np.ndarray
+    extremos: np.ndarray
+
+    @property
+    def distantes(self) -> np.ndarray:
+        return np.asarray(self.moderados | self.extremos, dtype=bool)
+
+    def cercas(self, fator: float) -> tuple[float, float]:
+        return _cercas(self.q1, self.q3, fator)
+
+
+def _cercas(q1: float, q3: float, fator: float) -> tuple[float, float]:
+    """[Q1 − fator·IQR, Q3 + fator·IQR]."""
+    iqr = q3 - q1
+    return q1 - fator * iqr, q3 + fator * iqr
+
+
+def _fora(valores: np.ndarray, cercas: tuple[float, float]) -> np.ndarray:
+    return (valores < cercas[0]) | (valores > cercas[1])
+
+
+def _quartis(valores: np.ndarray) -> tuple[float, float]:
+    q1, q3 = np.quantile(valores, QUARTIS)
+    return float(q1), float(q3)
+
+
+class RegraOutliers(RegraBase[AlvoColuna, MedicaoDistantes]):
+    """Moderado (fora de 1,5·IQR) → informativo; extremo (3·IQR ou |z| > 3) → atenção."""
+
+    codigo = "R7"
+    nome = "Valores distantes"
+    motivo_sem_alvos = textos.SEM_NUMERICAS
+
+    def alvos(self, tabela: TabelaDetector) -> tuple[AlvoColuna, ...]:
+        return alvos_por_tipo(tabela, TIPOS_NUMERICOS)
+
+    def motivo_nao_aplicavel(self, alvo: AlvoColuna) -> str | None:
+        if alvo.n < MINIMO_VALORES:
+            return textos.poucos_valores(MINIMO_VALORES, alvo.n)
+        if np.ptp(alvo.valores) == 0:
+            return textos.VALORES_IGUAIS
+        q1, q3 = _quartis(alvo.valores)
+        return textos.METADE_CENTRAL_IGUAL if q1 == q3 else None
+
+    def medir(self, alvo: AlvoColuna) -> MedicaoDistantes:
+        valores = alvo.valores
+        q1, q3 = _quartis(valores)
+        z = (valores - valores.mean()) / valores.std(ddof=1)
+        extremos = _fora(valores, _cercas(q1, q3, FATOR_EXTREMO)) | (np.abs(z) > Z_EXTREMO)
+        moderados = _fora(valores, _cercas(q1, q3, FATOR_MODERADO)) & ~extremos
+        return MedicaoDistantes(q1, q3, z, moderados, extremos)
+
+    def dispara(self, medicao: MedicaoDistantes) -> bool:
+        return bool(medicao.distantes.any())
+
+    def conteudo_aviso(self, alvo: AlvoColuna, medicao: MedicaoDistantes) -> ConteudoAviso:
+        distantes = medicao.distantes
+        mais_longe = int(np.argmax(np.where(distantes, np.abs(medicao.z), -np.inf)))
+        exemplo = float(alvo.valores[mais_longe])
+        baixo, alto = medicao.cercas(FATOR_MODERADO)
+        extremos = int(medicao.extremos.sum())
+        return ConteudoAviso(
+            severidade=Severidade.ATENCAO if extremos else Severidade.INFO,
+            colunas=(alvo.nome,),
+            textos=textos.r07_textos(
+                alvo.nome, int(distantes.sum()), exemplo, alto if exemplo > medicao.q3 else baixo
+            ),
+            exemplo=exemplo_de_valores(alvo.linhas[distantes], alvo.valores[distantes]),
+            detalhes=textos.r07_detalhes(
+                int(medicao.moderados.sum()),
+                extremos,
+                (baixo, alto, *medicao.cercas(FATOR_EXTREMO)),
+            ),
+        )
