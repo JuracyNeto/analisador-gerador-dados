@@ -39,6 +39,17 @@ def test_so_moderados_disparam_informativo() -> None:
     assert aviso.pode_ser_normal.startswith("…")
 
 
+def test_z_acima_de_3_dentro_das_cercas_extremas_e_so_informativo() -> None:
+    """Numa Normal de 1.000 valores, |z| > 3 é comum; extremo é só fora de 3·IQR (D122)."""
+    valores = _normal(1000)
+
+    (aviso,) = RegraOutliers().executar(tabela_numerica(valores)).avisos
+
+    assert np.abs((valores - valores.mean()) / valores.std(ddof=1)).max() > 3
+    assert aviso.severidade == Severidade.INFO
+    assert aviso.detalhes.valor.endswith("e 0 extremos")
+
+
 def test_um_valor_so_usa_o_singular() -> None:
     valores = np.concatenate([np.linspace(50, 90, 100), [150.0]])
 

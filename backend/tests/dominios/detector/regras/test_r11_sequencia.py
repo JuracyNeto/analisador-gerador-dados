@@ -1,7 +1,7 @@
 import numpy as np
-from app.dominios.detector.regras.r11_sequencia import RegraSequencia
 
 from app.compartilhado.tipos import Severidade, TipoVariavel
+from app.dominios.detector.regras.r11_sequencia import RegraSequencia
 from tests.dominios.detector.apoio import tabela_numerica
 
 

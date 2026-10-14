@@ -1,4 +1,7 @@
-"""R7 — Valores distantes: cercas de Tukey (1,5·IQR e 3·IQR) e escore z (spec 12)."""
+"""R7 — Valores distantes: cercas de Tukey (1,5·IQR e 3·IQR) e escore z (spec 12, D122).
+
+Moderado = fora de 1,5·IQR ou |z| > 3 (informativo); extremo = fora de 3·IQR (atenção).
+"""
 
 from dataclasses import dataclass
 
@@ -12,7 +15,7 @@ from app.dominios.detector.regras import base
 MINIMO_VALORES = 10
 FATOR_MODERADO = 1.5
 FATOR_EXTREMO = 3.0
-Z_EXTREMO = 3.0
+Z_DISTANTE = 3.0
 QUARTIS = (0.25, 0.75)
 
 
@@ -55,7 +58,7 @@ def _centro_varia(alvo: base.AlvoColuna) -> str | None:
 
 
 class RegraOutliers(base.RegraBase[base.AlvoColuna, MedicaoDistantes]):
-    """Moderado (fora de 1,5·IQR) → informativo; extremo (3·IQR ou |z| > 3) → atenção."""
+    """Moderado (fora de 1,5·IQR ou |z| > 3) → informativo; extremo (3·IQR) → atenção."""
 
     codigo = "R7"
     nome = "Valores distantes"
@@ -68,8 +71,10 @@ class RegraOutliers(base.RegraBase[base.AlvoColuna, MedicaoDistantes]):
         valores = alvo.valores
         q1, q3 = _quartis(valores)
         z = (valores - valores.mean()) / valores.std(ddof=1)
-        extremos = _fora(valores, _cercas(q1, q3, FATOR_EXTREMO)) | (np.abs(z) > Z_EXTREMO)
-        moderados = _fora(valores, _cercas(q1, q3, FATOR_MODERADO)) & ~extremos
+        # |z| > 3 sozinho é moderado: numa Normal de 500 valores ele aparece em 73% das amostras.
+        extremos = _fora(valores, _cercas(q1, q3, FATOR_EXTREMO))
+        distantes = _fora(valores, _cercas(q1, q3, FATOR_MODERADO)) | (np.abs(z) > Z_DISTANTE)
+        moderados = distantes & ~extremos
         return MedicaoDistantes(q1, q3, z, moderados, extremos)
 
     def dispara(self, medicao: MedicaoDistantes) -> bool:
