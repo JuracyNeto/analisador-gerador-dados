@@ -138,4 +138,13 @@ describe('PaginaGerador', () => {
       });
     });
   });
+
+  it('voltar para a Bivariada e continuar para o Detector', async () => {
+    simularApi(ROTAS);
+    const { usuario, roteador } = renderizarPagina();
+
+    expect(screen.getByRole('button', { name: 'Voltar para Bivariada' })).toBeInTheDocument();
+    await usuario.click(screen.getByRole('button', { name: 'Continuar para Detector' }));
+    expect(roteador.state.location.pathname).toBe('/detector');
+  });
 });

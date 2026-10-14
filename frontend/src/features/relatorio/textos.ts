@@ -31,5 +31,5 @@ export const TEXTOS_RELATORIO = {
     descricao: 'Marque ao menos uma seção para ver a prévia do relatório.',
   },
   baixado: (nome: string) => `Relatório baixado: ${nome}.`,
-  voltar: 'Voltar para Gerador',
+  voltar: 'Voltar para Detector',
 };

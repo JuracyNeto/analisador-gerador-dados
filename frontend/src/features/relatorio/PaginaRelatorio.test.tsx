@@ -138,10 +138,10 @@ describe('PaginaRelatorio', () => {
     expect(screen.getByText(T.semDataset)).toBeInTheDocument();
   });
 
-  it('"Voltar para Gerador" leva à etapa 6', async () => {
+  it('"Voltar para Detector" leva à etapa 7', async () => {
     const { usuario, roteador } = renderizarPagina();
 
-    await usuario.click(await screen.findByRole('button', { name: /Voltar para Gerador/ }));
-    expect(roteador.state.location.pathname).toBe('/gerador');
+    await usuario.click(await screen.findByRole('button', { name: /Voltar para Detector/ }));
+    expect(roteador.state.location.pathname).toBe('/detector');
   });
 });
