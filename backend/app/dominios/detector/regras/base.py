@@ -6,7 +6,7 @@ medir, dispara e o conteúdo do aviso são os passos de cada regra. Textos vêm 
 """
 
 from abc import ABC, abstractmethod
-from collections.abc import Collection
+from collections.abc import Collection, Sequence
 from dataclasses import dataclass
 from itertools import combinations
 from typing import Protocol
@@ -132,11 +132,16 @@ class Requisito[A](Protocol):
     def __call__(self, alvo: A) -> str | None: ...
 
 
+class AlvoContado(Alvo, Protocol):
+    @property
+    def n(self) -> int: ...
+
+
 @dataclass(frozen=True, slots=True)
 class MinimoDeValores:
     minimo: int
 
-    def __call__(self, alvo: AlvoColuna) -> str | None:
+    def __call__(self, alvo: AlvoContado) -> str | None:
         return textos.poucos_valores(self.minimo, alvo.n) if alvo.n < self.minimo else None
 
 
@@ -206,6 +211,19 @@ class Regra(Protocol):
     nome: str
 
     def executar(self, tabela: TabelaDetector) -> ResultadoRegra: ...
+
+
+def executar_em_partes(partes: Sequence[Regra], tabela: TabelaDetector) -> ResultadoRegra:
+    """Uma regra feita de partes com alvos diferentes (mesmo código e nome, ex.: R6).
+
+    O motivo repetido por todas as partes (ex.: "sem coluna de data") aparece uma vez só.
+    """
+    resultados = [parte.executar(tabela) for parte in partes]
+    return ResultadoRegra(
+        avisos=tuple(aviso for r in resultados for aviso in r.avisos),
+        nao_aplicadas=tuple(dict.fromkeys(item for r in resultados for item in r.nao_aplicadas)),
+        verificada=any(r.verificada for r in resultados),
+    )
 
 
 @dataclass(frozen=True, slots=True)

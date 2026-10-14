@@ -19,7 +19,8 @@ def tabela_de(dados: pd.DataFrame, tipos: Mapping[str, TipoVariavel]) -> TabelaD
     for nome, tipo in tipos.items():
         serie = numerado[nome]
         numeros = pd.to_numeric(serie, errors="coerce") if tipo in TIPOS_NUMERICOS else None
-        colunas.append(coluna_detector(nome, tipo, numeros, _textos(serie)))
+        datas = pd.to_datetime(serie, errors="coerce") if tipo == TipoVariavel.DATA else None
+        colunas.append(coluna_detector(nome, tipo, numeros, _textos(serie), datas))
     return montar_tabela(numerado.index, colunas)
 
 

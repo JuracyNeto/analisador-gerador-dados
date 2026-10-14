@@ -8,6 +8,7 @@ from app.dominios.detector.regras.r02_correlacao_blocos import RegraCorrelacaoBl
 from app.dominios.detector.regras.r03_formato import RegraFormato
 from app.dominios.detector.regras.r04_redondos import RegraRedondos
 from app.dominios.detector.regras.r05_duplicatas import RegraDuplicatas
+from app.dominios.detector.regras.r06_temporal import RegraTemporal
 from app.dominios.detector.regras.r07_outliers import RegraOutliers
 from app.dominios.detector.regras.r08_benford import RegraBenford
 from app.dominios.detector.regras.r09_ultimo_digito import RegraUltimoDigito
@@ -18,6 +19,7 @@ REGRAS: tuple[Regra, ...] = (
     RegraFormato(),
     RegraRedondos(),
     RegraDuplicatas(),
+    RegraTemporal(),
     RegraOutliers(),
     RegraBenford(),
     RegraUltimoDigito(),

@@ -115,7 +115,8 @@ def _ids(linhas: np.ndarray) -> np.ndarray:
     return tabela.groupby(list(tabela.columns), sort=False).ngroup().to_numpy(dtype="int64")
 
 
-def _ids_exatos(chaves: ColunasComparaveis) -> np.ndarray:
+def ids_exatos(chaves: ColunasComparaveis) -> np.ndarray:
+    """O mesmo número para linhas iguais em todas as colunas comparadas (faltante = faltante)."""
     numeros = chaves.numeros
     return _ids(np.column_stack([chaves.codigos, np.nan_to_num(numeros), np.isnan(numeros)]))
 
@@ -166,7 +167,7 @@ def _maiores_sequencias(
 
 def repetidos(chaves: ColunasComparaveis, quase: np.ndarray) -> tuple[GrupoRepetido, ...]:
     """Grupos de linhas idênticas, ligados também pelos pares quase iguais dados."""
-    ids = _ids_exatos(chaves)
+    ids = ids_exatos(chaves)
     posicoes, rotulos = _componentes(np.concatenate([_pares_de_mesmo_id(ids), quase]))
     if len(posicoes) == 0:
         return ()
@@ -212,7 +213,7 @@ def pares_quase_iguais(chaves: ColunasComparaveis) -> np.ndarray:
         locais = cKDTree(pontos[posicoes]).query_pairs(raio, output_type="ndarray")
         pares.append(posicoes[locais])
     juntos = np.concatenate(pares)
-    exatos = _ids_exatos(chaves)
+    exatos = ids_exatos(chaves)
     return np.asarray(juntos[exatos[juntos[:, 0]] != exatos[juntos[:, 1]]], dtype="int64")
 
 
@@ -247,7 +248,7 @@ def _pares_na_caixa(chaves: ColunasComparaveis, meia_caixa: np.ndarray) -> int:
 
 
 def _pares_identicos(chaves: ColunasComparaveis) -> int:
-    _, contagens = np.unique(_ids_exatos(chaves), return_counts=True)
+    _, contagens = np.unique(ids_exatos(chaves), return_counts=True)
     return int(np.sum(contagens * (contagens - 1) // 2))
 
 

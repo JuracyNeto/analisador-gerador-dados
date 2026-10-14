@@ -11,6 +11,7 @@ from app.compartilhado.numeros import (
     formatar_inteiro,
     formatar_numero,
 )
+from app.compartilhado.textos import pluralizar
 from app.dominios.detector import textos
 from app.dominios.detector.resultados import DetalhesAviso, TextosAviso
 
@@ -137,4 +138,96 @@ def r02_detalhes(
             "em mais de 0,3"
         ),
         formula="r = Σ(x − x̄)(y − ȳ) / √[Σ(x − x̄)² · Σ(y − ȳ)²]",
+    )
+
+
+# R6 — Comparação temporal -------------------------------------------------------------------
+
+SEM_DATA = "o arquivo não tem uma coluna de data"
+SO_DATAS = "o arquivo só tem datas e identificadores"
+POR_QUE_R6 = "Dados novos que copiam os antigos ou variam pouco demais podem ter sido inseridos."
+PODE_SER_NORMAL_R6 = "…houve mudança real no processo."
+
+
+def poucas_linhas_por_periodo(minimo: int) -> str:
+    return f"precisa de {formatar_inteiro(minimo)} linhas ou mais antes e depois da data do meio"
+
+
+def r06_textos_variacao(coluna: str, data: str, desvios: tuple[float, float]) -> TextosAviso:
+    """ "Os dados de {col} depois de {data} variam bem menos em relação aos anteriores…"."""
+    antes, depois = (textos.numero(desvio) for desvio in desvios)
+    return TextosAviso(
+        titulo=f"Variação menor depois de {data} em {coluna}",
+        resumo=(
+            f"Os dados de {coluna} depois de {data} variam bem menos em relação aos anteriores "
+            f"(desvio padrão {depois}; antes, {antes})."
+        ),
+        por_que=POR_QUE_R6,
+        pode_ser_normal=PODE_SER_NORMAL_R6,
+        o_que_fazer=f"Confira como os dados depois de {data} foram coletados.",
+    )
+
+
+def r06_detalhes_variacao(
+    data: str, desvios: tuple[float, float], linhas: tuple[int, int], p: float
+) -> DetalhesAviso:
+    antes, depois = desvios
+    return DetalhesAviso(
+        medida=f"Desvio padrão antes e depois da data do meio ({data})",
+        valor=(
+            f"antes: {textos.numero(antes)} ({textos.quantidade(linhas[0], 'linha', 'linhas')}) · "
+            f"depois: {textos.numero(depois)} "
+            f"({textos.quantidade(linhas[1], 'linha', 'linhas')}) · "
+            f"razão {textos.numero(depois / antes)}"
+        ),
+        limiar="DP depois < 0,5 × DP antes, improvável ao acaso (p < 0,01)",
+        teste="F de Snedecor (unilateral)",
+        formula="F = s²_depois / s²_antes",
+        p_valor=p,
+        p_em_palavras=textos.p_em_palavras(p),
+    )
+
+
+def r06_texto_exemplo_copias(novas: Sequence[int], antigas: Sequence[int]) -> str:
+    """ "Linhas 56, 62 e 71: iguais às linhas 4, 11 e 19, fora a data"."""
+    referencia = textos.faixa_de_linhas(antigas)
+    artigo = "à" if len(antigas) == 1 else "às"
+    iguais = pluralizar(len(novas), "igual", "iguais")
+    return (
+        f"{textos.faixa_de_linhas(novas)}: {iguais} {artigo} "
+        f"{referencia[0].lower()}{referencia[1:]}, fora a data"
+    )
+
+
+def r06_textos_copias(data: str, copias: int, novas: int) -> TextosAviso:
+    """ "Os dados depois de {data} copiam os anteriores: {k} das {m} linhas novas ({pct})…"."""
+    return TextosAviso(
+        titulo="Linhas novas repetem linhas antigas",
+        resumo=(
+            f"Os dados depois de {data} copiam os anteriores: {formatar_inteiro(copias)} das "
+            f"{formatar_inteiro(novas)} linhas novas ({textos.percentual(copias / novas)}) "
+            "são iguais a linhas de antes, fora a data."
+        ),
+        por_que=POR_QUE_R6,
+        pode_ser_normal=PODE_SER_NORMAL_R6,
+        o_que_fazer="Confira se essas linhas são registros novos de verdade.",
+    )
+
+
+def r06_detalhes_copias(copias: int, novas: int, acaso: float, p: float) -> DetalhesAviso:
+    return DetalhesAviso(
+        medida=(
+            "Linhas depois da data do meio iguais a alguma linha de antes "
+            "(fora as datas e os identificadores)"
+        ),
+        valor=(
+            f"{textos.percentual(copias / novas)} ({formatar_inteiro(copias)} de "
+            f"{formatar_inteiro(novas)}) · entre as linhas de antes, "
+            f"{textos.percentual(acaso)} se repetem"
+        ),
+        limiar="≥ 10% das linhas novas e acima do que as antigas repetem entre si (p < 0,01)",
+        teste="Binomial unilateral",
+        formula="P(X ≥ k), X ~ Binomial(linhas novas; fração das antigas que se repetem)",
+        p_valor=p,
+        p_em_palavras=textos.p_em_palavras(p),
     )
