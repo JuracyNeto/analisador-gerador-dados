@@ -12,7 +12,13 @@ import pandas as pd
 
 from app.compartilhado.datas import FormatoData, formatar_data, reconhecer_datas
 from app.compartilhado.numeros import formatar_numero
-from app.compartilhado.series import converter_para_numero, eh_inteira
+from app.compartilhado.series import (
+    TipoUnidade,
+    Unidade,
+    converter_para_numero,
+    eh_inteira,
+    reconhecer_unidade,
+)
 from app.compartilhado.textos import normalizar_texto, pluralizar
 from app.compartilhado.tipos import TIPOS_CATEGORICOS, OrigemTipo, TipoVariavel
 from app.dominios.datasets.escalas_ordinais import ordenar_por_escala
@@ -29,6 +35,10 @@ MOTIVOS_DATA: dict[FormatoData, str] = {
     "data_hora": "Datas com horário (ex.: {exemplo}).",
     "hora": "Horários (ex.: {exemplo}).",
     "planilha": "Datas da planilha (ex.: {exemplo}).",
+}
+MOTIVOS_UNIDADE: dict[TipoUnidade, str] = {
+    "reais": "Valores em reais (ex.: {exemplo}).",
+    "percentual": "Percentuais (ex.: {exemplo}).",
 }
 _NOME_DE_CODIGO = re.compile(r"^(id|cod|codigo|cpf|cnpj|cep|telefone|fone|matricula)\b")
 
@@ -59,6 +69,7 @@ class ColunaLida:
     numeros: pd.Series | None
     textos: pd.Series
     limiares: Limiares
+    unidade: Unidade | None = None
 
     @property
     def validos(self) -> pd.Series:
@@ -100,9 +111,10 @@ def _textos(serie: pd.Series, numeros: pd.Series | None) -> pd.Series:
 
 
 def ler_coluna(nome: str, serie: pd.Series, decimal: str | None, limiares: Limiares) -> ColunaLida:
-    """Converte uma vez e guarda números e textos (números no formato pt-BR)."""
+    """Converte uma vez e guarda números, textos (números no formato pt-BR) e a unidade."""
     numeros = serie_numerica(serie, decimal, limiares.numerico)
-    return ColunaLida(nome, serie, numeros, _textos(serie, numeros), limiares)
+    unidade = None if numeros is None else reconhecer_unidade(serie, limiares.numerico)
+    return ColunaLida(nome, serie, numeros, _textos(serie, numeros), limiares, unidade)
 
 
 def _eh_decimal(coluna: ColunaLida) -> bool:
@@ -132,7 +144,8 @@ def _identificador(coluna: ColunaLida) -> Classificacao | None:
         motivo = f"O nome da coluna indica um código ({coluna.nome})."
         return Classificacao(TipoVariavel.IDENTIFICADOR, motivo)
     n = len(coluna.validos)
-    if _eh_decimal(coluna) or n < N_MINIMO_IDENTIFICADOR:
+    # Valores com R$ ou % são quantias, nunca códigos (D132).
+    if _eh_decimal(coluna) or coluna.unidade is not None or n < N_MINIMO_IDENTIFICADOR:
         return None
     unicos = coluna.n_distintos / n
     if unicos < coluna.limiares.unicos_identificador:
@@ -164,19 +177,27 @@ def _nominal(coluna: ColunaLida) -> Classificacao | None:
     return Classificacao(TipoVariavel.NOMINAL, motivo)
 
 
+def _numerica(coluna: ColunaLida, tipo: TipoVariavel, motivo: str) -> Classificacao:
+    """Com R$ ou % nos valores, o motivo diz a unidade e mostra um valor como no arquivo."""
+    if coluna.unidade is None:
+        return Classificacao(tipo, motivo)
+    modelo = MOTIVOS_UNIDADE[coluna.unidade.tipo]
+    return Classificacao(tipo, modelo.format(exemplo=coluna.unidade.exemplo))
+
+
 def _discreta(coluna: ColunaLida) -> Classificacao | None:
     if _eh_decimal(coluna) or coluna.n_distintos > coluna.limiares.discreta:
         return None
     motivo = f"Números inteiros com {coluna.n_distintos} valores diferentes (contagem)."
-    return Classificacao(TipoVariavel.DISCRETA, motivo)
+    return _numerica(coluna, TipoVariavel.DISCRETA, motivo)
 
 
 def _continua(coluna: ColunaLida) -> Classificacao:
     if _eh_decimal(coluna):
-        return Classificacao(TipoVariavel.CONTINUA, "Números com casas decimais.")
+        return _numerica(coluna, TipoVariavel.CONTINUA, "Números com casas decimais.")
     k = coluna.n_distintos
     motivo = f"Inteiros com muitos valores diferentes ({k}); tratada como contínua."
-    return Classificacao(TipoVariavel.CONTINUA, motivo)
+    return _numerica(coluna, TipoVariavel.CONTINUA, motivo)
 
 
 type Regra = Callable[[ColunaLida], Classificacao | None]

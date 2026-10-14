@@ -1,9 +1,11 @@
 """Detector num cadastro com tipos variados e nada plantado (D131): retrato do comportamento.
 
-Os alertas que aparecem são os esperados em dados assim: valores de compra com cauda longa
-(R7 atenção), uma série no tempo com cada dia parecido com o anterior (R11; "pode ser normal se
-os dados estão ordenados por tempo") e valores das pontas de contagens, do saldo e da
-temperatura (R7 informativo). Códigos, datas e categorias nunca viram alerta.
+Os alertas que aparecem são os esperados em dados assim: valores de compra com cauda longa,
+com e sem R$ (R7 atenção), uma série no tempo com cada dia parecido com o anterior (R11; "pode
+ser normal se os dados estão ordenados por tempo"), descontos de uma tabela fixa (0%, 5%, 10%,
+12,5% e 15%), todos redondos (R4 e R9; "pode ser normal se o instrumento só mede de 5 em 5"), e
+valores das pontas de contagens, do saldo e da temperatura (R7 informativo). Códigos, datas e
+categorias nunca viram alerta.
 """
 
 from typing import Any
@@ -16,9 +18,20 @@ from app.dominios.datasets.servico import ServicoDatasets
 from app.dominios.detector.regras import r06_temporal
 from app.dominios.detector.servico import ServicoDetector
 
-NUMERICAS = {"valor_compra", "satisfacao", "itens", "saldo", "temperatura"}
+NUMERICAS = {
+    "valor_compra",
+    "valor_reais",
+    "desconto",
+    "satisfacao",
+    "itens",
+    "saldo",
+    "temperatura",
+}
 RETRATO = {
+    ("R4", "atencao", ("desconto",)),
     ("R7", "atencao", ("valor_compra",)),
+    ("R7", "atencao", ("valor_reais",)),
+    ("R9", "atencao", ("desconto",)),
     ("R11", "atencao", ("temperatura",)),
     ("R7", "info", ("itens",)),
     ("R7", "info", ("saldo",)),

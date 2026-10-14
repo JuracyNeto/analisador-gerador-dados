@@ -4,11 +4,77 @@ import pandas as pd
 import pytest
 
 from app.compartilhado.series import (
+    Unidade,
     casas_decimais,
     converter_para_numero,
     eh_inteira,
     proporcao_numerica,
+    reconhecer_unidade,
+    sem_unidade,
 )
+
+
+@pytest.mark.parametrize(
+    ("texto", "decimal", "esperado"),
+    [
+        ("R$ 1.234,56", ",", 1234.56),
+        ("R$1.234,56", ",", 1234.56),
+        ("R$ 1.234,56", ",", 1234.56),
+        ("−R$ 10,00", ",", -10.0),
+        ("R$ −10,00", ",", -10.0),
+        ("-R$ 10,00", ",", -10.0),
+        ("R$ -10,00", ",", -10.0),
+        ("12,5%", ",", 12.5),
+        ("12,5 %", ",", 12.5),
+        ("−3,5%", ",", -3.5),
+        ("−7", ",", -7.0),
+        ("R$ 1234.56", ".", 1234.56),
+        ("12.5%", ".", 12.5),
+    ],
+)
+def test_converter_aceita_reais_percentual_e_sinal_de_menos(
+    texto: str, decimal: str, esperado: float
+) -> None:
+    convertido = converter_para_numero(pd.Series([texto]), decimal).iloc[0]
+
+    assert convertido == pytest.approx(esperado)
+
+
+@pytest.mark.parametrize("texto", ["10,00 R$", "US$ 10,00", "% 12", "12,5%%", "R$", "R$ dez"])
+def test_unidade_fora_do_lugar_nao_vira_numero(texto: str) -> None:
+    assert math.isnan(converter_para_numero(pd.Series([texto]), ",").iloc[0])
+
+
+@pytest.mark.parametrize(
+    ("texto", "esperado"),
+    [(" R$ 1.234,56 ", "1.234,56"), ("−R$ 10,00", "-10,00"), ("12,5 %", "12,5"), ("Ana", "Ana")],
+)
+def test_sem_unidade(texto: str, esperado: str) -> None:
+    assert sem_unidade(texto) == esperado
+
+
+@pytest.mark.parametrize(
+    ("valores", "esperado"),
+    [
+        (["R$ 10,50", None, "−R$ 7,00"], Unidade("reais", "R$ 10,50")),
+        (["5 %", "12,5%"], Unidade("percentual", "5 %")),
+        (["10,5", "7"], None),
+        ([None, None], None),
+    ],
+)
+def test_reconhecer_unidade(valores: list[str | None], esperado: Unidade | None) -> None:
+    assert reconhecer_unidade(pd.Series(valores), 0.9) == esperado
+
+
+def test_unidade_precisa_estar_em_quase_todos_os_valores() -> None:
+    valores = pd.Series(["R$ 10,50"] * 8 + ["10,50"] * 2)
+
+    assert reconhecer_unidade(valores, 0.9) is None
+    assert reconhecer_unidade(valores, 0.8) == Unidade("reais", "R$ 10,50")
+
+
+def test_coluna_ja_numerica_nao_tem_unidade() -> None:
+    assert reconhecer_unidade(pd.Series([10.5, 7.0]), 0.9) is None
 
 
 def test_converter_texto_com_virgula_decimal_e_ponto_de_milhar() -> None:
