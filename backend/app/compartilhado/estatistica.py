@@ -9,6 +9,9 @@ from scipy import stats
 
 ALFA = 0.05  # nível de significância padrão (00-visao-geral.md)
 MINIMO_ESPERADO = 5.0
+AMOSTRA_MEDCOUPLE = 2_000
+"""O medcouple compara pares de valores (O(n²)); acima disso, numa amostra fixa."""
+SEMENTE_MEDCOUPLE = 0
 
 
 @dataclass(frozen=True, slots=True)
@@ -102,3 +105,19 @@ def teste_poisson_unilateral(k: int, media: float) -> float:
     if media <= 0:
         return 0.0
     return float(stats.poisson.sf(k - 1, media))
+
+
+def medcouple(valores: np.ndarray) -> float:
+    """Medcouple: assimetria robusta, entre −1 e 1 (Brys, Hubert e Struyf).
+
+    MC = mediana de h(xᵢ, xⱼ) = ((xᵢ − m) − (m − xⱼ)) / (xᵢ − xⱼ), com xᵢ ≥ m ≥ xⱼ e m a
+    mediana; os pares com xᵢ = xⱼ = m contam 0.
+    """
+    x = np.asarray(valores, dtype="float64")
+    if len(x) > AMOSTRA_MEDCOUPLE:
+        x = np.random.default_rng(SEMENTE_MEDCOUPLE).choice(x, AMOSTRA_MEDCOUPLE, replace=False)
+    m = float(np.median(x))
+    acima, abaixo = x[x >= m][:, np.newaxis], x[x <= m][np.newaxis, :]
+    with np.errstate(divide="ignore", invalid="ignore"):
+        h = ((acima - m) - (m - abaixo)) / (acima - abaixo)
+    return float(np.median(np.where(acima == abaixo, 0.0, h)))

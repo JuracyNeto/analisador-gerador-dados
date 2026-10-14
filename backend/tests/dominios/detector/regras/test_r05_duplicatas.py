@@ -166,3 +166,10 @@ def test_so_identificadores_nao_tem_o_que_comparar() -> None:
     (nao_aplicada,) = resultado.nao_aplicadas
     assert nao_aplicada.motivo == "o arquivo só tem identificadores"
     assert not resultado.verificada
+
+
+def test_linhas_sem_nenhuma_medida_nao_contam_como_iguais() -> None:
+    dados = _dados()
+    dados.loc[20:30, ["peso", "altura"]] = np.nan
+
+    assert RegraDuplicatas().executar(_tabela(dados)).avisos == ()

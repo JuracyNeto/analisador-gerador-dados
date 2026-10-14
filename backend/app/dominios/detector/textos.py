@@ -98,12 +98,22 @@ def poucos_valores(minimo: int, n: int) -> str:
     )
 
 
+def poucos_valores_diferentes(k: int) -> str:
+    return f"a coluna tem só {k} valores diferentes"
+
+
+def fora_os_zeros(motivo: str) -> str:
+    """R4 e R9 não olham os zeros (D134): "…; a coluna tem 40, fora os zeros"."""
+    return f"{motivo}, fora os zeros"
+
+
 SEM_NUMERICAS = "o arquivo não tem colunas numéricas"
 SEM_CONTINUAS = "o arquivo não tem colunas contínuas"
 SEM_PAR_NUMERICO = "o arquivo não tem duas colunas numéricas"
 VALORES_IGUAIS = "todos os valores são iguais"
 DIGITO_CONSTANTE = "o último dígito é sempre o mesmo"
 POUCA_VARIACAO = "os valores variam pouco para o último dígito ser aleatório"
+VALORES_PEQUENOS = "os valores são pequenos demais para o último dígito ser aleatório"
 METADE_CENTRAL_IGUAL = "a metade central dos valores é toda igual"
 
 
@@ -127,11 +137,13 @@ def r07_textos(coluna: str, k: int, exemplo: float, limite: float) -> TextosAvis
     )
 
 
-def r07_detalhes(moderados: int, extremos: int, cercas: tuple[float, ...]) -> DetalhesAviso:
-    """Cercas: (Q1 − 1,5·IQR, Q3 + 1,5·IQR, Q1 − 3·IQR, Q3 + 3·IQR)."""
+def r07_detalhes(
+    moderados: int, extremos: int, cercas: tuple[float, ...], mc: float
+) -> DetalhesAviso:
+    """Cercas de 1,5·IQR e de 3·IQR, alargadas pela assimetria (MC; D136)."""
     baixo, alto, baixo_extremo, alto_extremo = (numero(c) for c in cercas)
     return DetalhesAviso(
-        medida="Valores fora das cercas de Tukey ou com |z| > 3",
+        medida="Valores fora das cercas de Tukey ajustadas à assimetria ou com |z| > 3",
         valor=(
             f"{quantidade(moderados, 'moderado', 'moderados')} e "
             f"{quantidade(extremos, 'extremo', 'extremos')}"
@@ -140,7 +152,10 @@ def r07_detalhes(moderados: int, extremos: int, cercas: tuple[float, ...]) -> De
             f"Moderado: fora de {baixo} a {alto} (1,5·IQR) ou |z| > 3 · "
             f"extremo: fora de {baixo_extremo} a {alto_extremo} (3·IQR)"
         ),
-        formula="IQR = Q3 − Q1 · z = (x − x̄) / s",
+        formula=(
+            f"IQR = Q3 − Q1 · z = (x − x̄) / s · MC = {numero(mc)} (medcouple); "
+            "com MC > 0 a cerca de cima vai a Q3 + k·e^(3·MC)·IQR, nunca abaixo de Q3 + k·IQR"
+        ),
     )
 
 
@@ -197,7 +212,7 @@ def r09_textos(coluna: str, digito: int, proporcao: float) -> TextosAviso:
             "Medições reais têm o último dígito quase aleatório; "
             "pessoas evitam ou repetem certos dígitos."
         ),
-        pode_ser_normal="…o instrumento arredonda.",
+        pode_ser_normal="…são preços (ex.: 5,99) ou o instrumento arredonda.",
         o_que_fazer="Confira como esses valores foram medidos ou digitados.",
     )
 
@@ -206,7 +221,7 @@ def r09_detalhes(digito: int, proporcao: float, p: float) -> DetalhesAviso:
     return DetalhesAviso(
         medida="Frequência do último dígito (0 a 9)",
         valor=f"o {digito} em {percentual(proporcao)} (esperado 10%)",
-        limiar="p < 0,01",
+        limiar="p < 0,01 e o dígito mais comum com pelo menos 1,5× o esperado (15%)",
         teste="Qui-quadrado de uniformidade (gl = 9)",
         formula="χ² = Σ (Oᵢ − Eᵢ)² / Eᵢ, com Eᵢ = n / 10",
         p_valor=p,

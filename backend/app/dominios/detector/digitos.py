@@ -13,6 +13,10 @@ from app.dominios.detector.resultados import GraficoDigitos, PosicaoDigito
 
 MIN_PASSOS_CENTRAIS = 10
 """A metade central precisa cobrir 10 passos da resolução para o último dígito variar à toa."""
+MIN_VALORES_DIFERENTES = 10
+"""Com menos valores possíveis (descontos de uma tabela), o último dígito não varia à toa."""
+RAZAO_MINIMA = 1.5
+"""Efeito mínimo do último dígito (R4, R9): pelo menos 1,5× o esperado (D134)."""
 FOLGA_MANTISSA = 1e-9
 QUARTIS = (0.25, 0.75)
 
@@ -36,6 +40,18 @@ def primeiros_digitos(valores: np.ndarray) -> np.ndarray:
     return np.asarray(np.clip(digitos, 1, 9), dtype="int64")
 
 
+def passo_da_medida(valores: np.ndarray, casas: int) -> int:
+    """Maior passo que divide todos os valores, na precisão: chuva de 0,2 em 0,2 → 2 (D134)."""
+    escalados = np.round(np.abs(valores) * 10**casas).astype("int64")
+    return int(np.gcd.reduce(escalados[escalados != 0])) or 1
+
+
+def _valores_pequenos(valores: np.ndarray, casas: int) -> bool:
+    """1º quartil de |x| abaixo de 10 passos do instrumento: o último dígito não varia à toa."""
+    q1 = float(np.quantile(np.abs(valores), QUARTIS[0])) * float(10**casas)
+    return q1 < MIN_PASSOS_CENTRAIS * passo_da_medida(valores, casas)
+
+
 def passos_centrais(valores: np.ndarray, casas: int) -> float:
     """Amplitude interquartil medida em passos da resolução (0,01 com 2 casas)."""
     q1, q3 = np.quantile(valores, QUARTIS)
@@ -49,8 +65,13 @@ def motivo_digito_final(valores: np.ndarray, minimo: int) -> str | None:
     casas = resolucao(valores)
     if np.unique(digitos_finais(valores, casas)).size == 1:
         return textos.DIGITO_CONSTANTE
+    diferentes = np.unique(valores).size
+    if diferentes < MIN_VALORES_DIFERENTES:
+        return textos.poucos_valores_diferentes(diferentes)
     if passos_centrais(valores, casas) < MIN_PASSOS_CENTRAIS:
         return textos.POUCA_VARIACAO
+    if _valores_pequenos(valores, casas):
+        return textos.VALORES_PEQUENOS
     return None
 
 

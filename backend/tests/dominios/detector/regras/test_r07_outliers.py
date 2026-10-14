@@ -108,3 +108,38 @@ def test_sem_colunas_numericas_a_regra_nao_se_aplica_ao_arquivo() -> None:
     assert nao_aplicada.frase == (
         "Valores distantes não verificada: o arquivo não tem colunas numéricas."
     )
+
+
+def _exponencial(n: int = 300) -> np.ndarray:
+    """Quantis da Exponencial (média 10): cauda longa sem sorteio."""
+    return np.round(-10 * np.log(1 - (np.arange(1, n + 1) - 0.5) / n), 2)
+
+
+def test_cauda_longa_nao_vira_extremo() -> None:
+    # Com Tukey, os 3 maiores (até 63,9) passavam de Q3 + 3·IQR (46,8); as cercas ajustadas à
+    # assimetria alargam o lado da cauda (D136).
+    resultado = RegraOutliers().executar(tabela_numerica(_exponencial(), nome="valor"))
+
+    assert {aviso.severidade for aviso in resultado.avisos} <= {Severidade.INFO}
+
+
+def test_erro_de_digitacao_numa_cauda_longa_continua_extremo() -> None:
+    valores = _exponencial()
+    valores[[50, 120]] = valores.max() * 10
+
+    (aviso,) = RegraOutliers().executar(tabela_numerica(valores, nome="valor")).avisos
+
+    assert aviso.severidade == Severidade.ATENCAO
+    assert aviso.detalhes.valor.endswith("2 extremos")
+
+
+def test_detalhes_dizem_a_assimetria_usada_nas_cercas() -> None:
+    valores = np.concatenate([_normal(), [150.0, 155.0]])
+
+    (aviso,) = RegraOutliers().executar(tabela_numerica(valores)).avisos
+
+    assert aviso.detalhes.medida == (
+        "Valores fora das cercas de Tukey ajustadas à assimetria ou com |z| > 3"
+    )
+    assert aviso.detalhes.formula is not None
+    assert "MC" in aviso.detalhes.formula

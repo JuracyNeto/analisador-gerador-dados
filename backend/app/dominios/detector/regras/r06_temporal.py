@@ -15,9 +15,9 @@ from scipy import stats
 
 from app.compartilhado import estatistica
 from app.compartilhado.datas import formatar_data
-from app.compartilhado.tipos import TIPOS_AUXILIARES, Severidade, TipoVariavel
-from app.dominios.detector import textos, textos_blocos
-from app.dominios.detector.duplicatas import chaves_das_colunas, ids_exatos
+from app.compartilhado.tipos import TIPOS_AUXILIARES, Severidade
+from app.dominios.detector import tempo, textos, textos_blocos
+from app.dominios.detector.duplicatas import chaves_das_colunas, ids_exatos, linhas_com_numero
 from app.dominios.detector.exemplos import MAX_LINHAS_EXEMPLO, exemplo_de_valores
 from app.dominios.detector.regras import base
 from app.dominios.detector.resultados import ExemploAviso, RegraNaoAplicada
@@ -29,9 +29,6 @@ MINIMO_LINHAS = 40
 MINIMO_POR_PERIODO = 10
 RAZAO_DESVIO = 0.5
 MINIMO_COPIAS = 0.1
-MINIMO_ACOMPANHA = 0.5
-"""ρ de Spearman mínimo entre a data e o número da linha para ela ser a linha do tempo."""
-MINIMO_DATAS = 2
 
 
 @dataclass(frozen=True, slots=True, eq=False)
@@ -75,35 +72,16 @@ def periodos(coluna: str, datas: np.ndarray) -> Periodos:
     return Periodos(coluna, ordem, ordenadas, corte)
 
 
-def acompanha_as_linhas(datas: np.ndarray) -> float:
-    """ρ de Spearman entre as datas e o número da linha (só as linhas com data)."""
-    validas = ~np.isnat(datas)
-    valores = datas[validas].astype("int64")
-    if len(valores) < MINIMO_DATAS or np.ptp(valores) == 0:
-        return 0.0
-    return float(stats.spearmanr(np.flatnonzero(validas), valores).statistic)
-
-
-def _colunas_de_datas(tabela: TabelaDetector) -> list[tuple[str, np.ndarray]]:
-    return [
-        (coluna.nome, coluna.datas)
-        for coluna in tabela.do_tipo({TipoVariavel.DATA})
-        if coluna.datas is not None
-    ]
-
-
 def linha_do_tempo(tabela: TabelaDetector) -> Periodos | None:
     """A coluna de data que mais acompanha a ordem das linhas (ρ ≥ 0,5); senão, a 1ª (D130).
 
     Num cadastro com nascimento e dia do registro, a linha do tempo é o dia, não a 1ª data.
     """
-    colunas = _colunas_de_datas(tabela)
+    colunas = dict(tempo.colunas_de_datas(tabela))
     if not colunas:
         return None
-    acompanham = [acompanha_as_linhas(datas) for _, datas in colunas]
-    melhor = int(np.argmax(acompanham))
-    nome, datas = colunas[melhor] if acompanham[melhor] >= MINIMO_ACOMPANHA else colunas[0]
-    return periodos(nome, datas)
+    nome = tempo.coluna_do_tempo(tabela) or next(iter(colunas))
+    return periodos(nome, colunas[nome])
 
 
 def _dois_periodos(alvo: "AlvoVariacao | AlvoCopias") -> str | None:
@@ -235,7 +213,9 @@ class ArquivoNoTempo:
         colunas = tuple(c for c in tabela.colunas.values() if c.tipo not in TIPOS_AUXILIARES)
         if todos is None or not colunas:
             return ()
-        return (AlvoCopias(tabela.linhas, colunas, todos),)
+        # Linhas sem nenhum número (estação desligada) não são cópias umas das outras (D138).
+        com_medida = todos.so_com(linhas_com_numero(colunas))
+        return (AlvoCopias(tabela.linhas, colunas, com_medida),)
 
 
 @dataclass(frozen=True, slots=True, eq=False)
@@ -318,7 +298,7 @@ class RegraTemporal:
     partes = (VariacaoTemporal(), CopiasTemporais())
 
     def executar(self, tabela: TabelaDetector) -> base.ResultadoRegra:
-        if not _colunas_de_datas(tabela):
+        if not tempo.colunas_de_datas(tabela):
             motivo = textos_blocos.SEM_DATA
             frase = textos.frase_nao_aplicada(NOME, None, motivo)
             sem_data = RegraNaoAplicada(CODIGO, NOME, None, motivo, frase)

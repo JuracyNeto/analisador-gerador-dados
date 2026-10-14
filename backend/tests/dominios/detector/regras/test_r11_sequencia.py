@@ -1,8 +1,9 @@
 import numpy as np
+import pandas as pd
 
 from app.compartilhado.tipos import Severidade, TipoVariavel
 from app.dominios.detector.regras.r11_sequencia import RegraSequencia
-from tests.dominios.detector.apoio import tabela_numerica
+from tests.dominios.detector.apoio import tabela_de, tabela_numerica
 
 
 def _normal(n: int = 200, semente: int = 0) -> np.ndarray:
@@ -97,3 +98,37 @@ def test_coluna_constante_nao_se_aplica() -> None:
     (nao_aplicada,) = RegraSequencia().executar(tabela_numerica([2.0] * 40)).nao_aplicadas
 
     assert nao_aplicada.motivo == "todos os valores são iguais"
+
+
+def _serie_diaria(valores: np.ndarray) -> object:
+    """Valores com uma coluna de dia em ordem: a linha do tempo do arquivo."""
+    dados = pd.DataFrame(
+        {"dia": pd.date_range("2025-01-01", periods=len(valores)), "temperatura": valores}
+    )
+    return tabela_de(dados, {"dia": TipoVariavel.DATA, "temperatura": TipoVariavel.CONTINUA})
+
+
+def test_serie_no_tempo_parecida_com_o_anterior_fica_informativa() -> None:
+    # Temperaturas diárias: cada dia parecido com o anterior é o esperado (D137).
+    passos = np.random.default_rng(4).normal(0, 0.5, 200)
+    temperaturas = np.round(25 + np.cumsum(passos), 1)
+
+    (aviso,) = RegraSequencia().executar(_serie_diaria(temperaturas)).avisos
+
+    assert aviso.severidade == Severidade.INFO
+    assert "(cada valor é muito parecido com o anterior)" in aviso.resumo
+    assert aviso.pode_ser_normal == (
+        "…é uma série no tempo (as linhas seguem a coluna dia): "
+        "valores vizinhos costumam ser parecidos."
+    )
+
+
+def test_progressao_numa_serie_no_tempo_tambem_fica_informativa() -> None:
+    # Umidade subindo 1% por hora (87, 88, 89…) é comum numa série no tempo (D137).
+    valores = _normal()
+    valores[49:55] = [70.0, 72.5, 75.0, 77.5, 80.0, 82.5]
+
+    (aviso,) = RegraSequencia().executar(_serie_diaria(valores)).avisos
+
+    assert "progressão aritmética" in aviso.resumo
+    assert aviso.severidade == Severidade.INFO
