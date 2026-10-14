@@ -1,0 +1,30 @@
+"""Montagem de tabelas do detector para os testes (linhas numeradas a partir de 1)."""
+
+from collections.abc import Mapping, Sequence
+
+import pandas as pd
+
+from app.compartilhado.tipos import TIPOS_NUMERICOS, TipoVariavel
+from app.dominios.detector.tabela import TabelaDetector, coluna_detector, montar_tabela
+
+
+def _textos(serie: pd.Series) -> pd.Series:
+    return serie.map(lambda v: None if pd.isna(v) else str(v))
+
+
+def tabela_de(dados: pd.DataFrame, tipos: Mapping[str, TipoVariavel]) -> TabelaDetector:
+    """Tabela a partir de um DataFrame; as linhas viram 1, 2, 3…"""
+    numerado = dados.set_axis(pd.RangeIndex(1, len(dados) + 1), axis="index")
+    colunas = []
+    for nome, tipo in tipos.items():
+        serie = numerado[nome]
+        numeros = pd.to_numeric(serie, errors="coerce") if tipo in TIPOS_NUMERICOS else None
+        colunas.append(coluna_detector(nome, tipo, numeros, _textos(serie)))
+    return montar_tabela(numerado.index, colunas)
+
+
+def tabela_numerica(
+    valores: Sequence[float], tipo: TipoVariavel = TipoVariavel.CONTINUA, nome: str = "x"
+) -> TabelaDetector:
+    """Tabela com uma coluna numérica só."""
+    return tabela_de(pd.DataFrame({nome: list(valores)}), {nome: tipo})

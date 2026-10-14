@@ -4,7 +4,7 @@
 
 **Objetivo:** completar as 11 regras com R1 (bloco alinhado), R2 (correlação por blocos), R6 (temporal), R10 (Normal perfeita demais) e R11 (sequência/variância); dar figuras às regras R1, R8 e R9 (spec 08); criar os datasets de demonstração com dados plantados e deixá-los escolhíveis; provar o controle de falsos positivos.
 
-**Arquitetura:** novas regras em `detector/regras/` sobre a base do M3.2; `detector/blocos.py` (janelas e simulação vetorizada com somas acumuladas, D121); figuras no domínio `graficos` (`figuras_detector.py`), pedidas pelo `ServicoDetector` (o domínio do detector devolve só os dados da figura, como a análise faz). Script `backend/scripts/gerar_exemplos_detector.py` (usa o `ServicoGerador` para o bloco com ajuste exato). Exemplos escolhíveis no domínio `datasets`.
+**Arquitetura:** novas regras em `detector/regras/` sobre a base do M3.2; `detector/blocos.py` (janelas e simulação vetorizada com somas acumuladas, D122); figuras no domínio `graficos` (`figuras_detector.py`), pedidas pelo `ServicoDetector` (o domínio do detector devolve só os dados da figura, como a análise faz). Script `backend/scripts/gerar_exemplos_detector.py` (usa o `ServicoGerador` para o bloco com ajuste exato). Exemplos escolhíveis no domínio `datasets`.
 
 **Branch:** `feat/detector-blocos` (sai de `develop` depois do merge do M3.2) → PR para `develop`. **Prazo sugerido:** 06/11/2026.
 
@@ -33,8 +33,8 @@
 - **R6** (precisa de coluna `data`, n ≥ 40, alta): ordena pela 1ª coluna `data`; divide na data mediana; para cada numérica: DP depois < 0,5 × DP antes; para a linha inteira (sem a data): ≥ 10% das linhas novas idênticas a alguma antiga. Sem coluna `data` → não aplicada sem coluna ("Comparação temporal não verificada: o arquivo não tem uma coluna de data.").
 - **R10** (contínuas, n ≥ 200, info): |G₁| < 0,05 **e** |G₂| < 0,1 **e** Shapiro p > 0,9 (n ≤ 5.000; acima, D'Agostino) — G₁/G₂ via `ServicoAnalise.resumo_numerico` (D108), passado pelo serviço na `TabelaDetector` para manter a regra pura.
 - **R11** (numéricas, n ≥ 30, atenção): runs acima/abaixo da mediana (valores iguais à mediana saem) com p < 0,01, **ou** progressão aritmética (≥ 5 diferenças iguais seguidas, diferença ≠ 0), **ou** |ρ₁| > 0,8. O resumo cita o padrão: "valores alternam acima e abaixo do meio com regularidade" · "progressão aritmética nas linhas 50–56" · "cada valor é muito parecido com o anterior".
-- **Figuras** (D122; `meta` com papéis do tema): R1 linha da média por bloco (pontos `principal`) com a faixa x̄ ± s tracejada (`referencia`) e o bloco destacado; R8 barras observado × esperado (Benford) por 1º dígito; R9 barras de frequência do último dígito com a linha de 10%.
-- **Datasets plantados** (D123, semente fixa, LF, UTF-8, `;` e vírgula decimal):
+- **Figuras** (D123; `meta` com papéis do tema): R1 linha da média por bloco (pontos `principal`) com a faixa x̄ ± s tracejada (`referencia`) e o bloco destacado; R8 barras observado × esperado (Benford) por 1º dígito; R9 barras de frequência do último dígito com a linha de 10%.
+- **Datasets plantados** (D124, semente fixa, LF, UTF-8, `;` e vírgula decimal):
   - `alturas_reais.txt` — `id;altura_m;peso_kg`, 300 linhas, alturas Normal(1,70; 0,09) com 2 casas e pesos ligados à altura com ruído (sem manipulação);
   - `alturas_plantadas.txt` — o mesmo + bloco de 20 linhas gerado com ajuste exato (R1, R10), 10 inteiros seguidos em `peso_kg` (R3), trecho com pesos redondos (R4) e 3 linhas duplicadas em sequência (R5);
   - `vendas_correlacao_puxada.txt` — `data;anuncios;vendas`, 120 semanas: os primeiros 96 com r ≈ 0,3 e os 24 últimos com r ≈ 0,95 (R2), e ~15% dessas últimas copiando semanas antigas (R6).
@@ -88,7 +88,7 @@ Script com `argparse` (`--pasta`, padrão `dados-exemplo/`), semente fixa e fun�
 
 ### Tarefa 11: tipos e documentação
 - `exportar_openapi.py` → `gerar:tipos`.
-- Spec 12 (detalhes de R1/R2/R6/R11, figuras, datasets plantados e coluna `data` em vendas), spec 08 (figuras do detector), spec 14 (exemplos), spec 17 (tempo do teste); `decisions.md` D121–D123; CHANGELOG › Adicionado: "Detector completo com as 11 regras (bloco alinhado, correlação por blocos, comparação temporal, Normal perfeita demais e sequência), gráficos nos detalhes técnicos e três arquivos de demonstração com dados plantados, escolhíveis entre os exemplos."
+- Spec 12 (detalhes de R1/R2/R6/R11, figuras, datasets plantados e coluna `data` em vendas), spec 08 (figuras do detector), spec 14 (exemplos), spec 17 (tempo do teste); `decisions.md` D122–D124; CHANGELOG › Adicionado: "Detector completo com as 11 regras (bloco alinhado, correlação por blocos, comparação temporal, Normal perfeita demais e sequência), gráficos nos detalhes técnicos e três arquivos de demonstração com dados plantados, escolhíveis entre os exemplos."
 
 **Commit:** `docs: detector — regras de bloco e ordem, demonstração (spec 12, decisões)`
 

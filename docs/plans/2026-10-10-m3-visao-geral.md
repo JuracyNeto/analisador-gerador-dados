@@ -58,7 +58,7 @@ Execução prevista (um bloco por vez): M3.0 → M3.1 → M3.2 → M3.3 → M3.4
 - **pandas 3**: nunca comparar `dtype == object`. O `to_excel` do pandas grava horários como texto (use o openpyxl direto nos testes). Arquivos escritos por script: LF, UTF-8.
 - Números exibidos com o sinal de menos (−) (`formatar_com_sinal`, D107).
 - Aleatoriedade sempre com `np.random.default_rng(semente)`; nada de `np.random.seed` global. Testes com semente fixa.
-- Toda decisão nova vai para `docs/decisions.md` com o **próximo número livre** (D108–D114 no M3.0, D115–D117 no M3.1; próxima D118); os números abaixo são os previstos na ordem dos blocos. Toda entrega vai para `CHANGELOG.md` › *Não lançado*.
+- Toda decisão nova vai para `docs/decisions.md` com o **próximo número livre** (D108–D114 no M3.0, D115–D117 no M3.1, D118–D121 no M3.2; próxima D122); os números abaixo são os previstos na ordem dos blocos. Toda entrega vai para `CHANGELOG.md` › *Não lançado*.
 - Teste manual no preview (`.claude/launch.json`: `backend` 8000, `frontend` 5173) antes do push de cada bloco com tela; viewport fixa com `resize_window` e conferência pelo DOM. Depois de editar o backend, o `--reload` apaga os datasets: recarregue o exemplo antes de testar.
 - PR, merge e release só com o ok do usuário; merge só com os 3 checks verdes (`gh pr merge N --merge`).
 
@@ -131,7 +131,7 @@ Aviso {
   titulo: str, resumo: str, por_que: str, exemplo: ExemploAviso | None,
   pode_ser_normal: str, o_que_fazer: str, detalhes: DetalhesAviso,
   figura: Figura | None                                           # R1, R8, R9 (M3.3; spec 08)
-}
+}                                                                 # no OpenAPI: AvisoDetector (D121); R5 com colunas = []
 RegraNaoAplicada {regra: str, nome_regra: str, coluna: str | None, motivo: str, frase: str}
 ResumoDetector {
   total: int, por_severidade: {alta: int, atencao: int, info: int},
@@ -192,14 +192,15 @@ ResultadoDetector {resumo: ResumoDetector, avisos: [Aviso], nao_aplicadas: [Regr
 | D115 | Tela 6: aba na URL, gerador sem dataset, campo sem edição = valor exato da origem, diferença na precisão dos valores, `ultimoGerado` na sessão | M3.1 |
 | D116 | `GET /gerador/origem` e `/gerador/origem-par` para o formulário | M3.1 |
 | D117 | Leitura: `;` vence vírgulas decimais (defeito achado no teste do M3.1) | M3.1 |
-| D118 | Detector: Template Method (`RegraBase.executar` = alvos → aplicável? → medir → dispara? → aviso) com textos só em `textos.py`; entrada `TabelaDetector` montada pelo serviço | M3.2 |
-| D119 | R4/R9: "dígito final" = último dígito na resolução da coluna (maior nº de casas observado); regra não se aplica se esse dígito é constante | M3.2 |
-| D120 | R5: duplicatas exatas sempre; quase duplicatas só até 5.000 linhas (distância par a par O(n²)), com o motivo nas não aplicadas acima disso | M3.2 |
-| D121 | R1: referência por simulação com semente fixa e somas acumuladas (vetorizado); R2 em todos os pares de numéricas | M3.3 |
-| D122 | Figuras do detector (R1 média por bloco, R8 Benford, R9 último dígito) dentro dos detalhes técnicos (spec 08; os prints não mostram gráficos) | M3.3 |
-| D123 | Datasets plantados gerados por `backend/scripts/gerar_exemplos_detector.py` (semente fixa, reprodutível); `vendas_correlacao_puxada.txt` ganha coluna `data` para demonstrar também a R6; exemplos escolhíveis em `POST /datasets/exemplo?arquivo=` | M3.3 |
-| D124 | Tela 7: filtros e agrupamento na URL; 1º alerta de cada grupo aberto; drawer com ±3 linhas de contexto; "Exportar estas linhas" gera o CSV no navegador | M3.4 |
-| D125 | Relatório com `gerador` (via `?gerado=`) e `detector` já no M3 (escolha do usuário em 10/10/2026); padrão = 8 seções | M3.5 |
+| D118 | Detector: Template Method (`RegraBase.executar` = seletor → requisito (aplicável?) → medir → dispara? → aviso), com seletor e requisito compostos e reaproveitados; textos só em `textos.py`; entrada `TabelaDetector` montada pelo serviço | M3.2 |
+| D119 | Dígitos (R4, R8, R9): dígito final na precisão da coluna; R4/R9 não se aplicam se ele é constante ou se a metade central cobre < 10 passos; R8 com P99/P1 ≥ 100 (robusto a erros de digitação) | M3.2 |
+| D120 | R5: iguais e quase iguais (estas até 5.000 linhas) contam quando passam do acaso (densidade local na precisão; colunas independentes para as não numéricas; Poisson p < 0,01); 3 iguais seguidas improváveis em ordem aleatória → alta; `colunas` vazio | M3.2 |
+| D121 | Limiares sem spec (R3 n ≥ 30 e padrão improvável ao acaso, R7 n ≥ 10), exemplo no trecho concentrado (até 20 linhas, "; " com decimais), `?regras=R4,R7`, `/linhas` até 200 (`INTERVALO_INVALIDO`), schema `AvisoDetector` | M3.2 |
+| D122 | R1: referência por simulação com semente fixa e somas acumuladas (vetorizado); R2 em todos os pares de numéricas | M3.3 |
+| D123 | Figuras do detector (R1 média por bloco, R8 Benford, R9 último dígito) dentro dos detalhes técnicos (spec 08; os prints não mostram gráficos) | M3.3 |
+| D124 | Datasets plantados gerados por `backend/scripts/gerar_exemplos_detector.py` (semente fixa, reprodutível); `vendas_correlacao_puxada.txt` ganha coluna `data` para demonstrar também a R6; exemplos escolhíveis em `POST /datasets/exemplo?arquivo=` | M3.3 |
+| D125 | Tela 7: filtros e agrupamento na URL; 1º alerta de cada grupo aberto; drawer com ±3 linhas de contexto; "Exportar estas linhas" gera o CSV no navegador | M3.4 |
+| D126 | Relatório com `gerador` (via `?gerado=`) e `detector` já no M3 (escolha do usuário em 10/10/2026); padrão = 8 seções | M3.5 |
 
 ## Dependências novas
 - Nenhuma: `numpy` e `scipy` (KDE, Poisson, testes) já estão no backend; o frontend usa só componentes próprios.
@@ -222,7 +223,7 @@ ResultadoDetector {resumo: ResumoDetector, avisos: [Aviso], nao_aplicadas: [Regr
 4. **Binária:** o "sucesso" segue a regra da análise (`sucesso_padrao`, spec 05), para p̂ bater com a tela 4.
 5. **Sobreposição com até 1.000.000 valores:** a figura leva só as alturas das barras (ADR 0003), nunca os valores; dispersão com no máximo 5.000 pontos (D101).
 6. **R4/R9 "casa variável":** a spec não define o dígito final de números com casas diferentes; D119.
-7. **R5 quase duplicatas** é O(n²); limite de 5.000 linhas (D120).
-8. **Detector × gráficos:** spec 08 lista figuras por regra, os prints não mostram; ficam nos detalhes técnicos (D122).
+7. **R5 quase duplicatas**: limite de 5.000 linhas (D120). No M3.2 viu-se que, com 2 colunas, iguais e quase iguais aparecem por acaso (100% de alertas em dados aleatórios): a R5 compara as contagens com o acaso (D120). `alturas_reais.txt` (M3.3) depende disso.
+8. **Detector × gráficos:** spec 08 lista figuras por regra, os prints não mostram; ficam nos detalhes técnicos (D123).
 9. **Contagem de regras do resumo:** o print diz "9 regras verificadas, 2 não se aplicam a este arquivo" e lista não verificações por coluna; definimos as duas contagens por regra e a lista por (regra, coluna) (contrato acima).
 10. **Falsos positivos:** as amostras do teste são arredondadas a 2 casas (como medições reais); sem isso, R4 e R9 não se aplicam (dígito final de float é ruído) e o teste não mede nada.

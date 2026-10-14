@@ -25,3 +25,14 @@ class OrigemTipo(StrEnum):
 TIPOS_NUMERICOS = frozenset({TipoVariavel.DISCRETA, TipoVariavel.CONTINUA})
 TIPOS_CATEGORICOS = frozenset({TipoVariavel.NOMINAL, TipoVariavel.ORDINAL, TipoVariavel.BINARIA})
 TIPOS_AUXILIARES = frozenset({TipoVariavel.IDENTIFICADOR, TipoVariavel.DATA})
+
+
+class Severidade(StrEnum):
+    """Severidade de um alerta do detector (spec 12, spec 16)."""
+
+    INFO = "info"
+    ATENCAO = "atencao"
+    ALTA = "alta"
+
+
+ORDEM_SEVERIDADE = (Severidade.ALTA, Severidade.ATENCAO, Severidade.INFO)

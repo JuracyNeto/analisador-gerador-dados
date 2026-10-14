@@ -5,6 +5,8 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e
 ## [Não lançado]
 
 ### Adicionado
+- API do detector com resumo e as regras de formato numérico, valores redondos, duplicatas, valores distantes, Lei de Benford e último dígito, cada alerta com explicação em linguagem simples, exemplo com as linhas e detalhes técnicos; as regras que não se aplicam vêm com o motivo. Repetições de linhas só viram alerta quando passam do que o acaso produziria.
+- Linhas da versão atual por intervalo (`GET /datasets/{id}/linhas?de=&ate=`, até 200), para mostrar o exemplo de um alerta na tabela.
 - Etapa 6 Gerador: dados univariados e bivariados (pela coluna ou par do dataset, ou com parâmetros manuais) com a tabela Original × Gerado, gráfico, explicação do método, Baixar CSV, Anexar ao dataset atual e Usar como novo dataset.
 - API do gerador: dados univariados (preservando as estatísticas de uma coluna ou com novos parâmetros) e pares com médias, desvios e correlação alvo, com comparação com o original, explicação do método, gráfico sobreposto, CSV e uso como novo dataset ou anexado ao atual.
 
