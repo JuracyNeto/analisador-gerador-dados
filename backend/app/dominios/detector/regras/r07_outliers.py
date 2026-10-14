@@ -49,10 +49,6 @@ def _quartis(valores: np.ndarray) -> tuple[float, float]:
     return float(q1), float(q3)
 
 
-def _valores_variam(alvo: base.AlvoColuna) -> str | None:
-    return textos.VALORES_IGUAIS if np.ptp(alvo.valores) == 0 else None
-
-
 def _centro_varia(alvo: base.AlvoColuna) -> str | None:
     q1, q3 = _quartis(alvo.valores)
     return textos.METADE_CENTRAL_IGUAL if q1 == q3 else None
@@ -64,7 +60,9 @@ class RegraOutliers(base.RegraBase[base.AlvoColuna, MedicaoDistantes]):
     codigo = "R7"
     nome = "Valores distantes"
     seletor = base.COLUNAS_NUMERICAS
-    requisito = base.Todos((base.MinimoDeValores(MINIMO_VALORES), _valores_variam, _centro_varia))
+    requisito = base.Todos(
+        (base.MinimoDeValores(MINIMO_VALORES), base.valores_variam, _centro_varia)
+    )
 
     def medir(self, alvo: base.AlvoColuna) -> MedicaoDistantes:
         valores = alvo.valores

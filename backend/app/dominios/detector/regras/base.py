@@ -100,6 +100,11 @@ class MinimoDeValores:
         return textos.poucos_valores(self.minimo, alvo.n) if alvo.n < self.minimo else None
 
 
+def valores_variam(alvo: AlvoColuna) -> str | None:
+    """A coluna precisa ter valores diferentes entre si (depois do mínimo de valores)."""
+    return textos.VALORES_IGUAIS if np.ptp(alvo.valores) == 0 else None
+
+
 @dataclass(frozen=True, slots=True)
 class DigitoFinalTestavel:
     """n mínimo, último dígito variável e valores que variam o bastante (R4, R9; D119)."""
