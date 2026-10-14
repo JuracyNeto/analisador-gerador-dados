@@ -19,7 +19,8 @@ def resolucao(valores: np.ndarray) -> int:
 
 def digitos_finais(valores: np.ndarray, casas: int) -> np.ndarray:
     """Último dígito na resolução da coluna: round(|x| · 10^casas) mod 10."""
-    return np.round(np.abs(valores) * 10**casas).astype("int64") % 10
+    escalados = np.round(np.abs(valores) * 10**casas).astype("int64")
+    return np.asarray(escalados % 10, dtype="int64")
 
 
 def primeiros_digitos(valores: np.ndarray) -> np.ndarray:
@@ -27,7 +28,7 @@ def primeiros_digitos(valores: np.ndarray) -> np.ndarray:
     positivos = np.abs(valores[valores != 0])
     mantissas = positivos / 10.0 ** np.floor(np.log10(positivos))
     digitos = np.floor(mantissas + FOLGA_MANTISSA).astype("int64")
-    return np.clip(digitos, 1, 9)
+    return np.asarray(np.clip(digitos, 1, 9), dtype="int64")
 
 
 def passos_centrais(valores: np.ndarray, casas: int) -> float:
