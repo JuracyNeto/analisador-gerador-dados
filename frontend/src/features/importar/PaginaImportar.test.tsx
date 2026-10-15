@@ -111,6 +111,32 @@ describe('PaginaImportar', () => {
     expect(chamadasPara(falso, 'POST', '/datasets/exemplo')).toHaveLength(1);
   });
 
+  it('outros exemplos vêm da API; escolher um importa e mostra a prévia', async () => {
+    const falso = simularApi([
+      {
+        caminho: '/datasets/exemplos',
+        corpo: [
+          { arquivo: 'pesquisa_saude.txt', descricao: 'Pesquisa de saúde' },
+          { arquivo: 'alturas_plantadas.txt', descricao: 'Alturas com dados plantados' },
+        ],
+      },
+      { metodo: 'POST', caminho: '/datasets/exemplo', status: 201, corpo: DATASET_CRIADO },
+      { caminho: CAMINHO_PAGINA, corpo: criarPagina() },
+    ]);
+    const { usuario } = renderizarPagina();
+
+    const outros = await screen.findByRole('list', { name: T.exemplo.outros });
+    expect(outros).toHaveTextContent('alturas_plantadas.txt — Alturas com dados plantados');
+    expect(outros).not.toHaveTextContent('pesquisa_saude.txt');
+    await usuario.click(screen.getByRole('button', { name: 'alturas_plantadas.txt' }));
+
+    expect(await screen.findByText('O que detectamos')).toBeInTheDocument();
+    expect(screen.getByRole('table', { name: 'Prévia dos dados importados' })).toBeInTheDocument();
+    expect(chamadasPara(falso, 'POST', '/datasets/exemplo')[0]?.url).toContain(
+      'arquivo=alturas_plantadas.txt',
+    );
+  });
+
   it('voltando de outra etapa, ainda dá para corrigir a leitura', async () => {
     const falso = simularApi([
       {

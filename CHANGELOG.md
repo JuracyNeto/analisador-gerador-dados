@@ -5,6 +5,8 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e
 ## [Não lançado]
 
 ### Adicionado
+- Etapa 7 Detector: resumo por severidade, filtros (guardados no endereço da página), agrupamento por coluna ou regra, alertas explicados em linguagem simples com detalhes técnicos e gráfico, as linhas de cada alerta numa tabela lateral (com exportação em CSV), regras não verificadas com o motivo e a lista das 11 regras quando não há alertas.
+- Tela Importar com os outros exemplos de demonstração (alturas reais, alturas com dados plantados e vendas com correlação puxada).
 - Detector completo com as 11 regras (bloco alinhado, correlação por blocos, comparação temporal, Normal perfeita demais e sequência), gráficos nos detalhes técnicos (média por bloco, Lei de Benford e último dígito) e três arquivos de demonstração com dados plantados, escolhíveis entre os exemplos (`GET /datasets/exemplos` e `POST /datasets/exemplo?arquivo=`).
 - API do detector com resumo e as regras de formato numérico, valores redondos, duplicatas, valores distantes, Lei de Benford e último dígito, cada alerta com explicação em linguagem simples, exemplo com as linhas e detalhes técnicos; as regras que não se aplicam vêm com o motivo. Repetições de linhas só viram alerta quando passam do que o acaso produziria.
 - Linhas da versão atual por intervalo (`GET /datasets/{id}/linhas?de=&ate=`, até 200), para mostrar o exemplo de um alerta na tabela.
@@ -12,7 +14,7 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e
 - API do gerador: dados univariados (preservando as estatísticas de uma coluna ou com novos parâmetros) e pares com médias, desvios e correlação alvo, com comparação com o original, explicação do método, gráfico sobreposto, CSV e uso como novo dataset ou anexado ao atual.
 
 ### Alterado
-- A Bivariada continua para o Gerador, e o Relatório volta para ele.
+- A Bivariada continua para o Gerador, o Gerador para o Detector, e o Relatório volta para o Detector.
 - Detector com menos alertas falsos em dados reais (testado com preços da ANP e uma estação do INMET): os zeros ficam fora dos valores redondos e do último dígito, que também pedem valores variados e não muito pequenos; o último dígito só avisa quando o excesso passa de 1,5× o esperado; o mesmo inteiro repetido não conta como mudança de formato; valores distantes levam em conta a cauda longa; em séries no tempo, a sequência fica informativa e a correlação por blocos em atenção; linhas sem nenhum número não contam como cópias; "pode ser normal" fala de preços e da época do ano.
 - Valores distantes: só os que passam de 3·IQR dão "atenção"; |z| > 3 sozinho fica informativo (antes, quase toda amostra Normal grande recebia "atenção").
 

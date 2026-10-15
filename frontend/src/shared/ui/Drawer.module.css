@@ -1,0 +1,104 @@
+/* componentes.md §Drawer (tela 7b): 600 px à direita, fundo --cor-overlay. */
+.fundo {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  padding: 0;
+  border: 0;
+  cursor: default;
+  background: var(--cor-overlay);
+  animation: aparecer 160ms ease-out;
+}
+
+.drawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 41;
+  display: flex;
+  flex-direction: column;
+  width: min(600px, 100vw);
+  background: var(--cor-superficie-elevada);
+  box-shadow: var(--sombra-3);
+  animation: deslizar 200ms ease-out;
+}
+
+.cabecalho {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--esp-12);
+  padding: var(--esp-20) var(--esp-24);
+  border-bottom: 1px solid var(--cor-borda);
+}
+
+.textos {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  min-width: 0;
+}
+
+.titulo {
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+.subtitulo {
+  color: var(--cor-texto-2);
+  font-size: 14px;
+}
+
+.fechar {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border: 0;
+  border-radius: var(--raio-md);
+  background: transparent;
+  color: var(--cor-texto);
+  cursor: pointer;
+  transition: background-color var(--transicao);
+}
+
+.fechar:hover {
+  background: var(--cor-superficie-2);
+}
+
+.corpo {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+}
+
+.corpo:focus-visible {
+  outline-offset: -2px;
+}
+
+.rodape {
+  display: flex;
+  align-items: center;
+  gap: var(--esp-12);
+  padding: 14px var(--esp-24);
+  border-top: 1px solid var(--cor-borda);
+  color: var(--cor-texto-2);
+  font-size: 13px;
+}
+
+@keyframes aparecer {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes deslizar {
+  from {
+    transform: translateX(32px);
+    opacity: 0;
+  }
+}

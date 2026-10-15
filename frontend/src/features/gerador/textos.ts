@@ -93,5 +93,5 @@ export const TEXTOS_GERADOR = {
     novo: (n: string) => `Novo dataset criado: ${n} linhas.`,
   },
   descricaoSessao: (colunas: string, n: string) => `${colunas} · ${n}`,
-  navegacao: { voltar: 'Voltar para Bivariada', continuar: 'Continuar para Relatório' },
+  navegacao: { voltar: 'Voltar para Bivariada', continuar: 'Continuar para Detector' },
 };

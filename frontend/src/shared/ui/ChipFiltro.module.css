@@ -1,0 +1,29 @@
+/* Tela 7a (filtros): pílula 34 alto; marcada com borda, texto e fundo suave da cor do filtro. */
+.chip {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  gap: 6px;
+  height: 34px;
+  padding: 0 12px;
+  border: 1px solid var(--cor-borda-forte);
+  border-radius: var(--raio-pilula);
+  background: var(--cor-superficie);
+  color: var(--cor-texto-2);
+  font-size: 13.5px;
+  font-weight: 500;
+  white-space: nowrap;
+  cursor: pointer;
+  transition:
+    background-color var(--transicao),
+    border-color var(--transicao),
+    color var(--transicao);
+}
+
+.chip:hover {
+  border-color: var(--cor-texto-2);
+}
+
+.chip[aria-checked='true'] {
+  font-weight: 600;
+}
