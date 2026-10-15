@@ -80,7 +80,8 @@ export const avisoR5 = criarAviso({
   severidade: 'alta',
   colunas: [],
   titulo: 'Linhas iguais em sequência',
-  resumo: 'Encontramos 3 linhas iguais a outras do arquivo; as linhas 44 a 47 são iguais e seguidas.',
+  resumo:
+    'Encontramos 3 linhas iguais a outras do arquivo; as linhas 44 a 47 são iguais e seguidas.',
   exemplo: {
     linhas: [44, 45, 46, 47],
     valores: ['M · 39 · 1,9', 'M · 39 · 1,9', 'M · 39 · 1,9', 'M · 39 · 1,9'],
