@@ -30,15 +30,41 @@ def test_alturas_reais_sem_alertas_de_atencao_ou_alta(cliente: TestClient) -> No
     assert corpo["resumo"]["regras_verificadas"] == 9
 
 
-def test_bloco_alinhado_nas_alturas(plantadas: dict[Any, dict[str, Any]]) -> None:
-    aviso = plantadas[("R1", ("altura_m",))]
+def test_pesquisa_saude_limpa_sem_bloco_alinhado(cliente: TestClient) -> None:
+    """O exemplo principal depois da limpeza: altura_m tem só 41 valores distintos (empates)."""
+    dataset_id = cliente.post("/api/datasets/exemplo").json()["dataset_id"]
+    diagnostico = cliente.get(f"/api/datasets/{dataset_id}/diagnostico").json()
+    acoes = [{"problema": "duplicados", "acao": "remover"}] + [
+        {"problema": "fora_de_faixa", "acao": "remover_linhas", "coluna": item["coluna"]}
+        for item in diagnostico["fora_de_faixa"]
+    ]
+    cliente.post(f"/api/datasets/{dataset_id}/limpeza", json={"acoes": acoes})
+
+    resposta = cliente.get(f"/api/datasets/{dataset_id}/detector", params={"regras": "R1"})
+
+    assert resposta.json()["avisos"] == []
+    assert resposta.json()["resumo"]["regras_verificadas"] == 1
+
+
+def test_bloco_alinhado_nos_pesos(plantadas: dict[Any, dict[str, Any]]) -> None:
+    """Em pesos (0,1 kg), o bloco acertado não empata com os embaralhamentos (D142)."""
+    aviso = plantadas[("R1", ("peso_kg",))]
 
     assert aviso["severidade"] == "alta"
     assert aviso["exemplo"]["linhas"] == list(range(181, 201))
-    # O bloco tem a média exata do restante (1,7015): os dois lados aparecem iguais (D142).
-    assert aviso["exemplo"]["texto"].startswith("Linhas 181 a 200: média 1,702 (resto 1,702) ·")
-    assert aviso["detalhes"]["valor"].startswith("dᵤ = 0 · ")
+    assert aviso["exemplo"]["texto"] == (
+        "Linhas 181 a 200: média 71,26 (resto 71,26) · DP 12,01 (resto 12,01)"
+    )
+    assert aviso["detalhes"]["valor"] == "dᵤ = 0 · dₛ = 0"
+    assert aviso["detalhes"]["p_valor"] == 0.0
     assert aviso["figura"]["id"] == "blocos"
+
+
+def test_alturas_em_centimetros_sem_bloco_alinhado(
+    plantadas: dict[Any, dict[str, Any]],
+) -> None:
+    """Em cm, ~1% dos embaralhamentos empata com o melhor bloco possível (spec 12)."""
+    assert ("R1", ("altura_m",)) not in plantadas
 
 
 @pytest.mark.parametrize(

@@ -99,6 +99,20 @@ def test_exemplo_cita_o_bloco_inteiro_mesmo_com_mais_de_20_linhas() -> None:
     assert aviso.exemplo.texto.startswith("Linhas 401 a 422: média ")
 
 
+def test_mesma_media_aparece_igual_no_bloco_e_no_restante() -> None:
+    """Média 70,125 na fronteira do arredondamento: o ruído das contas não muda o texto."""
+    rng = np.random.default_rng(2)
+    resto = rng.normal(70, 10, 380)
+    resto = resto - resto.mean() + 70.125
+    z = rng.normal(0, 1, 20)
+    bloco = resto.mean() + resto.std(ddof=1) * (z - z.mean()) / z.std(ddof=1)
+
+    (aviso,) = RegraBlocoAlinhado().executar(tabela_numerica(np.concatenate([resto, bloco]))).avisos
+
+    assert aviso.exemplo is not None
+    assert aviso.exemplo.texto.startswith("Linhas 381 a 400: média 70,12 (resto 70,12) · DP ")
+
+
 def test_normal_sem_bloco_nao_dispara() -> None:
     resultado = RegraBlocoAlinhado().executar(tabela_numerica(_normal()))
 
@@ -111,6 +125,21 @@ def test_bloco_parecido_mas_comum_ao_acaso_nao_dispara() -> None:
     valores = np.random.default_rng(1).normal(0, 1, 40_000)
 
     assert RegraBlocoAlinhado().executar(tabela_numerica(valores)).avisos == ()
+
+
+@pytest.mark.parametrize("semente", [1575, 1816])
+def test_empates_com_a_candidata_contam_como_tao_parecidos(semente: int) -> None:
+    """Com poucos valores distintos, janelas embaralhadas empatam com a candidata.
+
+    As somas acumuladas arredondam diferente conforme a posição (~10⁻¹⁶): sem contar os
+    empates, 8 ou 9 embaralhamentos ficavam "tão parecidos" (p < 1%), e não 17 ou 18.
+    """
+    alturas = np.round(np.random.default_rng(semente).normal(1.70, 0.09, 220), 2)
+
+    resultado = RegraBlocoAlinhado().executar(tabela_numerica(alturas))
+
+    assert resultado.avisos == ()
+    assert resultado.verificada
 
 
 def test_poucos_valores_nao_se_aplica() -> None:

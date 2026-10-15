@@ -25,6 +25,12 @@ PARTES_DO_TAMANHO = 20
 LIMIAR_DISTANCIA = 0.01
 EMBARALHAMENTOS = 1_000
 SEMENTE = 2026
+EMPATE = 1e-9
+"""Distâncias (em DP) que diferem menos que isso empatam com a candidata (D142).
+
+As somas acumuladas arredondam diferente conforme a posição da janela (~10⁻¹⁶): com poucos
+valores distintos, janelas com os mesmos valores da candidata ficavam "um pouco mais longe".
+"""
 ALGARISMOS_MEDIDAS = 10
 """Média e DP guardados sem o ruído das contas: a mesma média no bloco e no restante sai igual."""
 
@@ -62,14 +68,15 @@ def tamanho_do_bloco(n: int) -> int:
 def proporcao_ao_acaso(valores: np.ndarray, k: int, alvo: float) -> float:
     """Fração dos embaralhamentos cuja melhor janela fica a até `alvo` do restante dela.
 
-    Para assim que 1% dos 1.000 embaralhamentos já foi atingido: a regra não dispara.
+    Empates (diferença < `EMPATE`) contam como tão parecidos. Para assim que 1% dos 1.000
+    embaralhamentos já foi atingido: a regra não dispara.
     """
     rng = np.random.default_rng(SEMENTE)
     limite = round(base.LIMIAR_P * EMBARALHAMENTOS)
     tao_parecidos = feitos = 0
     for lote in blocos.embaralhados(valores, EMBARALHAMENTOS, rng):
         melhores = blocos.afastamentos_do_resto(lote, k).min(axis=1)
-        tao_parecidos += int(np.count_nonzero(melhores <= alvo))
+        tao_parecidos += int(np.count_nonzero(melhores <= alvo + EMPATE))
         feitos += len(lote)
         if tao_parecidos >= limite:
             break

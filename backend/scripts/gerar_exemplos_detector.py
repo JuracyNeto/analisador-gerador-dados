@@ -4,7 +4,7 @@ O que cada arquivo dispara (spec 12):
 - alturas_reais.txt — id;altura_m;peso_kg, 400 pessoas sem manipulação: nenhum alerta de
   atenção ou de suspeita alta (a R7 pode dar um informativo).
 - alturas_plantadas.txt — o mesmo conjunto com dados plantados e a coluna cintura_cm:
-  linhas 181–200 com alturas de um bloco gerado com a média e o DP do restante (R1);
+  linhas 181–200 com pesos de um bloco gerado com a média e o DP do restante (R1);
   linhas 61–70 com pesos inteiros no meio de pesos com decimais (R3);
   linhas 301–380 com alturas de 5 em 5 cm (R4; o último dígito também sai do padrão, R9);
   a mesma linha 4 vezes seguidas entre as linhas 250 e 299 (R5, suspeita alta);
@@ -38,6 +38,8 @@ PESSOAS = 400
 CENTIMETROS = 100
 
 BLOCO_ALINHADO = slice(180, 200)
+DECIMOS = 10
+"""Pesos com 1 casa: o bloco da R1 é acertado em décimos de kg (inteiros; D142)."""
 INTEIROS = slice(60, 70)
 REDONDAS = slice(300, 380)
 PASSO_REDONDO = 5
@@ -86,7 +88,7 @@ def _gerar_exato(n: int, media: float, desvio: float, semente: int) -> np.ndarra
 
 
 def _melhor_troca(bloco: np.ndarray, falta: float) -> tuple[int, int, float]:
-    """+1 em i e −1 em j (a soma fica igual) que deixa Σx² mais perto do alvo."""
+    """+1 unidade em i e −1 em j (a soma fica igual) que deixa Σx² mais perto do alvo."""
     variacao = (2 * (bloco[:, np.newaxis] - bloco[np.newaxis, :]) + 2).astype("float64")
     np.fill_diagonal(variacao, np.inf)
     i, j = np.unravel_index(int(np.argmin(np.abs(falta - variacao))), variacao.shape)
@@ -94,11 +96,11 @@ def _melhor_troca(bloco: np.ndarray, falta: float) -> tuple[int, int, float]:
 
 
 def bloco_alinhado(resto: np.ndarray, k: int, semente: int) -> np.ndarray:
-    """k valores inteiros (cm) com a média e o DP do restante das linhas (R1 compara com ele, D142).
+    """k valores inteiros (na unidade da precisão) com a média e o DP do restante (R1, D142).
 
-    Média igual ⇔ soma do bloco = k · soma do resto / (n − k) (em cm, só quando a conta é exata);
-    DP igual ⇔ Σx² do bloco = (k − 1) · s²_resto + soma² / k. Começa pelo gerador do app e acerta
-    Σx² trocando 1 cm entre dois valores.
+    Média igual ⇔ soma do bloco = k · soma do resto / (n − k) (em inteiros, só quando a conta é
+    exata); DP igual ⇔ Σx² do bloco = (k − 1) · s²_resto + soma² / k. Começa pelo gerador do app e
+    acerta Σx² trocando 1 unidade entre dois valores.
     """
     soma = k * int(resto.sum()) // len(resto)
     desvio = float(resto.std(ddof=1))
@@ -119,17 +121,17 @@ def _copias(origem: int) -> slice:
     return slice(origem + 1, origem + 1 + COPIAS)
 
 
-def _media_exata_possivel(alturas: np.ndarray, posicoes_bloco: np.ndarray) -> bool:
-    """Em cm inteiros, o bloco só tem a média exata se k · soma do resto divide por n − k."""
-    resto = np.delete(alturas, posicoes_bloco)
+def _media_exata_possivel(valores: np.ndarray, posicoes_bloco: np.ndarray) -> bool:
+    """Em inteiros, o bloco só tem a média exata se k · soma do resto divide por n − k."""
+    resto = np.delete(valores, posicoes_bloco)
     return len(posicoes_bloco) * int(resto.sum()) % len(resto) == 0
 
 
-def _origem_das_copias(alturas: np.ndarray, posicoes_bloco: np.ndarray) -> int:
-    """1ª linha (de 250 a 296) cujas cópias deixam a média exata possível."""
+def _origem_das_copias(valores: np.ndarray, posicoes_bloco: np.ndarray) -> int:
+    """1ª linha (de 250 a 296) cujas cópias deixam a média exata do bloco possível."""
     for origem in ORIGENS_COPIAS:
-        copiadas = alturas.copy()
-        copiadas[_copias(origem)] = alturas[origem]
+        copiadas = valores.copy()
+        copiadas[_copias(origem)] = valores[origem]
         if _media_exata_possivel(copiadas, posicoes_bloco):
             return origem
     raise ValueError("nenhuma linha serve de origem das cópias")
@@ -161,15 +163,16 @@ def plantar(
     alturas, pesos = alturas.copy(), pesos.copy()
     pesos[INTEIROS] = np.round(pesos[INTEIROS])
     alturas[REDONDAS] = np.round(alturas[REDONDAS] / PASSO_REDONDO) * PASSO_REDONDO
-    posicoes_bloco = np.arange(len(alturas))[BLOCO_ALINHADO]
-    origem = _origem_das_copias(alturas, posicoes_bloco)
+    # Em cm, ~1% dos embaralhamentos empata com o melhor bloco possível: a R1 fica no peso.
+    decimos = np.round(pesos * DECIMOS).astype("int64")
+    posicoes_bloco = np.arange(len(decimos))[BLOCO_ALINHADO]
+    origem = _origem_das_copias(decimos, posicoes_bloco)
     cintura = cintura_perfeita(rng, len(alturas), slice(origem, _copias(origem).stop))
-    for coluna in (alturas, pesos):
+    for coluna in (alturas, decimos):
         coluna[_copias(origem)] = coluna[origem]
-    resto = np.delete(alturas, posicoes_bloco)
-    alturas[BLOCO_ALINHADO] = bloco_alinhado(resto, len(posicoes_bloco), SEMENTE)
-    pesos[BLOCO_ALINHADO] = _pesos(rng, alturas[BLOCO_ALINHADO])
-    return alturas, pesos, cintura
+    resto = np.delete(decimos, posicoes_bloco)
+    decimos[BLOCO_ALINHADO] = bloco_alinhado(resto, len(posicoes_bloco), SEMENTE)
+    return alturas, decimos / DECIMOS, cintura
 
 
 # Escrita ------------------------------------------------------------------------------------
