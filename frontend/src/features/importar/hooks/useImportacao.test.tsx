@@ -70,7 +70,7 @@ describe('useImportacao', () => {
     const { result } = renderizarHook(useTudo);
 
     act(() => {
-      result.current.importacao.abrirExemplo();
+      result.current.importacao.abrirExemplo('pesquisa_saude.txt');
     });
 
     await waitFor(() => {

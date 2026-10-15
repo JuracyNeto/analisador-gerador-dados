@@ -7,7 +7,6 @@ export const TEXTOS_UI = {
   valorAusente: '—',
   tentarDeNovo: 'Tentar de novo',
   fecharAviso: 'Fechar aviso',
+  fechar: 'Fechar',
   carregandoGrafico: 'Carregando o gráfico…',
-  etapaEmBreve: 'Esta etapa ainda não está pronta',
-  telaEmConstrucao: 'Estamos construindo esta tela. Ela fica pronta ainda nesta versão.',
 } as const;

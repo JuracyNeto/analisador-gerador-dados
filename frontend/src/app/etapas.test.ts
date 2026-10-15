@@ -1,13 +1,13 @@
 import { describe, expect, it } from 'vitest';
-import { ETAPAS, ehEtapaFutura, etapaDoCaminho } from './etapas';
+import { ETAPAS, etapaDoCaminho } from './etapas';
 
 describe('ETAPAS', () => {
   it('tem as 8 etapas em ordem', () => {
     expect(ETAPAS.map((etapa) => etapa.numero)).toEqual([1, 2, 3, 4, 5, 6, 7, 8]);
   });
 
-  it('só a 7 é futura no M3.1 (Gerador liberado)', () => {
-    expect(ETAPAS.filter(ehEtapaFutura).map((etapa) => etapa.numero)).toEqual([7]);
+  it('a etapa 7 é o Detector, liberado no M3.4', () => {
+    expect(etapaDoCaminho('/detector')?.nome).toBe('Detector');
   });
 });
 

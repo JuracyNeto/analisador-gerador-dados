@@ -1,0 +1,172 @@
+/* componentes.md §CartaoAlerta (telas/Cartao Alerta.dc.html). */
+.cartao {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: var(--esp-20) var(--esp-24);
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio-lg);
+  background: var(--cor-superficie);
+  box-shadow: var(--sombra-1);
+}
+
+.topo {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+
+.regra {
+  color: var(--cor-texto-2);
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+.espaco {
+  flex: 1;
+}
+
+.colunas {
+  color: var(--cor-texto-2);
+  font: 500 13px var(--fonte-mono);
+}
+
+.cabecalho {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.titulo {
+  font-size: 17px;
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+.resumo {
+  font-size: 15px;
+  font-variant-numeric: tabular-nums;
+}
+
+.alternar {
+  align-self: flex-start;
+  margin-left: -10px;
+}
+
+.explicacao {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.explicacao[hidden] {
+  display: none;
+}
+
+.grade {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: var(--esp-16) 28px;
+}
+
+.bloco {
+  display: flex;
+  flex-direction: column;
+  gap: var(--esp-4);
+  font-size: 14px;
+}
+
+.sobrelinha {
+  color: var(--cor-texto-2);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.exemplo {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--esp-16);
+  padding: 12px 14px;
+  border-radius: var(--raio-md);
+  background: var(--cor-superficie-2);
+}
+
+.textoExemplo {
+  display: flex;
+  flex: 1 1 280px;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.valoresExemplo {
+  font: 500 13.5px/1.5 var(--fonte-mono);
+  overflow-wrap: anywhere;
+}
+
+.fazer {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 14px;
+}
+
+.fazer strong {
+  font-weight: 600;
+}
+
+.seta {
+  margin-top: 1px;
+  color: var(--cor-primaria);
+}
+
+/* Accordion colado ao rodapé do cartão, com borda superior. */
+.detalhes {
+  margin: 0 calc(-1 * var(--esp-24)) calc(-1 * var(--esp-20));
+  padding: 0 var(--esp-24);
+  border-top: 1px solid var(--cor-borda);
+}
+
+.lista {
+  display: grid;
+  grid-template-columns: 120px minmax(0, 1fr);
+  gap: var(--esp-8) var(--esp-16);
+  margin: 0 0 18px;
+  font-size: 13.5px;
+}
+
+.lista dt {
+  color: var(--cor-texto-2);
+}
+
+.lista dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.mono {
+  font-family: var(--fonte-mono);
+}
+
+.secundario {
+  color: var(--cor-texto-2);
+}
+
+.formula {
+  padding: var(--esp-8) var(--esp-12);
+  border-radius: var(--raio-sm);
+  background: var(--cor-superficie-2);
+  font: 500 14px var(--fonte-mono);
+}
+
+.figura {
+  display: flex;
+  flex-direction: column;
+  gap: var(--esp-8);
+  margin-bottom: 18px;
+  font-size: 13.5px;
+}
