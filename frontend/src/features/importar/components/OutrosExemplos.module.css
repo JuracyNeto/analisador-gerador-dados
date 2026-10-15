@@ -1,0 +1,24 @@
+.outros {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: calc(-1 * var(--esp-12));
+  color: var(--cor-texto-2);
+  font-size: 14px;
+}
+
+.titulo {
+  font-weight: 500;
+}
+
+.lista {
+  display: flex;
+  flex-direction: column;
+  gap: var(--esp-4);
+  list-style: none;
+}
+
+.arquivo {
+  font-family: var(--fonte-mono);
+  font-size: 13.5px;
+}

@@ -1,0 +1,31 @@
+/* Tela 7a: grupos com cabeçalho "coluna · 2 alertas" e os cartões. */
+.lista {
+  display: flex;
+  flex-direction: column;
+  gap: var(--esp-20);
+}
+
+.grupo {
+  display: flex;
+  flex-direction: column;
+  gap: var(--esp-12);
+}
+
+.cabecalho {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin-top: var(--esp-8);
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.mono {
+  font-family: var(--fonte-mono);
+}
+
+.quantidade {
+  color: var(--cor-texto-2);
+  font-size: 13px;
+  font-weight: 400;
+}

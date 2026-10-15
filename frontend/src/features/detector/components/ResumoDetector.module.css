@@ -1,0 +1,55 @@
+/* Tela 7a: card de resumo com os contadores por severidade. */
+.resumo {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--esp-16) var(--esp-32);
+  padding: var(--esp-20) var(--esp-24);
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio-lg);
+  background: var(--cor-superficie);
+  box-shadow: var(--sombra-1);
+}
+
+.textos {
+  display: flex;
+  flex: 1 1 320px;
+  flex-direction: column;
+  gap: var(--esp-4);
+}
+
+.frase {
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.detalhe {
+  color: var(--cor-texto-2);
+  font-size: 14px;
+}
+
+.contadores {
+  display: flex;
+  gap: var(--esp-24);
+  list-style: none;
+}
+
+.contador {
+  display: flex;
+  flex-direction: column;
+  gap: var(--esp-4);
+}
+
+.numero {
+  font: 600 28px/1 var(--fonte-mono);
+}
+
+.palavra {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+}

@@ -6,5 +6,6 @@ export const CAMINHOS = {
   analise: '/analise',
   bivariada: '/bivariada',
   gerador: '/gerador',
+  detector: '/detector',
   relatorio: '/relatorio',
 } as const;

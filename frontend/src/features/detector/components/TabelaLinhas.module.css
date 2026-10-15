@@ -1,0 +1,77 @@
+/* Tabela do drawer (tela 7b): cabeçalho fixo, destaque na cor da severidade do aviso. */
+.tabela {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 13.5px;
+  font-variant-numeric: tabular-nums;
+  --cor-marca: var(--sev-atencao);
+}
+
+.tabela[data-severidade='alta'] {
+  --cor-marca: var(--sev-alta);
+}
+
+.tabela[data-severidade='info'] {
+  --cor-marca: var(--sev-info);
+}
+
+.tabela thead th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  padding: 10px var(--esp-16);
+  border-bottom: 1px solid var(--cor-borda-forte);
+  background: var(--cor-superficie-2);
+  font: 600 12.5px var(--fonte-mono);
+  text-align: left;
+  white-space: nowrap;
+}
+
+.tabela td,
+.tabela tbody th {
+  padding: 7px var(--esp-16);
+  font-weight: 400;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.tabela tbody tr:nth-child(even) {
+  background: var(--cor-zebra);
+}
+
+.tabela .numero {
+  color: var(--cor-texto-2);
+  font-family: var(--fonte-texto);
+  text-align: right;
+}
+
+.tabela .direita {
+  text-align: right;
+}
+
+.tabela .colunaAfetada {
+  color: var(--cor-marca);
+}
+
+.tabela tbody tr.destacada {
+  background: var(--cor-destaque-linha);
+}
+
+.tabela tr.destacada > .numero {
+  box-shadow: inset 3px 0 0 var(--cor-marca);
+}
+
+.tabela tr.destacada > .numero,
+.tabela tr.destacada > .afetada {
+  font-weight: 600;
+}
+
+.tabela tbody tr.separador {
+  background: transparent;
+}
+
+.separador td {
+  color: var(--cor-texto-2);
+  text-align: center;
+}

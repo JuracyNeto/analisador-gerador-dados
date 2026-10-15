@@ -3,10 +3,11 @@ import PaginaEtapa from '../../shared/ui/PaginaEtapa';
 import AreaUpload from './components/AreaUpload';
 import BannerErroImportacao from './components/BannerErroImportacao';
 import BotaoLink from './components/BotaoLink';
+import OutrosExemplos from './components/OutrosExemplos';
 import ResultadoImportacao from './components/ResultadoImportacao';
 import { type Importacao, useImportacao } from './hooks/useImportacao';
 import estilos from './PaginaImportar.module.css';
-import { TEXTOS_IMPORTAR as T } from './textos';
+import { NOME_EXEMPLO, TEXTOS_IMPORTAR as T } from './textos';
 
 function EnvioArquivo({ importacao }: Readonly<{ importacao: Importacao }>) {
   return (
@@ -19,8 +20,15 @@ function EnvioArquivo({ importacao }: Readonly<{ importacao: Importacao }>) {
       />
       <p className={estilos.exemplo}>
         {T.exemplo.pergunta}{' '}
-        <BotaoLink onClick={importacao.abrirExemplo}>{T.exemplo.link}</BotaoLink>
+        <BotaoLink
+          onClick={() => {
+            importacao.abrirExemplo(NOME_EXEMPLO);
+          }}
+        >
+          {T.exemplo.link}
+        </BotaoLink>
       </p>
+      <OutrosExemplos aoEscolher={importacao.abrirExemplo} />
     </>
   );
 }
@@ -36,7 +44,9 @@ export default function PaginaImportar() {
           <BannerErroImportacao
             erro={importacao.erro}
             nomeArquivo={importacao.nomeArquivo}
-            aoUsarExemplo={importacao.abrirExemplo}
+            aoUsarExemplo={() => {
+              importacao.abrirExemplo(NOME_EXEMPLO);
+            }}
           />
         )}
         {sessao.dataset === null ? (

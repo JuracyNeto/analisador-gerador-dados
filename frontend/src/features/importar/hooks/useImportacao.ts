@@ -7,28 +7,29 @@ export interface Importacao {
   enviando: boolean;
   erro: Error | null;
   enviar: (arquivo: File) => void;
-  abrirExemplo: () => void;
+  /** Um dos exemplos de `GET /datasets/exemplos` (o principal é `pesquisa_saude.txt`). */
+  abrirExemplo: (arquivo: string) => void;
 }
 
-/** Fluxo da tela 1 antes de ter um dataset: enviar um arquivo ou abrir o exemplo. */
+/** Fluxo da tela 1 antes de ter um dataset: enviar um arquivo ou abrir um exemplo. */
 export function useImportacao(): Importacao {
-  const [arquivo, setArquivo] = useState<File | null>(null);
+  const [nomeArquivo, setNomeArquivo] = useState(NOME_EXEMPLO);
   const importar = useImportarArquivo();
   const exemplo = useAbrirExemplo();
 
   return {
-    nomeArquivo: arquivo === null ? NOME_EXEMPLO : arquivo.name,
+    nomeArquivo,
     enviando: importar.isPending || exemplo.isPending,
     erro: importar.error ?? exemplo.error,
     enviar: (escolhido) => {
       exemplo.reset();
-      setArquivo(escolhido);
+      setNomeArquivo(escolhido.name);
       importar.mutate(escolhido);
     },
-    abrirExemplo: () => {
+    abrirExemplo: (arquivo) => {
       importar.reset();
-      setArquivo(null);
-      exemplo.mutate();
+      setNomeArquivo(arquivo);
+      exemplo.mutate(arquivo);
     },
   };
 }

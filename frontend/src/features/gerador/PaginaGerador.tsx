@@ -21,7 +21,7 @@ const ABAS = (['univariado', 'bivariado'] as const).map((id) => ({ id, rotulo: T
 const ACOES_GERADOR = (
   <AcoesEtapa
     voltar={{ para: CAMINHOS.bivariada, rotulo: T.navegacao.voltar }}
-    continuar={{ para: CAMINHOS.relatorio, rotulo: T.navegacao.continuar }}
+    continuar={{ para: CAMINHOS.detector, rotulo: T.navegacao.continuar }}
   />
 );
 
