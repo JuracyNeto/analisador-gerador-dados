@@ -13,6 +13,18 @@ export const TEXTOS_DETECTOR = {
   agrupamentos: { coluna: 'Coluna', regra: 'Regra' },
   chip: (palavra: string, quantidade: number): string => `${palavra} (${String(quantidade)})`,
   linhasInteiras: 'Linhas inteiras',
+  drawer: {
+    rotuloCorpo: 'Linhas do alerta',
+    legenda: (titulo: string): string => `${titulo}, com as linhas do alerta destacadas`,
+    linha: 'linha',
+    destacada: ' (destacada)',
+    destacadas: (quantidade: number): string =>
+      quantidade === 1 ? '1 linha destacada.' : `${String(quantidade)} linhas destacadas.`,
+    carregando: 'Buscando as linhas…',
+    exportar: 'Exportar estas linhas',
+    rodape: (trechos: string, total: string | null): string =>
+      total === null ? `Linhas ${trechos}` : `Linhas ${trechos} de ${total}`,
+  },
   cartao: {
     porQue: 'Por que chama atenção',
     podeSerNormal: 'Pode ser normal se…',
@@ -33,6 +45,7 @@ export const TEXTOS_DETECTOR = {
     traducao: (texto: string): string => `· ${texto}`,
   },
   separadorPar: ' × ',
+  separadorTitulo: ' · ',
   regra: (aviso: Pick<Aviso, 'regra' | 'nome_regra'>): string =>
     `${aviso.regra} · ${aviso.nome_regra}`,
 } as const;

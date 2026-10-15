@@ -27,12 +27,15 @@ function seguidas(linhas: readonly number[]): boolean {
   return linhas.every((linha, i) => i === 0 || linha === (linhas[i - 1] ?? linha) + 1);
 }
 
+/** "a", "a e b", "a, b e c". */
+function juntarComE(itens: readonly string[]): string {
+  const ultimo = itens.at(-1) ?? '';
+  return itens.length < 2 ? ultimo : `${itens.slice(0, -1).join(', ')} e ${ultimo}`;
+}
+
 function listar(numeros: readonly number[]): string {
   if (numeros.length > MAXIMO_NA_FRASE) return `${numeros.slice(0, MAXIMO_NA_FRASE).join(', ')}…`;
-  const ultimo = numeros.at(-1);
-  return numeros.length < 2
-    ? String(ultimo)
-    : `${numeros.slice(0, -1).join(', ')} e ${String(ultimo)}`;
+  return juntarComE(numeros.map(String));
 }
 
 /** "Linha 77", "Linhas 120 a 138", "Linhas 99, 106, 160 e 178" (como os exemplos da API). */
@@ -46,4 +49,9 @@ export function descreverLinhas(linhas: readonly number[]): string {
     return `Linhas ${String(primeira)} a ${String(ultima)}`;
   }
   return `Linhas ${listar(ordenadas)}`;
+}
+
+/** Rodapé do drawer: "117–141" ou "96–109, 157–163 e 175–181". */
+export function descreverTrechos(trechos: readonly Trecho[]): string {
+  return juntarComE(trechos.map(({ de, ate }) => `${String(de)}–${String(ate)}`));
 }

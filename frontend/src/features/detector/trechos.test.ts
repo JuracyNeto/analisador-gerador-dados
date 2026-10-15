@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { descreverLinhas, trechosDoExemplo } from './trechos';
+import { descreverLinhas, descreverTrechos, trechosDoExemplo } from './trechos';
 
 describe('trechosDoExemplo', () => {
   it('bloco seguido: um trecho com 3 linhas de contexto de cada lado', () => {
@@ -30,5 +30,18 @@ describe('descreverLinhas', () => {
     [[1, 3, 5, 7, 9, 11, 13, 15, 17], 'Linhas 1, 3, 5, 7, 9, 11, 13, 15…'],
   ])('%j → %s', (linhas, texto) => {
     expect(descreverLinhas(linhas)).toBe(texto);
+  });
+});
+
+describe('descreverTrechos', () => {
+  it('um trecho ou vários, com "e" antes do último', () => {
+    expect(descreverTrechos([{ de: 117, ate: 141 }])).toBe('117–141');
+    expect(
+      descreverTrechos([
+        { de: 96, ate: 109 },
+        { de: 157, ate: 163 },
+        { de: 175, ate: 181 },
+      ]),
+    ).toBe('96–109, 157–163 e 175–181');
   });
 });
