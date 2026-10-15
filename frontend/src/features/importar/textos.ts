@@ -22,7 +22,12 @@ export const TEXTOS_IMPORTAR = {
     enviando: (nome: string) => `Enviando ${nome}…`,
   },
   formatosAceitos: ['.txt', '.csv', '.tsv', '.xlsx', '.json'],
-  exemplo: { pergunta: 'Sem dados à mão?', link: `Abrir ${NOME_EXEMPLO} de exemplo` },
+  exemplo: {
+    pergunta: 'Sem dados à mão?',
+    link: `Abrir ${NOME_EXEMPLO} de exemplo`,
+    outros: 'Outros exemplos',
+    separador: ' — ',
+  },
   erro: {
     titulo: (nome: string) => `Não conseguimos ler este arquivo: ${nome}`,
     usarExemplo: 'Usar o arquivo de exemplo',
