@@ -7,14 +7,14 @@ medir, dispara e o conteúdo do aviso são os passos de cada regra. Textos vêm 
 
 from abc import ABC, abstractmethod
 from collections.abc import Collection, Sequence
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from itertools import combinations
 from typing import Protocol
 
 import numpy as np
 
 from app.compartilhado.tipos import TIPOS_NUMERICOS, Severidade, TipoVariavel
-from app.dominios.detector import digitos, textos
+from app.dominios.detector import digitos, tempo, textos
 from app.dominios.detector.exemplos import exemplo_do_trecho
 from app.dominios.detector.resultados import (
     Aviso,
@@ -46,6 +46,10 @@ class AlvoColuna:
     linhas: np.ndarray
     valores: np.ndarray
     forma: FormaColuna | None = None
+    zeros: int = 0
+    """Zeros tirados da coluna (R4 e R9; D134)."""
+    linha_do_tempo: str | None = None
+    """Coluna de data que as linhas seguem (R11; D137)."""
 
     @property
     def rotulo(self) -> str:
@@ -65,6 +69,8 @@ class AlvoPar:
     linhas: np.ndarray
     valores_x: np.ndarray
     valores_y: np.ndarray
+    linha_do_tempo: str | None = None
+    """Coluna de data que as linhas seguem (R2; D137)."""
 
     @property
     def rotulo(self) -> str:
@@ -105,6 +111,32 @@ COLUNAS_NUMERICAS = ColunasDoTipo(TIPOS_NUMERICOS, textos.SEM_NUMERICAS)
 COLUNAS_CONTINUAS = ColunasDoTipo(frozenset({TipoVariavel.CONTINUA}), textos.SEM_CONTINUAS)
 
 
+def _sem_zeros(alvo: AlvoColuna) -> AlvoColuna:
+    manter = alvo.valores != 0
+    zeros = int(alvo.n - manter.sum())
+    return replace(alvo, linhas=alvo.linhas[manter], valores=alvo.valores[manter], zeros=zeros)
+
+
+@dataclass(frozen=True, slots=True)
+class SemZeros:
+    """As colunas do seletor sem os zeros (R4, R9; D134).
+
+    Zero é "nada medido" (vento calmo, dia sem chuva), não um valor arredondado.
+    """
+
+    seletor: ColunasDoTipo
+
+    @property
+    def motivo_sem_alvos(self) -> str:
+        return self.seletor.motivo_sem_alvos
+
+    def __call__(self, tabela: TabelaDetector) -> tuple[AlvoColuna, ...]:
+        return tuple(_sem_zeros(alvo) for alvo in self.seletor(tabela))
+
+
+NUMERICAS_SEM_ZEROS = SemZeros(COLUNAS_NUMERICAS)
+
+
 def _par(tabela: TabelaDetector, x: ColunaDetector, y: ColunaDetector) -> AlvoPar:
     """O par só com as linhas em que as duas colunas têm valor."""
     numeros_x, numeros_y = tabela.numeros(x), tabela.numeros(y)
@@ -123,6 +155,26 @@ class ParesNumericos:
 
 
 PARES_NUMERICOS = ParesNumericos()
+
+
+@dataclass(frozen=True, slots=True)
+class NaLinhaDoTempo[A: (AlvoColuna, AlvoPar)]:
+    """Os alvos do seletor com a coluna de data que as linhas seguem, se houver (D137).
+
+    Numa série no tempo, valores vizinhos são parecidos e a relação entre colunas muda com as
+    estações: a R11 fica informativa e a R2 cai para atenção.
+    """
+
+    seletor: SeletorAlvos[A]
+
+    @property
+    def motivo_sem_alvos(self) -> str:
+        return self.seletor.motivo_sem_alvos
+
+    def __call__(self, tabela: TabelaDetector) -> tuple[A, ...]:
+        alvos = self.seletor(tabela)
+        nome = tempo.coluna_do_tempo(tabela) if alvos else None
+        return tuple(replace(alvo, linha_do_tempo=nome) for alvo in alvos)
 
 
 # Requisitos (passo "aplicável?") ------------------------------------------------------------
@@ -159,7 +211,8 @@ class DigitoFinalTestavel:
     minimo: int
 
     def __call__(self, alvo: AlvoColuna) -> str | None:
-        return digitos.motivo_digito_final(alvo.valores, self.minimo)
+        motivo = digitos.motivo_digito_final(alvo.valores, self.minimo)
+        return textos.fora_os_zeros(motivo) if motivo and alvo.zeros else motivo
 
 
 @dataclass(frozen=True, slots=True)

@@ -18,6 +18,8 @@ TIPOS = {
     "hora_atendimento": "data",
     "data_hora": "data",
     "valor_compra": "continua",
+    "valor_reais": "continua",
+    "desconto": "continua",
     "satisfacao": "discreta",
     "vip": "binaria",
     "itens": "discreta",
@@ -58,6 +60,8 @@ def test_tipo_de_cada_coluna(colunas: dict[str, dict[str, Any]], coluna: str, ti
         ("hora_atendimento", "Horários (ex.: 15:52)."),
         ("data_hora", "Datas com horário (ex.: 01/01/2026 15:06)."),
         ("escolaridade", "Os valores seguem uma escala conhecida: fundamental < médio < superior."),
+        ("valor_reais", "Valores em reais (ex.: R$ 259,70)."),
+        ("desconto", "Percentuais (ex.: 10,0%)."),
     ],
 )
 def test_motivos_mostram_o_formato(
@@ -66,7 +70,17 @@ def test_motivos_mostram_o_formato(
     assert colunas[coluna]["motivo"] == motivo
 
 
-@pytest.mark.parametrize(("coluna", "faltantes"), [("saldo", 8), ("observacao", 229)])
+def test_previa_mostra_reais_e_percentuais_como_no_arquivo(
+    cliente: TestClient, cadastro_variado: str
+) -> None:
+    linha = cliente.get(f"/api/datasets/{cadastro_variado}").json()["linhas"][0]["valores"]
+
+    assert (linha["valor_reais"], linha["desconto"]) == ("R$ 259,70", "10,0%")
+
+
+@pytest.mark.parametrize(
+    ("coluna", "faltantes"), [("saldo", 8), ("observacao", 229), ("valor_reais", 7)]
+)
 def test_na_e_celula_vazia_contam_como_faltantes(
     colunas: dict[str, dict[str, Any]], coluna: str, faltantes: int
 ) -> None:

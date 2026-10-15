@@ -10,15 +10,16 @@ from app.dominios.detector.regras import base
 
 MINIMO_VALORES = 50
 FINAIS_POSSIVEIS = np.arange(10)
-UNIFORME = np.full(10, 0.1)
+ESPERADO = 0.1
+UNIFORME = np.full(10, ESPERADO)
 
 
 class RegraUltimoDigito(base.RegraBase[base.AlvoColuna, FrequenciaDigitos]):
-    """Dígitos finais 0–9 deveriam ser uniformes; χ² com gl = 9 e p < 0,01."""
+    """Dígitos finais 0–9 deveriam ser uniformes; χ² p < 0,01 e o mais comum ≥ 15% (D134)."""
 
     codigo = "R9"
     nome = "Último dígito"
-    seletor = base.COLUNAS_NUMERICAS
+    seletor = base.NUMERICAS_SEM_ZEROS
     requisito = base.DigitoFinalTestavel(MINIMO_VALORES)
 
     def medir(self, alvo: base.AlvoColuna) -> FrequenciaDigitos:
@@ -26,7 +27,10 @@ class RegraUltimoDigito(base.RegraBase[base.AlvoColuna, FrequenciaDigitos]):
         return digitos.comparar_frequencias(finais, FINAIS_POSSIVEIS, UNIFORME)
 
     def dispara(self, medicao: FrequenciaDigitos) -> bool:
-        return medicao.teste.p_valor < base.LIMIAR_P
+        # Com milhares de valores, um excesso pequeno (13% contra 10%) já passa no teste (D134).
+        mais_comum = float(medicao.proporcoes[medicao.indice_mais_acima])
+        efeito = mais_comum >= digitos.RAZAO_MINIMA * ESPERADO
+        return medicao.teste.p_valor < base.LIMIAR_P and efeito
 
     def conteudo_aviso(
         self, alvo: base.AlvoColuna, medicao: FrequenciaDigitos

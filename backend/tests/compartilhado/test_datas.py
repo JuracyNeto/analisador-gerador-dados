@@ -13,8 +13,11 @@ from app.compartilhado.datas import formatar_data, reconhecer_datas
         (["07-10-2026", "08.10.2026"], "dd/mm/aaaa"),
         (["10/27/2026", "10/28/2026", "1/2/2026"], "mm/dd/aaaa"),
         (["2026-10-07", "2026-10-08"], "aaaa-mm-dd"),
+        (["2025/01/01", "2025/12/31"], "aaaa/mm/dd"),
         (["07/10/2026 08:30", "2026-10-07T17:05:12"], "data_hora"),
+        (["2025/01/01 08:30", "2025/01/01 09:00"], "data_hora"),
         (["08:30", "17:05:12", "0:15"], "hora"),
+        (["0000 UTC", "1300 UTC", "23:00 UTC"], "hora"),
     ],
 )
 def test_reconhece_o_formato(valores: list[str], formato: str) -> None:
@@ -30,6 +33,16 @@ def test_converte_os_valores_para_datas() -> None:
 
     assert leitura is not None
     assert leitura.valores.iloc[0] == pd.Timestamp("2026-10-07")
+
+
+def test_datas_e_horarios_do_inmet_viram_datas() -> None:
+    datas = reconhecer_datas(pd.Series(["2025/01/02", "2025/12/31"]))
+    horas = reconhecer_datas(pd.Series(["0000 UTC", "1330 UTC"]))
+
+    assert datas is not None
+    assert datas.valores.iloc[0] == pd.Timestamp("2025-01-02")
+    assert horas is not None
+    assert horas.valores.iloc[1] == pd.Timestamp("1900-01-01 13:30")
 
 
 def test_dia_vem_primeiro_quando_a_data_e_ambigua() -> None:
@@ -76,6 +89,10 @@ def test_ignora_faltantes_na_proporcao() -> None:
         ["Goiânia", "Anápolis"],
         ["13/14/2026", "07/10/2026"],
         ["12:3", "1:2:3"],
+        ["25:00", "08:61"],
+        ["0000", "1300"],
+        ["2500 UTC", "1370 UTC"],
+        ["2025/13/01", "2025/02/30"],
     ],
 )
 def test_nao_toma_outros_valores_por_data(valores: list[str]) -> None:
