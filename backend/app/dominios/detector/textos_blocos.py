@@ -178,14 +178,17 @@ def poucas_linhas_por_periodo(minimo: int) -> str:
     return f"precisa de {formatar_inteiro(minimo)} linhas ou mais antes e depois da data do meio"
 
 
-def r06_textos_variacao(coluna: str, data: str, desvios: tuple[float, float]) -> TextosAviso:
+def r06_textos_variacao(
+    coluna: str, data: str, desvios: tuple[float, float], zeros: int
+) -> TextosAviso:
     """ "Os dados de {col} depois de {data} variam bem menos em relação aos anteriores…"."""
     antes, depois = (textos.numero(desvio) for desvio in desvios)
+    medida = "desvio padrão fora os zeros" if zeros else "desvio padrão"
     return TextosAviso(
         titulo=f"Variação menor depois de {data} em {coluna}",
         resumo=(
             f"Os dados de {coluna} depois de {data} variam bem menos em relação aos anteriores "
-            f"(desvio padrão {depois}; antes, {antes})."
+            f"({medida} {depois}; antes, {antes})."
         ),
         por_que=POR_QUE_R6,
         pode_ser_normal=PODE_SER_NORMAL_R6_VARIACAO,
@@ -194,11 +197,12 @@ def r06_textos_variacao(coluna: str, data: str, desvios: tuple[float, float]) ->
 
 
 def r06_detalhes_variacao(
-    referencia: str, desvios: tuple[float, float], linhas: tuple[int, int], p: float
+    referencia: str, desvios: tuple[float, float], linhas: tuple[int, int], p: float, zeros: int
 ) -> DetalhesAviso:
     antes, depois = desvios
+    sem_zeros = f", fora os {formatar_inteiro(zeros)} zeros" if zeros else ""
     return DetalhesAviso(
-        medida=f"Desvio padrão antes e depois de {referencia}",
+        medida=f"Desvio padrão antes e depois de {referencia}{sem_zeros}",
         valor=(
             f"antes: {textos.numero(antes)} ({textos.quantidade(linhas[0], 'linha', 'linhas')}) · "
             f"depois: {textos.numero(depois)} "

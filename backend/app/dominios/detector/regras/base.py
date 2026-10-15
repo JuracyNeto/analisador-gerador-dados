@@ -6,7 +6,7 @@ medir, dispara e o conteúdo do aviso são os passos de cada regra. Textos vêm 
 """
 
 from abc import ABC, abstractmethod
-from collections.abc import Collection, Sequence
+from collections.abc import Callable, Collection, Sequence
 from dataclasses import dataclass, replace
 from itertools import combinations
 from typing import Protocol
@@ -28,6 +28,8 @@ from app.dominios.detector.tabela import ColunaDetector, FormaColuna, TabelaDete
 
 LIMIAR_P = 0.01
 """Nível de significância das regras do detector (spec 12)."""
+PROPORCAO_MUITOS_ZEROS = 0.25
+"""Com um quarto dos valores em zero, o 1º quartil já é zero (R6, R7; D143, D144)."""
 
 
 class Alvo(Protocol):
@@ -111,6 +113,21 @@ COLUNAS_NUMERICAS = ColunasDoTipo(TIPOS_NUMERICOS, textos.SEM_NUMERICAS)
 COLUNAS_CONTINUAS = ColunasDoTipo(frozenset({TipoVariavel.CONTINUA}), textos.SEM_CONTINUAS)
 
 
+def muitos_zeros(valores: np.ndarray) -> bool:
+    """Sem negativos e com 25% ou mais de zeros: os quartis medem quantas vezes houve medida.
+
+    Na chuva por dia (72% de zeros), Q1 = 0 e Q3 = 0,2 mm. Com negativos (saldo), zero é um
+    valor do meio como os outros (D143).
+    """
+    if len(valores) == 0 or bool(np.any(valores < 0)):
+        return False
+    return bool(np.mean(valores == 0) >= PROPORCAO_MUITOS_ZEROS)
+
+
+def sempre(_valores: np.ndarray) -> bool:
+    return True
+
+
 def _sem_zeros(alvo: AlvoColuna) -> AlvoColuna:
     manter = alvo.valores != 0
     zeros = int(alvo.n - manter.sum())
@@ -119,22 +136,27 @@ def _sem_zeros(alvo: AlvoColuna) -> AlvoColuna:
 
 @dataclass(frozen=True, slots=True)
 class SemZeros:
-    """As colunas do seletor sem os zeros (R4, R9; D134).
+    """As colunas do seletor sem os zeros, quando `quando` vale para os valores (D134, D143).
 
-    Zero é "nada medido" (vento calmo, dia sem chuva), não um valor arredondado.
+    Zero é "nada medido" (vento calmo, dia sem chuva), não um valor arredondado: R4 e R9 tiram
+    sempre; R7, só quando são muitos (um 0 no meio de alturas continua distante).
     """
 
     seletor: ColunasDoTipo
+    quando: Callable[[np.ndarray], bool] = sempre
 
     @property
     def motivo_sem_alvos(self) -> str:
         return self.seletor.motivo_sem_alvos
 
     def __call__(self, tabela: TabelaDetector) -> tuple[AlvoColuna, ...]:
-        return tuple(_sem_zeros(alvo) for alvo in self.seletor(tabela))
+        return tuple(
+            _sem_zeros(alvo) if self.quando(alvo.valores) else alvo for alvo in self.seletor(tabela)
+        )
 
 
 NUMERICAS_SEM_ZEROS = SemZeros(COLUNAS_NUMERICAS)
+NUMERICAS_SEM_MUITOS_ZEROS = SemZeros(COLUNAS_NUMERICAS, muitos_zeros)
 
 
 def _par(tabela: TabelaDetector, x: ColunaDetector, y: ColunaDetector) -> AlvoPar:
@@ -211,7 +233,22 @@ class DigitoFinalTestavel:
     minimo: int
 
     def __call__(self, alvo: AlvoColuna) -> str | None:
-        motivo = digitos.motivo_digito_final(alvo.valores, self.minimo)
+        return digitos.motivo_digito_final(alvo.valores, self.minimo)
+
+
+class AlvoSemZeros(Alvo, Protocol):
+    @property
+    def zeros(self) -> int: ...
+
+
+@dataclass(frozen=True, slots=True)
+class ForaOsZeros[A: AlvoSemZeros]:
+    """O motivo do requisito termina em ", fora os zeros" quando eles saíram do alvo (D134)."""
+
+    requisito: Requisito[A]
+
+    def __call__(self, alvo: A) -> str | None:
+        motivo = self.requisito(alvo)
         return textos.fora_os_zeros(motivo) if motivo and alvo.zeros else motivo
 
 

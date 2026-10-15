@@ -3,7 +3,9 @@
 from collections.abc import Mapping, Sequence
 from dataclasses import replace
 
+import numpy as np
 import pandas as pd
+from scipy import stats
 
 from app.compartilhado.tipos import TIPOS_NUMERICOS, TipoVariavel
 from app.dominios.detector.servico import forma_da_coluna
@@ -34,3 +36,12 @@ def tabela_numerica(
 ) -> TabelaDetector:
     """Tabela com uma coluna numérica só."""
     return tabela_de(pd.DataFrame({nome: list(valores)}), {nome: tipo})
+
+
+def chuva(dias: int, com_chuva: int) -> np.ndarray:
+    """Dias sem chuva (zero) e, espalhados, quantis da Gama(0,7; 15) no pluviômetro de 0,2 mm."""
+    milimetros = stats.gamma.ppf((np.arange(1, com_chuva + 1) - 0.5) / com_chuva, 0.7, scale=15)
+    valores = np.zeros(dias)
+    dias_de_chuva = np.linspace(0, dias - 1, com_chuva).round().astype(int)
+    valores[dias_de_chuva] = np.maximum(np.round(milimetros / 0.2) * 0.2, 0.2)
+    return np.round(valores, 1)

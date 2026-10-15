@@ -3,8 +3,9 @@
 Ordena pela coluna de data que acompanha a ordem das linhas (a linha do tempo do arquivo; sem
 nenhuma assim, a 1ª, D130) e divide na data do meio (a mediana, uma data do arquivo). Duas
 partes com o mesmo código: a variação de cada numérica (DP depois < 0,5 × DP antes, com F
-unilateral p < 0,01) e as linhas novas iguais a antigas fora a data (≥ 10% e acima do que as
-antigas se repetem entre si, binomial p < 0,01) — as duas contra o acaso, como a R5 (D120).
+unilateral p < 0,01; com muitos zeros, só os valores acima de zero, D144) e as linhas novas
+iguais a antigas fora a data (≥ 10% e acima do que as antigas se repetem entre si, binomial
+p < 0,01) — as duas contra o acaso, como a R5 (D120).
 """
 
 from dataclasses import dataclass
@@ -102,6 +103,8 @@ class AlvoVariacao:
     linhas: np.ndarray
     valores: np.ndarray
     periodos: Periodos
+    zeros: int = 0
+    """Zeros tirados da coluna, quando são muitos (D144)."""
 
     @property
     def rotulo(self) -> str:
@@ -113,10 +116,18 @@ class AlvoVariacao:
 
 
 def _variacao(tabela: TabelaDetector, coluna: ColunaDetector, todos: Periodos) -> AlvoVariacao:
+    """Linhas com data e valor; com muitos zeros, só as acima de zero (D144).
+
+    Na chuva por dia, a estação seca enche o 2º semestre de zeros e o DP cai sem que os dias de
+    chuva variem menos.
+    """
     numeros = tabela.numeros(coluna)
-    validos = todos.so_com(~np.isnan(numeros))
+    com_valor = ~np.isnan(numeros)
+    no_tempo = numeros[todos.so_com(com_valor).posicoes]
+    zeros = int(np.count_nonzero(no_tempo == 0)) if base.muitos_zeros(no_tempo) else 0
+    validos = todos.so_com(com_valor & (numeros != 0) if zeros else com_valor)
     return AlvoVariacao(
-        coluna.nome, tabela.linhas[validos.posicoes], numeros[validos.posicoes], validos
+        coluna.nome, tabela.linhas[validos.posicoes], numeros[validos.posicoes], validos, zeros
     )
 
 
@@ -153,7 +164,7 @@ class VariacaoTemporal(base.RegraBase[AlvoVariacao, MedicaoVariacao]):
     codigo = CODIGO
     nome = NOME
     seletor = NumericasNoTempo()
-    requisito = base.Todos((base.MinimoDeValores(MINIMO_LINHAS), _dois_periodos))
+    requisito = base.ForaOsZeros(base.Todos((base.MinimoDeValores(MINIMO_LINHAS), _dois_periodos)))
 
     def medir(self, alvo: AlvoVariacao) -> MedicaoVariacao:
         antes, depois = alvo.valores[: alvo.periodos.corte], alvo.valores[alvo.periodos.corte :]
@@ -172,11 +183,15 @@ class VariacaoTemporal(base.RegraBase[AlvoVariacao, MedicaoVariacao]):
             severidade=Severidade.ALTA,
             colunas=(alvo.nome,),
             textos=textos_blocos.r06_textos_variacao(
-                alvo.nome, periodos.data_do_meio, medicao.desvios
+                alvo.nome, periodos.data_do_meio, medicao.desvios, alvo.zeros
             ),
             exemplo=exemplo_de_valores(alvo.linhas[depois], alvo.valores[depois]),
             detalhes=textos_blocos.r06_detalhes_variacao(
-                periodos.referencia, medicao.desvios, (corte, alvo.n - corte), medicao.p_valor
+                periodos.referencia,
+                medicao.desvios,
+                (corte, alvo.n - corte),
+                medicao.p_valor,
+                alvo.zeros,
             ),
         )
 

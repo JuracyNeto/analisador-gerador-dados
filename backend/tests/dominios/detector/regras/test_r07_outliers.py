@@ -4,7 +4,7 @@ from scipy import stats
 
 from app.compartilhado.tipos import Severidade, TipoVariavel
 from app.dominios.detector.regras.r07_outliers import RegraOutliers
-from tests.dominios.detector.apoio import tabela_de, tabela_numerica
+from tests.dominios.detector.apoio import chuva, tabela_de, tabela_numerica
 
 
 def _normal(n: int = 200) -> np.ndarray:
@@ -75,7 +75,7 @@ def test_coluna_constante_nao_se_aplica() -> None:
 
 
 def test_metade_central_igual_nao_se_aplica() -> None:
-    valores = [0.0] * 30 + [1.0, 2.0, 3.0, 4.0, 50.0]
+    valores = [7.0] * 30 + [1.0, 2.0, 3.0, 4.0, 50.0]
 
     (nao_aplicada,) = RegraOutliers().executar(tabela_numerica(valores)).nao_aplicadas
 
@@ -143,3 +143,42 @@ def test_detalhes_dizem_a_assimetria_usada_nas_cercas() -> None:
     )
     assert aviso.detalhes.formula is not None
     assert "MC" in aviso.detalhes.formula
+
+
+def test_com_muitos_zeros_as_cercas_saem_dos_valores_acima_de_zero() -> None:
+    # Com 72% de zeros, Q1 = 0 e Q3 = 0,2: toda chuva acima de 0,8 mm virava extremo (D143).
+    resultado = RegraOutliers().executar(tabela_numerica(chuva(360, 100), nome="chuva"))
+
+    assert {aviso.severidade for aviso in resultado.avisos} <= {Severidade.INFO}
+
+
+def test_erro_de_digitacao_com_muitos_zeros_continua_extremo() -> None:
+    valores = chuva(360, 100)
+    valores[np.argmax(valores)] *= 10
+
+    (aviso,) = RegraOutliers().executar(tabela_numerica(valores, nome="chuva")).avisos
+
+    assert aviso.severidade == Severidade.ATENCAO
+    assert aviso.detalhes.valor.endswith("e 1 extremo")
+    assert aviso.detalhes.medida.endswith(", fora os 260 zeros")
+    assert aviso.exemplo is not None
+    assert "0" not in aviso.exemplo.valores
+
+
+def test_um_zero_no_meio_de_valores_altos_continua_distante() -> None:
+    valores = np.concatenate([_normal(), [0.0]])
+
+    (aviso,) = RegraOutliers().executar(tabela_numerica(valores, nome="peso")).avisos
+
+    assert aviso.severidade == Severidade.ATENCAO
+    assert aviso.exemplo is not None
+    assert "0" in aviso.exemplo.valores
+    assert "zeros" not in aviso.detalhes.medida
+
+
+def test_muitos_zeros_e_poucos_valores_acima_de_zero_nao_se_aplica() -> None:
+    valores = [0.0] * 30 + [1.0, 2.0, 3.0, 4.0, 50.0]
+
+    (nao_aplicada,) = RegraOutliers().executar(tabela_numerica(valores)).nao_aplicadas
+
+    assert nao_aplicada.motivo == "precisa de 10 valores ou mais; a coluna tem 5, fora os zeros"

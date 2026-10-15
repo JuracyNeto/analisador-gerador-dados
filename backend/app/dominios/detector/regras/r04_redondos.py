@@ -60,7 +60,7 @@ class RegraRedondos(base.RegraBase[base.AlvoColuna, MedicaoRedondos]):
     codigo = "R4"
     nome = "Valores redondos"
     seletor = base.NUMERICAS_SEM_ZEROS
-    requisito = base.DigitoFinalTestavel(MINIMO_VALORES)
+    requisito = base.ForaOsZeros(base.DigitoFinalTestavel(MINIMO_VALORES))
 
     def medir(self, alvo: base.AlvoColuna) -> MedicaoRedondos:
         casas = digitos.resolucao(alvo.valores)

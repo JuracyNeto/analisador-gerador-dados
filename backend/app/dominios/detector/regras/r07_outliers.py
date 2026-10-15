@@ -2,7 +2,8 @@
 
 Moderado = fora de 1,5·IQR ou |z| > 3 (informativo); extremo = fora de 3·IQR (atenção). As
 cercas se alargam do lado da cauda longa (boxplot ajustado de Hubert e Vandervieren, D136):
-valores de dinheiro e rajadas de vento têm cauda longa sem que a ponta seja erro.
+valores de dinheiro e rajadas de vento têm cauda longa sem que a ponta seja erro. Com muitos
+zeros (chuva por dia), as cercas saem só dos valores acima de zero (D143).
 """
 
 import math
@@ -80,9 +81,9 @@ class RegraOutliers(base.RegraBase[base.AlvoColuna, MedicaoDistantes]):
 
     codigo = "R7"
     nome = "Valores distantes"
-    seletor = base.COLUNAS_NUMERICAS
-    requisito = base.Todos(
-        (base.MinimoDeValores(MINIMO_VALORES), base.valores_variam, _centro_varia)
+    seletor = base.NUMERICAS_SEM_MUITOS_ZEROS
+    requisito = base.ForaOsZeros(
+        base.Todos((base.MinimoDeValores(MINIMO_VALORES), base.valores_variam, _centro_varia))
     )
 
     def medir(self, alvo: base.AlvoColuna) -> MedicaoDistantes:
@@ -119,5 +120,6 @@ class RegraOutliers(base.RegraBase[base.AlvoColuna, MedicaoDistantes]):
                 extremos,
                 (baixo, alto, *medicao.cercas(FATOR_EXTREMO)),
                 medicao.mc,
+                alvo.zeros,
             ),
         )

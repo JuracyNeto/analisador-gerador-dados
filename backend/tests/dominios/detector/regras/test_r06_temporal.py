@@ -4,7 +4,7 @@ import pandas as pd
 from app.compartilhado.tipos import Severidade, TipoVariavel
 from app.dominios.detector.regras.r06_temporal import RegraTemporal
 from app.dominios.detector.tabela import TabelaDetector
-from tests.dominios.detector.apoio import tabela_de
+from tests.dominios.detector.apoio import chuva, tabela_de
 
 TIPOS = {"data": TipoVariavel.DATA, "x": TipoVariavel.CONTINUA, "y": TipoVariavel.CONTINUA}
 
@@ -190,3 +190,45 @@ def test_variacao_menor_pode_ser_a_epoca_do_ano() -> None:
         "…houve mudança real no processo ou a época do ano muda os dados "
         "(ex.: chuva, vendas de fim de ano)."
     )
+
+
+def _tabela_chuva(antes: np.ndarray, depois: np.ndarray) -> TabelaDetector:
+    """Chuva em x (antes e depois da data do meio) e uma Normal em y."""
+    valores = np.concatenate([antes, depois])
+    return _tabela(valores, _normais(len(valores))[1])
+
+
+def test_estacao_seca_com_mais_zeros_nao_dispara() -> None:
+    # Com os zeros, DP 10,7 → 5,0 (razão 0,47); só nos dias com chuva, 12,2 → 11,3 (D144).
+    resultado = RegraTemporal().executar(_tabela_chuva(chuva(100, 60), chuva(100, 12)))
+
+    assert resultado.avisos == ()
+    assert resultado.verificada
+
+
+def test_chuva_inventada_depois_da_data_do_meio_dispara_fora_os_zeros() -> None:
+    depois = chuva(100, 30)
+    choveu = depois > 0
+    media = depois[choveu].mean()
+    depois[choveu] = np.round(np.maximum(media + (depois[choveu] - media) * 0.3, 0.2), 1)
+
+    (aviso,) = RegraTemporal().executar(_tabela_chuva(chuva(100, 50), depois)).avisos
+
+    # Com os zeros, a razão dos DPs é 0,51 e o alerta não saía; sem eles, 0,29.
+    assert aviso.severidade == Severidade.ALTA
+    assert aviso.colunas == ("x",)
+    assert "em relação aos anteriores (desvio padrão fora os zeros " in aviso.resumo
+    assert aviso.detalhes.medida.endswith(", fora os 120 zeros")
+    assert aviso.detalhes.valor.startswith("antes: ")
+    assert "(50 linhas) · depois: " in aviso.detalhes.valor
+    assert "(30 linhas)" in aviso.detalhes.valor
+    assert aviso.exemplo is not None
+    assert "0" not in aviso.exemplo.valores
+
+
+def test_poucos_dias_com_chuva_depois_da_data_do_meio_nao_se_aplica() -> None:
+    tabela = _tabela_chuva(chuva(100, 60), chuva(100, 5))
+
+    motivos = {item.motivo for item in RegraTemporal().executar(tabela).nao_aplicadas}
+
+    assert motivos == {"precisa de 10 linhas ou mais antes e depois da data do meio, fora os zeros"}
