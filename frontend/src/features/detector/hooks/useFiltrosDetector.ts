@@ -14,7 +14,7 @@ function alternada(filtros: FiltrosDetector, severidade: Severidade): FiltrosDet
   return { ...filtros, severidades };
 }
 
-/** Filtros e agrupamento na URL (D132): recarregar ou voltar mantém a escolha. */
+/** Filtros e agrupamento na URL (D140): recarregar ou voltar mantém a escolha. */
 export function useFiltrosDetector(): FiltrosNaUrl {
   const [busca, definirBusca] = useSearchParams();
   const mudar = (transformar: (atuais: FiltrosDetector) => FiltrosDetector) => {

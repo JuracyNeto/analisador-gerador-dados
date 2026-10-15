@@ -12,7 +12,7 @@ export interface GrupoAvisos {
 
 type Cabecalho = Omit<GrupoAvisos, 'avisos'>;
 
-/** R2 fala do par; R5 e as cópias da R6 (colunas vazio) falam de linhas inteiras (D132). */
+/** R2 fala do par; R5 e as cópias da R6 (colunas vazio) falam de linhas inteiras (D140). */
 function cabecalhoDaColuna(aviso: Aviso): Cabecalho {
   if (aviso.colunas.length === 0) {
     return { chave: '', titulo: TEXTOS_DETECTOR.linhasInteiras, mono: false };

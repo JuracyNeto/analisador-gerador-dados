@@ -1,4 +1,4 @@
-/** "Exportar estas linhas" (tela 7b): CSV montado no navegador, no formato que o app lê (D132). */
+/** "Exportar estas linhas" (tela 7b): CSV montado no navegador, no formato que o app lê (D140). */
 import { formatarCelula } from '../../shared/lib/formatarCelula';
 import type { Aviso, LinhaDados } from './tipos';
 

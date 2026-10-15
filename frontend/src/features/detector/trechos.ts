@@ -1,4 +1,4 @@
-/** Trechos de linhas que o drawer "Ver na tabela" busca e mostra (tela 7b, D132). */
+/** Trechos de linhas que o drawer "Ver na tabela" busca e mostra (tela 7b, D140). */
 
 /** Linhas de contexto antes e depois de cada linha destacada. */
 export const CONTEXTO = 3;

@@ -1,4 +1,4 @@
-/** Filtros da tela 7 na URL (`?sev=alta&sev=atencao&agrupar=regra`), como a tela 4 (D78, D132). */
+/** Filtros da tela 7 na URL (`?sev=alta&sev=atencao&agrupar=regra`), como a tela 4 (D78, D140). */
 import { ORDEM_SEVERIDADES } from '../../shared/ui/severidades';
 import type { Agrupamento, FiltrosDetector, Severidade } from './tipos';
 

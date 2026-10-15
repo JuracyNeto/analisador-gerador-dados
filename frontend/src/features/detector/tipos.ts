@@ -14,7 +14,7 @@ export type { Severidade };
 /** Como a lista de alertas é agrupada (Segmented "Agrupar por"). */
 export type Agrupamento = 'coluna' | 'regra';
 
-/** Filtros da tela 7, guardados na URL (D132). */
+/** Filtros da tela 7, guardados na URL (D140). */
 export interface FiltrosDetector {
   severidades: ReadonlySet<Severidade>;
   agrupar: Agrupamento;

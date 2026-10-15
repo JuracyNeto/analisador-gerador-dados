@@ -43,7 +43,7 @@ export function estadoDosTrechos(
     : { status: 'carregando' };
 }
 
-/** Linhas do exemplo do aviso com ±3 de contexto, um pedido por trecho (tela 7b, D132). */
+/** Linhas do exemplo do aviso com ±3 de contexto, um pedido por trecho (tela 7b, D140). */
 export function useLinhasDoAviso(datasetId: string, aviso: Aviso | null): LinhasDoAviso {
   const destacadas = aviso?.exemplo?.linhas ?? [];
   const trechos = trechosDoExemplo(destacadas);

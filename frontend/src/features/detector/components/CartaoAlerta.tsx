@@ -10,7 +10,7 @@ const T = TEXTOS_DETECTOR.cartao;
 
 interface PropsCartaoAlerta {
   aviso: Aviso;
-  /** O 1º alerta de cada grupo abre; os demais começam recolhidos, com "Ver explicação" (D132). */
+  /** O 1º alerta de cada grupo abre; os demais começam recolhidos, com "Ver explicação" (D140). */
   abertoInicial: boolean;
 }
 
