@@ -16,6 +16,7 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e
 ### Alterado
 - A Bivariada continua para o Gerador, o Gerador para o Detector, e o Relatório volta para o Detector.
 - Detector com menos alertas falsos em dados reais (testado com preços da ANP e uma estação do INMET): os zeros ficam fora dos valores redondos e do último dígito, que também pedem valores variados e não muito pequenos; o último dígito só avisa quando o excesso passa de 1,5× o esperado; o mesmo inteiro repetido não conta como mudança de formato; valores distantes levam em conta a cauda longa; em séries no tempo, a sequência fica informativa e a correlação por blocos em atenção; linhas sem nenhum número não contam como cópias; "pode ser normal" fala de preços e da época do ano.
+- Detector em colunas com muitos zeros (chuva por dia): valores distantes e a variação no tempo olham só os valores acima de zero, e a estação seca não dá mais suspeita alta; a Lei de Benford não conta os valores perto do passo do instrumento (chuva de 0,2 em 0,2 mm). Os motivos e os detalhes técnicos dizem o que ficou de fora.
 - Valores distantes: só os que passam de 3·IQR dão "atenção"; |z| > 3 sozinho fica informativo (antes, quase toda amostra Normal grande recebia "atenção").
 
 ### Corrigido

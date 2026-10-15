@@ -58,7 +58,7 @@ Execução prevista (um bloco por vez): M3.0 → M3.1 → M3.2 → M3.3 → M3.4
 - **pandas 3**: nunca comparar `dtype == object`. O `to_excel` do pandas grava horários como texto (use o openpyxl direto nos testes). Arquivos escritos por script: LF, UTF-8.
 - Números exibidos com o sinal de menos (−) (`formatar_com_sinal`, D107).
 - Aleatoriedade sempre com `np.random.default_rng(semente)`; nada de `np.random.seed` global. Testes com semente fixa.
-- Toda decisão nova vai para `docs/decisions.md` com o **próximo número livre** (D108–D114 no M3.0, D115–D117 no M3.1, D118–D121 no M3.2, D122–D131 no M3.3, D132 na leitura de reais e percentuais, D133–D139 nos ajustes com dados reais; próxima D140); os números abaixo são os previstos na ordem dos blocos. Toda entrega vai para `CHANGELOG.md` › *Não lançado*.
+- Toda decisão nova vai para `docs/decisions.md` com o **próximo número livre** (D108–D114 no M3.0, D115–D117 no M3.1, D118–D121 no M3.2, D122–D131 no M3.3, D132 na leitura de reais e percentuais, D133–D139 nos ajustes com dados reais, D140 na tela 7, D143–D145 nos zeros e no passo do instrumento; D141 e D142 reservadas ao M3.5 e à R1 com o restante; próxima D146); os números abaixo são os previstos na ordem dos blocos. Toda entrega vai para `CHANGELOG.md` › *Não lançado*.
 - Teste manual no preview (`.claude/launch.json`: `backend` 8000, `frontend` 5173) antes do push de cada bloco com tela; viewport fixa com `resize_window` e conferência pelo DOM. Depois de editar o backend, o `--reload` apaga os datasets: recarregue o exemplo antes de testar.
 - PR, merge e release só com o ok do usuário; merge só com os 3 checks verdes (`gh pr merge N --merge`).
 
@@ -210,6 +210,7 @@ ResultadoDetector {resumo: ResumoDetector, avisos: [Aviso], nao_aplicadas: [Regr
 | D133–D139 | Ajustes com dados reais (ANP e INMET): datas `AAAA/MM/DD`, R3, R4/R9, R5/R6, R7, séries no tempo (R2, R11) e amostra da ANP | correção |
 | D140 | Tela 7: filtros e agrupamento na URL; 1º alerta de cada grupo aberto; drawer com ±3 linhas de contexto; "Exportar estas linhas" gera o CSV no navegador | M3.4 |
 | D141 | Relatório com `gerador` (via `?gerado=`) e `detector` já no M3 (escolha do usuário em 10/10/2026); padrão = 8 seções | M3.5 |
+| D143–D145 | Ajustes com dados reais: R7 e R6 sem os zeros quando são muitos; R8 sem os valores perto do passo do instrumento | correção |
 
 ## Dependências novas
 - Nenhuma: `numpy` e `scipy` (KDE, Poisson, testes) já estão no backend; o frontend usa só componentes próprios.
