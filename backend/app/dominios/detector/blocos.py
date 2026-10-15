@@ -10,8 +10,12 @@ from itertools import pairwise
 
 import numpy as np
 
-LIMITE_ELEMENTOS = 1_000_000
-"""Embaralhamentos por lote: até 1 milhão de valores na matriz (memória limitada)."""
+LIMITE_ELEMENTOS = 250_000
+"""Embaralhamentos por lote: até 250 mil valores na matriz (D142).
+
+Matrizes menores cabem no cache do processador: com 1 milhão, a simulação ficava 2× mais lenta.
+O tamanho do lote não muda o sorteio.
+"""
 PARTES = 5
 
 
@@ -22,10 +26,12 @@ def _acumulada(matriz: np.ndarray) -> np.ndarray:
     return acumulada
 
 
-def _desvios(somas: np.ndarray, quadrados: np.ndarray, tamanho: int) -> np.ndarray:
-    """DP amostral de `tamanho` valores a partir de Σ(x − c) e Σ(x − c)²."""
-    variancias = (quadrados - somas * somas / tamanho) / (tamanho - 1)
-    return np.asarray(np.sqrt(np.clip(variancias, 0, None)), dtype="float64")
+def _variancias(somas: np.ndarray, quadrados: np.ndarray, tamanho: int) -> np.ndarray:
+    """Variância amostral (≥ 0) de `tamanho` valores a partir de Σ(x − c) e Σ(x − c)²."""
+    variancias: np.ndarray = quadrados - somas * somas / tamanho
+    variancias /= tamanho - 1
+    np.maximum(variancias, 0, out=variancias)
+    return variancias
 
 
 def afastamentos_do_resto(matriz: np.ndarray, k: int) -> np.ndarray:
@@ -37,15 +43,15 @@ def afastamentos_do_resto(matriz: np.ndarray, k: int) -> np.ndarray:
     numeros = np.asarray(matriz, dtype="float64")
     # Centrar na média geral evita perder precisão nas somas dos quadrados.
     centrados = numeros - numeros.mean()
-    acumulada, quadrados = _acumulada(centrados), _acumulada(centrados * centrados)
+    acumulada = _acumulada(centrados)
+    quadrados = _acumulada(np.square(centrados, out=centrados))
     soma, quadrado = acumulada[:, k:] - acumulada[:, :-k], quadrados[:, k:] - quadrados[:, :-k]
     resto = numeros.shape[1] - k
     soma_resto, quadrado_resto = acumulada[:, -1:] - soma, quadrados[:, -1:] - quadrado
-    desvio_resto = _desvios(soma_resto, quadrado_resto, resto)
-    diferencas = np.maximum(
-        np.abs(soma / k - soma_resto / resto),
-        np.abs(_desvios(soma, quadrado, k) - desvio_resto),
-    )
+    desvio_resto = np.sqrt(_variancias(soma_resto, quadrado_resto, resto))
+    # Menos cópias de matrizes grandes: as contas seguintes reaproveitam `diferencas`.
+    diferencas = np.abs(np.sqrt(_variancias(soma, quadrado, k)) - desvio_resto)
+    np.maximum(diferencas, np.abs(soma / k - soma_resto / resto), out=diferencas)
     afastamentos = np.full(diferencas.shape, np.inf)
     np.divide(diferencas, desvio_resto, out=afastamentos, where=desvio_resto > 0)
     return afastamentos
