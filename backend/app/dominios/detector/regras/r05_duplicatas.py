@@ -13,6 +13,7 @@ from app.dominios.detector.duplicatas import (
     GrupoRepetido,
     acaso_das_repeticoes,
     chaves_das_colunas,
+    linhas_com_numero,
     pares_quase_iguais,
     repetidos,
     seguidas_contra_o_acaso,
@@ -30,10 +31,14 @@ MINIMO_LINHAS = 2
 
 @dataclass(frozen=True, slots=True, eq=False)
 class AlvoArquivo:
-    """O arquivo todo: as colunas comparáveis (todas menos os identificadores, D50)."""
+    """O arquivo todo: as colunas comparáveis (todas menos os identificadores, D50).
+
+    Só as linhas com algum número entram (D138); o limite das quase iguais vale para o arquivo.
+    """
 
     linhas: np.ndarray
     colunas: tuple[ColunaDetector, ...]
+    linhas_no_arquivo: int
 
     @property
     def rotulo(self) -> None:
@@ -49,7 +54,7 @@ class AlvoArquivo:
 
     @property
     def compara_quase_iguais(self) -> bool:
-        return self.n <= LIMITE_QUASE and self.n_numericas > 0
+        return self.linhas_no_arquivo <= LIMITE_QUASE and self.n_numericas > 0
 
     def linha_como_texto(self, posicao: int) -> str:
         return textos.linha_como_texto([coluna.textos[posicao] for coluna in self.colunas])
@@ -67,7 +72,12 @@ class ArquivoTodo:
             for coluna in tabela.colunas.values()
             if coluna.tipo != TipoVariavel.IDENTIFICADOR
         )
-        return (AlvoArquivo(tabela.linhas, colunas),) if colunas else ()
+        if not colunas:
+            return ()
+        # Linhas sem nenhum número (estação desligada) não são cópias umas das outras (D138).
+        com_medida = linhas_com_numero(colunas)
+        recortadas = tuple(coluna.nas_linhas(com_medida) for coluna in colunas)
+        return (AlvoArquivo(tabela.linhas[com_medida], recortadas, tabela.n_linhas),)
 
 
 @dataclass(frozen=True, slots=True, eq=False)

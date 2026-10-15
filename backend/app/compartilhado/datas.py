@@ -12,14 +12,19 @@ from typing import Literal
 import pandas as pd
 
 type FormatoData = Literal[
-    "dd/mm/aaaa", "mm/dd/aaaa", "aaaa-mm-dd", "data_hora", "hora", "planilha"
+    "dd/mm/aaaa", "mm/dd/aaaa", "aaaa-mm-dd", "aaaa/mm/dd", "data_hora", "hora", "planilha"
 ]
 
 LIMITE_DIA_MES = 12
+HORAS_DO_DIA = 24
+MINUTOS_DA_HORA = 60
 DATA_DOS_HORARIOS = {"year": 1900, "month": 1, "day": 1}
 _DMY = r"(?P<a>\d{1,2})[/.-](?P<b>\d{1,2})[/.-](?P<ano>\d{4})"
 _ISO = r"(?P<ano>\d{4})-(?P<mes>\d{1,2})-(?P<dia>\d{1,2})"
+_ISO_BARRA = r"(?P<ano>\d{4})/(?P<mes>\d{1,2})/(?P<dia>\d{1,2})"
 _HORA = r"(?P<hora>\d{1,2}):(?P<minuto>\d{2})(?::(?P<segundo>\d{2}))?"
+# Horário das estações do INMET: "0000 UTC", "1330 UTC" (D133).
+_HORA_UTC = r"(?P<hora>\d{2}):?(?P<minuto>\d{2})(?::(?P<segundo>\d{2}))? UTC"
 _SEPARADOR_HORA = r"[ T]"
 
 
@@ -60,11 +65,16 @@ def _partes_iso(extraido: pd.DataFrame) -> dict[str, pd.Series]:
     }
 
 
+def _ate(valores: pd.Series, limite: int) -> pd.Series:
+    """Fora da faixa vira NaN: o pandas levaria 25:00 para o dia seguinte."""
+    return valores.where(valores < limite)
+
+
 def _partes_hora(extraido: pd.DataFrame) -> dict[str, pd.Series]:
     return {
-        "hour": _numeros(extraido, "hora"),
-        "minute": _numeros(extraido, "minuto"),
-        "second": _numeros(extraido, "segundo").fillna(0),
+        "hour": _ate(_numeros(extraido, "hora"), HORAS_DO_DIA),
+        "minute": _ate(_numeros(extraido, "minuto"), MINUTOS_DA_HORA),
+        "second": _ate(_numeros(extraido, "segundo").fillna(0), MINUTOS_DA_HORA),
     }
 
 
@@ -97,9 +107,12 @@ def _padrao(
 PADROES: tuple[_Padrao, ...] = (
     _padrao("dd/mm/aaaa", _DMY, _partes_dmy),
     _padrao("aaaa-mm-dd", _ISO, _partes_iso),
+    _padrao("aaaa/mm/dd", _ISO_BARRA, _partes_iso),
     _padrao("data_hora", f"{_DMY}{_SEPARADOR_HORA}{_HORA}", _com_hora(_partes_dmy)),
     _padrao("data_hora", f"{_ISO}{_SEPARADOR_HORA}{_HORA}", _com_hora(_partes_iso)),
+    _padrao("data_hora", f"{_ISO_BARRA} {_HORA}", _com_hora(_partes_iso)),
     _padrao("hora", _HORA, _partes_so_hora),
+    _padrao("hora", _HORA_UTC, _partes_so_hora),
 )
 
 
@@ -111,7 +124,10 @@ def _converter(textos: pd.Series, padrao: _Padrao) -> pd.Series:
     if not casaram.any():
         return datas
     partes = pd.DataFrame(padrao.partes(extraido[casaram]))
-    datas[casaram] = pd.to_datetime(partes, errors="coerce")
+    completas = partes.notna().all(axis="columns").to_numpy()
+    validas = casaram.to_numpy().copy()
+    validas[validas] = completas
+    datas[validas] = pd.to_datetime(partes[completas], errors="coerce").to_numpy()
     return datas
 
 

@@ -35,12 +35,19 @@ def cliente(servico_datasets: ServicoDatasets) -> Iterator[TestClient]:
     app.dependency_overrides.clear()
 
 
+def _importar(servico: ServicoDatasets, nome: str) -> str:
+    """Importa um arquivo de `fixtures/` no mesmo serviço que o `cliente` usa (segue pela API)."""
+    caminho = FIXTURES / nome
+    return servico.importar(caminho.read_bytes(), caminho.name, OpcoesLeitura()).dataset_id
+
+
 @pytest.fixture
 def cadastro_variado(servico_datasets: ServicoDatasets) -> str:
-    """Id do cadastro com tipos de dado variados (fixtures/cadastro_variado.txt, D131).
+    """Id do cadastro com tipos de dado variados (fixtures/cadastro_variado.txt, D131)."""
+    return _importar(servico_datasets, "cadastro_variado.txt")
 
-    Importado no mesmo serviço que o `cliente` usa: os testes podem seguir pela API.
-    """
-    caminho = FIXTURES / "cadastro_variado.txt"
-    importacao = servico_datasets.importar(caminho.read_bytes(), caminho.name, OpcoesLeitura())
-    return importacao.dataset_id
+
+@pytest.fixture
+def precos_anp(servico_datasets: ServicoDatasets) -> str:
+    """Id da amostra real de preços de combustíveis da ANP em Goiás (CC-BY, D139)."""
+    return _importar(servico_datasets, "anp_precos_go_2026_09.csv")

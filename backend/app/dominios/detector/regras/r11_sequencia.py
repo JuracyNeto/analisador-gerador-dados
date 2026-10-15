@@ -14,6 +14,7 @@ import numpy as np
 
 from app.compartilhado import estatistica
 from app.compartilhado.estatistica import ResultadoRuns
+from app.compartilhado.tipos import Severidade
 from app.dominios.detector import blocos, digitos, textos_blocos
 from app.dominios.detector.regras import base
 
@@ -117,12 +118,17 @@ def _p_do_padrao(medicao: MedicaoSequencia, padrao: str) -> float | None:
     return None if padrao == "parecidos" else medicao.runs.p_valor
 
 
+def _severidade(alvo: base.AlvoColuna) -> Severidade:
+    """Numa série no tempo, qualquer padrão é informativo: a ordem não é aleatória (D137)."""
+    return Severidade.ATENCAO if alvo.linha_do_tempo is None else Severidade.INFO
+
+
 class RegraSequencia(base.RegraBase[base.AlvoColuna, MedicaoSequencia]):
-    """Runs p < 0,01, progressão além do acaso ou |ρ₁| > 0,8 → atenção."""
+    """Runs p < 0,01, progressão além do acaso ou |ρ₁| > 0,8 → atenção (série no tempo: info)."""
 
     codigo = "R11"
     nome = "Sequência"
-    seletor = base.COLUNAS_NUMERICAS
+    seletor = base.NaLinhaDoTempo(base.COLUNAS_NUMERICAS)
     requisito = base.Todos((base.MinimoDeValores(MINIMO_VALORES), base.valores_variam))
 
     def medir(self, alvo: base.AlvoColuna) -> MedicaoSequencia:
@@ -151,9 +157,13 @@ class RegraSequencia(base.RegraBase[base.AlvoColuna, MedicaoSequencia]):
             medicao.autocorrelacao,
             medicao.progressoes.quantidade,
         )
+        escrito = textos_blocos.r11_textos(
+            alvo.nome, textos_blocos.r11_padrao(padrao, linhas), alvo.linha_do_tempo
+        )
         return base.conteudo_da_coluna(
             alvo,
-            textos_blocos.r11_textos(alvo.nome, textos_blocos.r11_padrao(padrao, linhas)),
+            escrito,
             textos_blocos.r11_detalhes(medidas, padrao, _p_do_padrao(medicao, padrao)),
             marcas,
+            _severidade(alvo),
         )

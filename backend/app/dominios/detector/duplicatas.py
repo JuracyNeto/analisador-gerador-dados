@@ -106,6 +106,17 @@ def chaves_das_colunas(colunas: Sequence[ColunaDetector]) -> ColunasComparaveis:
     )
 
 
+def linhas_com_numero(colunas: Sequence[ColunaDetector]) -> np.ndarray:
+    """Linhas com algum valor nas numéricas; sem numéricas, todas (R5, R6; D138).
+
+    Uma linha só com textos fixos (a hora de uma estação desligada) não é cópia de outra.
+    """
+    numericas = [coluna.numeros for coluna in colunas if coluna.numeros is not None]
+    if not numericas:
+        return np.ones(len(colunas[0].textos), dtype=bool)
+    return np.asarray(~np.isnan(np.column_stack(numericas)).all(axis=1), dtype=bool)
+
+
 # Grupos -------------------------------------------------------------------------------------
 
 

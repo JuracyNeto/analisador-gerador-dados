@@ -83,11 +83,14 @@ def _exemplo(alvo: base.AlvoPar, parte: slice) -> ExemploAviso:
 
 
 class RegraCorrelacaoBlocos(base.RegraBase[base.AlvoPar, MedicaoBlocos]):
-    """|r| − |média dos blocos| > 0,3 ou tirar um bloco baixa |r| em mais de 0,3 → alta."""
+    """|r| − |média dos blocos| > 0,3 ou tirar um bloco baixa |r| em mais de 0,3 → alta.
+
+    Numa série no tempo, os blocos são épocas diferentes: atenção (D137).
+    """
 
     codigo = "R2"
     nome = "Correlação por blocos"
-    seletor = base.PARES_NUMERICOS
+    seletor = base.NaLinhaDoTempo(base.PARES_NUMERICOS)
     requisito = base.Todos((_pares_suficientes, _blocos_variam))
 
     def medir(self, alvo: base.AlvoPar) -> MedicaoBlocos:
@@ -112,11 +115,15 @@ class RegraCorrelacaoBlocos(base.RegraBase[base.AlvoPar, MedicaoBlocos]):
         linhas = alvo.linhas[parte]
         sem = (int(linhas[0]), int(linhas[-1]), medicao.sem_bloco[medicao.destaque])
         media = float(np.mean(medicao.por_bloco))
+        no_tempo = alvo.linha_do_tempo
         return base.ConteudoAviso(
-            severidade=Severidade.ALTA,
+            severidade=Severidade.ALTA if no_tempo is None else Severidade.ATENCAO,
             colunas=(alvo.x, alvo.y),
             textos=textos_blocos.r02_textos(
-                (alvo.x, alvo.y), medicao.r, media, None if medicao.puxada_pela_media else sem
+                (alvo.x, alvo.y),
+                (medicao.r, media),
+                None if medicao.puxada_pela_media else sem,
+                no_tempo,
             ),
             exemplo=_exemplo(alvo, parte),
             detalhes=textos_blocos.r02_detalhes(medicao.r, medicao.por_bloco, sem),

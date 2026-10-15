@@ -33,6 +33,8 @@ def _csv_de_datas() -> bytes:
         (["07/10/2026", "08/10/2026"], "Datas no formato DD/MM/AAAA (ex.: 07/10/2026)."),
         (["10/27/2026", "10/28/2026"], "Datas no formato MM/DD/AAAA (ex.: 10/27/2026)."),
         (["2026-10-07", "2026-10-08"], "Datas no formato AAAA-MM-DD (ex.: 2026-10-07)."),
+        (["2025/01/01", "2025/01/02"], "Datas no formato AAAA/MM/DD (ex.: 2025/01/01)."),
+        (["0000 UTC", "0100 UTC"], "Horários (ex.: 0000 UTC)."),
         (["07/10/2026 08:30", "07/10/2026 09:00"], "Datas com horário (ex.: 07/10/2026 08:30)."),
         (["08:30", "17:05"], "Horários (ex.: 08:30)."),
         ([time(8, 30), time(9, 0)], "Horários (ex.: 08:30)."),

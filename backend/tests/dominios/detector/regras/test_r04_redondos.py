@@ -76,10 +76,10 @@ def test_excesso_pequeno_com_p_baixo_nao_dispara() -> None:
 @pytest.mark.parametrize(
     ("valores", "motivo"),
     [
-        (np.arange(30.0), "precisa de 50 valores ou mais; a coluna tem 30"),
+        (np.arange(1.0, 31.0), "precisa de 50 valores ou mais; a coluna tem 30"),
         (np.arange(10.0, 1010.0, 10.0), "o último dígito é sempre o mesmo"),
         (
-            np.tile(np.arange(11.0), 10),
+            np.tile(np.arange(1.0, 12.0), 10),
             "os valores variam pouco para o último dígito ser aleatório",
         ),
     ],
@@ -89,3 +89,22 @@ def test_nao_se_aplica(valores: np.ndarray, motivo: str) -> None:
 
     assert nao_aplicada.motivo == motivo
     assert nao_aplicada.frase == f"Valores redondos não verificada em nota: {motivo}."
+
+
+def test_zeros_nao_contam_como_valores_redondos() -> None:
+    # Vento calmo: muitos 0,0 entre velocidades com o último dígito uniforme (D134).
+    medidas = np.round(np.arange(0.1, 20.1, 0.1), 1)
+    valores = np.concatenate([np.zeros(60), medidas])
+
+    resultado = RegraRedondos().executar(tabela_numerica(valores, nome="vento"))
+
+    assert resultado.avisos == ()
+    assert resultado.verificada
+
+
+def test_coluna_com_poucos_valores_diferentes_nao_se_aplica() -> None:
+    descontos = np.tile([0.0, 5.0, 10.0, 12.5, 15.0], 60)
+
+    (nao_aplicada,) = RegraRedondos().executar(tabela_numerica(descontos)).nao_aplicadas
+
+    assert nao_aplicada.motivo == "a coluna tem só 4 valores diferentes, fora os zeros"
