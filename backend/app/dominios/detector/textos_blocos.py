@@ -33,12 +33,13 @@ def diferenca_percentual(fracao: float) -> str:
 
 
 def r01_textos(coluna: str, k: int, linhas: tuple[int, int], diferenca: float) -> TextosAviso:
-    """ "Um bloco de {k} linhas ({ini}–{fim}) tem média e desvio quase idênticos…" (spec 16)."""
+    """ "Um bloco de {k} linhas ({ini}–{fim}) tem média e desvio quase idênticos aos do
+    restante dos dados…" (spec 16, D142)."""
     return TextosAviso(
-        titulo=f"Bloco alinhado ao conjunto em {coluna}",
+        titulo=f"Bloco alinhado ao restante dos dados em {coluna}",
         resumo=(
             f"Um bloco de {k} linhas ({linhas[0]}–{linhas[1]}) tem média e desvio quase "
-            f"idênticos ao conjunto todo (diferença de {diferenca_percentual(diferenca)})."
+            f"idênticos aos do restante dos dados (diferença de {diferenca_percentual(diferenca)})."
         ),
         por_que=(
             "Em dados reais, pedaços pequenos variam bastante; um bloco que 'bate' tudo "
@@ -50,13 +51,13 @@ def r01_textos(coluna: str, k: int, linhas: tuple[int, int], diferenca: float) -
 
 
 def r01_texto_exemplo(
-    linhas: Sequence[int], bloco: tuple[float, float], geral: tuple[float, float]
+    linhas: tuple[int, int], bloco: tuple[float, float], resto: tuple[float, float]
 ) -> str:
-    """ "Linhas 181 a 200: média 1,702 (geral 1,701) · DP 0,0881 (geral 0,0884)"."""
+    """ "Linhas 401 a 421: média 71,12 (resto 71,12) · DP 11,94 (resto 11,94)"."""
     return (
-        f"{textos.faixa_de_linhas(linhas)}: média {textos.numero(bloco[0])} "
-        f"(geral {textos.numero(geral[0])}) · DP {textos.numero(bloco[1])} "
-        f"(geral {textos.numero(geral[1])})"
+        f"Linhas {linhas[0]} a {linhas[1]}: média {textos.numero(bloco[0])} "
+        f"(resto {textos.numero(resto[0])}) · DP {textos.numero(bloco[1])} "
+        f"(resto {textos.numero(resto[1])})"
     )
 
 
@@ -68,17 +69,17 @@ def distancia(valor: float) -> str:
 def r01_detalhes(
     k: int, distancias: tuple[float, float], simulacoes: int, p: float
 ) -> DetalhesAviso:
-    """dᵤ e dₛ da janela mais parecida e a proporção de embaralhamentos tão parecidos."""
+    """dᵤ e dₛ da janela mais parecida com o restante e a proporção de embaralhamentos."""
     embaralhamentos = textos.quantidade(simulacoes, "embaralhamento", "embaralhamentos")
     return DetalhesAviso(
         medida=(
             f"Janelas de {k} linhas seguidas: diferença de média (dᵤ) e de desvio (dₛ) "
-            "para o conjunto todo, em desvios padrão"
+            "para o restante das linhas, em desvios padrão do restante"
         ),
         valor=f"dᵤ = {distancia(distancias[0])} · dₛ = {distancia(distancias[1])}",
         limiar="dᵤ e dₛ < 0,01 e menos de 1% dos embaralhamentos com uma janela tão parecida",
         teste=f"Simulação: {embaralhamentos} da coluna (semente fixa)",
-        formula="dᵤ = |x̄_bloco − x̄| / s · dₛ = |s_bloco − s| / s",
+        formula="dᵤ = |x̄_bloco − x̄_resto| / s_resto · dₛ = |s_bloco − s_resto| / s_resto",
         p_valor=p,
         p_em_palavras=textos.p_em_palavras(p),
     )

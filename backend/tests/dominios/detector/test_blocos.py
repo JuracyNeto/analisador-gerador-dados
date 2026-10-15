@@ -11,38 +11,47 @@ def _valores(n: int = 200, semente: int = 0) -> np.ndarray:
     return np.random.default_rng(semente).normal(70, 10, n)
 
 
-def test_janelas_batem_com_um_laco_simples() -> None:
+def _afastamento_por_laco(valores: np.ndarray, k: int) -> list[float]:
+    """max(dᵤ, dₛ) de cada janela contra o restante, um por vez."""
+    afastamentos = []
+    for inicio in range(len(valores) - k + 1):
+        janela = valores[inicio : inicio + k]
+        resto = np.delete(valores, np.arange(inicio, inicio + k))
+        desvio = resto.std(ddof=1)
+        d_media = abs(janela.mean() - resto.mean()) / desvio
+        afastamentos.append(max(d_media, abs(janela.std(ddof=1) - desvio) / desvio))
+    return afastamentos
+
+
+def test_afastamentos_do_resto_batem_com_um_laco_simples() -> None:
     valores = _valores()
 
-    medias, desvios = blocos.janelas(valores, 15)
+    afastamentos = blocos.afastamentos_do_resto(np.vstack([valores, valores[::-1]]), 15)
 
-    esperadas = [valores[i : i + 15].mean() for i in range(len(valores) - 14)]
-    desvios_esperados = [valores[i : i + 15].std(ddof=1) for i in range(len(valores) - 14)]
-    np.testing.assert_allclose(medias, esperadas, rtol=1e-10)
-    np.testing.assert_allclose(desvios, desvios_esperados, rtol=1e-8)
+    np.testing.assert_allclose(afastamentos[0], _afastamento_por_laco(valores, 15), rtol=1e-8)
+    np.testing.assert_allclose(afastamentos[1], _afastamento_por_laco(valores[::-1], 15), rtol=1e-8)
 
 
-def test_janelas_de_valores_iguais_tem_desvio_zero() -> None:
-    _, desvios = blocos.janelas(np.full(30, 1.7), 10)
+def test_janela_com_a_media_e_o_desvio_do_resto_tem_afastamento_zero() -> None:
+    resto = _valores(380)
+    z = np.random.default_rng(5).normal(0, 1, 20)
+    janela = resto.mean() + resto.std(ddof=1) * (z - z.mean()) / z.std(ddof=1)
 
-    np.testing.assert_allclose(desvios, 0.0, atol=1e-12)
+    afastamentos = blocos.afastamentos_do_resto(np.concatenate([resto, janela])[np.newaxis], 20)
 
-
-def test_afastamento_e_o_maior_entre_media_e_desvio() -> None:
-    afastamento = blocos.afastamento(np.array([71.0, 70.0]), np.array([10.0, 12.0]), 70.0, 10.0)
-
-    np.testing.assert_allclose(afastamento, [0.1, 0.2])
+    assert afastamentos[0, -1] < 1e-9
 
 
-def test_melhor_janela_de_cada_linha_da_matriz() -> None:
-    valores = _valores()
-    media, desvio = valores.mean(), valores.std(ddof=1)
-    medias, desvios = blocos.janelas(valores, 10)
+def test_resto_sem_variacao_nao_vira_a_melhor_janela() -> None:
+    """Com o resto constante, s_resto = 0: a janela fica infinitamente longe (sem NaN)."""
+    valores = np.zeros(42)
+    valores[20:22] = (1.0, 2.0)
 
-    melhores = blocos.menor_afastamento(np.vstack([valores, valores[::-1]]), 10, media, desvio)
+    afastamentos = blocos.afastamentos_do_resto(valores[np.newaxis], 10)
 
-    esperado = blocos.afastamento(medias, desvios, media, desvio).min()
-    np.testing.assert_allclose(melhores, [esperado, esperado])
+    assert not np.isnan(afastamentos).any()
+    assert np.isinf(afastamentos[0, 12:21]).all()
+    assert np.isfinite(afastamentos[0, :12]).all()
 
 
 def test_embaralhados_vem_em_lotes_com_os_mesmos_valores() -> None:
@@ -79,11 +88,10 @@ def test_dividir_em_cinco_blocos_seguidos(n: int, tamanhos: list[int]) -> None:
 
 def test_mil_embaralhamentos_de_dez_mil_valores_sao_rapidos() -> None:
     valores = _valores(10_000)
-    media, desvio = valores.mean(), valores.std(ddof=1)
     rng = np.random.default_rng(0)
 
     inicio = time.perf_counter()
     for lote in blocos.embaralhados(valores, 1_000, rng):
-        blocos.menor_afastamento(lote, 500, media, desvio)
+        blocos.afastamentos_do_resto(lote, 500).min(axis=1)
 
     assert time.perf_counter() - inicio < 3.0

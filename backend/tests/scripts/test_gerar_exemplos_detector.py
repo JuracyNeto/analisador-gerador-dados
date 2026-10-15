@@ -20,13 +20,13 @@ def test_script_gera_os_arquivos_versionados(tmp_path: Path) -> None:
         assert caminho.read_bytes() == (EXEMPLOS / caminho.name).read_bytes(), caminho.name
 
 
-def test_bloco_alinhado_tem_a_media_e_o_desvio_do_conjunto() -> None:
+def test_bloco_alinhado_tem_a_media_e_o_desvio_do_restante() -> None:
+    """Média exata e DP a menos de 0,05% do restante (no conjunto todo, o DP fica ~0,13% abaixo)."""
     script = carregar_script("gerar_exemplos_detector")
     resto, _ = script.pessoas(np.random.default_rng(1), 380)
     resto[0] += (19 - int(resto.sum()) % 19) % 19
 
     bloco = script.bloco_alinhado(resto, 20, 7)
 
-    conjunto = np.concatenate([resto, bloco])
-    assert bloco.sum() * 20 == conjunto.sum()
-    assert abs(bloco.std(ddof=1) - conjunto.std(ddof=1)) / conjunto.std(ddof=1) < 0.001
+    assert bloco.sum() * 380 == resto.sum() * 20
+    assert abs(bloco.std(ddof=1) - resto.std(ddof=1)) / resto.std(ddof=1) < 0.0005
