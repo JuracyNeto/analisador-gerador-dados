@@ -124,3 +124,19 @@ def test_valor_digitado_errado_que_derruba_r_nao_dispara() -> None:
     x[76] = 120.0
 
     assert RegraCorrelacaoBlocos().executar(_tabela(x, y)).avisos == ()
+
+
+def test_relacao_que_muda_numa_serie_no_tempo_fica_em_atencao() -> None:
+    # Temperatura mínima × média: a relação muda com as estações do ano (D137).
+    x, y = _puxada()
+    dados = pd.DataFrame(
+        {"dia": pd.date_range("2025-01-01", periods=len(x)), "x": np.round(x, 2), "y": y}
+    )
+    tipos = {"dia": TipoVariavel.DATA} | CONTINUAS
+
+    (aviso,) = RegraCorrelacaoBlocos().executar(tabela_de(dados, tipos)).avisos
+
+    assert aviso.severidade == Severidade.ATENCAO
+    assert aviso.pode_ser_normal == (
+        "…a relação muda com o tempo (as linhas seguem a coluna dia; ex.: estações do ano)."
+    )

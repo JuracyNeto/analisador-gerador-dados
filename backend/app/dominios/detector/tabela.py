@@ -1,7 +1,7 @@
 """Entrada pura das regras do detector: a tabela já convertida pelo serviço (D118)."""
 
 from collections.abc import Collection, Mapping, Sequence
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 
 import numpy as np
 import pandas as pd
@@ -29,6 +29,15 @@ class ColunaDetector:
     textos: tuple[str | None, ...]
     datas: np.ndarray | None = None
     forma: FormaColuna | None = None
+
+    def nas_linhas(self, mascara: np.ndarray) -> "ColunaDetector":
+        """Só as linhas marcadas (na ordem da tabela)."""
+        return replace(
+            self,
+            numeros=None if self.numeros is None else self.numeros[mascara],
+            textos=tuple(texto for texto, fica in zip(self.textos, mascara, strict=True) if fica),
+            datas=None if self.datas is None else self.datas[mascara],
+        )
 
 
 @dataclass(frozen=True, slots=True, eq=False)

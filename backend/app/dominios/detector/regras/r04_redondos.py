@@ -9,7 +9,6 @@ from app.dominios.detector import digitos, textos
 from app.dominios.detector.regras import base
 
 MINIMO_VALORES = 50
-RAZAO_MINIMA = 1.5
 
 
 @dataclass(frozen=True, slots=True)
@@ -45,7 +44,7 @@ class MedicaoRedondos:
 
     @property
     def acima_do_esperado(self) -> bool:
-        return self.p_valor < base.LIMIAR_P and self.razao >= RAZAO_MINIMA
+        return self.p_valor < base.LIMIAR_P and self.razao >= digitos.RAZAO_MINIMA
 
 
 def _medir(finais: np.ndarray, casas: int, arredondamento: Arredondamento) -> MedicaoRedondos:
@@ -60,7 +59,7 @@ class RegraRedondos(base.RegraBase[base.AlvoColuna, MedicaoRedondos]):
 
     codigo = "R4"
     nome = "Valores redondos"
-    seletor = base.COLUNAS_NUMERICAS
+    seletor = base.NUMERICAS_SEM_ZEROS
     requisito = base.DigitoFinalTestavel(MINIMO_VALORES)
 
     def medir(self, alvo: base.AlvoColuna) -> MedicaoRedondos:

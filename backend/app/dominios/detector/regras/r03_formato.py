@@ -96,7 +96,11 @@ class RegraFormato(base.RegraBase[base.AlvoColuna, MedicaoFormato]):
 
     def medir(self, alvo: base.AlvoColuna) -> MedicaoFormato:
         inteiros = np.abs(alvo.valores - np.round(alvo.valores)) < TOLERANCIA
-        return MedicaoFormato(1 - float(inteiros.mean()), padrao_dos_inteiros(inteiros))
+        # O mesmo inteiro em linhas seguidas conta uma vez: 0, 0, 0 de vento calmo é repetição,
+        # não mudança de formato (D135).
+        repete_o_anterior = np.concatenate(([False], np.diff(alvo.valores) == 0))
+        padrao = padrao_dos_inteiros(inteiros & ~repete_o_anterior)
+        return MedicaoFormato(1 - float(inteiros.mean()), padrao)
 
     def dispara(self, medicao: MedicaoFormato) -> bool:
         decimais = medicao.proporcao_decimais >= MINIMO_DECIMAIS

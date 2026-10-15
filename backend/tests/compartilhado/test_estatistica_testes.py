@@ -94,3 +94,24 @@ def test_poisson_unilateral_e_a_cauda_superior() -> None:
 def test_poisson_unilateral_sem_casos_ou_sem_media() -> None:
     assert estatistica.teste_poisson_unilateral(0, 2.0) == 1
     assert estatistica.teste_poisson_unilateral(2, 0.0) == 0
+
+
+def test_medcouple_de_dados_simetricos_e_zero() -> None:
+    simetricos = np.array([-3.0, -2.0, -1.0, 0.0, 1.0, 2.0, 3.0])
+
+    assert estatistica.medcouple(simetricos) == pytest.approx(0.0)
+
+
+def test_medcouple_mede_a_cauda_longa_e_troca_de_sinal_com_os_valores() -> None:
+    cauda_longa = np.random.default_rng(1).exponential(10, 500)
+
+    mc = estatistica.medcouple(cauda_longa)
+
+    assert mc > 0.2
+    assert estatistica.medcouple(-cauda_longa) == pytest.approx(-mc)
+
+
+def test_medcouple_de_muitos_valores_usa_uma_amostra_fixa() -> None:
+    valores = np.random.default_rng(2).lognormal(0, 1, 50_000)
+
+    assert estatistica.medcouple(valores) == estatistica.medcouple(valores.copy())

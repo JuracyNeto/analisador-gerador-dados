@@ -7,8 +7,8 @@ from tests.dominios.detector.apoio import tabela_de, tabela_numerica
 
 
 def _decimais(n: int = 100) -> np.ndarray:
-    """Valores sempre com casas decimais: 50,25 · 50,75 · 51,25…"""
-    return 50 + np.arange(n) * 0.5 + 0.25
+    """Valores sempre com casas decimais e inteiros diferentes: 50,25 · 51,75 · 53,25…"""
+    return 50 + np.arange(n) * 1.5 + 0.25
 
 
 def _com_inteiros(posicoes: list[int] | np.ndarray) -> np.ndarray:
@@ -32,7 +32,7 @@ def test_inteiros_juntos_no_meio_de_decimais_disparam_atencao() -> None:
     )
     assert aviso.exemplo is not None
     assert aviso.exemplo.linhas == tuple(range(40, 50))
-    assert aviso.exemplo.texto.startswith("Linhas 40 a 49: 69, 70, 70")
+    assert aviso.exemplo.texto.startswith("Linhas 40 a 49: 108, 110, 111")
 
 
 def test_inteiros_em_posicoes_regulares_disparam() -> None:
@@ -55,6 +55,17 @@ def test_inteiros_espalhados_ao_acaso_nao_disparam() -> None:
 
     assert resultado.avisos == ()
     assert resultado.verificada
+
+
+def test_o_mesmo_inteiro_repetido_nao_conta_como_grupo() -> None:
+    # Vento calmo (0, 0, 0…) ou noite estável (20, 20, 20…) não é mudança de formato (D135).
+    valores = _decimais()
+    valores[30:40] = 0.0
+    valores[60:67] = 20.0
+
+    resultado = RegraFormato().executar(tabela_numerica(valores, nome="vento"))
+
+    assert resultado.avisos == ()
 
 
 def test_quatro_inteiros_seguidos_nao_bastam() -> None:

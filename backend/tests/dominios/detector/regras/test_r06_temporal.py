@@ -164,3 +164,29 @@ def test_sem_data_que_acompanhe_as_linhas_usa_a_primeira() -> None:
     (aviso,) = RegraTemporal().executar(_duas_datas(primeira, segunda, x)).avisos
 
     assert aviso.detalhes.medida.endswith("(data do meio de nascimento)")
+
+
+def test_linhas_sem_nenhuma_medida_nao_contam_como_copias() -> None:
+    # Estação desligada: as linhas só com a data e a hora não são cópias (D138).
+    x, y = _normais()
+    x[10:14], y[10:14] = np.nan, np.nan
+    x[60:90], y[60:90] = np.nan, np.nan
+    dados = pd.DataFrame(
+        {"data": _semanas(), "hora": ["0000 UTC", "1200 UTC"] * 50, "x": np.round(x, 2), "y": y}
+    )
+
+    resultado = RegraTemporal().executar(tabela_de(dados, TIPOS | {"hora": TipoVariavel.NOMINAL}))
+
+    assert resultado.avisos == ()
+
+
+def test_variacao_menor_pode_ser_a_epoca_do_ano() -> None:
+    x, y = _normais()
+    x[50:] = 50 + (x[50:] - 50) * 0.3
+
+    (aviso,) = RegraTemporal().executar(_tabela(x, y)).avisos
+
+    assert aviso.pode_ser_normal == (
+        "…houve mudança real no processo ou a época do ano muda os dados "
+        "(ex.: chuva, vendas de fim de ano)."
+    )

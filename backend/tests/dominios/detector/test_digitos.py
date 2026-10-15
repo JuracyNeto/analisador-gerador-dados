@@ -63,3 +63,31 @@ def test_valores_com_pouca_variacao_nao_tem_ultimo_digito_aleatorio() -> None:
     motivo = digitos.motivo_digito_final(notas, 50)
 
     assert motivo == "os valores variam pouco para o último dígito ser aleatório"
+
+
+def test_coluna_com_poucos_valores_diferentes_nao_tem_digito_testavel() -> None:
+    descontos = np.tile([5.0, 10.0, 12.5, 15.0], 30)
+
+    motivo = digitos.motivo_digito_final(descontos, 50)
+
+    assert motivo == "a coluna tem só 4 valores diferentes"
+
+
+def _chuva(media: float) -> np.ndarray:
+    """Quantis de uma Exponencial na grade do pluviômetro (de 0,2 em 0,2 mm, sem zeros)."""
+    quantis = -media * np.log(1 - (np.arange(1, 301) - 0.5) / 300)
+    return np.round(0.2 * (np.floor(quantis / 0.2) + 1), 1)
+
+
+@pytest.mark.parametrize("media", [1.5, 4.0])
+def test_valores_pequenos_perto_do_passo_nao_tem_ultimo_digito_aleatorio(media: float) -> None:
+    # Por hora, o 1º quartil é 0,6 mm; por dia, 1,2 mm: 3 e 6 passos do pluviômetro (D134).
+    motivo = digitos.motivo_digito_final(_chuva(media), 50)
+
+    assert motivo == "os valores são pequenos demais para o último dígito ser aleatório"
+
+
+def test_passo_da_medida() -> None:
+    assert digitos.passo_da_medida(np.array([0.2, 1.4, 3.0]), 1) == 2
+    assert digitos.passo_da_medida(np.array([1.62, 1.7]), 2) == 2
+    assert digitos.passo_da_medida(np.array([70.1, 70.4]), 1) == 1

@@ -32,6 +32,7 @@ MOTIVOS_DATA: dict[FormatoData, str] = {
     "dd/mm/aaaa": "Datas no formato DD/MM/AAAA (ex.: {exemplo}).",
     "mm/dd/aaaa": "Datas no formato MM/DD/AAAA (ex.: {exemplo}).",
     "aaaa-mm-dd": "Datas no formato AAAA-MM-DD (ex.: {exemplo}).",
+    "aaaa/mm/dd": "Datas no formato AAAA/MM/DD (ex.: {exemplo}).",
     "data_hora": "Datas com horário (ex.: {exemplo}).",
     "hora": "Horários (ex.: {exemplo}).",
     "planilha": "Datas da planilha (ex.: {exemplo}).",

@@ -101,13 +101,18 @@ def poucos_pares(minimo: int, n: int) -> str:
 
 
 def r02_textos(
-    par: tuple[str, str], r: float, media_blocos: float, sem_bloco: tuple[int, int, float] | None
+    par: tuple[str, str],
+    correlacoes: tuple[float, float],
+    sem_bloco: tuple[int, int, float] | None,
+    linha_do_tempo: str | None,
 ) -> TextosAviso:
     """ "A correlação geral entre {x} e {y} é {r}, mas a média dos blocos é só {rb}." (spec 16).
 
-    Quando o que dispara é um bloco só, o resumo diz quanto r fica sem ele.
+    `correlacoes` = (r geral, média dos blocos). Quando o que dispara é um bloco só, o resumo
+    diz quanto r fica sem ele; numa série no tempo, o "pode ser normal" fala das épocas (D137).
     """
     x, y = par
+    r, media_blocos = correlacoes
     if sem_bloco is None:
         contraste = f"a média dos blocos é só {correlacao(media_blocos)}"
     else:
@@ -120,7 +125,12 @@ def r02_textos(
             "Se poucos dados novos fazem a correlação subir muito, "
             "eles podem ter sido adicionados para 'puxar' a relação."
         ),
-        pode_ser_normal="…os blocos têm faixas de valores muito diferentes.",
+        pode_ser_normal=(
+            "…os blocos têm faixas de valores muito diferentes."
+            if linha_do_tempo is None
+            else f"…a relação muda com o tempo (as linhas seguem a coluna {linha_do_tempo}; "
+            "ex.: estações do ano)."
+        ),
         o_que_fazer=(
             "Compare os blocos e confira de onde vieram as linhas que mais mudam a correlação."
         ),
@@ -154,6 +164,10 @@ SEM_DATA = "o arquivo não tem uma coluna de data"
 SO_DATAS = "o arquivo só tem datas e identificadores"
 POR_QUE_R6 = "Dados novos que copiam os antigos ou variam pouco demais podem ter sido inseridos."
 PODE_SER_NORMAL_R6 = "…houve mudança real no processo."
+PODE_SER_NORMAL_R6_VARIACAO = (
+    "…houve mudança real no processo ou a época do ano muda os dados "
+    "(ex.: chuva, vendas de fim de ano)."
+)
 
 
 def data_do_meio(data: str, coluna: str) -> str:
@@ -175,7 +189,7 @@ def r06_textos_variacao(coluna: str, data: str, desvios: tuple[float, float]) ->
             f"(desvio padrão {depois}; antes, {antes})."
         ),
         por_que=POR_QUE_R6,
-        pode_ser_normal=PODE_SER_NORMAL_R6,
+        pode_ser_normal=PODE_SER_NORMAL_R6_VARIACAO,
         o_que_fazer=f"Confira como os dados depois de {data} foram coletados.",
     )
 
@@ -316,13 +330,21 @@ def r11_padrao(padrao: str, linhas: tuple[int, int]) -> str:
     return R11_PADROES[padrao]
 
 
-def r11_textos(coluna: str, padrao: str) -> TextosAviso:
-    """ "A ordem dos valores de {col} segue um padrão ({padrao})." (spec 16)."""
+def r11_textos(coluna: str, padrao: str, linha_do_tempo: str | None) -> TextosAviso:
+    """ "A ordem dos valores de {col} segue um padrão ({padrao})." (spec 16).
+
+    Numa série no tempo, o "pode ser normal" diz a coluna de data que as linhas seguem (D137).
+    """
     return TextosAviso(
         titulo=f"Ordem dos valores segue um padrão em {coluna}",
         resumo=f"A ordem dos valores de {coluna} segue um padrão ({padrao}).",
         por_que="Em dados reais, a sequência costuma parecer aleatória.",
-        pode_ser_normal="…os dados estão ordenados por tempo ou por outra coluna.",
+        pode_ser_normal=(
+            "…os dados estão ordenados por tempo ou por outra coluna."
+            if linha_do_tempo is None
+            else f"…é uma série no tempo (as linhas seguem a coluna {linha_do_tempo}): "
+            "valores vizinhos costumam ser parecidos."
+        ),
         o_que_fazer=(
             "Confira se o arquivo foi ordenado ou se esses valores foram digitados em sequência."
         ),

@@ -74,7 +74,9 @@ def test_vendas_com_correlacao_puxada_e_semanas_copiadas(cliente: TestClient) ->
     avisos = _por_regra(_detector(cliente, "vendas_correlacao_puxada.txt"))
 
     puxada = avisos[("R2", ("anuncios", "vendas"))]
-    assert puxada["severidade"] == "alta"
+    # As semanas estão em ordem (série no tempo): a R2 fica em atenção (D137).
+    assert puxada["severidade"] == "atencao"
+    assert "as linhas seguem a coluna data" in puxada["pode_ser_normal"]
     assert puxada["exemplo"]["linhas"][0] == 97
     copias = avisos[("R6", ())]
     assert copias["severidade"] == "alta"

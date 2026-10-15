@@ -13,10 +13,12 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e
 
 ### Alterado
 - A Bivariada continua para o Gerador, e o Relatório volta para ele.
+- Detector com menos alertas falsos em dados reais (testado com preços da ANP e uma estação do INMET): os zeros ficam fora dos valores redondos e do último dígito, que também pedem valores variados e não muito pequenos; o último dígito só avisa quando o excesso passa de 1,5× o esperado; o mesmo inteiro repetido não conta como mudança de formato; valores distantes levam em conta a cauda longa; em séries no tempo, a sequência fica informativa e a correlação por blocos em atenção; linhas sem nenhum número não contam como cópias; "pode ser normal" fala de preços e da época do ano.
 - Valores distantes: só os que passam de 3·IQR dão "atenção"; |z| > 3 sozinho fica informativo (antes, quase toda amostra Normal grande recebia "atenção").
 - Bloco alinhado: cada bloco de linhas seguidas é comparado com o restante dos dados (antes, com o conjunto todo); valores gerados com a média e o desvio de uma coluna e anexados a ela passam a ser encontrados sempre (antes, em cerca de metade das vezes). O exemplo mostra a média e o desvio do bloco ao lado dos do restante.
 
 ### Corrigido
+- Datas no formato AAAA/MM/DD e horários como `0000 UTC` (arquivos do INMET) são reconhecidos; horários impossíveis (25:00) não contam mais.
 - Valores em reais (`R$ 1.234,56`, `−R$ 10,00`) e percentuais (`12,5%`) viram número (antes, código ou categorias); o percentual fica na escala do arquivo (12,5), o motivo diz a unidade ("Valores em reais (ex.: R$ 1.234,56).") e a prévia mostra as células como no arquivo.
 - Arquivos com `;` e duas ou mais colunas com vírgula decimal (ex.: `1,5;2,25`) eram lidos com a vírgula como separador.
 
