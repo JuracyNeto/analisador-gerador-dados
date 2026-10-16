@@ -1,0 +1,44 @@
+.resultado {
+  display: flex;
+  flex-direction: column;
+  gap: var(--esp-16);
+  min-width: 0;
+}
+.diferenca {
+  color: var(--cor-texto-2);
+}
+.graficoExplicacao {
+  display: grid;
+  grid-template-columns: minmax(0, 1.6fr) minmax(220px, 1fr);
+  gap: var(--esp-24);
+  align-items: start;
+}
+.explicacao {
+  display: flex;
+  flex-direction: column;
+  gap: var(--esp-8);
+  font-size: 14.5px;
+  line-height: 1.6;
+}
+.explicacao p {
+  margin: 0;
+}
+.tituloExplicacao {
+  display: flex;
+  align-items: center;
+  gap: var(--esp-8);
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+}
+.acoes {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: var(--esp-12);
+}
+@media (max-width: 1100px) {
+  .graficoExplicacao {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

@@ -1,0 +1,21 @@
+/* Tela 7a: chips "Mostrar" à esquerda e "Agrupar por" à direita. */
+.barra {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--esp-12) var(--esp-24);
+}
+
+.grupo {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--esp-12);
+}
+
+.rotulo {
+  color: var(--cor-texto-2);
+  font-size: 13px;
+  font-weight: 500;
+}

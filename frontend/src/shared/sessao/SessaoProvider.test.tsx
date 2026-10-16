@@ -6,10 +6,20 @@ import { useSessao } from './useSessao';
 
 function Painel() {
   const { dataset, definirDataset, encerrar, etapasVisitadas, marcarVisitada } = useSessao();
+  const { ultimoGerado, definirUltimoGerado } = useSessao();
   return (
     <div>
       <p>{dataset ? dataset.nomeArquivo : 'sem arquivo'}</p>
       <p>visitadas: {[...etapasVisitadas].join(',')}</p>
+      <p>gerado: {ultimoGerado?.descricao ?? 'nenhum'}</p>
+      <button
+        type="button"
+        onClick={() => {
+          definirUltimoGerado({ id: 'g1', descricao: 'peso_kg · 500 valores' });
+        }}
+      >
+        gerar
+      </button>
       <button
         type="button"
         onClick={() => {
@@ -94,4 +104,16 @@ it('encerrar limpa a sessão', async () => {
 
   expect(screen.getByText('sem arquivo')).toBeInTheDocument();
   expect(sessaoSalva()).toEqual({ dataset: null, etapasVisitadas: [] });
+});
+
+it('trocar de dataset mantém a última geração; encerrar limpa', async () => {
+  renderizar();
+  await userEvent.click(screen.getByRole('button', { name: 'gerar' }));
+
+  await userEvent.click(screen.getByRole('button', { name: 'importar' }));
+
+  expect(screen.getByText('gerado: peso_kg · 500 valores')).toBeInTheDocument();
+  expect(sessaoSalva()).toMatchObject({ ultimoGerado: { id: 'g1' } });
+  await userEvent.click(screen.getByRole('button', { name: 'encerrar' }));
+  expect(screen.getByText('gerado: nenhum')).toBeInTheDocument();
 });

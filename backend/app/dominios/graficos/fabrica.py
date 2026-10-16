@@ -9,11 +9,17 @@ from app.compartilhado.numeros import formatar_percentual
 from app.compartilhado.tipos import TipoVariavel
 from app.dominios.graficos import figuras, textos
 from app.dominios.graficos import figuras_bivariadas as desenhos_bivariados
+from app.dominios.graficos import figuras_detector as desenhos_detector
 from app.dominios.graficos import figuras_forma as desenhos_forma
+from app.dominios.graficos import figuras_gerador as desenhos_gerador
 from app.dominios.graficos.entradas import (
     DadosBivariados,
+    DadosBlocos,
+    DadosDigitos,
     DadosForma,
     DadosMatriz,
+    DadosParesGerados,
+    DadosSobreposicao,
     DadosUnivariados,
     FiguraPronta,
 )
@@ -49,6 +55,11 @@ MOLDES = {
     "dispersao": _Molde("dispersao", "dispersao", textos.PORQUE["dispersao"], True),
     "residuos": _Molde("residuos", "residuos", textos.PORQUE["residuos"]),
     "matriz": _Molde("matriz", "matriz", textos.PORQUE["matriz"]),
+    "sobreposicao": _Molde("sobreposicao", "sobreposicao", textos.PORQUE["sobreposicao"], True),
+    "pares_gerados": _Molde("dispersao", "dispersao", textos.PORQUE["pares_gerados"], True),
+    "blocos": _Molde("blocos", "blocos", textos.PORQUE["blocos"], True),
+    "benford": _Molde("benford", "benford", textos.PORQUE["benford"], True),
+    "ultimo_digito": _Molde("ultimo_digito", "ultimo_digito", textos.PORQUE["ultimo_digito"], True),
 }
 
 
@@ -244,4 +255,86 @@ def figura_matriz(dados: DadosMatriz) -> FiguraPronta | None:
         return None
     return _pronta(
         MOLDES["matriz"], textos.TITULO_MATRIZ, dados.resumo, desenhos_bivariados.heatmap(dados)
+    )
+
+
+def _titulo_sobreposicao(dados: DadosSobreposicao) -> str:
+    if dados.original is None:
+        return textos.titulo_gerados(dados.coluna)
+    return textos.titulo_sobreposicao(dados.coluna)
+
+
+def figura_sobreposicao_numerica(dados: DadosSobreposicao) -> FiguraPronta:
+    """Original × gerado em histogramas sobrepostos (spec 11, D113)."""
+    diferenca = desenhos_gerador.maior_diferenca_numerica(dados)
+    return _pronta(
+        MOLDES["sobreposicao"],
+        _titulo_sobreposicao(dados),
+        textos.resumo_sobreposicao(diferenca, len(dados.gerado)),
+        desenhos_gerador.sobreposicao_numerica(dados),
+    )
+
+
+def figura_sobreposicao_categorica(dados: DadosSobreposicao) -> FiguraPronta:
+    """Original × gerado em barras agrupadas por categoria."""
+    diferenca = desenhos_gerador.maior_diferenca_categorica(dados)
+    return _pronta(
+        MOLDES["sobreposicao"],
+        _titulo_sobreposicao(dados),
+        textos.resumo_sobreposicao(diferenca, len(dados.gerado)),
+        desenhos_gerador.sobreposicao_categorica(dados),
+    )
+
+
+def figura_pares_gerados(dados: DadosParesGerados) -> FiguraPronta:
+    """Dispersão dos pares gerados (com os originais, quando há origem)."""
+    n = len(dados.x)
+    mostrados = len(desenhos_bivariados.amostrar(dados.x, dados.y)[0])
+    return _pronta(
+        MOLDES["pares_gerados"],
+        textos.titulo_pares_gerados(n),
+        textos.resumo_pares_gerados(dados.r, n, mostrados),
+        desenhos_gerador.dispersao_gerada(dados),
+    )
+
+
+def figura_blocos(dados: DadosBlocos) -> FiguraPronta:
+    """Média por bloco com a faixa x̄ ± s e o bloco alinhado em destaque (R1; D123)."""
+    return _pronta(
+        MOLDES["blocos"],
+        textos.titulo_blocos(dados.coluna, dados.k),
+        textos.resumo_blocos(dados.destaque_linhas, dados.media),
+        desenhos_detector.media_por_bloco(
+            dados, textos.nome_bloco_destacado(dados.destaque_linhas)
+        ),
+    )
+
+
+def _mais_acima(dados: DadosDigitos) -> int:
+    """Posição do dígito que mais passa do esperado."""
+    diferencas = [o - e for o, e in zip(dados.observadas, dados.esperadas, strict=True)]
+    return diferencas.index(max(diferencas))
+
+
+def figura_benford(dados: DadosDigitos) -> FiguraPronta:
+    """1º dígito: barras observadas × Lei de Benford (R8; D123)."""
+    i = _mais_acima(dados)
+    return _pronta(
+        MOLDES["benford"],
+        textos.titulo_benford(dados.coluna),
+        textos.resumo_benford(dados.digitos[i], dados.observadas[i], dados.esperadas[i]),
+        desenhos_detector.observado_esperado(dados, "1º dígito", textos.NOME_BENFORD),
+    )
+
+
+def figura_ultimo_digito(dados: DadosDigitos) -> FiguraPronta:
+    """Último dígito: barras com a linha do esperado (10%) (R9; D123)."""
+    i = _mais_acima(dados)
+    return _pronta(
+        MOLDES["ultimo_digito"],
+        textos.titulo_ultimo_digito(dados.coluna),
+        textos.resumo_ultimo_digito(dados.digitos[i], dados.observadas[i], dados.esperadas[i]),
+        desenhos_detector.observado_esperado(
+            dados, "Último dígito", textos.nome_esperado(dados.esperadas[i])
+        ),
     )

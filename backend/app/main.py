@@ -8,6 +8,8 @@ from app.core.config import obter_configuracao
 from app.core.handlers import registrar_handlers
 from app.dominios.analise import router as analise
 from app.dominios.datasets import router as datasets
+from app.dominios.detector import router as detector
+from app.dominios.gerador import router as gerador
 from app.dominios.relatorio import router as relatorio
 
 PREFIXO_API = "/api"
@@ -27,6 +29,8 @@ def create_app() -> FastAPI:
     app.include_router(saude.router, prefix=PREFIXO_API)
     app.include_router(datasets.router, prefix=PREFIXO_API)
     app.include_router(analise.router, prefix=PREFIXO_API)
+    app.include_router(gerador.router, prefix=PREFIXO_API)
+    app.include_router(detector.router, prefix=PREFIXO_API)
     app.include_router(relatorio.router, prefix=PREFIXO_API)
     return app
 

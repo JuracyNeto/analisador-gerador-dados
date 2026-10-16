@@ -55,6 +55,15 @@ def test_sugeridos_de_coluna_numerica() -> None:
     assert (peso.sugeridos.media, peso.sugeridos.mediana, peso.sugeridos.moda) == (20.0, 20.0, 20.0)
 
 
+def test_sugeridos_nas_casas_da_coluna() -> None:
+    """O valor sugerido é o que entra na coluna: 68,75 em pesos com 1 casa vira 68,8 (D146)."""
+    dados = pd.DataFrame({"peso": [60.0, 68.5, None, 69.0, 75.0]}, index=pd.RangeIndex(1, 6))
+
+    [peso] = diagnosticar(dados, _tipos(dados), ".", {}).faltantes
+
+    assert (peso.sugeridos.media, peso.sugeridos.mediana) == (68.1, 68.8)
+
+
 def test_duplicados_ignoram_identificador() -> None:
     dados = pd.DataFrame(
         {"id": [1, 2, 3, 4], "sexo": ["F", "M", "F", "F"], "peso": [58.2, 79.6, 58.2, 58.2]},

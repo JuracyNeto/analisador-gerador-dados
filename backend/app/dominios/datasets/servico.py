@@ -10,10 +10,11 @@ from typing import Literal
 import pandas as pd
 
 from app.compartilhado.tipos import TIPOS_NUMERICOS, OrigemTipo, TipoVariavel
-from app.core.config import Configuracao, obter_configuracao
+from app.core.config import Configuracao, Exemplo, obter_configuracao
 from app.core.erros import ErroAplicacao
 from app.dominios.datasets import erros
 from app.dominios.datasets.ajuste_tipo import ajustar_tipo
+from app.dominios.datasets.anexacao import entrada_anexacao, preparar_linhas
 from app.dominios.datasets.classificacao import (
     ColunaLida,
     Limiares,
@@ -34,7 +35,7 @@ from app.dominios.datasets.modelos import (
     TipoColuna,
 )
 from app.dominios.datasets.repositorio import RepositorioDatasets
-from app.dominios.datasets.tabela import linhas_dados, paginar
+from app.dominios.datasets.tabela import intervalo, linhas_dados, paginar
 
 __all__ = [
     "AcaoLimpeza",
@@ -51,6 +52,9 @@ __all__ = [
 ]
 
 type Versao = Literal["atual", "original"]
+
+MAX_LINHAS_INTERVALO = 200
+"""Linhas por pedido em `linhas` (drawer "Ver na tabela" da tela 7)."""
 
 
 @dataclass(frozen=True, slots=True)
@@ -154,9 +158,19 @@ class ServicoDatasets:
         anterior = self.obter(dataset_id)
         return self._ler(anterior.id, anterior.conteudo, anterior.nome_arquivo, opcoes)
 
-    def importar_exemplo(self) -> Importacao:
-        """Importa o arquivo de demonstração de dados-exemplo/ (D52)."""
-        caminho = self._config.pasta_exemplos / self._config.arquivo_exemplo
+    def exemplos(self) -> tuple[Exemplo, ...]:
+        """Arquivos de demonstração que o usuário pode carregar (D124)."""
+        return self._config.exemplos
+
+    def importar_exemplo(self, arquivo: str | None = None) -> Importacao:
+        """Importa um arquivo de demonstração (sem nome, o da pesquisa de saúde; D52, D124).
+
+        Só os arquivos da lista: o nome nunca vira caminho livre.
+        """
+        nome = arquivo or self._config.arquivo_exemplo
+        if nome not in {exemplo.arquivo for exemplo in self._config.exemplos}:
+            raise erros.exemplo_nao_encontrado(nome)
+        caminho = self._config.pasta_exemplos / nome
         return self.importar(caminho.read_bytes(), caminho.name, OpcoesLeitura())
 
     def obter(self, dataset_id: str) -> Dataset:
@@ -187,6 +201,12 @@ class ServicoDatasets:
         return PaginaDataset(
             self.resumo(dataset_id), versao, pagina, tamanho, recorte.total_paginas, recorte.linhas
         )
+
+    def linhas(self, dataset_id: str, de: int, ate: int) -> tuple[LinhaDados, ...]:
+        """Linhas da versão atual com número entre `de` e `ate` (no máximo 200)."""
+        if de > ate or ate - de + 1 > MAX_LINHAS_INTERVALO:
+            raise erros.intervalo_invalido(MAX_LINHAS_INTERVALO)
+        return intervalo(self.obter(dataset_id).atual, de, ate)
 
     def colunas(self, dataset_id: str) -> list[TipoColuna]:
         return list(self.obter(dataset_id).tipos.values())
@@ -231,6 +251,18 @@ class ServicoDatasets:
         dataset.atual = resultado.dados
         dataset.log_limpeza.extend(resultado.log)
         self._reclassificar(dataset, resultado.colunas_alteradas)
+        return self._resultado_limpeza(dataset)
+
+    def anexar_linhas(self, dataset_id: str, linhas: pd.DataFrame, frase: str) -> ResultadoLimpeza:
+        """Linhas novas no fim da versão atual (dados gerados, D111); saem com "Desfazer"."""
+        dataset = self.obter(dataset_id)
+        faltando = [coluna for coluna in linhas.columns if coluna not in dataset.atual.columns]
+        if faltando:
+            raise erros.colunas_incompativeis(str(faltando[0]))
+        novas = preparar_linhas(dataset.atual, linhas, dataset.metadados.decimal)
+        dataset.atual = pd.concat([dataset.atual, novas])
+        dataset.log_limpeza.append(entrada_anexacao(novas, frase, datetime.now()))
+        self._reclassificar(dataset, list(dataset.tipos))
         return self._resultado_limpeza(dataset)
 
     def desfazer_limpeza(self, dataset_id: str) -> ResultadoLimpeza:

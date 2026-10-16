@@ -233,6 +233,15 @@ def test_marcadores_de_faltante(marcador: str) -> None:
     assert resultado.dados["cidade"].isna().sum() == 1
 
 
+def test_reais_e_percentuais_ficam_como_no_arquivo() -> None:
+    conteudo = b"nome;valor;desconto\nAna;R$ 1.234,56;12,5%\nBia;-R$ 10,00;5 %\n"
+
+    resultado = ler_arquivo(conteudo, "precos.txt", SEM_OPCOES)
+
+    assert resultado.dados["valor"].tolist() == ["R$ 1.234,56", "-R$ 10,00"]
+    assert resultado.dados["desconto"].tolist() == ["12,5%", "5 %"]
+
+
 def test_indice_e_o_numero_da_linha() -> None:
     assert _ler("virgula.csv").dados.index.tolist() == [1, 2, 3]
 

@@ -8,18 +8,19 @@ const PaginaVariaveis = lazy(() => import('../features/variaveis/PaginaVariaveis
 const PaginaLimpeza = lazy(() => import('../features/limpeza/PaginaLimpeza'));
 const PaginaAnalise = lazy(() => import('../features/analise/PaginaAnalise'));
 const PaginaBivariada = lazy(() => import('../features/bivariada/PaginaBivariada'));
+const PaginaGerador = lazy(() => import('../features/gerador/PaginaGerador'));
+const PaginaDetector = lazy(() => import('../features/detector/PaginaDetector'));
 const PaginaRelatorio = lazy(() => import('../features/relatorio/PaginaRelatorio'));
-const PaginaIndisponivel = lazy(() => import('./paginas/PaginaIndisponivel'));
 
-/** Uma página por etapa; as futuras (D60) usam PaginaIndisponivel. */
+/** Uma página por etapa. */
 const PAGINAS = {
   1: PaginaImportar,
   2: PaginaVariaveis,
   3: PaginaLimpeza,
   4: PaginaAnalise,
   5: PaginaBivariada,
-  6: PaginaIndisponivel,
-  7: PaginaIndisponivel,
+  6: PaginaGerador,
+  7: PaginaDetector,
   8: PaginaRelatorio,
 } as const satisfies Record<Etapa['numero'], ComponentType>;
 

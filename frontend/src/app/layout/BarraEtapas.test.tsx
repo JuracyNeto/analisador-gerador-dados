@@ -57,16 +57,13 @@ it('com arquivo: visitadas aparecem concluídas e a atual fica marcada', () => {
   expect(screen.queryByText(/ficam disponíveis depois/)).not.toBeInTheDocument();
 });
 
-it('etapas futuras ficam bloqueadas mesmo com arquivo e dizem a versão', async () => {
+it('com arquivo, Gerador e Detector abrem como as demais etapas', () => {
   salvarSessao([1]);
   renderizarBarra('/importar');
 
-  const gerador = screen.getByRole('button', { name: 'Gerador Bloqueada' });
-  await userEvent.hover(gerador);
-
-  expect(gerador).toHaveAttribute('aria-disabled', 'true');
-  expect(screen.getByRole('tooltip')).toHaveTextContent('Disponível na versão v0.3.');
-  expect(screen.getByRole('link', { name: 'Bivariada' })).toBeInTheDocument();
+  expect(screen.getByRole('link', { name: 'Gerador' })).toBeInTheDocument();
+  expect(screen.getByRole('link', { name: 'Detector' })).toBeInTheDocument();
+  expect(screen.queryByRole('button', { name: /Bloqueada/ })).not.toBeInTheDocument();
 });
 
 it('recolhida: nomes seguem acessíveis e o botão pede para expandir', async () => {

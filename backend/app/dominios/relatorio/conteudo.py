@@ -3,7 +3,9 @@
 from dataclasses import dataclass
 from typing import Literal
 
-type Secao = Literal["leitura", "tipos", "limpeza", "analises", "distribuicoes", "bivariada"]
+type Secao = Literal[
+    "leitura", "tipos", "limpeza", "analises", "distribuicoes", "bivariada", "gerador", "detector"
+]
 
 SECOES_PADRAO: tuple[Secao, ...] = (
     "leitura",
@@ -12,6 +14,8 @@ SECOES_PADRAO: tuple[Secao, ...] = (
     "analises",
     "distribuicoes",
     "bivariada",
+    "gerador",
+    "detector",
 )
 
 
@@ -112,6 +116,47 @@ class SecaoBivariada:
 
 
 @dataclass(frozen=True, slots=True)
+class SecaoGerador:
+    """Última geração da sessão: parâmetros, método, explicação e Original × Gerado (D141)."""
+
+    subtitulo: str
+    parametros: tuple[ItemMedida, ...]
+    metodo: str
+    explicacao: str
+    cabecalho_comparacao: tuple[str, ...]
+    linhas_comparacao: tuple[tuple[str, ...], ...]
+    figura: FiguraRelatorio | None
+
+
+@dataclass(frozen=True, slots=True)
+class AvisoRelatorio:
+    """Um alerta com as 8 partes da spec 16; os detalhes técnicos ficam sempre abertos."""
+
+    severidade: str
+    selo: str
+    titulo: str
+    resumo: str
+    por_que: str
+    exemplo: str | None
+    pode_ser_normal: str
+    o_que_fazer: str
+    detalhes: tuple[ItemMedida, ...]
+    figura: FiguraRelatorio | None
+
+
+@dataclass(frozen=True, slots=True)
+class SecaoDetector:
+    """Resumo, alertas completos e regras não verificadas (D141)."""
+
+    frase: str
+    detalhe: str
+    contadores: str
+    avisos: tuple[AvisoRelatorio, ...]
+    nao_verificadas: tuple[str, ...]
+    vazio: str | None
+
+
+@dataclass(frozen=True, slots=True)
 class ConteudoRelatorio:
     nome_arquivo: str
     gerado_em: str
@@ -122,3 +167,5 @@ class ConteudoRelatorio:
     limpeza: tuple[str, ...] | None = None
     colunas: tuple[SecaoColuna, ...] | None = None
     bivariada: SecaoBivariada | None = None
+    gerador: SecaoGerador | None = None
+    detector: SecaoDetector | None = None

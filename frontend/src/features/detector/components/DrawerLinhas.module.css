@@ -1,0 +1,11 @@
+.colunas {
+  font-family: var(--fonte-mono);
+}
+
+.contagem {
+  flex: 1;
+}
+
+.erro {
+  padding: var(--esp-20) var(--esp-24);
+}

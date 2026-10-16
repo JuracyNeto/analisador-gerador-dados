@@ -6,6 +6,8 @@ from collections.abc import Sequence
 from dataclasses import dataclass
 from pathlib import PurePath
 
+from app.compartilhado.series import sem_unidade
+from app.compartilhado.textos import pluralizar
 from app.dominios.datasets import erros
 
 FORMATOS = {".txt": "txt", ".csv": "csv", ".tsv": "tsv", ".xlsx": "xlsx", ".json": "json"}
@@ -19,7 +21,9 @@ FRACAO_LINHAS_CONSTANTE = 0.9
 FRACAO_DECIMAL_VIRGULA = 0.8
 SEM_SEPARADOR = "\x1f"  # caractere que não aparece em texto: a linha inteira vira uma célula
 SEPARADOR_ESPACOS = r"\s{2,}"
-CANDIDATOS_SEPARADOR = (";", ",", "\t", "|", SEPARADOR_ESPACOS)
+PONTO_E_VIRGULA = ";"
+VIRGULA = ","
+CANDIDATOS_SEPARADOR = (PONTO_E_VIRGULA, VIRGULA, "\t", "|", SEPARADOR_ESPACOS)
 _NUMERO = re.compile(r"^-?[\d.,]*\d[\d.,]*$")
 _NUMERO_VIRGULA = re.compile(r"^-?\d{1,3}(\.\d{3})*(,\d+)?$|^-?\d+,\d+$")
 _PALAVRA = re.compile(r"\w+")
@@ -94,12 +98,45 @@ def _contagem_constante(linhas: list[str], separador: str) -> int:
     return contagem if vezes >= FRACAO_LINHAS_CONSTANTE * len(linhas) else 0
 
 
+def _virgulas_sao_decimais(linhas: list[str]) -> bool:
+    """Toda célula (separada por ;) que tem vírgula é um número como 1,5 ou 1.234,5."""
+    celulas = [c.strip() for linha in linhas for c in quebrar(linha, PONTO_E_VIRGULA)]
+    com_virgula = [c for c in celulas if "," in c]
+    return bool(com_virgula) and all(_NUMERO_VIRGULA.match(c) for c in com_virgula)
+
+
+def _melhor_separador(linhas: list[str], contagens: dict[str, int]) -> str:
+    """O que gera mais colunas; mas vírgulas decimais não vencem um ; constante (D116)."""
+    melhor = max(CANDIDATOS_SEPARADOR, key=lambda c: contagens[c])
+    if melhor == VIRGULA and contagens[PONTO_E_VIRGULA] > 0 and _virgulas_sao_decimais(linhas):
+        return PONTO_E_VIRGULA
+    return melhor
+
+
 def _separador_constante(linhas: list[str]) -> Deteccao[str | None]:
     contagens = {c: _contagem_constante(linhas, c) for c in CANDIDATOS_SEPARADOR}
-    melhor = max(CANDIDATOS_SEPARADOR, key=lambda c: contagens[c])
+    melhor = _melhor_separador(linhas, contagens)
     if contagens[melhor] == 0:
         return Deteccao(None, "Não encontramos um separador; lemos uma coluna só.")
-    return Deteccao(melhor, f"Aparece {contagens[melhor]} vezes em todas as linhas.")
+    vezes = pluralizar(contagens[melhor], "vez", "vezes")
+    return Deteccao(melhor, f"Aparece {contagens[melhor]} {vezes} em todas as linhas.")
+
+
+def _coluna_com_virgula_decimal(linhas: list[str]) -> str | None:
+    """1ª vírgula de uma coluna de números como 1,74, se ela não é separador (D147).
+
+    Nenhum outro candidato aparece, cada linha tem no máximo uma vírgula, sempre dentro de um
+    número, e alguma linha não tem (o cabeçalho): é a vírgula decimal de um arquivo de uma coluna
+    só (o CSV univariado do gerador). Sem cabeçalho e com vírgula em todas as linhas, "1,74" pode
+    ser um par de inteiros: a vírgula continua separador.
+    """
+    outros = (c for c in CANDIDATOS_SEPARADOR if c != VIRGULA)
+    if any(len(quebrar(linha, c)) > 1 for c in outros for linha in linhas):
+        return None
+    virgulas = [linha.count(VIRGULA) for linha in linhas]
+    if max(virgulas) != 1 or min(virgulas) != 0 or not _virgulas_sao_decimais(linhas):
+        return None
+    return next(linha.strip() for linha in linhas if VIRGULA in linha)
 
 
 def detectar_separador(linhas: list[str]) -> Deteccao[str | None]:
@@ -110,14 +147,26 @@ def detectar_separador(linhas: list[str]) -> Deteccao[str | None]:
     """
     if not linhas:
         return Deteccao(None, "Não há linhas para analisar.")
+    exemplo = _coluna_com_virgula_decimal(linhas)
+    if exemplo is not None:
+        return Deteccao(None, f"As vírgulas são decimais (ex.: {exemplo}); lemos uma coluna só.")
     inicios = range(max(1, min(MAX_LINHAS_TITULO, len(linhas) - 1)))
     deteccoes = (_separador_constante(linhas[inicio:]) for inicio in inicios)
     return next((d for d in deteccoes if d.valor is not None), _separador_constante(linhas))
 
 
-def _tokens_decimais(linhas: list[str], separador: str | None) -> list[str]:
+@dataclass(frozen=True, slots=True)
+class _Token:
+    """Célula com número decimal: o texto como no arquivo e o número sem R$ e %."""
+
+    celula: str
+    numero: str
+
+
+def _tokens_decimais(linhas: list[str], separador: str | None) -> list[_Token]:
     celulas = (c.strip() for linha in linhas for c in quebrar(linha, separador))
-    return [c for c in celulas if _NUMERO.match(c) and ("," in c or "." in c)]
+    tokens = (_Token(c, sem_unidade(c)) for c in celulas)
+    return [t for t in tokens if _NUMERO.match(t.numero) and ("," in t.numero or "." in t.numero)]
 
 
 def detectar_decimal(linhas: list[str], separador: str | None) -> Deteccao[str]:
@@ -126,14 +175,16 @@ def detectar_decimal(linhas: list[str], separador: str | None) -> Deteccao[str]:
     if not tokens:
         decimal = "," if separador == ";" else "."
         return Deteccao(decimal, "Não há números com casas decimais.")
-    com_virgula = [t for t in tokens if _NUMERO_VIRGULA.match(t)]
+    com_virgula = [t for t in tokens if _NUMERO_VIRGULA.match(t.numero)]
     decimal = "," if len(com_virgula) >= FRACAO_DECIMAL_VIRGULA * len(tokens) else "."
-    exemplos = [t for t in tokens if decimal in t][:2] or tokens[:2]
+    exemplos = [t.celula for t in tokens if decimal in t.numero][:2] or [
+        t.celula for t in tokens[:2]
+    ]
     return Deteccao(decimal, f"Valores como {' e '.join(exemplos)}.")
 
 
 def _eh_numero(celula: str) -> bool:
-    return bool(_NUMERO.match(celula.strip()))
+    return bool(_NUMERO.match(sem_unidade(celula)))
 
 
 def _so_nomes_unicos(celulas: list[str]) -> bool:

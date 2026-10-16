@@ -30,15 +30,33 @@ def test_secao_distribuicoes_aceita(cliente: TestClient) -> None:
     assert resposta.status_code == 200
 
 
-def test_sem_secoes_traz_as_seis(cliente: TestClient) -> None:
+def test_secoes_gerador_e_detector_aceitas(cliente: TestClient) -> None:
     dataset_id = _exemplo(cliente)
 
-    html = cliente.get(f"/api/datasets/{dataset_id}/relatorio").text
+    resposta = cliente.get(
+        f"/api/datasets/{dataset_id}/relatorio",
+        params={"secoes": ["gerador", "detector"], "gerado": "nao-existe"},
+    )
+
+    assert resposta.status_code == 200
+
+
+def test_sem_secoes_traz_as_oito(cliente: TestClient) -> None:
+    dataset_id = _exemplo(cliente)
+    corpo = {"origem": {"dataset_id": dataset_id, "coluna": "peso_kg"}, "x": 50, "semente": 42}
+    gerado_id = cliente.post("/api/gerador/univariado", json=corpo).json()["gerado_id"]
+
+    sem_gerado = cliente.get(f"/api/datasets/{dataset_id}/relatorio").text
+    html = cliente.get(f"/api/datasets/{dataset_id}/relatorio", params={"gerado": gerado_id}).text
 
     for titulo in ("Leitura do arquivo", "Tipos de variável", "Limpeza", "Análise de"):
         assert titulo in html
     assert "<h3>Forma e distribuição</h3>" in html
     assert ". Bivariada</h2>" in html
+    assert ". Gerador de dados</h2>" in html
+    assert ". Gerador de dados</h2>" not in sem_gerado
+    assert ". Detector de dados artificiais</h2>" in html
+    assert ". Detector de dados artificiais</h2>" in sem_gerado
 
 
 def test_secao_desconhecida(cliente: TestClient) -> None:

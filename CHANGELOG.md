@@ -4,6 +4,34 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e
 
 ## [Não lançado]
 
+## [0.3.0] - 2026-10-16
+
+### Adicionado
+- Etapa 6 Gerador: dados univariados e bivariados (pela coluna ou par do dataset, ou com parâmetros manuais) com a tabela Original × Gerado, gráfico, explicação do método, Baixar CSV, Anexar ao dataset atual e Usar como novo dataset; se a geração sair da memória do servidor, o aviso traz "Gerar de novo", com a mesma semente.
+- API do gerador: dados univariados (preservando as estatísticas de uma coluna ou com novos parâmetros) e pares com médias, desvios e correlação alvo, com comparação com o original, explicação do método, gráfico sobreposto, CSV e uso como novo dataset ou anexado ao atual.
+- Etapa 7 Detector: resumo por severidade, filtros (guardados no endereço da página), agrupamento por coluna ou regra, alertas explicados em linguagem simples com detalhes técnicos e gráfico, as linhas de cada alerta numa tabela lateral (com exportação em CSV), regras não verificadas com o motivo e a lista das 11 regras quando não há alertas.
+- API do detector com as 11 regras (bloco alinhado, correlação por blocos, formato numérico, valores redondos, duplicatas, comparação temporal, valores distantes, Lei de Benford, último dígito, Normal perfeita demais e sequência) e resumo; cada alerta tem explicação em linguagem simples, exemplo com as linhas e detalhes técnicos, com gráfico no bloco alinhado (média por bloco), na Lei de Benford e no último dígito; as regras que não se aplicam vêm com o motivo. Repetições de linhas só viram alerta quando passam do que o acaso produziria.
+- Detector testado com dados reais (preços da ANP e uma estação do INMET), para dar menos alertas falsos:
+  - os zeros ficam fora dos valores redondos e do último dígito, que também pedem valores variados e não muito pequenos; o último dígito só avisa quando o excesso passa de 1,5× o esperado; o mesmo inteiro repetido não conta como mudança de formato; valores distantes levam em conta a cauda longa; em séries no tempo, a sequência fica informativa e a correlação por blocos em atenção; linhas sem nenhum número não contam como cópias; "pode ser normal" fala de preços e da época do ano;
+  - em colunas com muitos zeros (chuva por dia), valores distantes e a variação no tempo olham só os valores acima de zero, e a estação seca não dá suspeita alta; a Lei de Benford não conta os valores perto do passo do instrumento (chuva de 0,2 em 0,2 mm); os motivos e os detalhes técnicos dizem o que ficou de fora;
+  - valores distantes: só os que passam de 3·IQR dão "atenção"; |z| > 3 sozinho fica informativo;
+  - bloco alinhado: cada bloco de linhas seguidas é comparado com o restante dos dados, e valores gerados com a média e o desvio de uma coluna e anexados a ela são encontrados sempre; o exemplo mostra a média e o desvio do bloco ao lado dos do restante; janelas do acaso que empatam com o bloco contam (com poucos valores distintos, o arredondamento das contas gerava alertas sem nada plantado);
+  - bloco alinhado também no fim do arquivo, de 10 linhas até metade dele: dados anexados pelo Gerador são encontrados com qualquer quantidade (antes, só com um número exato de linhas).
+- Três arquivos de demonstração com dados plantados (alturas reais, alturas com dados plantados e vendas com correlação puxada), escolhíveis em "Outros exemplos" na tela Importar (`GET /datasets/exemplos` e `POST /datasets/exemplo?arquivo=`).
+- Linhas da versão atual por intervalo (`GET /datasets/{id}/linhas?de=&ate=`, até 200), para mostrar o exemplo de um alerta na tabela.
+- Relatório com as seções Gerador (última geração: parâmetros, método, explicação e comparação) e Detector (resumo, alertas com detalhes técnicos e regras não verificadas); na tela Relatório, as caixas "Gerador" (desabilitada enquanto não há dados gerados na sessão) e "Detector".
+
+### Alterado
+- A Bivariada continua para o Gerador, o Gerador para o Detector, e o Relatório volta para o Detector.
+- O relatório pedido sem escolher seções traz as 8 seções (a seção Gerador só com a geração informada em `gerado`).
+
+### Corrigido
+- Preencher faltantes com a média ou a mediana usa as casas decimais da coluna (68,8, e não 68,75, em pesos com 1 casa); antes, o valor preenchido mudava a precisão da coluna e o detector via valores redondos onde não havia.
+- Arquivos de uma coluna só com vírgula decimal (como o CSV univariado do gerador) eram lidos com a vírgula como separador, em duas colunas; "Usar como novo dataset" com dados univariados sai com uma coluna, e o motivo do separador diz "1 vez" no singular.
+- Datas no formato AAAA/MM/DD e horários como `0000 UTC` (arquivos do INMET) são reconhecidos; horários impossíveis (25:00) não contam mais.
+- Valores em reais (`R$ 1.234,56`, `−R$ 10,00`) e percentuais (`12,5%`) viram número (antes, código ou categorias); o percentual fica na escala do arquivo (12,5), o motivo diz a unidade ("Valores em reais (ex.: R$ 1.234,56).") e a prévia mostra as células como no arquivo.
+- Arquivos com `;` e duas ou mais colunas com vírgula decimal (ex.: `1,5;2,25`) eram lidos com a vírgula como separador.
+
 ## [0.2.0] - 2026-10-10
 
 ### Adicionado

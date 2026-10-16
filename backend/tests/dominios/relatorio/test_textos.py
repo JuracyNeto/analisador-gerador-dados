@@ -2,10 +2,14 @@ import pytest
 
 from app.dominios.relatorio.conteudo import DadosLeitura
 from app.dominios.relatorio.textos import (
+    SELOS_SEVERIDADE,
+    contadores_severidade,
     descrever_leitura,
     selo_assimetria,
     selo_correlacao,
     subtitulo,
+    subtitulo_gerador,
+    titulo_aviso,
 )
 
 
@@ -67,3 +71,37 @@ def test_selo_assimetria(classe: str, sentido: str | None, esperado: str) -> Non
 )
 def test_selo_correlacao(forca: str, sentido: str, esperado: str) -> None:
     assert selo_correlacao(forca, sentido) == esperado
+
+
+@pytest.mark.parametrize(
+    ("tipo", "n", "esperado"),
+    [
+        ("univariado", 1, "Univariado · 1 valor · semente 42"),
+        ("univariado", 1500, "Univariado · 1.500 valores · semente 42"),
+        ("bivariado", 300, "Bivariado · 300 pares · semente 42"),
+    ],
+)
+def test_subtitulo_gerador(tipo: str, n: int, esperado: str) -> None:
+    assert subtitulo_gerador(tipo, n, 42) == esperado
+
+
+@pytest.mark.parametrize(
+    ("contagens", "esperado"),
+    [
+        ((2, 2, 1), "2 suspeitas altas · 2 de atenção · 1 informativo"),
+        ((1, 0, 3), "1 suspeita alta · 0 de atenção · 3 informativos"),
+    ],
+)
+def test_contadores_severidade(contagens: tuple[int, int, int], esperado: str) -> None:
+    assert contadores_severidade(*contagens) == esperado
+
+
+def test_selos_com_icone_e_palavra() -> None:
+    assert SELOS_SEVERIDADE == {
+        "alta": "⛔ Suspeita alta",
+        "atencao": "⚠️ Atenção",
+        "info": "ℹ️ Informativo",
+    }
+    assert titulo_aviso("R4", "Muitos valores redondos em peso_kg") == (
+        "R4 · Muitos valores redondos em peso_kg"
+    )

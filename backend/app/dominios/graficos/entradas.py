@@ -121,3 +121,48 @@ class DadosMatriz:
     colunas: tuple[str, ...]
     valores: tuple[tuple[float | None, ...], ...]
     resumo: str
+
+
+@dataclass(frozen=True, slots=True, eq=False)
+class DadosSobreposicao:
+    """Valores do original (quando há origem) e do gerado, numéricos ou categorias."""
+
+    coluna: str
+    gerado: pd.Series
+    original: pd.Series | None = None
+    n_original: int = 0
+
+
+@dataclass(frozen=True, slots=True)
+class DadosParesGerados:
+    x_nome: str
+    y_nome: str
+    x: tuple[float, ...]
+    y: tuple[float, ...]
+    r: float
+    x_original: tuple[float, ...] | None = None
+    y_original: tuple[float, ...] | None = None
+
+
+@dataclass(frozen=True, slots=True)
+class DadosBlocos:
+    """Média de cada bloco de k linhas (x = linha do meio), a média e o DP gerais (R1)."""
+
+    coluna: str
+    k: int
+    x: tuple[float, ...]
+    medias: tuple[float, ...]
+    media: float
+    desvio: float
+    destaque_linhas: tuple[int, int]
+    destaque_media: float
+
+
+@dataclass(frozen=True, slots=True)
+class DadosDigitos:
+    """Proporção (0–1) de cada dígito, observada e esperada (R8: 1º dígito; R9: último)."""
+
+    coluna: str
+    digitos: tuple[int, ...]
+    observadas: tuple[float, ...]
+    esperadas: tuple[float, ...]

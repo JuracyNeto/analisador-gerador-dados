@@ -10,6 +10,7 @@ interface PropsCampoNumero {
   aoMudar: (texto: string) => void;
   erro?: string | undefined;
   ajuda?: string | undefined;
+  desabilitado?: boolean;
 }
 
 export default function CampoNumero({
@@ -18,6 +19,7 @@ export default function CampoNumero({
   aoMudar,
   erro,
   ajuda,
+  desabilitado = false,
 }: Readonly<PropsCampoNumero>) {
   const id = useId();
   const idMensagem = `${id}-mensagem`;
@@ -32,6 +34,7 @@ export default function CampoNumero({
         type="text"
         inputMode="decimal"
         autoComplete="off"
+        disabled={desabilitado}
         value={valor}
         onChange={(evento) => {
           aoMudar(evento.target.value);

@@ -16,7 +16,10 @@ export const TEXTOS_RELATORIO = {
     analises: 'Análises por coluna',
     distribuicoes: 'Distribuições',
     bivariada: 'Bivariada',
+    gerador: 'Gerador',
+    detector: 'Detector',
   } satisfies Record<SecaoRelatorio, string>,
+  semGeracao: 'Gere dados na etapa Gerador para incluir esta seção.',
   contador: (marcados: number, total: number) => `${String(marcados)} de ${String(total)}`,
   colunasSemAnalises: 'Marque "Análises por coluna" ou "Distribuições" para escolher as colunas.',
   carregandoColunas: 'Carregando as colunas…',
@@ -31,5 +34,5 @@ export const TEXTOS_RELATORIO = {
     descricao: 'Marque ao menos uma seção para ver a prévia do relatório.',
   },
   baixado: (nome: string) => `Relatório baixado: ${nome}.`,
-  voltar: 'Voltar para Bivariada',
+  voltar: 'Voltar para Detector',
 };

@@ -15,9 +15,11 @@ function previa(): HTMLIFrameElement {
   return screen.getByTitle(T.tituloPrevia);
 }
 
+const GERADO = { id: 'g-1', descricao: 'peso_kg · 500 valores' };
+
 /** Sessão real com o dataset de teste (entra depois da 1ª renderização: começar com findBy…). */
-function renderizarPagina() {
-  return renderizarComProvedores(<PaginaRelatorio />, { dataset: DATASET_TESTE });
+function renderizarPagina(ultimoGerado: typeof GERADO | null = null) {
+  return renderizarComProvedores(<PaginaRelatorio />, { dataset: DATASET_TESTE, ultimoGerado });
 }
 
 describe('PaginaRelatorio', () => {
@@ -31,12 +33,17 @@ describe('PaginaRelatorio', () => {
     ]);
   });
 
-  it('começa com as 6 seções e todas as colunas analisáveis marcadas', async () => {
+  it('sem geração, começa com 7 de 8 seções e a caixa Gerador desabilitada', async () => {
     renderizarPagina();
 
     const secoes = await screen.findByRole('group', { name: /^Seções/ });
-    expect(within(secoes).getAllByRole('checkbox', { checked: true })).toHaveLength(6);
-    expect(within(secoes).getByText('6 de 6')).toBeInTheDocument();
+    expect(within(secoes).getAllByRole('checkbox')).toHaveLength(8);
+    expect(within(secoes).getAllByRole('checkbox', { checked: true })).toHaveLength(7);
+    expect(within(secoes).getByText('7 de 8')).toBeInTheDocument();
+    const gerador = within(secoes).getByRole('checkbox', { name: T.rotulosSecoes.gerador });
+    expect(gerador).toBeDisabled();
+    expect(gerador).not.toBeChecked();
+    expect(within(secoes).getByText(T.semGeracao)).toBeInTheDocument();
     const colunas = await screen.findByRole('group', { name: /^Colunas/ });
     expect(within(colunas).getAllByRole('checkbox', { checked: true })).toHaveLength(3);
     expect(within(colunas).queryByText('id')).toBeNull();
@@ -47,9 +54,39 @@ describe('PaginaRelatorio', () => {
 
     await waitFor(() => {
       expect(previa().getAttribute('src')).toBe(
-        `/api${BASE}/relatorio?secoes=leitura&secoes=tipos&secoes=limpeza&secoes=analises&secoes=distribuicoes&secoes=bivariada&colunas=sexo&colunas=peso_kg&colunas=cidade&offline=true`,
+        `/api${BASE}/relatorio?secoes=leitura&secoes=tipos&secoes=limpeza&secoes=analises&secoes=distribuicoes&secoes=bivariada&secoes=detector&colunas=sexo&colunas=peso_kg&colunas=cidade&offline=true`,
       );
     });
+  });
+
+  it('com geração na sessão, as 8 seções começam marcadas e a prévia leva a geração', async () => {
+    renderizarPagina(GERADO);
+
+    const secoes = await screen.findByRole('group', { name: /^Seções/ });
+    await waitFor(() => {
+      expect(within(secoes).getByText('8 de 8')).toBeInTheDocument();
+    });
+    expect(within(secoes).getByRole('checkbox', { name: T.rotulosSecoes.gerador })).toBeEnabled();
+    expect(within(secoes).queryByText(T.semGeracao)).toBeNull();
+    await waitFor(() => {
+      expect(previa().getAttribute('src')).toContain('&secoes=gerador&secoes=detector&');
+    });
+    expect(previa().getAttribute('src')).toContain('&gerado=g-1&offline=true');
+  });
+
+  it('desmarcar Gerador tira a geração do pedido', async () => {
+    const { usuario } = renderizarPagina(GERADO);
+    const gerador = await screen.findByRole('checkbox', { name: T.rotulosSecoes.gerador });
+    await waitFor(() => {
+      expect(gerador).toBeEnabled();
+    });
+
+    await usuario.click(gerador);
+
+    await waitFor(() => {
+      expect(previa().getAttribute('src')).not.toContain('gerado=');
+    });
+    expect(previa().getAttribute('src')).not.toContain('secoes=gerador');
   });
 
   it('desmarcar uma coluna atualiza a prévia depois da pausa', async () => {
@@ -77,7 +114,8 @@ describe('PaginaRelatorio', () => {
     const { usuario } = renderizarPagina();
     await screen.findByRole('group', { name: /^Seções/ });
     for (const rotulo of Object.values(T.rotulosSecoes)) {
-      await usuario.click(screen.getByRole('checkbox', { name: rotulo }));
+      const caixa = screen.getByRole('checkbox', { name: rotulo });
+      if (!caixa.hasAttribute('disabled')) await usuario.click(caixa);
     }
 
     expect(screen.getByText(T.vazio.titulo)).toBeInTheDocument();
@@ -138,10 +176,10 @@ describe('PaginaRelatorio', () => {
     expect(screen.getByText(T.semDataset)).toBeInTheDocument();
   });
 
-  it('"Voltar para Bivariada" leva à etapa 5', async () => {
+  it('"Voltar para Detector" leva à etapa 7', async () => {
     const { usuario, roteador } = renderizarPagina();
 
-    await usuario.click(await screen.findByRole('button', { name: /Voltar para Bivariada/ }));
-    expect(roteador.state.location.pathname).toBe('/bivariada');
+    await usuario.click(await screen.findByRole('button', { name: /Voltar para Detector/ }));
+    expect(roteador.state.location.pathname).toBe('/detector');
   });
 });

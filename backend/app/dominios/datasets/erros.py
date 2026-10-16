@@ -89,3 +89,27 @@ def acao_incompativel(coluna: str | None, motivo: str) -> EntradaInvalida:
     return EntradaInvalida(
         "ACAO_INCOMPATIVEL", f"Esta ação não serve para {alvo}: {motivo}", "Escolha outra ação."
     )
+
+
+def colunas_incompativeis(coluna: str) -> EntradaInvalida:
+    return EntradaInvalida(
+        "COLUNAS_INCOMPATIVEIS",
+        f"O dataset não tem a coluna {coluna}.",
+        'Use "Usar como novo dataset".',
+    )
+
+
+def intervalo_invalido(maximo: int) -> EntradaInvalida:
+    return EntradaInvalida(
+        "INTERVALO_INVALIDO",
+        f'Peça no máximo {maximo} linhas, com "de" menor ou igual a "até".',
+        "Ajuste o intervalo e tente de novo.",
+    )
+
+
+def exemplo_nao_encontrado(arquivo: str) -> NaoEncontrado:
+    return NaoEncontrado(
+        "EXEMPLO_NAO_ENCONTRADO",
+        f"Não encontramos o exemplo {arquivo}.",
+        "Escolha um dos exemplos da lista.",
+    )

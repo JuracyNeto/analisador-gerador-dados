@@ -9,8 +9,10 @@ from pydantic import ValidationError
 from app.dominios.datasets import schemas
 from app.dominios.datasets.schemas import (
     AlteracaoTipo,
+    ArquivoExemplo,
     DatasetCriado,
     Diagnostico,
+    LinhaDados,
     PaginaDataset,
     PedidoLeitura,
     PedidoLimpeza,
@@ -51,13 +53,23 @@ def importar(servico: Servico, arquivo: UploadFile, opcoes: Opcoes) -> DatasetCr
     return DatasetCriado.model_validate(servico.importar(arquivo.file.read(), nome, opcoes))
 
 
+@router.get("/exemplos", summary="Arquivos de demonstração que dá para carregar")
+def listar_exemplos(servico: Servico) -> list[ArquivoExemplo]:
+    return [ArquivoExemplo.model_validate(exemplo) for exemplo in servico.exemplos()]
+
+
 @router.post(
     "/exemplo",
     status_code=status.HTTP_201_CREATED,
-    summary="Importa o arquivo de exemplo (pesquisa_saude.txt)",
+    summary="Importa um arquivo de demonstração (sem arquivo, pesquisa_saude.txt)",
 )
-def importar_exemplo(servico: Servico) -> DatasetCriado:
-    return DatasetCriado.model_validate(servico.importar_exemplo())
+def importar_exemplo(
+    servico: Servico,
+    arquivo: Annotated[
+        str | None, Query(description="Um dos arquivos de GET /datasets/exemplos")
+    ] = None,
+) -> DatasetCriado:
+    return DatasetCriado.model_validate(servico.importar_exemplo(arquivo))
 
 
 @router.post("/{dataset_id}/leitura", summary="Lê de novo o arquivo com outras opções")
@@ -83,6 +95,13 @@ def obter_pagina(
 def remover(servico: Servico, dataset_id: str) -> Response:
     servico.remover(dataset_id)
     return Response(status_code=status.HTTP_204_NO_CONTENT)
+
+
+@router.get(
+    "/{dataset_id}/linhas", summary="Linhas da versão atual de “de” a “até” (no máximo 200)"
+)
+def obter_linhas(servico: Servico, dataset_id: str, de: int, ate: int) -> list[LinhaDados]:
+    return [LinhaDados.model_validate(linha) for linha in servico.linhas(dataset_id, de, ate)]
 
 
 @router.get("/{dataset_id}/colunas", summary="Tipo de cada coluna, com o motivo")

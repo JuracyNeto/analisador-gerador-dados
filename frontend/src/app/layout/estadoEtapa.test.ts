@@ -3,7 +3,7 @@ import { ETAPAS } from '../etapas';
 import { type ContextoEtapas, dicaDaEtapa, estadoDaEtapa } from './estadoEtapa';
 
 const [IMPORTAR, VARIAVEIS, LIMPEZA] = ETAPAS;
-const GERADOR = ETAPAS[5];
+const DETECTOR = ETAPAS[6];
 
 function contexto(parcial: Partial<ContextoEtapas>): ContextoEtapas {
   return { atual: null, temDataset: false, visitadas: new Set(), ...parcial };
@@ -24,19 +24,18 @@ describe('estadoDaEtapa', () => {
     expect(estadoDaEtapa(LIMPEZA, comDados)).toBe('atual');
   });
 
-  it('etapa futura fica bloqueada mesmo com dataset e na própria rota', () => {
-    expect(
-      estadoDaEtapa(GERADOR, contexto({ atual: 6, temDataset: true, visitadas: new Set([6]) })),
-    ).toBe('bloqueada');
+  it('o Detector abre como as demais etapas (M3.4)', () => {
+    expect(estadoDaEtapa(DETECTOR, contexto({ temDataset: true }))).toBe('disponivel');
+    expect(estadoDaEtapa(DETECTOR, contexto({ atual: 7, temDataset: true }))).toBe('atual');
   });
 });
 
 describe('dicaDaEtapa', () => {
   it.each([
     [IMPORTAR, false, null],
-    [GERADOR, false, 'Disponível na versão v0.3.'],
+    [DETECTOR, false, null],
     [IMPORTAR, true, 'Importar'],
-    [GERADOR, true, 'Gerador. Disponível na versão v0.3.'],
+    [DETECTOR, true, 'Detector'],
   ] as const)('%o recolhida=%s → %s', (etapa, recolhida, esperado) => {
     expect(dicaDaEtapa(etapa, recolhida)).toBe(esperado);
   });

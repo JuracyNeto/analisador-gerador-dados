@@ -38,6 +38,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/datasets/exemplos": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Arquivos de demonstração que dá para carregar */
+        get: operations["listar_exemplos_api_datasets_exemplos_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/datasets/exemplo": {
         parameters: {
             query?: never;
@@ -47,7 +64,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Importa o arquivo de exemplo (pesquisa_saude.txt) */
+        /** Importa um arquivo de demonstração (sem arquivo, pesquisa_saude.txt) */
         post: operations["importar_exemplo_api_datasets_exemplo_post"];
         delete?: never;
         options?: never;
@@ -85,6 +102,23 @@ export interface paths {
         post?: never;
         /** Descarta o dataset */
         delete: operations["remover_api_datasets__dataset_id__delete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/datasets/{dataset_id}/linhas": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Linhas da versão atual de “de” a “até” (no máximo 200) */
+        get: operations["obter_linhas_api_datasets__dataset_id__linhas_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
         options?: never;
         head?: never;
         patch?: never;
@@ -260,6 +294,142 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/gerador/univariado": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Gera valores de uma coluna (preservando ou com novos parâmetros) */
+        post: operations["gerar_univariado_api_gerador_univariado_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/gerador/bivariado": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Gera pares com médias, desvios e correlação alvo */
+        post: operations["gerar_bivariado_api_gerador_bivariado_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/gerador/origem": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Medidas da coluna de origem (formulário univariado) */
+        get: operations["resumir_origem_api_gerador_origem_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/gerador/origem-par": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Médias, desvios e r do par de origem (formulário bivariado) */
+        get: operations["resumir_origem_par_api_gerador_origem_par_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/gerador/{gerado_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Uma geração guardada */
+        get: operations["obter_api_gerador__gerado_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/gerador/{gerado_id}/csv": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Dados gerados em CSV */
+        get: operations["baixar_csv_api_gerador__gerado_id__csv_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/gerador/{gerado_id}/adotar": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Usa a geração como novo dataset ou anexa ao dataset atual */
+        post: operations["adotar_api_gerador__gerado_id__adotar_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/datasets/{dataset_id}/detector": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Alertas de dados artificiais com explicação (spec 12) */
+        get: operations["detectar_api_datasets__dataset_id__detector_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/datasets/{dataset_id}/relatorio": {
         parameters: {
             query?: never;
@@ -267,7 +437,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Mini relatório em HTML */
+        /** Relatório em HTML */
         get: operations["gerar_relatorio_api_datasets__dataset_id__relatorio_get"];
         put?: never;
         post?: never;
@@ -289,10 +459,24 @@ export interface components {
             acao: components["schemas"]["Acao"];
             /** Coluna */
             coluna?: string | null;
-            valor?: components["schemas"]["Celula"];
+            valor?: components["schemas"]["Celula-Input"];
             limites?: components["schemas"]["Limites"] | null;
             /** Grupo */
             grupo?: string | null;
+        };
+        /** Adotado */
+        Adotado: {
+            /** Dataset Id */
+            dataset_id: string;
+            /** Nome Arquivo */
+            nome_arquivo: string;
+            /** N Linhas */
+            n_linhas: number;
+            /**
+             * Modo
+             * @enum {string}
+             */
+            modo: "novo" | "anexar";
         };
         /** Ajuste */
         Ajuste: {
@@ -349,12 +533,49 @@ export interface components {
             /** Figuras */
             figuras: components["schemas"]["Figura"][];
         };
+        /**
+         * ArquivoExemplo
+         * @description Arquivo de demonstração que dá para carregar com `POST /datasets/exemplo?arquivo=`.
+         */
+        ArquivoExemplo: {
+            /** Arquivo */
+            arquivo: string;
+            /** Descricao */
+            descricao: string;
+        };
         /** Aviso */
         Aviso: {
             /** Codigo */
             codigo: string;
             /** Mensagem */
             mensagem: string;
+        };
+        /**
+         * AvisoDetector
+         * @description Um alerta em 8 partes (spec 16); `colunas` vazio = linhas inteiras (R5, R6).
+         *
+         *     `figura`: gráfico dos detalhes técnicos em R1, R8 e R9 (spec 08, D123).
+         */
+        AvisoDetector: {
+            regra: components["schemas"]["CodigoRegra"];
+            /** Nome Regra */
+            nome_regra: string;
+            severidade: components["schemas"]["Severidade"];
+            /** Colunas */
+            colunas: string[];
+            /** Titulo */
+            titulo: string;
+            /** Resumo */
+            resumo: string;
+            /** Por Que */
+            por_que: string;
+            exemplo: components["schemas"]["ExemploAviso"] | null;
+            /** Pode Ser Normal */
+            pode_ser_normal: string;
+            /** O Que Fazer */
+            o_que_fazer: string;
+            detalhes: components["schemas"]["DetalhesAviso"];
+            figura: components["schemas"]["Figura"] | null;
         };
         /** Bivariada */
         Bivariada: {
@@ -403,7 +624,9 @@ export interface components {
             /** Linha Cabecalho */
             linha_cabecalho?: number | null;
         };
-        Celula: string | number | boolean | null;
+        "Celula-Input": string | number | boolean | null;
+        /** @enum {string} */
+        CodigoRegra: "R1" | "R2" | "R3" | "R4" | "R5" | "R6" | "R7" | "R8" | "R9" | "R10" | "R11";
         /** DatasetCriado */
         DatasetCriado: {
             /** Dataset Id */
@@ -415,6 +638,23 @@ export interface components {
             previa: components["schemas"]["LinhaDados"][];
             /** Colunas */
             colunas: components["schemas"]["TipoColuna"][];
+        };
+        /** DetalhesAviso */
+        DetalhesAviso: {
+            /** Medida */
+            medida: string;
+            /** Valor */
+            valor: string;
+            /** Limiar */
+            limiar: string;
+            /** Teste */
+            teste: string | null;
+            /** P Valor */
+            p_valor: number | null;
+            /** P Em Palavras */
+            p_em_palavras: string | null;
+            /** Formula */
+            formula: string | null;
         };
         /** Diagnostico */
         Diagnostico: {
@@ -465,6 +705,15 @@ export interface components {
             /** Frase */
             frase: string;
         };
+        /** ExemploAviso */
+        ExemploAviso: {
+            /** Linhas */
+            linhas: number[];
+            /** Valores */
+            valores: string[];
+            /** Texto */
+            texto: string;
+        };
         /** Faixa */
         Faixa: {
             /** Minimo */
@@ -482,7 +731,10 @@ export interface components {
             linhas: number[];
             sugeridos: components["schemas"]["ValoresSugeridos"];
         };
-        /** Figura */
+        /**
+         * Figura
+         * @description Figura Plotly pronta (ADR 0003): análise, bivariada e gerador usam o mesmo contrato.
+         */
         Figura: {
             /** Id */
             id: string;
@@ -550,6 +802,37 @@ export interface components {
             /** Texto */
             texto: string;
         };
+        /** Gerado */
+        Gerado: {
+            /** Gerado Id */
+            gerado_id: string;
+            /**
+             * Tipo
+             * @enum {string}
+             */
+            tipo: "univariado" | "bivariado";
+            /** Colunas */
+            colunas: string[];
+            /** N */
+            n: number;
+            /** Semente */
+            semente: number;
+            origem: components["schemas"]["OrigemGeracao"] | null;
+            /** Metodo */
+            metodo: string;
+            /** Explicacao */
+            explicacao: string;
+            /** Parametros */
+            parametros: components["schemas"]["ParametroGeracao"][];
+            /** Amostra */
+            amostra: {
+                [key: string]: components["schemas"]["app__dominios__gerador__schemas__Celula"];
+            }[];
+            /** Comparacao */
+            comparacao: components["schemas"]["LinhaComparacao"][];
+            /** Figuras */
+            figuras: components["schemas"]["Figura"][];
+        };
         /** Grafia */
         Grafia: {
             /** Texto */
@@ -597,13 +880,24 @@ export interface components {
             /** Celulas */
             celulas: string[];
         };
+        /** LinhaComparacao */
+        LinhaComparacao: {
+            /** Estatistica */
+            estatistica: string;
+            /** Original */
+            original: number | null;
+            /** Gerado */
+            gerado: number | null;
+            /** Diferenca */
+            diferenca: number | null;
+        };
         /** LinhaDados */
         LinhaDados: {
             /** Linha */
             linha: number;
             /** Valores */
             valores: {
-                [key: string]: components["schemas"]["Celula"];
+                [key: string]: components["schemas"]["app__dominios__datasets__schemas__Celula"];
             };
         };
         /** LinhaFrequencia */
@@ -707,7 +1001,32 @@ export interface components {
         Ocorrencia: {
             /** Linha */
             linha: number;
-            valor: components["schemas"]["Celula"];
+            valor: components["schemas"]["app__dominios__datasets__schemas__Celula"];
+        };
+        /** OrigemColuna */
+        OrigemColuna: {
+            /** Dataset Id */
+            dataset_id: string;
+            /** Coluna */
+            coluna: string;
+        };
+        /** OrigemGeracao */
+        OrigemGeracao: {
+            /** Dataset Id */
+            dataset_id: string;
+            /** Nome Arquivo */
+            nome_arquivo: string;
+            /** Colunas */
+            colunas: string[];
+        };
+        /** OrigemPar */
+        OrigemPar: {
+            /** Dataset Id */
+            dataset_id: string;
+            /** X */
+            x: string;
+            /** Y */
+            y: string;
         };
         /**
          * OrigemTipo
@@ -741,6 +1060,53 @@ export interface components {
             /** Valor */
             valor: number;
         };
+        /** ParametroGeracao */
+        ParametroGeracao: {
+            /** Nome */
+            nome: string;
+            /** Valor */
+            valor: string;
+        };
+        /** PedidoAdotar */
+        PedidoAdotar: {
+            /**
+             * Modo
+             * @enum {string}
+             */
+            modo: "novo" | "anexar";
+            /** Dataset Id */
+            dataset_id?: string | null;
+        };
+        /**
+         * PedidoBivariado
+         * @description Com origem, o que for omitido vem do par (médias, desvios e r de Pearson).
+         */
+        PedidoBivariado: {
+            origem?: components["schemas"]["OrigemPar"] | null;
+            /** N */
+            n: number;
+            /** Media X */
+            media_x?: number | null;
+            /** Media Y */
+            media_y?: number | null;
+            /** Desvio X */
+            desvio_x?: number | null;
+            /** Desvio Y */
+            desvio_y?: number | null;
+            /** Rho */
+            rho?: number | null;
+            /** Nome X */
+            nome_x?: string | null;
+            /** Nome Y */
+            nome_y?: string | null;
+            /**
+             * Ajuste Exato
+             * @default true
+             */
+            ajuste_exato: boolean;
+            /** Semente */
+            semente?: number | null;
+        };
         /**
          * PedidoLeitura
          * @description Opções que sobrescrevem a detecção; vazio = detectar tudo de novo (spec 01).
@@ -761,6 +1127,50 @@ export interface components {
         PedidoLimpeza: {
             /** Acoes */
             acoes: components["schemas"]["AcaoLimpeza"][];
+        };
+        /**
+         * PedidoUnivariado
+         * @description Sem origem, só "parametros" (contínua, discreta ou binária).
+         */
+        PedidoUnivariado: {
+            origem?: components["schemas"]["OrigemColuna"] | null;
+            /** Tipo */
+            tipo?: ("continua" | "discreta" | "binaria") | null;
+            /** X */
+            x: number;
+            /**
+             * Modo
+             * @default preservar
+             * @enum {string}
+             */
+            modo: "preservar" | "parametros";
+            /** Media */
+            media?: number | null;
+            /** Desvio */
+            desvio?: number | null;
+            /** P */
+            p?: number | null;
+            /** Rotulos */
+            rotulos?: [
+                string,
+                string
+            ] | null;
+            /** Semente */
+            semente?: number | null;
+            /**
+             * Limitar Faixa
+             * @default false
+             */
+            limitar_faixa: boolean;
+        };
+        /** PorSeveridade */
+        PorSeveridade: {
+            /** Alta */
+            alta: number;
+            /** Atencao */
+            atencao: number;
+            /** Info */
+            info: number;
         };
         /** Posicao */
         Posicao: {
@@ -808,6 +1218,18 @@ export interface components {
         };
         /** @enum {string} */
         Problema: "faltantes" | "duplicados" | "fora_de_faixa" | "inconsistencia" | "tipo_misto";
+        /** RegraNaoAplicada */
+        RegraNaoAplicada: {
+            regra: components["schemas"]["CodigoRegra"];
+            /** Nome Regra */
+            nome_regra: string;
+            /** Coluna */
+            coluna: string | null;
+            /** Motivo */
+            motivo: string;
+            /** Frase */
+            frase: string;
+        };
         /** Regressao */
         Regressao: {
             /** A */
@@ -819,6 +1241,14 @@ export interface components {
             reta: components["schemas"]["Medida"];
             r2: components["schemas"]["Medida"];
             se: components["schemas"]["Medida"];
+        };
+        /** ResultadoDetector */
+        ResultadoDetector: {
+            resumo: components["schemas"]["ResumoDetector"];
+            /** Avisos */
+            avisos: components["schemas"]["AvisoDetector"][];
+            /** Nao Aplicadas */
+            nao_aplicadas: components["schemas"]["RegraNaoAplicada"][];
         };
         /** ResultadoLimpeza */
         ResultadoLimpeza: {
@@ -850,6 +1280,71 @@ export interface components {
             /** Tem Ajustes */
             tem_ajustes: boolean;
         };
+        /** ResumoDetector */
+        ResumoDetector: {
+            /** Total */
+            total: number;
+            por_severidade: components["schemas"]["PorSeveridade"];
+            /** Colunas Afetadas */
+            colunas_afetadas: string[];
+            /** Regras Verificadas */
+            regras_verificadas: number;
+            /** Regras Nao Aplicadas */
+            regras_nao_aplicadas: number;
+            /** Frase */
+            frase: string;
+            /** Detalhe */
+            detalhe: string;
+            /** Vazio */
+            vazio: string | null;
+        };
+        /** ResumoOrigem */
+        ResumoOrigem: {
+            /** Coluna */
+            coluna: string;
+            /**
+             * Tipo
+             * @enum {string}
+             */
+            tipo: "nominal" | "ordinal" | "discreta" | "continua" | "binaria";
+            /** N */
+            n: number;
+            /** Media */
+            media: number | null;
+            /** Desvio */
+            desvio: number | null;
+            /** Minimo */
+            minimo: number | null;
+            /** Maximo */
+            maximo: number | null;
+            /** Sucesso */
+            sucesso: string | null;
+            /** Fracasso */
+            fracasso: string | null;
+            /** Chance */
+            chance: number | null;
+            /** So Preservar */
+            so_preservar: boolean;
+        };
+        /** ResumoOrigemPar */
+        ResumoOrigemPar: {
+            /** X */
+            x: string;
+            /** Y */
+            y: string;
+            /** N */
+            n: number;
+            /** Media X */
+            media_x: number;
+            /** Media Y */
+            media_y: number;
+            /** Desvio X */
+            desvio_x: number;
+            /** Desvio Y */
+            desvio_y: number;
+            /** R */
+            r: number;
+        };
         /** Saude */
         Saude: {
             /** Status */
@@ -858,7 +1353,7 @@ export interface components {
             versao: string;
         };
         /** @enum {string} */
-        Secao: "leitura" | "tipos" | "limpeza" | "analises" | "distribuicoes" | "bivariada";
+        Secao: "leitura" | "tipos" | "limpeza" | "analises" | "distribuicoes" | "bivariada" | "gerador" | "detector";
         /** Separatrizes */
         Separatrizes: {
             /** Quartis */
@@ -870,6 +1365,12 @@ export interface components {
             /** Destaques */
             destaques: string[];
         };
+        /**
+         * Severidade
+         * @description Severidade de um alerta do detector (spec 12, spec 16).
+         * @enum {string}
+         */
+        Severidade: "info" | "atencao" | "alta";
         /** TabelaFrequencia */
         TabelaFrequencia: {
             tipo: components["schemas"]["TipoVariavel"];
@@ -978,8 +1479,10 @@ export interface components {
             media: number | null;
             /** Mediana */
             mediana: number | null;
-            moda: components["schemas"]["Celula"];
+            moda: components["schemas"]["app__dominios__datasets__schemas__Celula"];
         };
+        app__dominios__datasets__schemas__Celula: string | number | boolean | null;
+        app__dominios__gerador__schemas__Celula: number | string | null;
     };
     responses: never;
     parameters: never;
@@ -1042,9 +1545,32 @@ export interface operations {
             };
         };
     };
-    importar_exemplo_api_datasets_exemplo_post: {
+    listar_exemplos_api_datasets_exemplos_get: {
         parameters: {
             query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ArquivoExemplo"][];
+                };
+            };
+        };
+    };
+    importar_exemplo_api_datasets_exemplo_post: {
+        parameters: {
+            query?: {
+                /** @description Um dos arquivos de GET /datasets/exemplos */
+                arquivo?: string | null;
+            };
             header?: never;
             path?: never;
             cookie?: never;
@@ -1058,6 +1584,15 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["DatasetCriado"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
                 };
             };
         };
@@ -1149,6 +1684,40 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    obter_linhas_api_datasets__dataset_id__linhas_get: {
+        parameters: {
+            query: {
+                de: number;
+                ate: number;
+            };
+            header?: never;
+            path: {
+                dataset_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LinhaDados"][];
+                };
             };
             /** @description Validation Error */
             422: {
@@ -1505,15 +2074,277 @@ export interface operations {
             };
         };
     };
+    gerar_univariado_api_gerador_univariado_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PedidoUnivariado"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Gerado"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    gerar_bivariado_api_gerador_bivariado_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PedidoBivariado"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Gerado"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    resumir_origem_api_gerador_origem_get: {
+        parameters: {
+            query: {
+                dataset_id: string;
+                coluna: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ResumoOrigem"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    resumir_origem_par_api_gerador_origem_par_get: {
+        parameters: {
+            query: {
+                dataset_id: string;
+                x: string;
+                y: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ResumoOrigemPar"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    obter_api_gerador__gerado_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                gerado_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Gerado"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    baixar_csv_api_gerador__gerado_id__csv_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                gerado_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    adotar_api_gerador__gerado_id__adotar_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                gerado_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PedidoAdotar"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Adotado"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    detectar_api_datasets__dataset_id__detector_get: {
+        parameters: {
+            query?: {
+                /** @description Códigos separados por vírgula (R1…R11); sem o campo, todas as regras */
+                regras?: string | null;
+            };
+            header?: never;
+            path: {
+                dataset_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ResultadoDetector"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     gerar_relatorio_api_datasets__dataset_id__relatorio_get: {
         parameters: {
             query?: {
-                /** @description Seções do mini relatório */
+                /** @description Seções do relatório */
                 secoes?: components["schemas"]["Secao"][] | null;
                 /** @description Colunas analisadas */
                 colunas?: string[] | null;
                 /** @description Embute o plotly.js (funciona sem internet) */
                 offline?: boolean;
+                /** @description Geração mostrada na seção Gerador (sem ela, a seção sai) */
+                gerado?: string | null;
             };
             header?: never;
             path: {
