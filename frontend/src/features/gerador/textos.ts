@@ -93,5 +93,11 @@ export const TEXTOS_GERADOR = {
     novo: (n: string) => `Novo dataset criado: ${n} linhas.`,
   },
   descricaoSessao: (colunas: string, n: string) => `${colunas} · ${n}`,
+  /** Geração que saiu da memória do servidor (D149): refaz o mesmo pedido, com a mesma semente. */
+  expirado: {
+    descricao: (semente: number) =>
+      `Gere de novo: com a mesma semente (${String(semente)}), os dados saem iguais.`,
+    acao: 'Gerar de novo',
+  },
   navegacao: { voltar: 'Voltar para Bivariada', continuar: 'Continuar para Detector' },
 };

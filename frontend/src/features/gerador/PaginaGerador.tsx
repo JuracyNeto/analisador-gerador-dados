@@ -66,6 +66,7 @@ export default function PaginaGerador() {
             gerado={mutacao.data}
             gerando={mutacao.isPending}
             aoExpirar={mutacao.reset}
+            aoGerarDeNovo={mutacao.data === undefined ? null : geracao.refazer(mutacao.data)}
           />
         </div>
       </Abas>

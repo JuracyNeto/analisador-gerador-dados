@@ -16,10 +16,11 @@ const T = TEXTOS_GERADOR;
 interface PropsGerado {
   gerado: Gerado;
   aoExpirar: () => void;
+  aoGerarDeNovo: (() => void) | null;
 }
 
-function AcoesGeracao({ gerado, aoExpirar }: Readonly<PropsGerado>) {
-  const acoes = useAcoesGeracao(gerado, aoExpirar);
+function AcoesGeracao({ gerado, aoExpirar, aoGerarDeNovo }: Readonly<PropsGerado>) {
+  const acoes = useAcoesGeracao(gerado, { aoExpirar, aoGerarDeNovo });
   return (
     <div className={estilos.acoes}>
       <Botao
@@ -72,10 +73,17 @@ interface Props {
   gerado: Gerado | undefined;
   gerando: boolean;
   aoExpirar: () => void;
+  /** Refaz o pedido desta geração (null quando não há pedido para refazer). */
+  aoGerarDeNovo: (() => void) | null;
 }
 
 /** Coluna direita da tela 6: vazio, gerando ou o resultado com as ações. */
-export default function ResultadoGeracao({ gerado, gerando, aoExpirar }: Readonly<Props>) {
+export default function ResultadoGeracao({
+  gerado,
+  gerando,
+  aoExpirar,
+  aoGerarDeNovo,
+}: Readonly<Props>) {
   if (gerando) {
     return <EstadoCarregando forma={['tabela', 'grafico']} mensagem={T.resultado.gerandoDados} />;
   }
@@ -92,7 +100,7 @@ export default function ResultadoGeracao({ gerado, gerando, aoExpirar }: Readonl
     <div className={estilos.resultado}>
       <TabelaComparacao gerado={gerado} />
       <GraficoEExplicacao gerado={gerado} />
-      <AcoesGeracao gerado={gerado} aoExpirar={aoExpirar} />
+      <AcoesGeracao gerado={gerado} aoExpirar={aoExpirar} aoGerarDeNovo={aoGerarDeNovo} />
     </div>
   );
 }

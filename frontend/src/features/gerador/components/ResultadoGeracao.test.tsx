@@ -14,7 +14,12 @@ const ADOTAR = `/gerador/${geradoAltura.gerado_id}/adotar`;
 
 function renderizar(aoExpirar = vi.fn(), dataset: typeof DATASET_TESTE | null = DATASET_TESTE) {
   const tela = renderizarComProvedores(
-    <ResultadoGeracao gerado={geradoAltura} gerando={false} aoExpirar={aoExpirar} />,
+    <ResultadoGeracao
+      gerado={geradoAltura}
+      gerando={false}
+      aoExpirar={aoExpirar}
+      aoGerarDeNovo={null}
+    />,
     { dataset },
   );
   return { ...tela, aoExpirar };
@@ -92,11 +97,18 @@ describe('ResultadoGeracao', () => {
   it('estados vazio e gerando', () => {
     simularApi([]);
     const { rerender } = renderizarComProvedores(
-      <ResultadoGeracao gerado={undefined} gerando={false} aoExpirar={vi.fn()} />,
+      <ResultadoGeracao
+        gerado={undefined}
+        gerando={false}
+        aoExpirar={vi.fn()}
+        aoGerarDeNovo={null}
+      />,
     );
     expect(screen.getByText(T.resultado.vazio.titulo)).toBeInTheDocument();
 
-    rerender(<ResultadoGeracao gerado={undefined} gerando aoExpirar={vi.fn()} />);
+    rerender(
+      <ResultadoGeracao gerado={undefined} gerando aoExpirar={vi.fn()} aoGerarDeNovo={null} />,
+    );
     expect(screen.getByText(T.resultado.gerandoDados)).toBeInTheDocument();
   });
 });
