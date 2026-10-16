@@ -55,6 +55,8 @@ def test_sem_secoes_traz_as_oito(cliente: TestClient) -> None:
     assert ". Bivariada</h2>" in html
     assert ". Gerador de dados</h2>" in html
     assert ". Gerador de dados</h2>" not in sem_gerado
+    assert ". Detector de dados artificiais</h2>" in html
+    assert ". Detector de dados artificiais</h2>" in sem_gerado
 
 
 def test_secao_desconhecida(cliente: TestClient) -> None:

@@ -20,13 +20,14 @@ from app.dominios.analise.servico import (
     ServicoAnalise,
 )
 from app.dominios.datasets.servico import Resumo, ServicoDatasets
-from app.dominios.detector.servico import ServicoDetector
+from app.dominios.detector.servico import Aviso, ResultadoDetector, ServicoDetector
 from app.dominios.gerador.servico import Gerado, ServicoGerador
 from app.dominios.graficos.servico import codigo_plotlyjs, endereco_plotlyjs_cdn, figura_html
 from app.dominios.relatorio import textos
 from app.dominios.relatorio.comparacao import linha_comparacao
 from app.dominios.relatorio.conteudo import (
     SECOES_PADRAO,
+    AvisoRelatorio,
     BlocoAnalises,
     ConteudoRelatorio,
     DadosLeitura,
@@ -38,6 +39,7 @@ from app.dominios.relatorio.conteudo import (
     Secao,
     SecaoBivariada,
     SecaoColuna,
+    SecaoDetector,
     SecaoForma,
     SecaoGerador,
 )
@@ -294,6 +296,47 @@ def _secao_gerador(gerado: Gerado) -> SecaoGerador:
     )
 
 
+def _detalhes(aviso: Aviso) -> tuple[ItemMedida, ...]:
+    """Parte 8 da spec 16: medida, valor, limiar, teste, p traduzido e fórmula (só os que há)."""
+    d = aviso.detalhes
+    p_valor = None if d.p_valor is None else formatar_p_valor(d.p_valor)
+    partes = {"medida": d.medida, "valor": d.valor, "limiar": d.limiar, "teste": d.teste}
+    partes |= {"p_valor": p_valor, "formula": d.formula}
+    notas = {"p_valor": d.p_em_palavras}
+    return tuple(
+        ItemMedida(textos.ROTULOS_DETALHES[chave], valor, notas.get(chave))
+        for chave, valor in partes.items()
+        if valor
+    )
+
+
+def _aviso_relatorio(aviso: Aviso, ordem: int) -> AvisoRelatorio:
+    return AvisoRelatorio(
+        severidade=aviso.severidade,
+        selo=textos.SELOS_SEVERIDADE[aviso.severidade],
+        titulo=textos.titulo_aviso(aviso.regra, aviso.titulo),
+        resumo=aviso.resumo,
+        por_que=aviso.por_que,
+        exemplo=aviso.exemplo.texto if aviso.exemplo else None,
+        pode_ser_normal=aviso.pode_ser_normal,
+        o_que_fazer=aviso.o_que_fazer,
+        detalhes=_detalhes(aviso),
+        figura=_figura((aviso.figura,), f"aviso-{ordem}"),
+    )
+
+
+def _secao_detector(resultado: ResultadoDetector) -> SecaoDetector:
+    resumo, contagem = resultado.resumo, resultado.resumo.por_severidade
+    return SecaoDetector(
+        frase=resumo.frase,
+        detalhe=resumo.detalhe,
+        contadores=textos.contadores_severidade(contagem.alta, contagem.atencao, contagem.info),
+        avisos=tuple(_aviso_relatorio(a, ordem) for ordem, a in enumerate(resultado.avisos, 1)),
+        nao_verificadas=tuple(regra.frase for regra in resultado.nao_aplicadas),
+        vazio=resumo.vazio,
+    )
+
+
 class ServicoRelatorio:
     """Relatório da spec 13: leitura, tipos, limpeza, colunas, bivariada, gerador e detector."""
 
@@ -359,6 +402,10 @@ class ServicoRelatorio:
         except NaoEncontrado:
             return None
 
+    def _secao_detector(self, dataset_id: str) -> SecaoDetector:
+        """Todas as regras na versão atual, como na tela 7."""
+        return _secao_detector(self._detector.analisar(dataset_id))
+
     def gerar(self, dataset_id: str, pedido: PedidoRelatorio) -> str:
         """HTML autocontido; `offline` embute o plotly.js (cerca de 4,8 MB)."""
         resumo = self._datasets.resumo(dataset_id)
@@ -376,5 +423,6 @@ class ServicoRelatorio:
             colunas=self._colunas(dataset_id, pedido) if secoes & SECOES_POR_COLUNA else None,
             bivariada=self._bivariada(dataset_id) if "bivariada" in secoes else None,
             gerador=self._secao_do_gerado(pedido.gerado) if "gerador" in secoes else None,
+            detector=self._secao_detector(dataset_id) if "detector" in secoes else None,
         )
         return renderizar(conteudo)

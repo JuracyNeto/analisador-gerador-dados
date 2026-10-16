@@ -129,6 +129,34 @@ class SecaoGerador:
 
 
 @dataclass(frozen=True, slots=True)
+class AvisoRelatorio:
+    """Um alerta com as 8 partes da spec 16; os detalhes técnicos ficam sempre abertos."""
+
+    severidade: str
+    selo: str
+    titulo: str
+    resumo: str
+    por_que: str
+    exemplo: str | None
+    pode_ser_normal: str
+    o_que_fazer: str
+    detalhes: tuple[ItemMedida, ...]
+    figura: FiguraRelatorio | None
+
+
+@dataclass(frozen=True, slots=True)
+class SecaoDetector:
+    """Resumo, alertas completos e regras não verificadas (D141)."""
+
+    frase: str
+    detalhe: str
+    contadores: str
+    avisos: tuple[AvisoRelatorio, ...]
+    nao_verificadas: tuple[str, ...]
+    vazio: str | None
+
+
+@dataclass(frozen=True, slots=True)
 class ConteudoRelatorio:
     nome_arquivo: str
     gerado_em: str
@@ -140,3 +168,4 @@ class ConteudoRelatorio:
     colunas: tuple[SecaoColuna, ...] | None = None
     bivariada: SecaoBivariada | None = None
     gerador: SecaoGerador | None = None
+    detector: SecaoDetector | None = None

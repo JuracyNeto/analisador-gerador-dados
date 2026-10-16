@@ -1,6 +1,7 @@
 from pathlib import Path
 
 import pytest
+from markupsafe import escape
 
 from app.compartilhado.numeros import formatar_com_sinal
 from app.compartilhado.tipos import TipoVariavel
@@ -275,3 +276,54 @@ def test_sem_geracao_a_secao_gerador_sai(
 
     assert "<h2>1. Leitura do arquivo</h2>" in html
     assert "Gerador de dados</h2>" not in html
+
+
+def test_secao_detector_com_alturas_plantadas(
+    servico: ServicoRelatorio, servico_datasets: ServicoDatasets
+) -> None:
+    dataset_id = servico_datasets.importar_exemplo("alturas_plantadas.txt").dataset_id
+    detector = ServicoDetector(servico_datasets, ServicoAnalise(servico_datasets))
+    resultado = detector.analisar(dataset_id)
+
+    html = servico.gerar(dataset_id, PedidoRelatorio(secoes=("detector",)))
+
+    assert "<h2>1. Detector de dados artificiais</h2>" in html
+    assert resultado.resumo.frase in html
+    assert {"R1", "R3", "R4", "R5", "R10"} <= {aviso.regra for aviso in resultado.avisos}
+    titulos = [f"<h3>{escape(f'{a.regra} · {a.titulo}')}</h3>" for a in resultado.avisos]
+    posicoes = [html.index(titulo) for titulo in titulos]
+    assert posicoes == sorted(posicoes)
+    assert html.count("<h4>Detalhes técnicos</h4>") == len(resultado.avisos)
+    assert "<dt>Teste</dt><dd>Binomial unilateral</dd>" in html
+    assert "⛔ Suspeita alta" in html
+    assert html.index("<h3>R1 · ") < html.index("Figura 1 · ")
+    figuras = sum(aviso.figura is not None for aviso in resultado.avisos)
+    assert html.count("Plotly.newPlot(") == figuras
+    assert "<h3>Regras não verificadas</h3>" in html
+    for nao_aplicada in resultado.nao_aplicadas:
+        assert str(escape(nao_aplicada.frase)) in html
+
+
+def test_secao_detector_com_alturas_reais(
+    servico: ServicoRelatorio, servico_datasets: ServicoDatasets
+) -> None:
+    dataset_id = servico_datasets.importar_exemplo("alturas_reais.txt").dataset_id
+
+    html = servico.gerar(dataset_id, PedidoRelatorio(secoes=("detector",)))
+
+    assert "⛔ Suspeita alta" not in html
+    assert "⚠️ Atenção" not in html
+    assert "<h3>Regras não verificadas</h3>" in html
+
+
+def test_secao_detector_sem_alertas(
+    servico: ServicoRelatorio, servico_datasets: ServicoDatasets
+) -> None:
+    conteudo = b"x;y\n1;5\n2;1\n3;4\n4;2\n5;5\n6;1\n"
+    dataset_id = servico_datasets.importar(conteudo, "pequeno.txt", OpcoesLeitura()).dataset_id
+
+    html = servico.gerar(dataset_id, PedidoRelatorio(secoes=("detector",)))
+
+    assert "Nenhuma das 11 regras encontrou suspeitas." in html
+    assert "de atenção" not in html
+    assert "<h4>Detalhes técnicos</h4>" not in html

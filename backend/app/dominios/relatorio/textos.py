@@ -128,3 +128,34 @@ def selo_correlacao(forca: str, sentido: str) -> str:
     if forca == "fraca" or sentido == "nula":
         return "Fraca"
     return f"{sentido.capitalize()} {forca}"
+
+
+# Spec 16: ícone + palavra (a cor vem do CSS; o selo não depende só dela).
+SELOS_SEVERIDADE = {
+    "alta": "⛔ Suspeita alta",
+    "atencao": "⚠️ Atenção",
+    "info": "ℹ️ Informativo",
+}
+ROTULOS_DETALHES = {
+    "medida": "Medida",
+    "valor": "Valor",
+    "limiar": "Limiar",
+    "teste": "Teste",
+    "p_valor": "p-valor",
+    "formula": "Fórmula",
+}
+
+
+def contadores_severidade(alta: int, atencao: int, info: int) -> str:
+    """Ex.: "2 suspeitas altas · 2 de atenção · 1 informativo" (os contadores da tela 7)."""
+    partes = (
+        _quantidade(alta, "suspeita alta", "suspeitas altas"),
+        f"{formatar_inteiro(atencao)} de atenção",
+        _quantidade(info, "informativo", "informativos"),
+    )
+    return " · ".join(partes)
+
+
+def titulo_aviso(regra: str, titulo: str) -> str:
+    """Ex.: "R4 · Muitos valores redondos em peso_kg"."""
+    return f"{regra} · {titulo}"

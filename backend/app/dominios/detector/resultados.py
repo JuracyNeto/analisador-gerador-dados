@@ -81,6 +81,9 @@ class FiguraPronta(Protocol):
     def titulo(self) -> str: ...
 
     @property
+    def resumo(self) -> str: ...
+
+    @property
     def dados(self) -> Mapping[str, Any]: ...
 
 
