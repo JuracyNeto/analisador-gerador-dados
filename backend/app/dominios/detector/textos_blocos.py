@@ -67,13 +67,18 @@ def distancia(valor: float) -> str:
 
 
 def r01_detalhes(
-    k: int, distancias: tuple[float, float], simulacoes: int, p: float
+    tamanhos: tuple[int, int, int], distancias: tuple[float, float], simulacoes: int, p: float
 ) -> DetalhesAviso:
-    """dᵤ e dₛ da janela mais parecida com o restante e a proporção de embaralhamentos."""
+    """dᵤ e dₛ do trecho mais parecido com o restante e a proporção de embaralhamentos.
+
+    `tamanhos` = (k das janelas, menor e maior fim do arquivo) (D148).
+    """
+    k, menor, maior = tamanhos
     embaralhamentos = textos.quantidade(simulacoes, "embaralhamento", "embaralhamentos")
     return DetalhesAviso(
         medida=(
-            f"Janelas de {k} linhas seguidas: diferença de média (dᵤ) e de desvio (dₛ) "
+            f"Janelas de {k} linhas seguidas e o fim do arquivo (de {menor} a "
+            f"{formatar_inteiro(maior)} linhas): diferença de média (dᵤ) e de desvio (dₛ) "
             "para o restante das linhas, em desvios padrão do restante"
         ),
         valor=f"dᵤ = {distancia(distancias[0])} · dₛ = {distancia(distancias[1])}",

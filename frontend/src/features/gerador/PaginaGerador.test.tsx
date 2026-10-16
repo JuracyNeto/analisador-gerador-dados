@@ -147,4 +147,36 @@ describe('PaginaGerador', () => {
     await usuario.click(screen.getByRole('button', { name: 'Continuar para Detector' }));
     expect(roteador.state.location.pathname).toBe('/detector');
   });
+  it('geração expirada: o aviso oferece "Gerar de novo", com o mesmo pedido e a mesma semente', async () => {
+    const api = simularApi([
+      ...ROTAS,
+      {
+        metodo: 'POST',
+        caminho: `/gerador/${geradoAltura.gerado_id}/adotar`,
+        status: 404,
+        corpo: {
+          codigo: 'GERADO_NAO_ENCONTRADO',
+          mensagem: 'Os dados gerados não estão mais disponíveis.',
+          sugestao: 'Gere de novo na etapa Gerador.',
+        },
+      },
+    ]);
+    const { usuario } = renderizarPagina();
+    await screen.findByText(/Mesma média/);
+    await usuario.click(screen.getByRole('button', { name: T.gerar }));
+
+    await usuario.click(await screen.findByRole('button', { name: T.acoes.usar }));
+
+    const aviso = await screen.findByRole('alert');
+    expect(within(aviso).getByText('Os dados gerados não estão mais disponíveis.')).toBeVisible();
+    expect(within(aviso).getByText(T.expirado.descricao(geradoAltura.semente))).toBeVisible();
+    expect(screen.getByText(T.resultado.vazio.titulo)).toBeInTheDocument();
+    await usuario.click(within(aviso).getByRole('button', { name: T.expirado.acao }));
+
+    await waitFor(() => {
+      expect(chamadasPara(api, 'POST', '/gerador/univariado')).toHaveLength(2);
+    });
+    const [primeiro, segundo] = chamadasPara(api, 'POST', '/gerador/univariado');
+    expect(segundo?.corpo).toEqual({ ...(primeiro?.corpo as object), semente: 42 });
+  });
 });

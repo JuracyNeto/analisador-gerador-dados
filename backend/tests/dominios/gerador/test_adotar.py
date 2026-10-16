@@ -39,7 +39,10 @@ def test_usar_como_novo_dataset(cliente: TestClient) -> None:
     assert adotado["n_linhas"] == 500
     assert adotado["nome_arquivo"] == "gerado-peso_kg.csv"
     colunas = cliente.get(f"/api/datasets/{adotado['dataset_id']}/colunas").json()
-    assert colunas[0]["tipo"] == "continua"
+    # Uma coluna só: a vírgula decimal não vira separador (D147).
+    assert [(c["coluna"], c["tipo"]) for c in colunas] == [("peso_kg", "continua")]
+    resumo = cliente.get(f"/api/datasets/{adotado['dataset_id']}").json()["resumo"]
+    assert resumo["n_linhas"] == 500
 
 
 def test_anexar_ao_dataset_atual_e_desfazer(cliente: TestClient) -> None:

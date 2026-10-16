@@ -387,7 +387,9 @@ class ServicoGerador:
         gerado = self.obter(gerado_id)
         if modo == "novo":
             criado = self._datasets.importar(gerado.csv(), gerado.nome_csv, OpcoesLeitura())
-            return Adotado(criado.dataset_id, criado.nome_arquivo, gerado.n, "novo")
+            # As linhas do dataset criado (não as da geração): o aviso mostra o que foi lido.
+            linhas = criado.metadados.n_linhas
+            return Adotado(criado.dataset_id, criado.nome_arquivo, linhas, "novo")
         if dataset_id is None:
             raise erros.parametros_incompletos(["o dataset"])
         frase = (

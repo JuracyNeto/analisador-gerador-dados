@@ -7,7 +7,7 @@ from datetime import datetime
 import pandas as pd
 
 from app.compartilhado.numeros import formatar_numero
-from app.compartilhado.series import converter_para_numero
+from app.compartilhado.series import converter_para_numero, na_precisao
 from app.compartilhado.tipos import TIPOS_NUMERICOS
 from app.dominios.datasets import erros
 from app.dominios.datasets import frases_limpeza as frases
@@ -133,15 +133,19 @@ def _preencher(ctx: _Contexto, coluna: str, valor: Celula, descricao: str) -> _E
     return _Efeito(_com_coluna(ctx, coluna, novo), _linhas(vazias), VAZIO, _texto(valor), frase)
 
 
+# Média e mediana entram nas casas da coluna: um 68,75 entre pesos com 1 casa mudaria a precisão
+# que o detector (R4, R9) e o gerador leem da coluna (D146).
 def _preencher_media(ctx: _Contexto, acao: AcaoLimpeza) -> _Efeito:
     coluna = _coluna(ctx, acao)
-    media = float(_numeros(ctx, coluna).mean())
+    numeros = _numeros(ctx, coluna)
+    media = na_precisao(float(numeros.mean()), numeros)
     return _preencher(ctx, coluna, media, f"a média ({formatar_numero(media)})")
 
 
 def _preencher_mediana(ctx: _Contexto, acao: AcaoLimpeza) -> _Efeito:
     coluna = _coluna(ctx, acao)
-    mediana = float(_numeros(ctx, coluna).median())
+    numeros = _numeros(ctx, coluna)
+    mediana = na_precisao(float(numeros.median()), numeros)
     return _preencher(ctx, coluna, mediana, f"a mediana ({formatar_numero(mediana)})")
 
 

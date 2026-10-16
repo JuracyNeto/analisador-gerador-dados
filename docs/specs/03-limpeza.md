@@ -28,6 +28,7 @@ Cada ação gera `{acao, coluna, linhas_afetadas, antes_exemplo, depois_exemplo,
 
 ## Regras
 - Preencher com média só para numéricas; ordinal/nominal só moda.
+- Média e mediana entram nas casas decimais da coluna (68,75 entre pesos com 1 casa vira 68,8; contagens continuam inteiras), para não mudar a precisão que o detector (R4, R9) e o gerador leem; o diagnóstico sugere o mesmo valor (D146).
 - Após limpeza, reclassificar tipos apenas das colunas cujo conteúdo mudou e que estão com `origem="auto"`.
 - Tipos `manual` são mantidos após a limpeza se continuarem válidos; só as contagens são atualizadas.
 - Se uma coluna numérica ainda tem texto (tipo misto mantido), o valor de preenchimento entra como texto no formato do arquivo.

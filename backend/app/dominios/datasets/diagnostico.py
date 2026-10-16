@@ -6,7 +6,7 @@ from typing import Literal
 
 import pandas as pd
 
-from app.compartilhado.series import converter_para_numero
+from app.compartilhado.series import converter_para_numero, na_precisao
 from app.compartilhado.textos import normalizar_texto
 from app.compartilhado.tipos import TIPOS_CATEGORICOS, TIPOS_NUMERICOS, TipoVariavel
 from app.dominios.datasets import erros
@@ -112,7 +112,8 @@ def _sugeridos(serie: pd.Series, numeros: pd.Series | None) -> ValoresSugeridos:
     moda = celula(modas.iloc[0]) if not modas.empty else None
     if numeros is None or numeros.dropna().empty:
         return ValoresSugeridos(None, None, moda)
-    return ValoresSugeridos(float(numeros.mean()), float(numeros.median()), moda)
+    media, mediana = (na_precisao(float(m), numeros) for m in (numeros.mean(), numeros.median()))
+    return ValoresSugeridos(media, mediana, moda)
 
 
 def faltantes(

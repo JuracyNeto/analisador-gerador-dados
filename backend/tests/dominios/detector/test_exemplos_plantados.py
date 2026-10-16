@@ -5,6 +5,8 @@ from typing import Any
 import pytest
 from fastapi.testclient import TestClient
 
+from tests.dominios.detector.apoio import exemplo_principal_limpo
+
 
 def _detector(cliente: TestClient, arquivo: str) -> dict[str, Any]:
     criado = cliente.post("/api/datasets/exemplo", params={"arquivo": arquivo}).json()
@@ -32,18 +34,29 @@ def test_alturas_reais_sem_alertas_de_atencao_ou_alta(cliente: TestClient) -> No
 
 def test_pesquisa_saude_limpa_sem_bloco_alinhado(cliente: TestClient) -> None:
     """O exemplo principal depois da limpeza: altura_m tem só 41 valores distintos (empates)."""
-    dataset_id = cliente.post("/api/datasets/exemplo").json()["dataset_id"]
-    diagnostico = cliente.get(f"/api/datasets/{dataset_id}/diagnostico").json()
-    acoes = [{"problema": "duplicados", "acao": "remover"}] + [
-        {"problema": "fora_de_faixa", "acao": "remover_linhas", "coluna": item["coluna"]}
-        for item in diagnostico["fora_de_faixa"]
-    ]
-    cliente.post(f"/api/datasets/{dataset_id}/limpeza", json={"acoes": acoes})
+    dataset_id = exemplo_principal_limpo(cliente)
 
     resposta = cliente.get(f"/api/datasets/{dataset_id}/detector", params={"regras": "R1"})
 
     assert resposta.json()["avisos"] == []
     assert resposta.json()["resumo"]["regras_verificadas"] == 1
+
+
+def test_faltantes_preenchidos_nao_viram_valores_redondos(cliente: TestClient) -> None:
+    """A mediana entra nas casas da coluna (68,8, não 68,75): pesos não "terminam em 0" (D146)."""
+    dataset_id = cliente.post("/api/datasets/exemplo").json()["dataset_id"]
+    diagnostico = cliente.get(f"/api/datasets/{dataset_id}/diagnostico").json()
+    acoes = [{"problema": "duplicados", "acao": "remover"}] + [
+        {"problema": "faltantes", "acao": "preencher_mediana", "coluna": item["coluna"]}
+        for item in diagnostico["faltantes"]
+        if item["sugeridos"]["mediana"] is not None
+    ]
+    log = cliente.post(f"/api/datasets/{dataset_id}/limpeza", json={"acoes": acoes}).json()["log"]
+
+    resposta = cliente.get(f"/api/datasets/{dataset_id}/detector", params={"regras": "R4,R9"})
+
+    assert any("peso_kg com a mediana" in entrada["frase"] for entrada in log)
+    assert resposta.json()["avisos"] == []
 
 
 def test_bloco_alinhado_nos_pesos(plantadas: dict[Any, dict[str, Any]]) -> None:

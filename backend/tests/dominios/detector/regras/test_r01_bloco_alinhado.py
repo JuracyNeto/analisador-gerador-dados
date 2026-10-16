@@ -73,6 +73,25 @@ def test_bloco_igual_ao_restante_dispara_em_qualquer_amostra(familia: str, semen
     assert aviso.resumo.startswith("Um bloco de 20 linhas (381–400)")
 
 
+@pytest.mark.parametrize(
+    ("n", "inicio", "tamanho", "linhas"),
+    [(242, 221, 21, "222–242"), (400, 365, 35, "366–400"), (300, 260, 40, "261–300")],
+    ids=["21_anexados_com_k_12", "35_com_k_20", "40_com_k_15"],
+)
+def test_bloco_no_fim_dispara_com_qualquer_tamanho(
+    n: int, inicio: int, tamanho: int, linhas: str
+) -> None:
+    """Anexar valores gerados exigia acertar k = max(10, ⌊n/20⌋); o fim vale com 10 a n/2
+    linhas (D148)."""
+    valores = alinhar_bloco(_normal(n), inicio, tamanho)
+
+    (aviso,) = RegraBlocoAlinhado().executar(tabela_numerica(valores)).avisos
+
+    assert aviso.resumo.startswith(f"Um bloco de {tamanho} linhas ({linhas})")
+    assert aviso.exemplo is not None
+    assert aviso.exemplo.texto.startswith(f"Linhas {linhas.replace('–', ' a ')}: média ")
+
+
 def test_detalhes_trazem_a_simulacao() -> None:
     (aviso,) = (
         RegraBlocoAlinhado().executar(tabela_numerica(alinhar_bloco(_normal(), 180, 20))).avisos
@@ -87,6 +106,9 @@ def test_detalhes_trazem_a_simulacao() -> None:
         "dᵤ = |x̄_bloco − x̄_resto| / s_resto · dₛ = |s_bloco − s_resto| / s_resto"
     )
     assert "para o restante das linhas" in detalhes.medida
+    assert detalhes.medida.startswith(
+        "Janelas de 20 linhas seguidas e o fim do arquivo (de 10 a 200 linhas)"
+    )
 
 
 def test_exemplo_cita_o_bloco_inteiro_mesmo_com_mais_de_20_linhas() -> None:

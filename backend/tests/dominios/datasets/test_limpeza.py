@@ -49,6 +49,27 @@ def test_preencher_com_a_mediana() -> None:
     assert resultado.log[0].frase == "Preenchemos 1 valor faltante de idade com a mediana (30)."
 
 
+@pytest.mark.parametrize(
+    ("acao", "valores", "esperado", "frase"),
+    [
+        # Pesos com 1 casa: a mediana 68,75 entra como 68,8 (D146).
+        ("preencher_mediana", [60.0, 68.5, None, 69.0, 75.0], 68.8, "a mediana (68,8)"),
+        ("preencher_media", [1.1, 1.2, None, 1.4, 1.4], 1.3, "a média (1,3)"),
+        # Contagens inteiras continuam inteiras.
+        ("preencher_media", [1.0, 2.0, None, 2.0, 4.0], 2.0, "a média (2)"),
+    ],
+)
+def test_media_e_mediana_entram_nas_casas_da_coluna(
+    acao: str, valores: list[float | None], esperado: float, frase: str
+) -> None:
+    dados = pd.DataFrame({"valor": valores}, index=pd.RangeIndex(1, len(valores) + 1))
+
+    resultado = _aplicar(AcaoLimpeza("faltantes", acao, "valor"), dados=dados)
+
+    assert resultado.dados.loc[3, "valor"] == esperado
+    assert resultado.log[0].frase == f"Preenchemos 1 valor faltante de valor com {frase}."
+
+
 def test_preencher_com_a_media_e_com_a_moda() -> None:
     resultado = _aplicar(
         AcaoLimpeza("faltantes", "preencher_media", "idade"),
@@ -123,11 +144,11 @@ def test_tipo_misto_vira_faltante_e_coluna_vira_numero() -> None:
 
 def test_preencher_coluna_numerica_que_ainda_tem_texto_mantem_o_formato() -> None:
     # "doze" foi mantido (tipo misto): a coluna guarda texto e o valor entra como texto.
-    dados = _dados().assign(nota=["7", None, "8", "6", "doze", "9"])
+    dados = _dados().assign(nota=["7.2", None, "8.4", "6.1", "doze", "9.3"])
 
     resultado = _aplicar(AcaoLimpeza("faltantes", "preencher_mediana", "nota"), dados=dados)
 
-    assert resultado.dados.loc[2, "nota"] == "7.5"
+    assert resultado.dados.loc[2, "nota"] == "7.8"
 
 
 def test_ordem_da_spec_inconsistencia_antes_de_duplicados() -> None:

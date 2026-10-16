@@ -105,3 +105,8 @@ def casas_decimais(numeros: pd.Series) -> int:
         if np.all(np.abs(escalados - np.round(escalados)) < _TOLERANCIA * 10**casas):
             return casas
     return MAX_CASAS_DECIMAIS
+
+
+def na_precisao(valor: float, numeros: pd.Series) -> float:
+    """O valor nas casas decimais da coluna: a mediana 68,75 de pesos com 1 casa vira 68,8."""
+    return float(np.round(valor, casas_decimais(numeros)))

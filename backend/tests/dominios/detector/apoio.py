@@ -5,11 +5,24 @@ from dataclasses import replace
 
 import numpy as np
 import pandas as pd
+from fastapi.testclient import TestClient
 from scipy import stats
 
 from app.compartilhado.tipos import TIPOS_NUMERICOS, TipoVariavel
 from app.dominios.detector.servico import forma_da_coluna
 from app.dominios.detector.tabela import TabelaDetector, coluna_detector, montar_tabela
+
+
+def exemplo_principal_limpo(cliente: TestClient) -> str:
+    """`pesquisa_saude.txt` pela API, sem duplicados e sem as linhas fora de faixa."""
+    dataset_id = cliente.post("/api/datasets/exemplo").json()["dataset_id"]
+    diagnostico = cliente.get(f"/api/datasets/{dataset_id}/diagnostico").json()
+    acoes = [{"problema": "duplicados", "acao": "remover"}] + [
+        {"problema": "fora_de_faixa", "acao": "remover_linhas", "coluna": item["coluna"]}
+        for item in diagnostico["fora_de_faixa"]
+    ]
+    cliente.post(f"/api/datasets/{dataset_id}/limpeza", json={"acoes": acoes})
+    return str(dataset_id)
 
 
 def _textos(serie: pd.Series) -> pd.Series:

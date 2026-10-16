@@ -8,6 +8,7 @@ from app.compartilhado.series import (
     casas_decimais,
     converter_para_numero,
     eh_inteira,
+    na_precisao,
     proporcao_numerica,
     reconhecer_unidade,
     sem_unidade,
@@ -117,3 +118,13 @@ def test_eh_inteira(valores: list[float | None], esperado: bool) -> None:
 )
 def test_casas_decimais(valores: list[float], esperado: int) -> None:
     assert casas_decimais(pd.Series(valores)) == esperado
+
+
+@pytest.mark.parametrize(
+    ("valor", "valores", "esperado"),
+    [(68.75, [60.0, 68.5], 68.8), (2.25, [1.0, 4.0], 2.0), (1.6234, [1.62, 1.7], 1.62)],
+)
+def test_na_precisao_usa_as_casas_da_coluna(
+    valor: float, valores: list[float], esperado: float
+) -> None:
+    assert na_precisao(valor, pd.Series(valores)) == esperado

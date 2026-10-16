@@ -117,6 +117,36 @@ def test_sem_separador_le_uma_coluna() -> None:
     assert detectar_separador(["valor", "1", "2"]).valor is None
 
 
+def test_coluna_unica_com_virgula_decimal_nao_tem_separador() -> None:
+    """CSV univariado do gerador: a vírgula falta só no cabeçalho e fica nos números (D147)."""
+    linhas = ["altura_m", "1,74", "1,73", "1,51", "2,0", "1.234,5"]
+
+    detectado = detectar_separador(linhas)
+
+    assert detectado.valor is None
+    assert detectado.motivo == "As vírgulas são decimais (ex.: 1,74); lemos uma coluna só."
+    assert detectar_decimal(linhas, None).valor == ","
+
+
+@pytest.mark.parametrize(
+    "linhas",
+    [["a,b", "1,74", "2,5"], ["1,74", "1,73", "1,51"], ["nome", "Ana,Bia", "Caio,Davi"]],
+    ids=["cabecalho_com_virgula", "sem_cabecalho", "virgula_em_texto"],
+)
+def test_virgula_continua_separador_fora_da_coluna_decimal(linhas: list[str]) -> None:
+    assert detectar_separador(linhas).valor == ","
+
+
+def test_titulo_acima_de_tabela_com_ponto_e_virgula_nao_vira_uma_coluna() -> None:
+    linhas = ["Pesquisa", "sexo;peso", "F;58,2", "M;79,6", "F;61,0", "M;88,1"]
+
+    assert detectar_separador(linhas).valor == ";"
+
+
+def test_motivo_do_separador_no_singular() -> None:
+    assert detectar_separador(["a,b", "1.5,2", "3,4"]).motivo == "Aparece 1 vez em todas as linhas."
+
+
 @pytest.mark.parametrize(
     ("linhas", "separador", "decimal"),
     [
