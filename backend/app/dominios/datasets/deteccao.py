@@ -7,6 +7,7 @@ from dataclasses import dataclass
 from pathlib import PurePath
 
 from app.compartilhado.series import sem_unidade
+from app.compartilhado.textos import pluralizar
 from app.dominios.datasets import erros
 
 FORMATOS = {".txt": "txt", ".csv": "csv", ".tsv": "tsv", ".xlsx": "xlsx", ".json": "json"}
@@ -117,7 +118,25 @@ def _separador_constante(linhas: list[str]) -> Deteccao[str | None]:
     melhor = _melhor_separador(linhas, contagens)
     if contagens[melhor] == 0:
         return Deteccao(None, "Não encontramos um separador; lemos uma coluna só.")
-    return Deteccao(melhor, f"Aparece {contagens[melhor]} vezes em todas as linhas.")
+    vezes = pluralizar(contagens[melhor], "vez", "vezes")
+    return Deteccao(melhor, f"Aparece {contagens[melhor]} {vezes} em todas as linhas.")
+
+
+def _coluna_com_virgula_decimal(linhas: list[str]) -> str | None:
+    """1ª vírgula de uma coluna de números como 1,74, se ela não é separador (D147).
+
+    Nenhum outro candidato aparece, cada linha tem no máximo uma vírgula, sempre dentro de um
+    número, e alguma linha não tem (o cabeçalho): é a vírgula decimal de um arquivo de uma coluna
+    só (o CSV univariado do gerador). Sem cabeçalho e com vírgula em todas as linhas, "1,74" pode
+    ser um par de inteiros: a vírgula continua separador.
+    """
+    outros = (c for c in CANDIDATOS_SEPARADOR if c != VIRGULA)
+    if any(len(quebrar(linha, c)) > 1 for c in outros for linha in linhas):
+        return None
+    virgulas = [linha.count(VIRGULA) for linha in linhas]
+    if max(virgulas) != 1 or min(virgulas) != 0 or not _virgulas_sao_decimais(linhas):
+        return None
+    return next(linha.strip() for linha in linhas if VIRGULA in linha)
 
 
 def detectar_separador(linhas: list[str]) -> Deteccao[str | None]:
@@ -128,6 +147,9 @@ def detectar_separador(linhas: list[str]) -> Deteccao[str | None]:
     """
     if not linhas:
         return Deteccao(None, "Não há linhas para analisar.")
+    exemplo = _coluna_com_virgula_decimal(linhas)
+    if exemplo is not None:
+        return Deteccao(None, f"As vírgulas são decimais (ex.: {exemplo}); lemos uma coluna só.")
     inicios = range(max(1, min(MAX_LINHAS_TITULO, len(linhas) - 1)))
     deteccoes = (_separador_constante(linhas[inicio:]) for inicio in inicios)
     return next((d for d in deteccoes if d.valor is not None), _separador_constante(linhas))
