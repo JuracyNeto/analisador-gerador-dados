@@ -32,6 +32,24 @@ def test_afastamentos_do_resto_batem_com_um_laco_simples() -> None:
     np.testing.assert_allclose(afastamentos[1], _afastamento_por_laco(valores[::-1], 15), rtol=1e-8)
 
 
+def _afastamento_de(valores: np.ndarray, trecho: slice) -> float:
+    posicoes = np.arange(len(valores))[trecho]
+    parte, resto = valores[posicoes], np.delete(valores, posicoes)
+    desvio = resto.std(ddof=1)
+    return max(abs(parte.mean() - resto.mean()), abs(parte.std(ddof=1) - desvio)) / desvio
+
+
+def test_afastamentos_do_fim_batem_com_um_laco_simples() -> None:
+    """Os últimos 10 a 30 valores, cada fim contra o resto."""
+    valores = _valores(80)
+
+    afastamentos = blocos.afastamentos_do_fim(np.vstack([valores, valores[::-1]]), 10, 30)
+
+    esperados = [_afastamento_de(valores, slice(80 - m, 80)) for m in range(10, 31)]
+    np.testing.assert_allclose(afastamentos[0], esperados, rtol=1e-8)
+    assert afastamentos.shape == (2, 21)
+
+
 def test_janela_com_a_media_e_o_desvio_do_resto_tem_afastamento_zero() -> None:
     resto = _valores(380)
     z = np.random.default_rng(5).normal(0, 1, 20)
@@ -93,5 +111,6 @@ def test_mil_embaralhamentos_de_dez_mil_valores_sao_rapidos() -> None:
     inicio = time.perf_counter()
     for lote in blocos.embaralhados(valores, 1_000, rng):
         blocos.afastamentos_do_resto(lote, 500).min(axis=1)
+        blocos.afastamentos_do_fim(lote, 10, 5_000).min(axis=1)
 
     assert time.perf_counter() - inicio < 3.0

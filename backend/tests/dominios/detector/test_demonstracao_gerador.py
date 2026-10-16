@@ -57,3 +57,33 @@ def test_alturas_em_centimetros_nao_disparam(cliente: TestClient) -> None:
     dataset_id = _gerar_e_anexar(cliente, "altura_m", 0)
 
     assert _avisos_r1(cliente, dataset_id) == []
+
+
+@pytest.mark.parametrize("semente", [5, 7, 14])
+def test_pesos_anexados_ao_exemplo_principal_limpo_disparam(
+    cliente: TestClient, semente: int
+) -> None:
+    """Com 221 linhas e 21 anexadas, k = 12: o bloco é pego pelo fim do arquivo (D148)."""
+    dataset_id = cliente.post("/api/datasets/exemplo").json()["dataset_id"]
+    diagnostico = cliente.get(f"/api/datasets/{dataset_id}/diagnostico").json()
+    acoes = [{"problema": "duplicados", "acao": "remover"}] + [
+        {"problema": "fora_de_faixa", "acao": "remover_linhas", "coluna": item["coluna"]}
+        for item in diagnostico["fora_de_faixa"]
+    ]
+    cliente.post(f"/api/datasets/{dataset_id}/limpeza", json={"acoes": acoes})
+    pedido = {
+        "origem": {"dataset_id": dataset_id, "coluna": "peso_kg"},
+        "x": GERADOS,
+        "modo": "preservar",
+        "semente": semente,
+    }
+    gerado = cliente.post("/api/gerador/univariado", json=pedido).json()
+    cliente.post(
+        f"/api/gerador/{gerado['gerado_id']}/adotar",
+        json={"modo": "anexar", "dataset_id": dataset_id},
+    )
+
+    (aviso,) = _avisos_r1(cliente, dataset_id)
+
+    assert aviso["resumo"].startswith("Um bloco de 21 linhas (")
+    assert aviso["severidade"] == "alta"
