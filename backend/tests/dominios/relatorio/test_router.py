@@ -30,7 +30,18 @@ def test_secao_distribuicoes_aceita(cliente: TestClient) -> None:
     assert resposta.status_code == 200
 
 
-def test_sem_secoes_traz_as_seis(cliente: TestClient) -> None:
+def test_secoes_gerador_e_detector_aceitas(cliente: TestClient) -> None:
+    dataset_id = _exemplo(cliente)
+
+    resposta = cliente.get(
+        f"/api/datasets/{dataset_id}/relatorio",
+        params={"secoes": ["gerador", "detector"], "gerado": "nao-existe"},
+    )
+
+    assert resposta.status_code == 200
+
+
+def test_sem_secoes_traz_as_oito(cliente: TestClient) -> None:
     dataset_id = _exemplo(cliente)
 
     html = cliente.get(f"/api/datasets/{dataset_id}/relatorio").text

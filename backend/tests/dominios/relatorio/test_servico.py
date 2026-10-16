@@ -6,17 +6,38 @@ from app.compartilhado.tipos import TipoVariavel
 from app.core.config import Configuracao
 from app.dominios.analise.servico import ServicoAnalise
 from app.dominios.datasets.servico import AcaoLimpeza, OpcoesLeitura, ServicoDatasets
+from app.dominios.detector.servico import ServicoDetector
+from app.dominios.gerador.servico import Gerado, RepositorioGerados, ServicoGerador
 from app.dominios.relatorio.servico import (
     SECOES_PADRAO,
     PedidoRelatorio,
+    Secao,
     ServicoRelatorio,
     pares_mais_fortes,
 )
 
+SECOES_DA_ANALISE: tuple[Secao, ...] = (
+    "leitura",
+    "tipos",
+    "limpeza",
+    "analises",
+    "distribuicoes",
+    "bivariada",
+)
+
 
 @pytest.fixture
-def servico(servico_datasets: ServicoDatasets) -> ServicoRelatorio:
-    return ServicoRelatorio(servico_datasets, ServicoAnalise(servico_datasets))
+def servico_gerador(servico_datasets: ServicoDatasets) -> ServicoGerador:
+    config = Configuracao()
+    gerados = RepositorioGerados[Gerado](config.max_gerados)
+    return ServicoGerador(servico_datasets, ServicoAnalise(servico_datasets), gerados, config)
+
+
+@pytest.fixture
+def servico(servico_datasets: ServicoDatasets, servico_gerador: ServicoGerador) -> ServicoRelatorio:
+    analise = ServicoAnalise(servico_datasets)
+    detector = ServicoDetector(servico_datasets, analise)
+    return ServicoRelatorio(servico_datasets, analise, servico_gerador, detector)
 
 
 @pytest.fixture
@@ -26,8 +47,9 @@ def dataset_id(servico_datasets: ServicoDatasets) -> str:
     return dataset_id
 
 
-def test_pedido_padrao_tem_as_seis_secoes() -> None:
+def test_pedido_padrao_tem_as_oito_secoes() -> None:
     assert PedidoRelatorio().secoes == SECOES_PADRAO
+    assert PedidoRelatorio().gerado is None
     assert SECOES_PADRAO == (
         "leitura",
         "tipos",
@@ -35,11 +57,13 @@ def test_pedido_padrao_tem_as_seis_secoes() -> None:
         "analises",
         "distribuicoes",
         "bivariada",
+        "gerador",
+        "detector",
     )
 
 
 def test_mini_relatorio_completo(servico: ServicoRelatorio, dataset_id: str) -> None:
-    html = servico.gerar(dataset_id, PedidoRelatorio())
+    html = servico.gerar(dataset_id, PedidoRelatorio(secoes=SECOES_DA_ANALISE))
 
     assert "Relatório estatístico" in html
     assert "pesquisa_saude.txt · 227 linhas após limpeza × 8 colunas" in html

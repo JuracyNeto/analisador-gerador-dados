@@ -3,7 +3,9 @@
 from dataclasses import dataclass
 from typing import Literal
 
-type Secao = Literal["leitura", "tipos", "limpeza", "analises", "distribuicoes", "bivariada"]
+type Secao = Literal[
+    "leitura", "tipos", "limpeza", "analises", "distribuicoes", "bivariada", "gerador", "detector"
+]
 
 SECOES_PADRAO: tuple[Secao, ...] = (
     "leitura",
@@ -12,6 +14,8 @@ SECOES_PADRAO: tuple[Secao, ...] = (
     "analises",
     "distribuicoes",
     "bivariada",
+    "gerador",
+    "detector",
 )
 
 

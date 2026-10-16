@@ -20,6 +20,8 @@ from app.dominios.analise.servico import (
     ServicoAnalise,
 )
 from app.dominios.datasets.servico import Resumo, ServicoDatasets
+from app.dominios.detector.servico import ServicoDetector
+from app.dominios.gerador.servico import ServicoGerador
 from app.dominios.graficos.servico import codigo_plotlyjs, endereco_plotlyjs_cdn, figura_html
 from app.dominios.relatorio import textos
 from app.dominios.relatorio.conteudo import (
@@ -58,11 +60,12 @@ ERROS_DO_PAR = frozenset({"POUCOS_PARES", "SEM_VARIACAO"})
 
 @dataclass(frozen=True, slots=True)
 class PedidoRelatorio:
-    """O que entra no relatório; sem colunas = todas as analisáveis."""
+    """O que entra no relatório; sem colunas = todas as analisáveis; sem `gerado`, sem Gerador."""
 
     secoes: tuple[Secao, ...] = SECOES_PADRAO
     colunas: tuple[str, ...] | None = None
     offline: bool = False
+    gerado: str | None = None
 
 
 def _script_plotly(offline: bool) -> str:
@@ -259,11 +262,19 @@ def _formulas_bivariada(analises: Iterable[Bivariada]) -> tuple[FormulaTexto, ..
 
 
 class ServicoRelatorio:
-    """Relatório da spec 13: leitura, tipos, limpeza, colunas (análises e forma) e bivariada."""
+    """Relatório da spec 13: leitura, tipos, limpeza, colunas, bivariada, gerador e detector."""
 
-    def __init__(self, datasets: ServicoDatasets, analise: ServicoAnalise) -> None:
+    def __init__(
+        self,
+        datasets: ServicoDatasets,
+        analise: ServicoAnalise,
+        gerador: ServicoGerador,
+        detector: ServicoDetector,
+    ) -> None:
         self._datasets = datasets
         self._analise = analise
+        self._gerador = gerador
+        self._detector = detector
 
     def _tipos(self, dataset_id: str) -> tuple[LinhaTipo, ...]:
         return tuple(
