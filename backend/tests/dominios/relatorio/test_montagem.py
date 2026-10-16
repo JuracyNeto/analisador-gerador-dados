@@ -165,6 +165,7 @@ def test_estilos_de_severidade_e_impressao() -> None:
 
     for token in ("--sev-alta: #b42318", "--sev-atencao: #995700", "--sev-info: #1d5fd1"):
         assert token in html
-    assert ".aviso { break-inside: avoid;" in html
+    # O texto do alerta não se divide; a figura pode ir para a página seguinte.
+    assert ".aviso-texto { break-inside: avoid; }" in html
     quebra = "section.coluna, section.bivariada, section.gerador, section.detector"
     assert f"{quebra} {{ break-before: page; }}" in html

@@ -81,19 +81,21 @@
   {% endmacro %}
   {% macro aviso(a) %}
     <article class="aviso sev-{{ a.severidade }}">
-      <p class="selo-severidade">{{ a.selo }}</p>
-      <h3>{{ a.titulo }}</h3>
-      <p>{{ a.resumo }}</p>
-      <div class="partes">
-        <div><h4>Por que chama atenção</h4><p>{{ a.por_que }}</p></div>
-        <div><h4>Pode ser normal se…</h4><p>{{ a.pode_ser_normal }}</p></div>
+      <div class="aviso-texto">
+        <p class="selo-severidade">{{ a.selo }}</p>
+        <h3>{{ a.titulo }}</h3>
+        <p>{{ a.resumo }}</p>
+        <div class="partes">
+          <div><h4>Por que chama atenção</h4><p>{{ a.por_que }}</p></div>
+          <div><h4>Pode ser normal se…</h4><p>{{ a.pode_ser_normal }}</p></div>
+        </div>
+        {% if a.exemplo %}<p class="exemplo"><span class="rotulo">Exemplo</span> <span class="mono">{{ a.exemplo }}</span></p>{% endif %}
+        <p><strong>O que fazer:</strong> {{ a.o_que_fazer }}</p>
+        <h4>Detalhes técnicos</h4>
+        <dl class="detalhes">
+          {% for d in a.detalhes %}<dt>{{ d.rotulo }}</dt><dd>{{ d.valor }}{% if d.nota %} <span class="nota">· {{ d.nota }}</span>{% endif %}</dd>{% endfor %}
+        </dl>
       </div>
-      {% if a.exemplo %}<p class="exemplo"><span class="rotulo">Exemplo</span> <span class="mono">{{ a.exemplo }}</span></p>{% endif %}
-      <p><strong>O que fazer:</strong> {{ a.o_que_fazer }}</p>
-      <h4>Detalhes técnicos</h4>
-      <dl class="detalhes">
-        {% for d in a.detalhes %}<dt>{{ d.rotulo }}</dt><dd>{{ d.valor }}{% if d.nota %} <span class="nota">· {{ d.nota }}</span>{% endif %}</dd>{% endfor %}
-      </dl>
       {% if a.figura %}{{ figura(a.figura) }}{% endif %}
     </article>
   {% endmacro %}

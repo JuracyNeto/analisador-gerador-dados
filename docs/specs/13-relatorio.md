@@ -21,7 +21,7 @@ Parâmetros: `secoes` (leitura, tipos, limpeza, analises, distribuicoes, bivaria
 ## Requisitos
 - Arquivo único autocontido: CSS inline, Plotly via CDN **ou** embutido (opção "funciona offline" → `include_plotlyjs=True`)
 - Fórmulas renderizadas com KaTeX (CDN) e fallback em texto
-- CSS `@media print`: quebra de página por seção, gráficos com largura total, sem elementos interativos; alertas do detector sem quebra no meio (`break-inside: avoid`)
+- CSS `@media print`: quebra de página por seção, gráficos com largura total, sem elementos interativos; o texto de cada alerta do detector não se divide entre páginas (`break-inside: avoid`), e a figura dele (que também não se divide) pode ir para a página seguinte
 - O usuário escolhe colunas e seções na tela Relatório
 - A prévia da tela usa sempre `offline=true`; o arquivo baixado segue a opção "Funciona sem internet" (D84)
 - Sem seção sobre uso de IA
