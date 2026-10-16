@@ -37,7 +37,7 @@ Matriz de covariância alvo Σ = [[σx², ρσxσy], [ρσxσy, σy²]] = L·L�
 ## CSV e adotar
 - `GET /api/gerador/{gid}/csv`: `;` como separador e vírgula decimal (como o app lê), nome `gerado-{colunas}.csv`.
 - `POST /api/gerador/{gid}/adotar {modo: "novo"|"anexar", dataset_id?}` → `{dataset_id, nome_arquivo, n_linhas, modo}`. "novo" importa o CSV da geração como um dataset novo; "anexar" põe as linhas no fim da versão atual do dataset (colunas de mesmo nome; as demais ficam faltantes), registra "Anexamos 500 linhas geradas em peso_kg." no log da limpeza e sai com "Desfazer limpeza" (D111) — usado na demonstração do detector. Coluna que não existe no dataset → 400 `COLUNAS_INCOMPATIVEIS`.
-- Gerações ficam em memória (até `max_gerados = 20`; a mais antiga sai); sumiu → 404 `GERADO_NAO_ENCONTRADO`.
+- Gerações ficam em memória (até `max_gerados = 20`; a mais antiga sai); sumiu → 404 `GERADO_NAO_ENCONTRADO`; na tela 6, o aviso traz "Gerar de novo", que refaz o pedido com a mesma semente (D149). "Usar como novo dataset" devolve as linhas do dataset criado; o CSV univariado (uma coluna, vírgula decimal) é lido com uma coluna só (D147).
 
 ## Testes
 Média/DP gerados dentro de 1% (reescala → exatos; sem `limitar_faixa`); bivariado com ajuste exato: |r − ρ| < 1e-9; sem ajuste, n = 10.000: |r − ρ| < 0,03; mesma seed → mesmo resultado; figura de sobreposição leve com 1.000.000 de valores.
