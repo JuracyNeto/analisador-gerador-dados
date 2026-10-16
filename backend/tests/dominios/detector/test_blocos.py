@@ -1,4 +1,5 @@
 import time
+from collections.abc import Callable
 from itertools import pairwise
 
 import numpy as np
@@ -104,13 +105,23 @@ def test_dividir_em_cinco_blocos_seguidos(n: int, tamanhos: list[int]) -> None:
     assert all(a.stop == b.start for a, b in pairwise(partes))
 
 
-def test_mil_embaralhamentos_de_dez_mil_valores_sao_rapidos() -> None:
+@pytest.mark.parametrize(
+    "medir",
+    [
+        lambda lote: blocos.afastamentos_do_resto(lote, 500),
+        lambda lote: blocos.afastamentos_do_fim(lote, 10, 5_000),
+    ],
+    ids=["janelas", "fim"],
+)
+def test_mil_embaralhamentos_de_dez_mil_valores_sao_rapidos(
+    medir: Callable[[np.ndarray], np.ndarray],
+) -> None:
+    """Cada tipo de trecho da R1 (D148) num tempo que cabe numa requisição."""
     valores = _valores(10_000)
     rng = np.random.default_rng(0)
 
     inicio = time.perf_counter()
     for lote in blocos.embaralhados(valores, 1_000, rng):
-        blocos.afastamentos_do_resto(lote, 500).min(axis=1)
-        blocos.afastamentos_do_fim(lote, 10, 5_000).min(axis=1)
+        medir(lote).min(axis=1)
 
     assert time.perf_counter() - inicio < 3.0

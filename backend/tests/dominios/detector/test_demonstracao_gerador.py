@@ -9,6 +9,8 @@ from typing import Any
 import pytest
 from fastapi.testclient import TestClient
 
+from tests.dominios.detector.apoio import exemplo_principal_limpo
+
 GERADOS = 21
 
 
@@ -64,13 +66,7 @@ def test_pesos_anexados_ao_exemplo_principal_limpo_disparam(
     cliente: TestClient, semente: int
 ) -> None:
     """Com 221 linhas e 21 anexadas, k = 12: o bloco é pego pelo fim do arquivo (D148)."""
-    dataset_id = cliente.post("/api/datasets/exemplo").json()["dataset_id"]
-    diagnostico = cliente.get(f"/api/datasets/{dataset_id}/diagnostico").json()
-    acoes = [{"problema": "duplicados", "acao": "remover"}] + [
-        {"problema": "fora_de_faixa", "acao": "remover_linhas", "coluna": item["coluna"]}
-        for item in diagnostico["fora_de_faixa"]
-    ]
-    cliente.post(f"/api/datasets/{dataset_id}/limpeza", json={"acoes": acoes})
+    dataset_id = exemplo_principal_limpo(cliente)
     pedido = {
         "origem": {"dataset_id": dataset_id, "coluna": "peso_kg"},
         "x": GERADOS,

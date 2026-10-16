@@ -5,6 +5,8 @@ from typing import Any
 import pytest
 from fastapi.testclient import TestClient
 
+from tests.dominios.detector.apoio import exemplo_principal_limpo
+
 
 def _detector(cliente: TestClient, arquivo: str) -> dict[str, Any]:
     criado = cliente.post("/api/datasets/exemplo", params={"arquivo": arquivo}).json()
@@ -32,13 +34,7 @@ def test_alturas_reais_sem_alertas_de_atencao_ou_alta(cliente: TestClient) -> No
 
 def test_pesquisa_saude_limpa_sem_bloco_alinhado(cliente: TestClient) -> None:
     """O exemplo principal depois da limpeza: altura_m tem só 41 valores distintos (empates)."""
-    dataset_id = cliente.post("/api/datasets/exemplo").json()["dataset_id"]
-    diagnostico = cliente.get(f"/api/datasets/{dataset_id}/diagnostico").json()
-    acoes = [{"problema": "duplicados", "acao": "remover"}] + [
-        {"problema": "fora_de_faixa", "acao": "remover_linhas", "coluna": item["coluna"]}
-        for item in diagnostico["fora_de_faixa"]
-    ]
-    cliente.post(f"/api/datasets/{dataset_id}/limpeza", json={"acoes": acoes})
+    dataset_id = exemplo_principal_limpo(cliente)
 
     resposta = cliente.get(f"/api/datasets/{dataset_id}/detector", params={"regras": "R1"})
 
