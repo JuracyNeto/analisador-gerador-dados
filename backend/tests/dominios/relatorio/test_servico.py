@@ -2,12 +2,21 @@ from pathlib import Path
 
 import pytest
 
+from app.compartilhado.numeros import formatar_com_sinal
 from app.compartilhado.tipos import TipoVariavel
 from app.core.config import Configuracao
 from app.dominios.analise.servico import ServicoAnalise
 from app.dominios.datasets.servico import AcaoLimpeza, OpcoesLeitura, ServicoDatasets
 from app.dominios.detector.servico import ServicoDetector
-from app.dominios.gerador.servico import Gerado, RepositorioGerados, ServicoGerador
+from app.dominios.gerador.servico import (
+    Gerado,
+    Origem,
+    OrigemPar,
+    PedidoBivariado,
+    PedidoUnivariado,
+    RepositorioGerados,
+    ServicoGerador,
+)
 from app.dominios.relatorio.servico import (
     SECOES_PADRAO,
     PedidoRelatorio,
@@ -215,3 +224,54 @@ def test_bivariada_sem_par_forte(
 
     assert "Nenhum par de colunas numéricas tem correlação moderada ou forte" in html
     assert html.count("Plotly.newPlot(") == 1
+
+
+def _gerar_peso(servico_gerador: ServicoGerador, dataset_id: str) -> Gerado:
+    pedido = PedidoUnivariado(x=500, origem=Origem(dataset_id, "peso_kg"), semente=42)
+    return servico_gerador.univariado(pedido)
+
+
+def test_secao_gerador_com_a_ultima_geracao(
+    servico: ServicoRelatorio, servico_gerador: ServicoGerador, dataset_id: str
+) -> None:
+    gerado = _gerar_peso(servico_gerador, dataset_id)
+
+    html = servico.gerar(dataset_id, PedidoRelatorio(secoes=("gerador",), gerado=gerado.gerado_id))
+
+    assert "<h2>1. Gerador de dados</h2>" in html
+    assert "Univariado · 500 valores · semente 42" in html
+    assert "<dt>Origem</dt><dd>peso_kg (pesquisa_saude.txt)</dd>" in html
+    assert f"<dt>Método</dt><dd>{gerado.metodo}</dd>" in html
+    assert "<h3>Como geramos</h3>" in html
+    assert f"<p>{gerado.explicacao}</p>" in html
+    assert '<th scope="col">Gerado (500)</th>' in html
+    media = next(linha for linha in gerado.comparacao if linha.estatistica == "Média")
+    assert media.original is not None
+    assert media.gerado is not None
+    valor_original = formatar_com_sinal(media.original)
+    assert f'<td>Média</td><td class="numero">{valor_original}</td>' in html
+    assert "Figura 1 · " in html
+    assert html.count("Plotly.newPlot(") == 1
+
+
+def test_secao_gerador_bivariada(
+    servico: ServicoRelatorio, servico_gerador: ServicoGerador, dataset_id: str
+) -> None:
+    pedido = PedidoBivariado(n=300, origem=OrigemPar(dataset_id, "altura_m", "peso_kg"), semente=7)
+    gerado = servico_gerador.bivariado(pedido)
+
+    html = servico.gerar(dataset_id, PedidoRelatorio(secoes=("gerador",), gerado=gerado.gerado_id))
+
+    assert "Bivariado · 300 pares · semente 7" in html
+    assert "<td>Correlação (r)</td>" in html
+    assert html.count("Plotly.newPlot(") == 1
+
+
+@pytest.mark.parametrize("gerado", [None, "nao-existe"])
+def test_sem_geracao_a_secao_gerador_sai(
+    servico: ServicoRelatorio, dataset_id: str, gerado: str | None
+) -> None:
+    html = servico.gerar(dataset_id, PedidoRelatorio(secoes=("leitura", "gerador"), gerado=gerado))
+
+    assert "<h2>1. Leitura do arquivo</h2>" in html
+    assert "Gerador de dados</h2>" not in html

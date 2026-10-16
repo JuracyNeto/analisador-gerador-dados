@@ -116,6 +116,19 @@ class SecaoBivariada:
 
 
 @dataclass(frozen=True, slots=True)
+class SecaoGerador:
+    """Última geração da sessão: parâmetros, método, explicação e Original × Gerado (D141)."""
+
+    subtitulo: str
+    parametros: tuple[ItemMedida, ...]
+    metodo: str
+    explicacao: str
+    cabecalho_comparacao: tuple[str, ...]
+    linhas_comparacao: tuple[tuple[str, ...], ...]
+    figura: FiguraRelatorio | None
+
+
+@dataclass(frozen=True, slots=True)
 class ConteudoRelatorio:
     nome_arquivo: str
     gerado_em: str
@@ -126,3 +139,4 @@ class ConteudoRelatorio:
     limpeza: tuple[str, ...] | None = None
     colunas: tuple[SecaoColuna, ...] | None = None
     bivariada: SecaoBivariada | None = None
+    gerador: SecaoGerador | None = None

@@ -34,6 +34,8 @@ TITULOS_SECOES = {
     "tipos": "Tipos de variável",
     "limpeza": "Limpeza",
     "bivariada": "Bivariada",
+    "gerador": "Gerador de dados",
+    "detector": "Detector de dados artificiais",
 }
 
 
@@ -102,6 +104,23 @@ def selo_assimetria(classe: str, sentido: str | None) -> str:
     if classe == "simetrica":
         return SELOS_ASSIMETRIA[classe]
     return f"{SELOS_ASSIMETRIA[classe]} à {sentido}"
+
+
+TIPOS_GERACAO = {
+    "univariado": ("Univariado", "valor", "valores"),
+    "bivariado": ("Bivariado", "par", "pares"),
+}
+
+
+def subtitulo_gerador(tipo: str, n: int, semente: int) -> str:
+    """Ex.: "Univariado · 500 valores · semente 42"; no bivariado, "300 pares"."""
+    nome, singular, plural = TIPOS_GERACAO[tipo]
+    return f"{nome} · {_quantidade(n, singular, plural)} · semente {semente}"
+
+
+def cabecalho_comparacao(n: int) -> tuple[str, ...]:
+    """As colunas da tabela Original × Gerado da tela 6."""
+    return ("Medida", "Original", f"Gerado ({formatar_inteiro(n)})", "Diferença")
 
 
 def selo_correlacao(forca: str, sentido: str) -> str:

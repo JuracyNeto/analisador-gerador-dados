@@ -1,19 +1,19 @@
 """Fachada do domínio relatorio: junta leitura, tipos, limpeza e análises num HTML (spec 13)."""
 
-from collections.abc import Iterable
+from collections.abc import Iterable, Mapping
 from dataclasses import dataclass
 from datetime import datetime
 from itertools import combinations
+from typing import Any, Protocol
 
 from app.compartilhado.numeros import formatar_com_sinal, formatar_p_valor, formatar_percentual
 from app.compartilhado.tipos import TIPOS_AUXILIARES, TipoVariavel
-from app.core.erros import EntradaInvalida
+from app.core.erros import EntradaInvalida, NaoEncontrado
 from app.dominios.analise.servico import (
     CHAVES_FORMA,
     Ajuste,
     Analise,
     Bivariada,
-    Figura,
     Forma,
     Formula,
     Medida,
@@ -21,9 +21,10 @@ from app.dominios.analise.servico import (
 )
 from app.dominios.datasets.servico import Resumo, ServicoDatasets
 from app.dominios.detector.servico import ServicoDetector
-from app.dominios.gerador.servico import ServicoGerador
+from app.dominios.gerador.servico import Gerado, ServicoGerador
 from app.dominios.graficos.servico import codigo_plotlyjs, endereco_plotlyjs_cdn, figura_html
 from app.dominios.relatorio import textos
+from app.dominios.relatorio.comparacao import linha_comparacao
 from app.dominios.relatorio.conteudo import (
     SECOES_PADRAO,
     BlocoAnalises,
@@ -38,6 +39,7 @@ from app.dominios.relatorio.conteudo import (
     SecaoBivariada,
     SecaoColuna,
     SecaoForma,
+    SecaoGerador,
 )
 from app.dominios.relatorio.montagem import renderizar
 
@@ -130,7 +132,22 @@ def _separatrizes(analise: Analise) -> str | None:
     return " · ".join(f"{q.rotulo} = {_valor(q.valor)}" for q in analise.separatrizes.quartis)
 
 
-def _figura(figuras: Iterable[Figura | None], identificador: str) -> FiguraRelatorio | None:
+class FiguraDesenhavel(Protocol):
+    """Figura de qualquer domínio (análise, gerador, detector): título, resumo e JSON do Plotly."""
+
+    @property
+    def titulo(self) -> str: ...
+
+    @property
+    def resumo(self) -> str: ...
+
+    @property
+    def dados(self) -> Mapping[str, Any]: ...
+
+
+def _figura(
+    figuras: Iterable[FiguraDesenhavel | None], identificador: str
+) -> FiguraRelatorio | None:
     """A primeira figura da lista, desenhada no tema claro (D47)."""
     principal = next(iter(figuras), None)
     if principal is None:
@@ -261,6 +278,22 @@ def _formulas_bivariada(analises: Iterable[Bivariada]) -> tuple[FormulaTexto, ..
     return _como_texto(unicas.values())
 
 
+def _secao_gerador(gerado: Gerado) -> SecaoGerador:
+    linhas = tuple(
+        linha_comparacao(linha.estatistica, linha.original, linha.gerado, linha.diferenca)
+        for linha in gerado.comparacao
+    )
+    return SecaoGerador(
+        subtitulo=textos.subtitulo_gerador(gerado.tipo, gerado.n, gerado.semente),
+        parametros=tuple(ItemMedida(p.nome, p.valor) for p in gerado.parametros),
+        metodo=gerado.metodo,
+        explicacao=gerado.explicacao,
+        cabecalho_comparacao=textos.cabecalho_comparacao(gerado.n),
+        linhas_comparacao=linhas,
+        figura=_figura(gerado.figuras, "gerador"),
+    )
+
+
 class ServicoRelatorio:
     """Relatório da spec 13: leitura, tipos, limpeza, colunas, bivariada, gerador e detector."""
 
@@ -317,6 +350,15 @@ class ServicoRelatorio:
             formulas=_formulas_bivariada(analises),
         )
 
+    def _secao_do_gerado(self, gerado_id: str | None) -> SecaoGerador | None:
+        """Sem geração (ou com a geração já descartada) a seção sai e o relatório segue (D141)."""
+        if gerado_id is None:
+            return None
+        try:
+            return _secao_gerador(self._gerador.obter(gerado_id))
+        except NaoEncontrado:
+            return None
+
     def gerar(self, dataset_id: str, pedido: PedidoRelatorio) -> str:
         """HTML autocontido; `offline` embute o plotly.js (cerca de 4,8 MB)."""
         resumo = self._datasets.resumo(dataset_id)
@@ -333,5 +375,6 @@ class ServicoRelatorio:
             limpeza=_limpeza(resumo) if "limpeza" in secoes else None,
             colunas=self._colunas(dataset_id, pedido) if secoes & SECOES_POR_COLUNA else None,
             bivariada=self._bivariada(dataset_id) if "bivariada" in secoes else None,
+            gerador=self._secao_do_gerado(pedido.gerado) if "gerador" in secoes else None,
         )
         return renderizar(conteudo)

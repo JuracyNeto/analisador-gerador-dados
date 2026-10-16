@@ -63,6 +63,16 @@
       {% for m in itens %}<div><dt>{{ m.rotulo }}</dt><dd class="mono">{{ m.valor }}</dd>{% if m.nota %}<dd class="selo">{{ m.nota }}</dd>{% endif %}</div>{% endfor %}
     </dl>
   {% endmacro %}
+  {% macro tabela(cabecalho, linhas, classe) %}
+    <table class="{{ classe }}">
+      <thead><tr>{% for titulo in cabecalho %}<th scope="col">{{ titulo }}</th>{% endfor %}</tr></thead>
+      <tbody>
+      {% for linha in linhas %}
+        <tr>{% for celula in linha %}<td{% if not loop.first %} class="numero"{% endif %}>{{ celula }}</td>{% endfor %}</tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  {% endmacro %}
   {% macro formulas(lista) %}
     <h3>Fórmulas usadas</h3>
     <ul class="formulas">
@@ -79,14 +89,7 @@
     {% if a %}
     {% if a.medidas %}{{ medidas(a.medidas) }}{% endif %}
     {% if a.separatrizes %}<p class="mono">{{ a.separatrizes }}</p>{% endif %}
-    <table class="frequencias">
-      <thead><tr>{% for titulo in a.cabecalho_tabela %}<th scope="col">{{ titulo }}</th>{% endfor %}</tr></thead>
-      <tbody>
-      {% for linha in a.linhas_tabela %}
-        <tr>{% for celula in linha %}<td{% if not loop.first %} class="numero"{% endif %}>{{ celula }}</td>{% endfor %}</tr>
-      {% endfor %}
-      </tbody>
-    </table>
+    {{ tabela(a.cabecalho_tabela, a.linhas_tabela, "frequencias") }}
     {% if a.figura %}{{ figura(a.figura) }}{% endif %}
     {% for frase in a.interpretacoes %}<p>{{ frase }}</p>{% endfor %}
     {% endif %}
@@ -119,6 +122,24 @@
     {% if par.figura %}{{ figura(par.figura) }}{% endif %}
     {% endfor %}
     {% if b.formulas %}{{ formulas(b.formulas) }}{% endif %}
+  </section>
+  {% endif %}
+
+  {% set g = c.gerador %}
+  {% if g is not none %}
+  {% set numero.secao = numero.secao + 1 %}
+  <section class="gerador">
+    <h2>{{ numero.secao }}. {{ titulos.gerador }}</h2>
+    <p class="nota">{{ g.subtitulo }}</p>
+    <dl class="parametros">
+      {% for p in g.parametros %}<div><dt>{{ p.rotulo }}</dt><dd>{{ p.valor }}</dd></div>{% endfor %}
+      <div><dt>Método</dt><dd>{{ g.metodo }}</dd></div>
+    </dl>
+    <h3>Como geramos</h3>
+    <p>{{ g.explicacao }}</p>
+    <h3>Original × Gerado</h3>
+    {{ tabela(g.cabecalho_comparacao, g.linhas_comparacao, "comparacao") }}
+    {% if g.figura %}{{ figura(g.figura) }}{% endif %}
   </section>
   {% endif %}
 
