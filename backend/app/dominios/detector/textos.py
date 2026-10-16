@@ -138,12 +138,13 @@ def r07_textos(coluna: str, k: int, exemplo: float, limite: float) -> TextosAvis
 
 
 def r07_detalhes(
-    moderados: int, extremos: int, cercas: tuple[float, ...], mc: float
+    moderados: int, extremos: int, cercas: tuple[float, ...], mc: float, zeros: int
 ) -> DetalhesAviso:
-    """Cercas de 1,5·IQR e de 3·IQR, alargadas pela assimetria (MC; D136)."""
+    """Cercas de 1,5·IQR e de 3·IQR, alargadas pela assimetria (MC; D136), sem os zeros (D143)."""
     baixo, alto, baixo_extremo, alto_extremo = (numero(c) for c in cercas)
+    sem_zeros = f", fora os {formatar_inteiro(zeros)} zeros" if zeros else ""
     return DetalhesAviso(
-        medida="Valores fora das cercas de Tukey ajustadas à assimetria ou com |z| > 3",
+        medida=f"Valores fora das cercas de Tukey ajustadas à assimetria ou com |z| > 3{sem_zeros}",
         valor=(
             f"{quantidade(moderados, 'moderado', 'moderados')} e "
             f"{quantidade(extremos, 'extremo', 'extremos')}"
@@ -242,6 +243,15 @@ def poucos_positivos(minimo: int, n: int) -> str:
     )
 
 
+def fora_os_pequenos(motivo: str, passos: int, passo: float) -> str:
+    """R8 não conta os valores perto do passo do instrumento (D145)."""
+    limite, vezes = numero(passos * passo), formatar_inteiro(passos)
+    return (
+        f"{motivo}, fora os valores abaixo de {limite} "
+        f"({vezes} vezes o passo de {numero(passo)} do instrumento)"
+    )
+
+
 def r08_textos(coluna: str, digito: int, proporcao: float, esperado: float) -> TextosAviso:
     """ "Os primeiros dígitos de {col} não seguem o padrão natural (Lei de Benford)" (spec 16)."""
     return TextosAviso(
@@ -260,9 +270,12 @@ def r08_textos(coluna: str, digito: int, proporcao: float, esperado: float) -> T
     )
 
 
-def r08_detalhes(mad: float, p: float) -> DetalhesAviso:
+def r08_detalhes(mad: float, p: float, pequenos: int, limite: float) -> DetalhesAviso:
+    medida = "Frequência do primeiro dígito comparada à Lei de Benford"
+    if pequenos:
+        medida += f", fora os {quantidade(pequenos, 'valor', 'valores')} abaixo de {numero(limite)}"
     return DetalhesAviso(
-        medida="Frequência do primeiro dígito comparada à Lei de Benford",
+        medida=medida,
         valor=f"MAD = {numero(mad)}",
         limiar="p < 0,01 e MAD > 0,015 (Nigrini: não conformidade)",
         teste="Qui-quadrado (gl = 8)",

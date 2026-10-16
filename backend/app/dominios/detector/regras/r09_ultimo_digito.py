@@ -20,7 +20,7 @@ class RegraUltimoDigito(base.RegraBase[base.AlvoColuna, FrequenciaDigitos]):
     codigo = "R9"
     nome = "Último dígito"
     seletor = base.NUMERICAS_SEM_ZEROS
-    requisito = base.DigitoFinalTestavel(MINIMO_VALORES)
+    requisito = base.ForaOsZeros(base.DigitoFinalTestavel(MINIMO_VALORES))
 
     def medir(self, alvo: base.AlvoColuna) -> FrequenciaDigitos:
         finais = digitos.digitos_finais(alvo.valores, digitos.resolucao(alvo.valores))
