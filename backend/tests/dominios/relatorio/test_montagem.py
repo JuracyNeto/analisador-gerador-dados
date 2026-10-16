@@ -1,4 +1,5 @@
 from app.dominios.relatorio.conteudo import (
+    AvisoRelatorio,
     ConteudoRelatorio,
     FiguraRelatorio,
     ItemMedida,
@@ -6,7 +7,9 @@ from app.dominios.relatorio.conteudo import (
     ParRelatorio,
     SecaoBivariada,
     SecaoColuna,
+    SecaoDetector,
     SecaoForma,
+    SecaoGerador,
 )
 from app.dominios.relatorio.montagem import renderizar
 
@@ -60,3 +63,108 @@ def test_renderizar_forma_e_bivariada_numera_figuras_em_ordem() -> None:
     assert "Resumo da matriz." not in html  # a legenda da figura já traz o resumo
     assert "fᵢ" not in html
     assert "{{" not in html
+
+
+def _aviso(
+    severidade: str, selo: str, titulo: str, figura: FiguraRelatorio | None
+) -> AvisoRelatorio:
+    return AvisoRelatorio(
+        severidade=severidade,
+        selo=selo,
+        titulo=titulo,
+        resumo="46% dos valores terminam em 0 ou 5.",
+        por_que="Pessoas tendem a arredondar.",
+        exemplo="Linhas 120 a 138: 70, 75, 80",
+        pode_ser_normal="…a balança só mede de 5 em 5 kg.",
+        o_que_fazer="Confira a origem dessas linhas.",
+        detalhes=(
+            ItemMedida("Teste", "Binomial unilateral"),
+            ItemMedida(
+                "p-valor", "p < 0,001", "chance de acontecer por acaso: menos de 1 em 1.000"
+            ),
+        ),
+        figura=figura,
+    )
+
+
+def test_renderizar_gerador_e_detector_numera_secoes_e_figuras() -> None:
+    gerador = SecaoGerador(
+        subtitulo="Univariado · 3 valores · semente 1",
+        parametros=(ItemMedida("Origem", "<i>x</i> (a.csv)"),),
+        metodo="Normal com reescala",
+        explicacao="Sorteamos 3 valores.",
+        cabecalho_comparacao=("Medida", "Original", "Gerado (3)", "Diferença"),
+        linhas_comparacao=(("Média", "1", "1", "0"),),
+        figura=_figura("Sobreposição"),
+    )
+    avisos = (
+        _aviso("alta", "⛔ Suspeita alta", "R1 · Bloco alinhado em <b>x</b>", _figura("Blocos")),
+        _aviso("atencao", "⚠️ Atenção", "R4 · Muitos valores redondos em x", None),
+    )
+    detector = SecaoDetector(
+        frase="Encontramos 2 alertas em 1 coluna",
+        detalhe="x · 9 regras verificadas, 2 não se aplicam a este arquivo",
+        contadores="1 suspeita alta · 1 de atenção · 0 informativos",
+        avisos=avisos,
+        nao_verificadas=("Lei de Benford não verificada em x: precisa de 100 valores ou mais.",),
+        vazio=None,
+    )
+    conteudo = ConteudoRelatorio(
+        nome_arquivo="a.csv",
+        gerado_em="16/10/2026 10:00",
+        subtitulo="a.csv",
+        script_plotly="",
+        leitura="Arquivo CSV.",
+        bivariada=SecaoBivariada(_figura("Matriz"), "Resumo.", (), None, ()),
+        gerador=gerador,
+        detector=detector,
+    )
+
+    html = renderizar(conteudo)
+
+    marcos = [
+        "<h2>1. Leitura do arquivo</h2>",
+        "<h2>2. Bivariada</h2>",
+        "Figura 1 · Matriz",
+        "<h2>3. Gerador de dados</h2>",
+        "<h3>Como geramos</h3>",
+        "<h3>Original × Gerado</h3>",
+        "Figura 2 · Sobreposição",
+        "<h2>4. Detector de dados artificiais</h2>",
+        "1 suspeita alta · 1 de atenção · 0 informativos",
+        '<article class="aviso sev-alta">',
+        "Figura 3 · Blocos",
+        '<article class="aviso sev-atencao">',
+        "<h3>Regras não verificadas</h3>",
+    ]
+    posicoes = [html.index(marco) for marco in marcos]
+    assert posicoes == sorted(posicoes)
+    assert html.count("<h4>Detalhes técnicos</h4>") == 2
+    assert '<p class="selo-severidade">⚠️ Atenção</p>' in html
+    assert "R1 · Bloco alinhado em &lt;b&gt;x&lt;/b&gt;" in html
+    assert "<dd>&lt;i&gt;x&lt;/i&gt; (a.csv)</dd>" in html
+    assert '<dd>p &lt; 0,001 <span class="nota">· chance de acontecer' in html
+    assert "{{" not in html
+    assert "{%" not in html
+
+
+def test_detector_sem_alertas_mostra_o_texto_vazio() -> None:
+    vazio = "Nenhuma das 11 regras encontrou suspeitas."
+    detector = SecaoDetector("Nenhum alerta", "11 regras verificadas", "0", (), (), vazio)
+    conteudo = ConteudoRelatorio("a.csv", "16/10/2026", "a.csv", "", detector=detector)
+
+    html = renderizar(conteudo)
+
+    assert f"<p>{vazio}</p>" in html
+    assert '<p class="contadores">' not in html
+    assert "Regras não verificadas" not in html
+
+
+def test_estilos_de_severidade_e_impressao() -> None:
+    html = renderizar(ConteudoRelatorio("a.csv", "16/10/2026", "a.csv", ""))
+
+    for token in ("--sev-alta: #b42318", "--sev-atencao: #995700", "--sev-info: #1d5fd1"):
+        assert token in html
+    assert ".aviso { break-inside: avoid;" in html
+    quebra = "section.coluna, section.bivariada, section.gerador, section.detector"
+    assert f"{quebra} {{ break-before: page; }}" in html
