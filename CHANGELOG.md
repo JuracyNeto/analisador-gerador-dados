@@ -4,6 +4,8 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e
 
 ## [Não lançado]
 
+## [0.3.0] - 2026-10-16
+
 ### Adicionado
 - Etapa 6 Gerador: dados univariados e bivariados (pela coluna ou par do dataset, ou com parâmetros manuais) com a tabela Original × Gerado, gráfico, explicação do método, Baixar CSV, Anexar ao dataset atual e Usar como novo dataset; se a geração sair da memória do servidor, o aviso traz "Gerar de novo", com a mesma semente.
 - API do gerador: dados univariados (preservando as estatísticas de uma coluna ou com novos parâmetros) e pares com médias, desvios e correlação alvo, com comparação com o original, explicação do método, gráfico sobreposto, CSV e uso como novo dataset ou anexado ao atual.
