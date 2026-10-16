@@ -46,6 +46,23 @@ def test_pesquisa_saude_limpa_sem_bloco_alinhado(cliente: TestClient) -> None:
     assert resposta.json()["resumo"]["regras_verificadas"] == 1
 
 
+def test_faltantes_preenchidos_nao_viram_valores_redondos(cliente: TestClient) -> None:
+    """A mediana entra nas casas da coluna (68,8, não 68,75): pesos não "terminam em 0" (D146)."""
+    dataset_id = cliente.post("/api/datasets/exemplo").json()["dataset_id"]
+    diagnostico = cliente.get(f"/api/datasets/{dataset_id}/diagnostico").json()
+    acoes = [{"problema": "duplicados", "acao": "remover"}] + [
+        {"problema": "faltantes", "acao": "preencher_mediana", "coluna": item["coluna"]}
+        for item in diagnostico["faltantes"]
+        if item["sugeridos"]["mediana"] is not None
+    ]
+    log = cliente.post(f"/api/datasets/{dataset_id}/limpeza", json={"acoes": acoes}).json()["log"]
+
+    resposta = cliente.get(f"/api/datasets/{dataset_id}/detector", params={"regras": "R4,R9"})
+
+    assert any("peso_kg com a mediana" in entrada["frase"] for entrada in log)
+    assert resposta.json()["avisos"] == []
+
+
 def test_bloco_alinhado_nos_pesos(plantadas: dict[Any, dict[str, Any]]) -> None:
     """Em pesos (0,1 kg), o bloco acertado não empata com os embaralhamentos (D142)."""
     aviso = plantadas[("R1", ("peso_kg",))]
