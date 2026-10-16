@@ -35,7 +35,7 @@ from app.dominios.graficos.servico import (
     figura_ultimo_digito,
 )
 
-__all__ = ["ResultadoDetector", "ServicoDetector", "forma_da_coluna"]
+__all__ = ["Aviso", "ResultadoDetector", "ServicoDetector", "forma_da_coluna"]
 
 MINIMO_FORMA = 4
 """A curtose (G₂) precisa de 4 valores."""

@@ -63,11 +63,41 @@
       {% for m in itens %}<div><dt>{{ m.rotulo }}</dt><dd class="mono">{{ m.valor }}</dd>{% if m.nota %}<dd class="selo">{{ m.nota }}</dd>{% endif %}</div>{% endfor %}
     </dl>
   {% endmacro %}
+  {% macro tabela(cabecalho, linhas, classe) %}
+    <table class="{{ classe }}">
+      <thead><tr>{% for titulo in cabecalho %}<th scope="col">{{ titulo }}</th>{% endfor %}</tr></thead>
+      <tbody>
+      {% for linha in linhas %}
+        <tr>{% for celula in linha %}<td{% if not loop.first %} class="numero"{% endif %}>{{ celula }}</td>{% endfor %}</tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  {% endmacro %}
   {% macro formulas(lista) %}
     <h3>Fórmulas usadas</h3>
     <ul class="formulas">
       {% for f in lista %}<li>{{ f.nome }}: <span class="formula" data-latex="{{ f.latex }}">{{ f.texto }}</span></li>{% endfor %}
     </ul>
+  {% endmacro %}
+  {% macro aviso(a) %}
+    <article class="aviso sev-{{ a.severidade }}">
+      <div class="aviso-texto">
+        <p class="selo-severidade">{{ a.selo }}</p>
+        <h3>{{ a.titulo }}</h3>
+        <p>{{ a.resumo }}</p>
+        <div class="partes">
+          <div><h4>Por que chama atenção</h4><p>{{ a.por_que }}</p></div>
+          <div><h4>Pode ser normal se…</h4><p>{{ a.pode_ser_normal }}</p></div>
+        </div>
+        {% if a.exemplo %}<p class="exemplo"><span class="rotulo">Exemplo</span> <span class="mono">{{ a.exemplo }}</span></p>{% endif %}
+        <p><strong>O que fazer:</strong> {{ a.o_que_fazer }}</p>
+        <h4>Detalhes técnicos</h4>
+        <dl class="detalhes">
+          {% for d in a.detalhes %}<dt>{{ d.rotulo }}</dt><dd>{{ d.valor }}{% if d.nota %} <span class="nota">· {{ d.nota }}</span>{% endif %}</dd>{% endfor %}
+        </dl>
+      </div>
+      {% if a.figura %}{{ figura(a.figura) }}{% endif %}
+    </article>
   {% endmacro %}
 
   {% for col in c.colunas or [] %}
@@ -79,14 +109,7 @@
     {% if a %}
     {% if a.medidas %}{{ medidas(a.medidas) }}{% endif %}
     {% if a.separatrizes %}<p class="mono">{{ a.separatrizes }}</p>{% endif %}
-    <table class="frequencias">
-      <thead><tr>{% for titulo in a.cabecalho_tabela %}<th scope="col">{{ titulo }}</th>{% endfor %}</tr></thead>
-      <tbody>
-      {% for linha in a.linhas_tabela %}
-        <tr>{% for celula in linha %}<td{% if not loop.first %} class="numero"{% endif %}>{{ celula }}</td>{% endfor %}</tr>
-      {% endfor %}
-      </tbody>
-    </table>
+    {{ tabela(a.cabecalho_tabela, a.linhas_tabela, "frequencias") }}
     {% if a.figura %}{{ figura(a.figura) }}{% endif %}
     {% for frase in a.interpretacoes %}<p>{{ frase }}</p>{% endfor %}
     {% endif %}
@@ -119,6 +142,42 @@
     {% if par.figura %}{{ figura(par.figura) }}{% endif %}
     {% endfor %}
     {% if b.formulas %}{{ formulas(b.formulas) }}{% endif %}
+  </section>
+  {% endif %}
+
+  {% set g = c.gerador %}
+  {% if g is not none %}
+  {% set numero.secao = numero.secao + 1 %}
+  <section class="gerador">
+    <h2>{{ numero.secao }}. {{ titulos.gerador }}</h2>
+    <p class="nota">{{ g.subtitulo }}</p>
+    <dl class="parametros">
+      {% for p in g.parametros %}<div><dt>{{ p.rotulo }}</dt><dd>{{ p.valor }}</dd></div>{% endfor %}
+      <div><dt>Método</dt><dd>{{ g.metodo }}</dd></div>
+    </dl>
+    <h3>Como geramos</h3>
+    <p>{{ g.explicacao }}</p>
+    <h3>Original × Gerado</h3>
+    {{ tabela(g.cabecalho_comparacao, g.linhas_comparacao, "comparacao") }}
+    {% if g.figura %}{{ figura(g.figura) }}{% endif %}
+  </section>
+  {% endif %}
+
+  {% set d = c.detector %}
+  {% if d is not none %}
+  {% set numero.secao = numero.secao + 1 %}
+  <section class="detector">
+    <h2>{{ numero.secao }}. {{ titulos.detector }}</h2>
+    <p class="frase-resumo">{{ d.frase }}</p>
+    <p class="nota">{{ d.detalhe }}</p>
+    {% if d.vazio %}<p>{{ d.vazio }}</p>{% else %}<p class="contadores">{{ d.contadores }}</p>{% endif %}
+    {% for a in d.avisos %}{{ aviso(a) }}{% endfor %}
+    {% if d.nao_verificadas %}
+    <h3>Regras não verificadas</h3>
+    <ul class="nao-verificadas">
+      {% for frase in d.nao_verificadas %}<li>{{ frase }}</li>{% endfor %}
+    </ul>
+    {% endif %}
   </section>
   {% endif %}
 

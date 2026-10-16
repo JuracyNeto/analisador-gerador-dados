@@ -29,7 +29,7 @@ Camada de apresentação: `router.py` + `schemas.py` de cada domínio; `app/main
 | POST | `/gerador/{gid}/adotar` | `{modo: novo \| anexar, dataset_id?}` | `Adotado {dataset_id, nome_arquivo, n_linhas, modo}` (201) | 11 |
 | GET | `/datasets/{id}/detector` | `?regras=R1,R2…` (códigos separados por vírgula; sem o campo = todas; código desconhecido → 422) | `ResultadoDetector {resumo, avisos: AvisoDetector[], nao_aplicadas[]}`; `AvisoDetector.figura` traz o gráfico dos detalhes em R1, R8 e R9 (nulo nas demais, D123) | 12 |
 | GET | `/datasets/{id}/linhas` | `?de=&ate=` (números das linhas, como na prévia; inclusive; no máximo 200, senão 400 `INTERVALO_INVALIDO`) | `LinhaDados[]` da versão atual (linhas removidas na limpeza não voltam) | 12 |
-| GET | `/datasets/{id}/relatorio` | `?colunas=&secoes=&offline=` (`secoes`: leitura, tipos, limpeza, analises, distribuicoes, bivariada; padrão = as 6; outra → 422) | `text/html` | 13 |
+| GET | `/datasets/{id}/relatorio` | `?colunas=&secoes=&gerado=&offline=` (`secoes`: leitura, tipos, limpeza, analises, distribuicoes, bivariada, gerador, detector; padrão = as 8; outra → 422; `gerado`: id da geração mostrada na seção Gerador; sem ele, ou com a geração descartada, a seção sai sem erro, D141) | `text/html` | 13 |
 
 ## Contrato `Analise` (único para todos os tipos)
 ```json

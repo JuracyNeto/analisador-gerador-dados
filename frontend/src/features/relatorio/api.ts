@@ -6,7 +6,7 @@ import { baixarArquivo } from '../../shared/lib/baixarArquivo';
 
 export type SecaoRelatorio = components['schemas']['Secao'];
 
-/** Seções do relatório (D57, D106), na ordem em que aparecem no HTML. */
+/** Seções do relatório (D57, D106, D141), na ordem em que aparecem no HTML. */
 export const SECOES_RELATORIO = [
   'leitura',
   'tipos',
@@ -14,11 +14,15 @@ export const SECOES_RELATORIO = [
   'analises',
   'distribuicoes',
   'bivariada',
+  'gerador',
+  'detector',
 ] as const satisfies readonly SecaoRelatorio[];
 
 export interface SelecaoRelatorio {
   secoes: readonly SecaoRelatorio[];
   colunas: readonly string[];
+  /** Geração mostrada na seção Gerador (a última da sessão). */
+  gerado: string | null;
 }
 
 export interface PedidoRelatorio extends SelecaoRelatorio {
@@ -31,6 +35,7 @@ export function caminhoRelatorio(datasetId: string, pedido: PedidoRelatorio): st
   const parametros = new URLSearchParams();
   for (const secao of pedido.secoes) parametros.append('secoes', secao);
   for (const coluna of pedido.colunas) parametros.append('colunas', coluna);
+  if (pedido.gerado !== null) parametros.set('gerado', pedido.gerado);
   parametros.set('offline', String(pedido.offline));
   return caminhoDataset(datasetId, `/relatorio?${parametros.toString()}`);
 }

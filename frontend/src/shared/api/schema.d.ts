@@ -437,7 +437,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Mini relatório em HTML */
+        /** Relatório em HTML */
         get: operations["gerar_relatorio_api_datasets__dataset_id__relatorio_get"];
         put?: never;
         post?: never;
@@ -1353,7 +1353,7 @@ export interface components {
             versao: string;
         };
         /** @enum {string} */
-        Secao: "leitura" | "tipos" | "limpeza" | "analises" | "distribuicoes" | "bivariada";
+        Secao: "leitura" | "tipos" | "limpeza" | "analises" | "distribuicoes" | "bivariada" | "gerador" | "detector";
         /** Separatrizes */
         Separatrizes: {
             /** Quartis */
@@ -2337,12 +2337,14 @@ export interface operations {
     gerar_relatorio_api_datasets__dataset_id__relatorio_get: {
         parameters: {
             query?: {
-                /** @description Seções do mini relatório */
+                /** @description Seções do relatório */
                 secoes?: components["schemas"]["Secao"][] | null;
                 /** @description Colunas analisadas */
                 colunas?: string[] | null;
                 /** @description Embute o plotly.js (funciona sem internet) */
                 offline?: boolean;
+                /** @description Geração mostrada na seção Gerador (sem ela, a seção sai) */
+                gerado?: string | null;
             };
             header?: never;
             path: {

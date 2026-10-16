@@ -58,7 +58,7 @@ Execução prevista (um bloco por vez): M3.0 → M3.1 → M3.2 → M3.3 → M3.4
 - **pandas 3**: nunca comparar `dtype == object`. O `to_excel` do pandas grava horários como texto (use o openpyxl direto nos testes). Arquivos escritos por script: LF, UTF-8.
 - Números exibidos com o sinal de menos (−) (`formatar_com_sinal`, D107).
 - Aleatoriedade sempre com `np.random.default_rng(semente)`; nada de `np.random.seed` global. Testes com semente fixa.
-- Toda decisão nova vai para `docs/decisions.md` com o **próximo número livre** (D108–D114 no M3.0, D115–D117 no M3.1, D118–D121 no M3.2, D122–D131 no M3.3, D132 na leitura de reais e percentuais, D133–D139 nos ajustes com dados reais, D140 na tela 7, D142 na R1 com o restante, D143–D145 nos zeros e no passo do instrumento; D141 reservada ao M3.5; próxima D146); os números abaixo são os previstos na ordem dos blocos. Toda entrega vai para `CHANGELOG.md` › *Não lançado*.
+- Toda decisão nova vai para `docs/decisions.md` com o **próximo número livre** (D108–D114 no M3.0, D115–D117 no M3.1, D118–D121 no M3.2, D122–D131 no M3.3, D132 na leitura de reais e percentuais, D133–D139 nos ajustes com dados reais, D140 na tela 7, D142 na R1 com o restante, D143–D145 nos zeros e no passo do instrumento; D141 no M3.5; próxima D146); os números abaixo são os previstos na ordem dos blocos. Toda entrega vai para `CHANGELOG.md` › *Não lançado*.
 - Teste manual no preview (`.claude/launch.json`: `backend` 8000, `frontend` 5173) antes do push de cada bloco com tela; viewport fixa com `resize_window` e conferência pelo DOM. Depois de editar o backend, o `--reload` apaga os datasets: recarregue o exemplo antes de testar.
 - PR, merge e release só com o ok do usuário; merge só com os 3 checks verdes (`gh pr merge N --merge`).
 
