@@ -11,6 +11,7 @@ Domínio: `app/dominios/graficos/` (`fabrica.py` + `tema.py`) · ADR 0003
 | Contínua | **Histograma** (classes da spec 04) | Boxplot, ogiva (Frᵢ); na aba Forma: histograma + curva Normal e QQ-plot (D56, D94) | Mostra forma, caudas e aderência |
 | Par numérico | **Dispersão** com reta de regressão (até 5.000 pontos, D101) | Resíduos × X com linha zero tracejada (D102); heatmap da matriz com escala divergente (D103) | Spec 10 |
 | Separatriz | Régua com marcas e marcador do valor | — | Spec 06 |
+| Gerador | Univariado: original × gerado sobrepostos em frequência relativa, nas mesmas classes (faixa da união, k de Sturges da menor série), barras `overlay` 0,55; qualitativas em barras agrupadas (D113). Bivariado: dispersão dos pares gerados e, com origem, dos originais (até 5.000 pontos por série, D101) | — | Spec 11; só as alturas das barras vão no JSON, mesmo com 1.000.000 de valores |
 | Detector | Nos detalhes técnicos do alerta (D123): R1 linha da média de cada bloco de k linhas, com a média geral, a faixa x̄ ± s tracejada e o bloco alinhado em destaque; R8 barras do 1º dígito × Lei de Benford; R9 barras do último dígito × esperado (10%) | — | Spec 12; só valores agregados (uma média por bloco, uma barra por dígito) |
 
 ## Regras visuais
