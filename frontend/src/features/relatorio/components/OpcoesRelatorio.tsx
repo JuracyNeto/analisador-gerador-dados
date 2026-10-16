@@ -2,16 +2,27 @@ import type { TipoColuna } from '../../../shared/api/dataset';
 import CaixaSelecao from '../../../shared/ui/CaixaSelecao';
 import ChipTipo from '../../../shared/ui/ChipTipo';
 import EstadoCarregando from '../../../shared/ui/EstadoCarregando';
-import { SECOES_RELATORIO } from '../api';
+import { SECOES_RELATORIO, type SecaoRelatorio } from '../api';
 import type { SelecaoNaTela } from '../hooks/useSelecaoRelatorio';
-import { usaColunas } from '../selecao';
+import { secaoDisponivel, usaColunas } from '../selecao';
 import { TEXTOS_RELATORIO } from '../textos';
-import GrupoCaixas from './GrupoCaixas';
+import GrupoCaixas, { type ItemCaixa } from './GrupoCaixas';
 import estilos from './OpcoesRelatorio.module.css';
 
 const T = TEXTOS_RELATORIO;
-const ITENS_SECOES = SECOES_RELATORIO.map((id) => ({ id, rotulo: T.rotulosSecoes[id] }));
 const NOTA_SEM_ANALISES = <p className={estilos.nota}>{T.colunasSemAnalises}</p>;
+const NOTA_SEM_GERACAO = <p className={estilos.nota}>{T.semGeracao}</p>;
+
+function itensSecoes(temGeracao: boolean): ItemCaixa<SecaoRelatorio>[] {
+  return SECOES_RELATORIO.map((id) =>
+    secaoDisponivel(id, temGeracao)
+      ? { id, rotulo: T.rotulosSecoes[id] }
+      : { id, rotulo: T.rotulosSecoes[id], desabilitada: true, nota: NOTA_SEM_GERACAO },
+  );
+}
+
+const ITENS_COM_GERACAO = itensSecoes(true);
+const ITENS_SEM_GERACAO = itensSecoes(false);
 
 function itemColuna(coluna: TipoColuna) {
   return {
@@ -44,7 +55,7 @@ export default function OpcoesRelatorio({
     <div className={estilos.opcoes}>
       <GrupoCaixas
         legenda={T.secoes}
-        itens={ITENS_SECOES}
+        itens={selecao.gerado === null ? ITENS_SEM_GERACAO : ITENS_COM_GERACAO}
         marcados={selecao.secoes}
         aoAlternar={selecao.alternarSecao}
       />

@@ -4,6 +4,7 @@ import userEvent from '@testing-library/user-event';
 import { type ReactElement, type ReactNode, useEffect, useRef } from 'react';
 import { MemoryRouter, type RouteObject, RouterProvider, createMemoryRouter } from 'react-router';
 import SessaoProvider from '../shared/sessao/SessaoProvider';
+import type { GeradoSessao } from '../shared/sessao/tipos';
 import { useSessao } from '../shared/sessao/useSessao';
 import TemaProvider from '../shared/tema/TemaProvider';
 import ToastProvider from '../shared/ui/ToastProvider';
@@ -15,6 +16,7 @@ export const DATASET_TESTE: DatasetSessao = { id: 'ds-1', nomeArquivo: 'pesquisa
 export interface OpcoesRenderizar {
   rota?: string;
   dataset?: DatasetSessao | null;
+  ultimoGerado?: GeradoSessao | null;
   cliente?: QueryClient;
 }
 
@@ -25,32 +27,40 @@ export function criarClienteTeste(): QueryClient {
   });
 }
 
-/** Põe o dataset na sessão após a 1ª renderização; o formato do localStorage é detalhe do M1.1. */
-function DefinirDataset({ dataset }: Readonly<{ dataset: DatasetSessao | null }>) {
+interface PropsDefinirSessao {
+  dataset: DatasetSessao | null;
+  ultimoGerado: GeradoSessao | null;
+}
+
+/**
+ * Põe o dataset (e a última geração) na sessão após a 1ª renderização; o formato do
+ * localStorage é detalhe do M1.1.
+ */
+function DefinirSessao({ dataset, ultimoGerado }: Readonly<PropsDefinirSessao>) {
   const sessao = useSessao();
   const definido = useRef(false);
   useEffect(() => {
     if (definido.current || dataset === null) return;
     definido.current = true;
     sessao.definirDataset(dataset);
-  }, [dataset, sessao]);
+    if (ultimoGerado !== null) sessao.definirUltimoGerado(ultimoGerado);
+  }, [dataset, ultimoGerado, sessao]);
   return null;
 }
 
-interface PropsProvedores {
+interface PropsProvedores extends PropsDefinirSessao {
   cliente: QueryClient;
-  dataset: DatasetSessao | null;
   children: ReactNode;
 }
 
 /** Provedores reais, na mesma ordem do App.tsx. */
-function Provedores({ cliente, dataset, children }: Readonly<PropsProvedores>) {
+function Provedores({ cliente, dataset, ultimoGerado, children }: Readonly<PropsProvedores>) {
   return (
     <QueryClientProvider client={cliente}>
       <TemaProvider>
         <SessaoProvider>
           <ToastProvider>
-            <DefinirDataset dataset={dataset} />
+            <DefinirSessao dataset={dataset} ultimoGerado={ultimoGerado} />
             {children}
           </ToastProvider>
         </SessaoProvider>
@@ -68,7 +78,11 @@ export function renderizarComRotas(
   const clienteConsultas = opcoes.cliente ?? criarClienteTeste();
   const usuario = userEvent.setup();
   const resultado = render(
-    <Provedores cliente={clienteConsultas} dataset={opcoes.dataset ?? null}>
+    <Provedores
+      cliente={clienteConsultas}
+      dataset={opcoes.dataset ?? null}
+      ultimoGerado={opcoes.ultimoGerado ?? null}
+    >
       <RouterProvider router={roteador} />
     </Provedores>,
   );
@@ -82,12 +96,12 @@ export function renderizarComProvedores(elemento: ReactElement, opcoes: OpcoesRe
 }
 
 export function renderizarHook<R>(hook: () => R, opcoes: OpcoesRenderizar = {}) {
-  const { rota = '/', dataset = null } = opcoes;
+  const { rota = '/', dataset = null, ultimoGerado = null } = opcoes;
   const cliente = opcoes.cliente ?? criarClienteTeste();
   const usuario = userEvent.setup();
   function Envoltorio({ children }: Readonly<{ children: ReactNode }>) {
     return (
-      <Provedores cliente={cliente} dataset={dataset}>
+      <Provedores cliente={cliente} dataset={dataset} ultimoGerado={ultimoGerado}>
         <MemoryRouter initialEntries={[rota]}>{children}</MemoryRouter>
       </Provedores>
     );

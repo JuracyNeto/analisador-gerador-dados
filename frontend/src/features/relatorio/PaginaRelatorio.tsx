@@ -70,7 +70,11 @@ interface Props {
 
 function RelatorioDoDataset({ datasetId, nomeArquivo }: Readonly<Props>) {
   const colunas = useColunasAnalisaveis(datasetId);
-  const selecao = useSelecaoRelatorio((colunas.data ?? []).map((coluna) => coluna.coluna));
+  const { ultimoGerado } = useSessao();
+  const selecao = useSelecaoRelatorio(
+    (colunas.data ?? []).map((coluna) => coluna.coluna),
+    ultimoGerado?.id ?? null,
+  );
   const [offline, setOffline] = useState(true);
   const efetiva = selecaoEfetiva(selecao);
   const previa = usePreviaRelatorio(datasetId, efetiva);

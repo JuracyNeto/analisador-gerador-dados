@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react';
+import { Fragment, type ReactNode } from 'react';
 import CaixaSelecao from '../../../shared/ui/CaixaSelecao';
 import { TEXTOS_RELATORIO } from '../textos';
 import estilos from './GrupoCaixas.module.css';
@@ -6,6 +6,9 @@ import estilos from './GrupoCaixas.module.css';
 export interface ItemCaixa<T extends string> {
   id: T;
   rotulo: ReactNode;
+  /** Só esta caixa desabilitada, com a nota logo abaixo (ex.: Gerador sem geração). */
+  desabilitada?: boolean;
+  nota?: ReactNode;
 }
 
 interface Props<T extends string> {
@@ -36,15 +39,17 @@ export default function GrupoCaixas<T extends string>({
         </span>
       </legend>
       {itens.map((item) => (
-        <CaixaSelecao
-          key={item.id}
-          rotulo={item.rotulo}
-          marcada={conjuntoMarcados.has(item.id)}
-          desabilitada={desabilitado}
-          aoMudar={() => {
-            aoAlternar(item.id);
-          }}
-        />
+        <Fragment key={item.id}>
+          <CaixaSelecao
+            rotulo={item.rotulo}
+            marcada={conjuntoMarcados.has(item.id)}
+            desabilitada={desabilitado || item.desabilitada === true}
+            aoMudar={() => {
+              aoAlternar(item.id);
+            }}
+          />
+          {item.nota ?? null}
+        </Fragment>
       ))}
       {nota}
     </fieldset>

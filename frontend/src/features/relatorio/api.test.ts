@@ -2,21 +2,27 @@ import { describe, expect, it } from 'vitest';
 import { caminhoRelatorio, nomeArquivoRelatorio, SECOES_RELATORIO } from './api';
 
 describe('caminhoRelatorio', () => {
-  it('repete secoes e colunas e manda offline', () => {
+  it('repete secoes e colunas, manda a geração e offline', () => {
     const caminho = caminhoRelatorio('ds1', {
       secoes: SECOES_RELATORIO,
       colunas: ['sexo', 'peso_kg'],
+      gerado: 'g-1',
       offline: true,
     });
 
     expect(caminho).toBe(
-      '/datasets/ds1/relatorio?secoes=leitura&secoes=tipos&secoes=limpeza&secoes=analises&secoes=distribuicoes&secoes=bivariada&colunas=sexo&colunas=peso_kg&offline=true',
+      '/datasets/ds1/relatorio?secoes=leitura&secoes=tipos&secoes=limpeza&secoes=analises&secoes=distribuicoes&secoes=bivariada&secoes=gerador&secoes=detector&colunas=sexo&colunas=peso_kg&gerado=g-1&offline=true',
     );
   });
 
   it('codifica nomes de coluna com espaço e acento', () => {
     expect(
-      caminhoRelatorio('ds1', { secoes: ['analises'], colunas: ['renda média'], offline: false }),
+      caminhoRelatorio('ds1', {
+        secoes: ['analises'],
+        colunas: ['renda média'],
+        gerado: null,
+        offline: false,
+      }),
     ).toBe('/datasets/ds1/relatorio?secoes=analises&colunas=renda+m%C3%A9dia&offline=false');
   });
 });
