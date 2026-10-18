@@ -40,9 +40,9 @@ export const avisoR1 = criarAviso({
   nome_regra: 'Bloco alinhado',
   severidade: 'alta',
   colunas: ['altura_m'],
-  titulo: 'Bloco alinhado ao conjunto em altura_m',
+  titulo: 'Bloco alinhado ao restante dos dados em altura_m',
   resumo:
-    'Um bloco de 20 linhas (181–200) tem média e desvio quase idênticos ao conjunto todo (diferença de 0,021%).',
+    'Um bloco de 20 linhas (181–200) tem média e desvio quase idênticos aos do restante dos dados (diferença de 0,021%).',
   por_que:
     "Em dados reais, pedaços pequenos variam bastante; um bloco que 'bate' tudo pode ter sido colocado para alinhar as estatísticas.",
   pode_ser_normal: '…o conjunto foi ordenado ou amostrado de forma sistemática.',
@@ -50,16 +50,17 @@ export const avisoR1 = criarAviso({
   exemplo: {
     linhas: linhasDe(181, 200),
     valores: linhasDe(181, 200).map(() => '1,7'),
-    texto: 'Linhas 181 a 200: média 1,702 (geral 1,702) · DP 0,09034 (geral 0,09036)',
+    texto: 'Linhas 181 a 200: média 1,702 (resto 1,702) · DP 0,09034 (resto 0,09036)',
   },
   detalhes: {
-    medida: 'Janelas de 20 linhas seguidas',
+    medida:
+      'Janelas de 20 linhas seguidas e o fim do arquivo (de 10 a 150 linhas): diferença de média (dᵤ) e de desvio (dₛ) para o restante das linhas, em desvios padrão do restante',
     valor: 'dᵤ = 0 · dₛ = 0,000206',
-    limiar: 'dᵤ e dₛ < 0,01',
+    limiar: 'dᵤ e dₛ < 0,01 e menos de 1% dos embaralhamentos com uma janela tão parecida',
     teste: 'Simulação: 1.000 embaralhamentos da coluna (semente fixa)',
     p_valor: 0.002,
     p_em_palavras: 'chance de acontecer por acaso: cerca de 1 em 500',
-    formula: 'dᵤ = |x̄_bloco − x̄| / s · dₛ = |s_bloco − s| / s',
+    formula: 'dᵤ = |x̄_bloco − x̄_resto| / s_resto · dₛ = |s_bloco − s_resto| / s_resto',
   },
   figura: { ...figura('blocos', 'Média por bloco', true, 'altura_m'), titulo: 'Média por bloco' },
 });
