@@ -92,6 +92,19 @@ def test_bloco_no_fim_dispara_com_qualquer_tamanho(
     assert aviso.exemplo.texto.startswith(f"Linhas {linhas.replace('–', ' a ')}: média ")
 
 
+@pytest.mark.parametrize(
+    ("tamanho", "achado"), [(20, True), (37, False)], ids=["com_k_linhas", "com_37_linhas"]
+)
+def test_bloco_no_comeco_so_e_achado_com_k_linhas(tamanho: int, achado: bool) -> None:
+    """Limite (D150): o começo de qualquer tamanho tiraria força do fim, onde o Gerador anexa
+    (junto com o fim), ou somaria alertas falsos (com acaso próprio)."""
+    valores = alinhar_bloco(_normal(), 0, tamanho)
+
+    avisos = RegraBlocoAlinhado().executar(tabela_numerica(valores)).avisos
+
+    assert bool(avisos) is achado
+
+
 def test_detalhes_trazem_a_simulacao() -> None:
     (aviso,) = (
         RegraBlocoAlinhado().executar(tabela_numerica(alinhar_bloco(_normal(), 180, 20))).avisos
