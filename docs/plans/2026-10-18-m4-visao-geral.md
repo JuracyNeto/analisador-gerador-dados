@@ -2,7 +2,7 @@
 
 > Índice do M4. Cada bloco tem plano, branch e PR próprios. Os contratos abaixo são a **fonte única** entre os blocos: quem implementa um bloco não muda um contrato sem atualizar este arquivo e avisar no PR.
 
-**Objetivo do marco:** fechar o trabalho para a entrega final. O relatório HTML ganha o apêndice de fórmulas (item 10 da spec 13, caixa "Fórmulas" do print 8a); as telas passam por uma auditoria de acessibilidade (WCAG 2.1 AA, spec 15) e por ajustes de UX achados num teste completo; o grupo recebe o relatório final do trabalho em `docs/relatorio-final/` (prints das telas e gráficos, fórmulas, explicação do gerador e do detector, documentação), um roteiro de apresentação e o README final. Fecham também as pendências do M3: a R1 no começo do arquivo e a fixture antiga do detector. Prazo **08/12/2026**, versão **v1.0.0** (`roadmap.md`).
+**Objetivo do marco:** fechar o trabalho para a entrega final. O relatório HTML ganha o apêndice de fórmulas (item 10 da spec 13, caixa "Fórmulas" do print 8a); as telas passam por uma auditoria de acessibilidade (WCAG 2.1 AA, spec 15) e por ajustes de UX achados num teste completo; o grupo recebe o relatório final do trabalho em `docs/relatorio-final/` (prints das telas e gráficos, fórmulas, explicação do gerador e do detector, documentação), um roteiro de apresentação e o README final. Fecham também as pendências do M3: a R1 no começo do arquivo (medida e deixada de fora, D150) e a fixture antiga do detector. Prazo **08/12/2026**, versão **v1.0.0** (`roadmap.md`).
 
 **Critérios de pronto** (pedido do M4, `roadmap.md` e checklist da versão final do professor):
 - Checklist da final completo: tudo da prévia · distribuições, assimetria, curtose · correlação e regressão · gerador univariado · gerador bivariado com correlação · detector com resumo · **relatório com imagens e fórmulas**.
@@ -16,7 +16,7 @@
 
 | Bloco | Plano | Branch | Conteúdo |
 |---|---|---|---|
-| **M4.0** R1 no começo do arquivo + fixture | `2026-10-18-m4-0-r1-comeco.md` | `fix/detector-r1-comeco` | R1 procura também no começo do arquivo (de 10 a n/2 linhas), na mesma família do fim, sem aumentar os falsos positivos; fixture do detector no frontend com os textos atuais da R1 |
+| **M4.0** Pendências do detector | `2026-10-18-m4-0-r1-comeco.md` | `fix/pendencias-detector-m3` | R1 no começo do arquivo medido e deixado de fora (D150: fica só o fim), com o limite testado e documentado; fixture do detector no frontend com os textos atuais da R1 |
 | **M4.1** Apêndice de fórmulas | `2026-10-18-m4-1-apendice-formulas.md` | `feat/relatorio-apendice-formulas` | 9ª seção `formulas` no relatório (módulo `relatorio/apendice.py`); catálogo de fórmulas do gerador (`Gerado.formulas`); fórmulas do detector a partir dos alertas; caixa "Fórmulas" na tela 8 ("9 de 9") |
 | **M4.2** Acessibilidade | `2026-10-18-m4-2-acessibilidade.md` | `fix/acessibilidade` | axe nos testes das 8 telas e dos componentes de `shared/ui`; contraste dos tokens testado; teclado, foco, `aria-live`, foco ao trocar de etapa, `prefers-reduced-motion`, 200% de zoom |
 | **M4.3** Ajustes de UX | `2026-10-18-m4-3-ajustes-ux.md` | `fix/ajustes-ux` | Teste completo com os 5 exemplos e arquivos grandes; lista de achados aprovada pelo usuário; correções; textos conferidos com a spec 16; medição dos tempos da spec 00 |
@@ -64,9 +64,7 @@ Execução prevista (um bloco por vez): M4.0 → M4.1 → M4.2 → M4.3 → M4.4
 ## Contratos do backend
 
 ### R1 (M4.0) — domínio `detector`
-- `blocos.afastamentos_do_comeco(matriz, menor, maior) -> np.ndarray`: max(dᵤ, dₛ) dos primeiros `menor` a `maior` valores de cada linha contra o resto (espelho de `afastamentos_do_fim`).
-- `r01_bloco_alinhado`: dois tipos de trecho, cada um contra o seu acaso, como na D148: (1) janelas de k linhas; (2) **bordas** = começo e fim, de 10 a ⌊n/2⌋ linhas. O candidato das bordas é o mais parecido entre começo e fim; a referência é a melhor borda (começo ou fim) de cada embaralhamento. Juntar começo e fim numa família só mantém duas famílias e não aumenta os falsos positivos (D150).
-- Textos: os detalhes técnicos dizem "Janelas de 20 linhas seguidas, o começo e o fim do arquivo (de 10 a 150 linhas)"; resumo e exemplo não mudam. API sem mudança.
+- Sem mudança de código (D150). O começo do arquivo foi medido de duas formas e ficou de fora: junto com o fim, o fim (onde o Gerador anexa) perdia força; com acaso próprio, os alertas falsos subiam ~1 ponto. Um teste registra o limite (bloco no começo só com k linhas).
 
 ### Fórmulas (M4.1)
 ```
@@ -108,7 +106,7 @@ Escolhas do usuário em 18/10/2026, ao aprovar o plano: fórmulas só no apêndi
 
 | # | Decisão | Bloco |
 |---|---|---|
-| D150 | R1: começo do arquivo (10 a ⌊n/2⌋ linhas) na mesma família do fim ("bordas", contra a melhor borda de cada embaralhamento); no meio, só janelas de k linhas (procurar todos os tamanhos custaria O(n²) por embaralhamento) | M4.0 |
+| D150 | R1 sem o começo do arquivo de qualquer tamanho (no começo e no meio, só janelas de k linhas; o fim como na D148), com as medições das duas alternativas (escolha do usuário em 18/10/2026) | M4.0 ✓ |
 | D151 | Apêndice de fórmulas como 9ª seção (`formulas`, caixa "Fórmulas" do print 8a), só com as fórmulas das seções incluídas, agrupadas e sem repetir; as listas por coluna e da Bivariada saem (o apêndice as substitui) | M4.1 |
 | D152 | `Formula` em `compartilhado/tipos.py` (value object usado por análise, gerador e relatório); catálogo do gerador por método em `gerador/formulas.py` e `Gerado.formulas` na API; detector usa a fórmula em texto dos alertas | M4.1 |
 | D153 | Acessibilidade testada com o axe (`axe-core` em dev) em cada tela e componente; contraste dos tokens testado à parte (o jsdom não mede cor) | M4.2 |
@@ -125,7 +123,7 @@ Escolhas do usuário em 18/10/2026, ao aprovar o plano: fórmulas só no apêndi
 ## Tamanho dos PRs
 | Bloco | Linhas estimadas (código + testes + docs) |
 |---|---|
-| M4.0 | ~300 |
+| M4.0 | ~100 (teste e docs) |
 | M4.1 | ~1.000 |
 | M4.2 | ~800 (depende dos achados) |
 | M4.3 | ~600 (depende dos achados) |
@@ -135,7 +133,7 @@ Escolhas do usuário em 18/10/2026, ao aprovar o plano: fórmulas só no apêndi
 ## Pontos de atenção encontrados nas specs, no design e no código
 1. **Fórmulas repetidas:** hoje cada coluna do relatório traz a sua lista "Fórmulas usadas" (média, mediana, variância… repetidas em toda coluna) e a Bivariada traz a dela. O print 8a mostra "Fórmulas" como seção própria (p. 11) e as colunas sem lista. O apêndice junta tudo uma vez, com o "onde" (D151).
 2. **KaTeX sem internet:** o KaTeX vem do CDN; no arquivo "Funciona sem internet" as fórmulas aparecem no texto de reserva (a spec 13 já prevê). Embutir o KaTeX (~300 KB + fontes) fica fora do M4.
-3. **R1 no meio do arquivo:** um bloco no meio só é achado com exatamente k linhas; achar qualquer tamanho exige todos os tamanhos em cada um dos 1.000 embaralhamentos (O(n²); com 10 mil linhas, minutos). O M4.0 resolve o começo (o caso simétrico ao fim, D148) e documenta o limite na spec 12.
+3. **R1 no meio do arquivo:** um bloco no meio só é achado com exatamente k linhas; achar qualquer tamanho exige todos os tamanhos em cada um dos 1.000 embaralhamentos (O(n²); com 10 mil linhas, minutos). O começo também fica só com k linhas: as duas formas de procurá-lo custavam força no fim ou alertas falsos (D150, medições na spec 12).
 4. **Fórmulas do detector:** estão só em texto Unicode nos detalhes (sem LaTeX); o apêndice mostra o texto, sem KaTeX.
 5. **axe no jsdom:** o jsdom não calcula cores nem layout; contraste, foco visível e ordem visual ficam com o teste dos tokens e com a conferência no preview.
 6. **Prints:** dependem da data do dia (cabeçalho do relatório) e do tema; o script fixa viewport (1440 × 900), tema e exemplos, e os PNGs não entram em teste automatizado.
