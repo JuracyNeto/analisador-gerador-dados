@@ -104,6 +104,8 @@ Nenhum.
 | M4.4 | `frontend/scripts/prints.ts` + `npm run prints` (fora do CI) |
 
 ## Decisões previstas (entram em `docs/decisions.md` no bloco indicado; use o próximo número livre)
+Escolhas do usuário em 18/10/2026, ao aprovar o plano: fórmulas só no apêndice (D151), relatório final em Markdown (D156), `axe-core` e `playwright-core` como dependências de desenvolvimento (D153, D155).
+
 | # | Decisão | Bloco |
 |---|---|---|
 | D150 | R1: começo do arquivo (10 a ⌊n/2⌋ linhas) na mesma família do fim ("bordas", contra a melhor borda de cada embaralhamento); no meio, só janelas de k linhas (procurar todos os tamanhos custaria O(n²) por embaralhamento) | M4.0 |
