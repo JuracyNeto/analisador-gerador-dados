@@ -31,6 +31,8 @@ def test_univariado_preservando_coluna_do_exemplo(cliente: TestClient) -> None:
     assert "semente 42" in gerado["explicacao"]
     assert gerado["figuras"][0]["id"] == "sobreposicao"
     assert {"nome": "Semente", "valor": "42"} in gerado["parametros"]
+    assert [f["chave"] for f in gerado["formulas"]] == ["kde", "reescala"]
+    assert gerado["formulas"][1]["texto"] == "zᵢ = (gᵢ − ḡ) / s_g → xᵢ' = x̄ + s·zᵢ"
 
 
 def test_mesma_semente_mesma_amostra(cliente: TestClient) -> None:
@@ -106,6 +108,9 @@ def test_bivariado_com_ajuste_exato_bate_a_correlacao_do_par(cliente: TestClient
     assert abs(correlacao["gerado"] - correlacao["original"]) < 1e-9
     assert gerado["colunas"] == ["altura_m", "peso_kg"]
     assert gerado["metodo"] == "Cholesky"
+    assert [f["chave"] for f in gerado["formulas"]] == ["cholesky", "ajuste_exato"]
+    reaberto = cliente.get(f"/api/gerador/{gerado['gerado_id']}").json()
+    assert reaberto["formulas"] == gerado["formulas"]
 
 
 def test_bivariado_sem_origem_exige_os_parametros(cliente: TestClient) -> None:
@@ -133,6 +138,7 @@ def test_bivariado_sem_origem_com_alvo(cliente: TestClient) -> None:
 
     assert gerado["colunas"] == ["a", "b"]
     assert gerado["comparacao"][-1]["original"] == -0.5
+    assert [f["chave"] for f in gerado["formulas"]] == ["cholesky"]
 
 
 def test_geracao_inexistente(cliente: TestClient) -> None:

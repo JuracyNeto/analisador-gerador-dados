@@ -5,7 +5,7 @@ from typing import Literal
 from pydantic import BaseModel, ConfigDict
 
 from app.compartilhado.tipos import TipoVariavel
-from app.core.esquemas import Figura
+from app.core.esquemas import Figura, Formula
 
 type Valor = float | str | None
 
@@ -17,13 +17,6 @@ class Modelo(BaseModel):
 class NaoAplicavel(Modelo):
     item: str
     motivo: str
-
-
-class Formula(Modelo):
-    chave: str
-    nome: str
-    latex: str
-    texto: str
 
 
 class Medida(Modelo):

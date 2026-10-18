@@ -17,3 +17,14 @@ class Figura(BaseModel):
     porque: str
     recomendado: bool
     dados: dict[str, Any]
+
+
+class Formula(BaseModel):
+    """Fórmula em LaTeX e em texto de reserva: análise e gerador usam o mesmo contrato (D152)."""
+
+    model_config = ConfigDict(from_attributes=True)
+
+    chave: str
+    nome: str
+    latex: str
+    texto: str

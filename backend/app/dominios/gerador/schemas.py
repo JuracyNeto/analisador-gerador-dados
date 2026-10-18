@@ -4,7 +4,7 @@ from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field
 
-from app.core.esquemas import Figura
+from app.core.esquemas import Figura, Formula
 
 LIMITE_GERACAO = 1_000_000
 MAX_SEMENTE = 2**32 - 1
@@ -89,6 +89,7 @@ class Gerado(Modelo):
     amostra: list[dict[str, Celula]]
     comparacao: list[LinhaComparacao]
     figuras: list[Figura]
+    formulas: list[Formula]
 
 
 class PedidoAdotar(BaseModel):

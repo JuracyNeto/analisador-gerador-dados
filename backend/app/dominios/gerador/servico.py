@@ -8,11 +8,11 @@ import numpy as np
 import pandas as pd
 
 from app.compartilhado.textos import juntar_lista
-from app.compartilhado.tipos import TIPOS_AUXILIARES, TIPOS_NUMERICOS, TipoVariavel
+from app.compartilhado.tipos import TIPOS_AUXILIARES, TIPOS_NUMERICOS, Formula, TipoVariavel
 from app.core.config import Configuracao, obter_configuracao
 from app.dominios.analise.servico import Amostra, ServicoAnalise
 from app.dominios.datasets.servico import OpcoesLeitura, ServicoDatasets
-from app.dominios.gerador import erros, textos
+from app.dominios.gerador import erros, formulas, textos
 from app.dominios.gerador.bivariado import ParametrosBivariado, gerar_pares, gerar_pares_exatos
 from app.dominios.gerador.comparacao import (
     MedidasPar,
@@ -111,6 +111,7 @@ class Gerado:
     parametros: tuple[Parametro, ...]
     comparacao: tuple[LinhaComparacao, ...]
     figuras: tuple[FiguraPronta, ...]
+    formulas: tuple[Formula, ...]
     tamanho_amostra: int = 50
 
     @property
@@ -316,6 +317,7 @@ class ServicoGerador:
             parametros=parametros_univariados(descricao_univariada(pedido, preparo, contexto)),
             comparacao=self._comparacao(preparo, resultado.valores),
             figuras=(_figura_univariada(preparo, resultado.valores),),
+            formulas=formulas.formulas_univariadas(resultado.metodo),
             tamanho_amostra=self._config.tamanho_amostra_gerada,
         )
 
@@ -377,6 +379,11 @@ class ServicoGerador:
             parametros=parametros_bivariados(DescricaoBivariada(origem, contexto)),
             comparacao=comparar_pares(nome_x, nome_y, base.original or _alvo(parametros), obtido),
             figuras=(_figura_pares(base, pares, obtido.r),),
+            formulas=(
+                formulas.FORMULAS_BIVARIADO_EXATO
+                if pedido.ajuste_exato
+                else formulas.FORMULAS_BIVARIADO
+            ),
             tamanho_amostra=self._config.tamanho_amostra_gerada,
         )
 
