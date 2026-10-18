@@ -791,7 +791,10 @@ export interface components {
             /** Figuras */
             figuras: components["schemas"]["Figura"][];
         };
-        /** Formula */
+        /**
+         * Formula
+         * @description Fórmula em LaTeX e em texto de reserva: análise e gerador usam o mesmo contrato (D152).
+         */
         Formula: {
             /** Chave */
             chave: string;
@@ -832,6 +835,8 @@ export interface components {
             comparacao: components["schemas"]["LinhaComparacao"][];
             /** Figuras */
             figuras: components["schemas"]["Figura"][];
+            /** Formulas */
+            formulas: components["schemas"]["Formula"][];
         };
         /** Grafia */
         Grafia: {
@@ -1353,7 +1358,7 @@ export interface components {
             versao: string;
         };
         /** @enum {string} */
-        Secao: "leitura" | "tipos" | "limpeza" | "analises" | "distribuicoes" | "bivariada" | "gerador" | "detector";
+        Secao: "leitura" | "tipos" | "limpeza" | "analises" | "distribuicoes" | "bivariada" | "gerador" | "detector" | "formulas";
         /** Separatrizes */
         Separatrizes: {
             /** Quartis */

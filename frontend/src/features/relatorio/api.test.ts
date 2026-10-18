@@ -11,7 +11,7 @@ describe('caminhoRelatorio', () => {
     });
 
     expect(caminho).toBe(
-      '/datasets/ds1/relatorio?secoes=leitura&secoes=tipos&secoes=limpeza&secoes=analises&secoes=distribuicoes&secoes=bivariada&secoes=gerador&secoes=detector&colunas=sexo&colunas=peso_kg&gerado=g-1&offline=true',
+      '/datasets/ds1/relatorio?secoes=leitura&secoes=tipos&secoes=limpeza&secoes=analises&secoes=distribuicoes&secoes=bivariada&secoes=gerador&secoes=detector&secoes=formulas&colunas=sexo&colunas=peso_kg&gerado=g-1&offline=true',
     );
   });
 
