@@ -57,7 +57,7 @@ def dataset_id(servico_datasets: ServicoDatasets) -> str:
     return dataset_id
 
 
-def test_pedido_padrao_tem_as_oito_secoes() -> None:
+def test_pedido_padrao_tem_as_nove_secoes() -> None:
     assert PedidoRelatorio().secoes == SECOES_PADRAO
     assert PedidoRelatorio().gerado is None
     assert SECOES_PADRAO == (
@@ -69,6 +69,7 @@ def test_pedido_padrao_tem_as_oito_secoes() -> None:
         "bivariada",
         "gerador",
         "detector",
+        "formulas",
     )
 
 
@@ -142,20 +143,66 @@ def test_distribuicoes_por_coluna(servico: ServicoRelatorio, dataset_id: str) ->
     assert '<th scope="col">fᵢ</th>' not in html
 
 
+def _apendice(html: str) -> str:
+    """O trecho do apêndice (do título ao rodapé)."""
+    return html[html.index("Fórmulas usadas</h2>") : html.index('<footer class="rodape">')]
+
+
 def test_formulas_da_forma_so_com_distribuicoes(servico: ServicoRelatorio, dataset_id: str) -> None:
     so_analises = servico.gerar(
-        dataset_id, PedidoRelatorio(secoes=("analises",), colunas=("peso_kg",))
+        dataset_id, PedidoRelatorio(secoes=("analises", "formulas"), colunas=("peso_kg",))
     )
     so_forma = servico.gerar(
-        dataset_id, PedidoRelatorio(secoes=("distribuicoes",), colunas=("peso_kg",))
+        dataset_id, PedidoRelatorio(secoes=("distribuicoes", "formulas"), colunas=("peso_kg",))
     )
 
-    assert "Forma e distribuição" not in so_analises
+    assert "Forma e distribuição</h3>" not in _apendice(so_analises)
     assert "Assimetria (Fisher)" not in so_analises
-    assert "Média:" in so_analises
-    assert "Assimetria (Fisher)" in so_forma
-    assert "Distribuição Normal" in so_forma
-    assert "Média:" not in so_forma
+    assert '<span class="nome-formula">Média</span>' in _apendice(so_analises)
+    assert "<h3>Forma e distribuição</h3>" in _apendice(so_forma)
+    assert '<span class="nome-formula">Distribuição Normal</span>' in _apendice(so_forma)
+    assert '<span class="nome-formula">Média</span>' not in so_forma
+
+
+def test_apendice_junta_as_formulas_das_colunas(servico: ServicoRelatorio, dataset_id: str) -> None:
+    html = servico.gerar(dataset_id, PedidoRelatorio(secoes=(*SECOES_DA_ANALISE, "formulas")))
+
+    apendice = _apendice(html)
+    assert html.count('<span class="nome-formula">Média</span>') == 1
+    assert html.count("<h3>Fórmulas usadas</h3>") == 0
+    grupos = ["<h3>Análise por coluna</h3>", "<h3>Forma e distribuição</h3>"]
+    assert [apendice.index(g) for g in grupos] == sorted(apendice.index(g) for g in grupos)
+    proporcao = apendice[apendice.index("Proporção</span>") :]
+    assert proporcao[: proporcao.index("</li>")].endswith('<span class="nota">· em sexo</span>')
+    frequencia = apendice[apendice.index("Frequência relativa</span>") :]
+    assert "· em todas as colunas</span>" in frequencia[: frequencia.index("</li>")]
+
+
+@pytest.mark.parametrize("secoes", [("leitura", "formulas"), ("formulas",)])
+def test_sem_formulas_nas_secoes_nao_ha_apendice(
+    servico: ServicoRelatorio, dataset_id: str, secoes: tuple[Secao, ...]
+) -> None:
+    html = servico.gerar(dataset_id, PedidoRelatorio(secoes=secoes))
+
+    assert "Fórmulas usadas" not in html
+
+
+def test_apendice_com_gerador_e_detector(
+    servico: ServicoRelatorio, servico_gerador: ServicoGerador, servico_datasets: ServicoDatasets
+) -> None:
+    dataset_id = servico_datasets.importar_exemplo("alturas_plantadas.txt").dataset_id
+    pedido = PedidoUnivariado(x=100, origem=Origem(dataset_id, "peso_kg"), semente=42)
+    gerado = servico_gerador.univariado(pedido)
+    secoes: tuple[Secao, ...] = ("gerador", "detector", "formulas")
+
+    html = servico.gerar(dataset_id, PedidoRelatorio(secoes, gerado=gerado.gerado_id))
+
+    apendice = _apendice(html)
+    assert apendice.index("<h3>Gerador</h3>") < apendice.index("<h3>Detector</h3>")
+    assert '<span class="nome-formula">Reescala exata</span>' in apendice
+    assert '<span class="nome-formula">R1 · Bloco alinhado</span>' in apendice
+    assert "· em peso_kg</span>" in apendice
+    assert '<span class="formula-texto">dᵤ = |x̄_bloco − x̄_resto|' in apendice
 
 
 def test_analises_e_distribuicoes_numeram_as_figuras(
@@ -199,8 +246,10 @@ def test_bivariada_com_notas(servico: ServicoRelatorio, servico_datasets: Servic
     titulo_par = '<span class="mono">nota_p2</span> em função de <span class="mono">nota_p1</span>'
     assert titulo_par in html
     assert "Ŷ = " in html
-    assert "Correlação de Pearson:" in html
+    assert "Fórmulas usadas" not in html  # as fórmulas ficam no apêndice (D151)
     assert html.count("Plotly.newPlot(") >= 2
+    com_formulas = servico.gerar(dataset_id, PedidoRelatorio(secoes=("bivariada", "formulas")))
+    assert '<span class="nome-formula">Correlação de Pearson</span>' in _apendice(com_formulas)
 
 
 def test_bivariada_com_uma_coluna_numerica(

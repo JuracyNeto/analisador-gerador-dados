@@ -41,7 +41,7 @@ def test_secoes_gerador_e_detector_aceitas(cliente: TestClient) -> None:
     assert resposta.status_code == 200
 
 
-def test_sem_secoes_traz_as_oito(cliente: TestClient) -> None:
+def test_sem_secoes_traz_as_nove(cliente: TestClient) -> None:
     dataset_id = _exemplo(cliente)
     corpo = {"origem": {"dataset_id": dataset_id, "coluna": "peso_kg"}, "x": 50, "semente": 42}
     gerado_id = cliente.post("/api/gerador/univariado", json=corpo).json()["gerado_id"]
@@ -57,6 +57,19 @@ def test_sem_secoes_traz_as_oito(cliente: TestClient) -> None:
     assert ". Gerador de dados</h2>" not in sem_gerado
     assert ". Detector de dados artificiais</h2>" in html
     assert ". Detector de dados artificiais</h2>" in sem_gerado
+    assert ". Fórmulas usadas</h2>" in html
+    assert html.index("Detector de dados artificiais</h2>") < html.index("Fórmulas usadas</h2>")
+
+
+def test_secao_formulas_aceita(cliente: TestClient) -> None:
+    dataset_id = _exemplo(cliente)
+
+    resposta = cliente.get(
+        f"/api/datasets/{dataset_id}/relatorio", params={"secoes": ["analises", "formulas"]}
+    )
+
+    assert resposta.status_code == 200
+    assert "<h3>Análise por coluna</h3>" in resposta.text
 
 
 def test_secao_desconhecida(cliente: TestClient) -> None:

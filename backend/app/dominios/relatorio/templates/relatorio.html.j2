@@ -73,12 +73,6 @@
       </tbody>
     </table>
   {% endmacro %}
-  {% macro formulas(lista) %}
-    <h3>Fórmulas usadas</h3>
-    <ul class="formulas">
-      {% for f in lista %}<li>{{ f.nome }}: <span class="formula" data-latex="{{ f.latex }}">{{ f.texto }}</span></li>{% endfor %}
-    </ul>
-  {% endmacro %}
   {% macro aviso(a) %}
     <article class="aviso sev-{{ a.severidade }}">
       <div class="aviso-texto">
@@ -122,7 +116,6 @@
     {% if f.interpretacao %}<p>{{ f.interpretacao }}</p>{% endif %}
     {% if f.figura %}{{ figura(f.figura) }}{% endif %}
     {% endif %}
-    {% if col.formulas %}{{ formulas(col.formulas) }}{% endif %}
   </section>
   {% endfor %}
 
@@ -141,7 +134,6 @@
     {% for frase in par.interpretacoes %}<p>{{ frase }}</p>{% endfor %}
     {% if par.figura %}{{ figura(par.figura) }}{% endif %}
     {% endfor %}
-    {% if b.formulas %}{{ formulas(b.formulas) }}{% endif %}
   </section>
   {% endif %}
 
@@ -178,6 +170,20 @@
       {% for frase in d.nao_verificadas %}<li>{{ frase }}</li>{% endfor %}
     </ul>
     {% endif %}
+  </section>
+  {% endif %}
+
+  {% set ap = c.formulas %}
+  {% if ap is not none %}
+  {% set numero.secao = numero.secao + 1 %}
+  <section class="apendice">
+    <h2>{{ numero.secao }}. {{ titulos.formulas }}</h2>
+    {% for g in ap.grupos %}
+    <h3>{{ g.titulo }}</h3>
+    <ul class="formulas">
+      {% for x in g.formulas %}<li><span class="nome-formula">{{ x.nome }}</span>: {% if x.latex %}<span class="formula" data-latex="{{ x.latex }}">{{ x.texto }}</span>{% else %}<span class="formula-texto">{{ x.texto }}</span>{% endif %}{% if x.onde %} <span class="nota">· {{ x.onde }}</span>{% endif %}</li>{% endfor %}
+    </ul>
+    {% endfor %}
   </section>
   {% endif %}
 

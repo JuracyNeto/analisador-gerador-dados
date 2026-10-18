@@ -1,21 +1,21 @@
 """Fachada do domínio relatorio: junta leitura, tipos, limpeza e análises num HTML (spec 13)."""
 
 from collections.abc import Iterable, Mapping
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from datetime import datetime
 from itertools import combinations
 from typing import Any, Protocol
 
 from app.compartilhado.numeros import formatar_com_sinal, formatar_p_valor, formatar_percentual
-from app.compartilhado.tipos import TIPOS_AUXILIARES, TipoVariavel
+from app.compartilhado.tipos import TIPOS_AUXILIARES, Formula, TipoVariavel
 from app.core.erros import EntradaInvalida, NaoEncontrado
 from app.dominios.analise.servico import (
     CHAVES_FORMA,
+    ORDEM_FORMULAS,
     Ajuste,
     Analise,
     Bivariada,
     Forma,
-    Formula,
     Medida,
     ServicoAnalise,
 )
@@ -24,6 +24,7 @@ from app.dominios.detector.servico import Aviso, ResultadoDetector, ServicoDetec
 from app.dominios.gerador.servico import Gerado, ServicoGerador
 from app.dominios.graficos.servico import codigo_plotlyjs, endereco_plotlyjs_cdn, figura_html
 from app.dominios.relatorio import textos
+from app.dominios.relatorio.apendice import montar_apendice
 from app.dominios.relatorio.comparacao import linha_comparacao
 from app.dominios.relatorio.conteudo import (
     SECOES_PADRAO,
@@ -32,7 +33,7 @@ from app.dominios.relatorio.conteudo import (
     ConteudoRelatorio,
     DadosLeitura,
     FiguraRelatorio,
-    FormulaTexto,
+    FormulaApendice,
     ItemMedida,
     LinhaTipo,
     ParRelatorio,
@@ -167,6 +168,7 @@ def _bloco_analises(analise: Analise, ordem: int) -> BlocoAnalises:
         separatrizes=_separatrizes(analise),
         interpretacoes=analise.interpretacoes,
         figura=_figura(analise.figuras, f"figura-{ordem}"),
+        formulas=tuple(f for f in analise.formulas if f.chave not in CHAVES_FORMA),
     )
 
 
@@ -214,15 +216,8 @@ def _secao_forma(analise: Analise, ordem: int) -> SecaoForma:
         ajustes=tuple(frase for frase in ajustes if frase),
         interpretacao=forma.interpretacao,
         figura=_figura(forma.figuras, f"forma-{ordem}"),
+        formulas=tuple(f for f in analise.formulas if f.chave in CHAVES_FORMA),
     )
-
-
-def _como_texto(formulas: Iterable[Formula]) -> tuple[FormulaTexto, ...]:
-    return tuple(FormulaTexto(f.nome, f.latex, f.texto) for f in formulas)
-
-
-def _secao_da_formula(formula: Formula) -> Secao:
-    return "distribuicoes" if formula.chave in CHAVES_FORMA else "analises"
 
 
 def _secao_coluna(analise: Analise, ordem: int, secoes: frozenset[Secao]) -> SecaoColuna:
@@ -233,7 +228,6 @@ def _secao_coluna(analise: Analise, ordem: int, secoes: frozenset[Secao]) -> Sec
         n_faltantes=analise.n_faltantes,
         analises=_bloco_analises(analise, ordem) if "analises" in secoes else None,
         forma=_secao_forma(analise, ordem) if "distribuicoes" in secoes else None,
-        formulas=_como_texto(f for f in analise.formulas if _secao_da_formula(f) in secoes),
     )
 
 
@@ -275,9 +269,9 @@ def _par_relatorio(bivariada: Bivariada, ordem: int) -> ParRelatorio:
     )
 
 
-def _formulas_bivariada(analises: Iterable[Bivariada]) -> tuple[FormulaTexto, ...]:
+def _formulas_bivariada(analises: Iterable[Bivariada]) -> tuple[Formula, ...]:
     unicas = {f.chave: f for bivariada in analises for f in bivariada.formulas}
-    return _como_texto(unicas.values())
+    return tuple(unicas.values())
 
 
 def _secao_gerador(gerado: Gerado) -> SecaoGerador:
@@ -293,6 +287,7 @@ def _secao_gerador(gerado: Gerado) -> SecaoGerador:
         cabecalho_comparacao=textos.cabecalho_comparacao(gerado.n),
         linhas_comparacao=linhas,
         figura=_figura(gerado.figuras, "gerador"),
+        formulas=gerado.formulas,
     )
 
 
@@ -310,6 +305,14 @@ def _detalhes(aviso: Aviso) -> tuple[ItemMedida, ...]:
     )
 
 
+def _formula_do_aviso(aviso: Aviso) -> FormulaApendice | None:
+    """A fórmula em texto dos detalhes, para o apêndice (os alertas não têm LaTeX)."""
+    formula = aviso.detalhes.formula
+    if not formula:
+        return None
+    return FormulaApendice(textos.nome_formula_regra(aviso.regra, aviso.nome_regra), formula)
+
+
 def _aviso_relatorio(aviso: Aviso, ordem: int) -> AvisoRelatorio:
     return AvisoRelatorio(
         severidade=aviso.severidade,
@@ -322,6 +325,8 @@ def _aviso_relatorio(aviso: Aviso, ordem: int) -> AvisoRelatorio:
         o_que_fazer=aviso.o_que_fazer,
         detalhes=_detalhes(aviso),
         figura=_figura((aviso.figura,), f"aviso-{ordem}"),
+        formula=_formula_do_aviso(aviso),
+        colunas=aviso.colunas,
     )
 
 
@@ -425,4 +430,6 @@ class ServicoRelatorio:
             gerador=self._secao_do_gerado(pedido.gerado) if "gerador" in secoes else None,
             detector=self._secao_detector(dataset_id) if "detector" in secoes else None,
         )
+        if "formulas" in secoes:
+            conteudo = replace(conteudo, formulas=montar_apendice(conteudo, ORDEM_FORMULAS))
         return renderizar(conteudo)

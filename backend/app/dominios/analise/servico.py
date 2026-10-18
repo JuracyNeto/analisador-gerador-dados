@@ -10,7 +10,7 @@ from app.dominios.analise import erros
 from app.dominios.analise.bivariada import analisar_par, montar_par, prever_no_par
 from app.dominios.analise.correlacao import matriz_correlacao
 from app.dominios.analise.distribuicoes import teste_normalidade
-from app.dominios.analise.formulas import CHAVES_FORMA
+from app.dominios.analise.formulas import CHAVES_FORMA, FORMULAS
 from app.dominios.analise.pontos_forma import PontosForma, pontos_da_forma
 from app.dominios.analise.posicao import calcular_posicao
 from app.dominios.analise.resultados import (
@@ -49,6 +49,7 @@ from app.dominios.graficos.servico import (
 
 __all__ = [
     "CHAVES_FORMA",
+    "ORDEM_FORMULAS",
     "Ajuste",
     "Amostra",
     "Analise",
@@ -67,6 +68,9 @@ __all__ = [
     "TesteAderencia",
     "TipoSeparatriz",
 ]
+
+ORDEM_FORMULAS: tuple[str, ...] = tuple(FORMULAS)
+"""Chaves do catálogo de fórmulas, na ordem dele (o apêndice do relatório segue esta ordem)."""
 
 
 @dataclass(frozen=True, slots=True)

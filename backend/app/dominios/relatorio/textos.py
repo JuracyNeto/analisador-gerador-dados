@@ -36,7 +36,17 @@ TITULOS_SECOES = {
     "bivariada": "Bivariada",
     "gerador": "Gerador de dados",
     "detector": "Detector de dados artificiais",
+    "formulas": "Fórmulas usadas",
 }
+# Grupos do apêndice de fórmulas, na ordem do documento (D151).
+GRUPOS_FORMULAS = {
+    "analises": "Análise por coluna",
+    "distribuicoes": "Forma e distribuição",
+    "bivariada": "Bivariada",
+    "gerador": "Gerador",
+    "detector": "Detector",
+}
+EM_TODAS_AS_COLUNAS = "em todas as colunas"
 
 
 def _quantidade(n: int, singular: str, plural: str) -> str:
@@ -159,3 +169,13 @@ def contadores_severidade(alta: int, atencao: int, info: int) -> str:
 def titulo_aviso(regra: str, titulo: str) -> str:
     """Ex.: "R4 · Muitos valores redondos em peso_kg"."""
     return f"{regra} · {titulo}"
+
+
+def nome_formula_regra(regra: str, nome_regra: str) -> str:
+    """Ex.: "R4 · Valores redondos" (a fórmula da regra no apêndice)."""
+    return f"{regra} · {nome_regra}"
+
+
+def onde_formula(colunas: list[str]) -> str | None:
+    """Ex.: "em peso_kg e idade"; sem colunas (R5), nada."""
+    return f"em {juntar_lista(colunas)}" if colunas else None
