@@ -48,3 +48,8 @@ class Formula:
     nome: str
     latex: str
     texto: str
+
+
+def catalogo_de_formulas(*formulas: Formula) -> dict[str, Formula]:
+    """Catálogo por chave, na ordem dada (a ordem em que o relatório as mostra)."""
+    return {formula.chave: formula for formula in formulas}

@@ -75,9 +75,7 @@ def _do_detector(detector: SecaoDetector | None) -> tuple[FormulaApendice, ...]:
     return tuple(replace(formula, onde=textos.onde_formula(nomes)) for formula, nomes in agrupadas)
 
 
-def montar_apendice(
-    conteudo: ConteudoRelatorio, ordem: tuple[str, ...]
-) -> ApendiceFormulas | None:
+def montar_apendice(conteudo: ConteudoRelatorio, ordem: tuple[str, ...]) -> ApendiceFormulas | None:
     """Grupos na ordem do documento; grupo sem fórmula sai; sem nenhum, não há apêndice.
 
     `ordem` = as chaves do catálogo da análise, na ordem em que as fórmulas aparecem nele.
