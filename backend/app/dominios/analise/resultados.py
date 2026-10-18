@@ -6,7 +6,7 @@ from typing import Any, Literal
 
 import pandas as pd
 
-from app.compartilhado.tipos import TipoVariavel
+from app.compartilhado.tipos import Formula, TipoVariavel
 
 type Valor = float | str | None
 type TipoSeparatriz = Literal["quartil", "decil", "percentil"]
@@ -49,14 +49,6 @@ class Amostra:
 class NaoAplicavel:
     item: str
     motivo: str
-
-
-@dataclass(frozen=True, slots=True)
-class Formula:
-    chave: str
-    nome: str
-    latex: str
-    texto: str
 
 
 @dataclass(frozen=True, slots=True)

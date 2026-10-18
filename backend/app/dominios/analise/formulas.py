@@ -1,6 +1,6 @@
 """Catálogo de fórmulas (LaTeX + texto) usadas na análise univariada (specs 04–07)."""
 
-from app.dominios.analise.resultados import Formula
+from app.compartilhado.tipos import Formula
 
 
 def _f(chave: str, nome: str, latex: str, texto: str) -> Formula:

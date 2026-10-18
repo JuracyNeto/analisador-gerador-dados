@@ -5,7 +5,7 @@ from dataclasses import dataclass, replace
 import numpy as np
 import pandas as pd
 
-from app.compartilhado.tipos import TIPOS_AUXILIARES, TIPOS_NUMERICOS
+from app.compartilhado.tipos import TIPOS_AUXILIARES, TIPOS_NUMERICOS, Formula
 from app.dominios.analise import erros
 from app.dominios.analise.bivariada import analisar_par, montar_par, prever_no_par
 from app.dominios.analise.correlacao import matriz_correlacao
@@ -19,7 +19,6 @@ from app.dominios.analise.resultados import (
     Analise,
     Figura,
     Forma,
-    Formula,
     Medida,
     Posicao,
     ResumoNumerico,

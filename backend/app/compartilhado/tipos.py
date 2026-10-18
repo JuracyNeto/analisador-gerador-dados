@@ -1,5 +1,6 @@
 """Enums e value objects compartilhados entre domínios (padroes-codigo.md §2)."""
 
+from dataclasses import dataclass
 from enum import StrEnum
 
 
@@ -36,3 +37,14 @@ class Severidade(StrEnum):
 
 
 ORDEM_SEVERIDADE = (Severidade.ALTA, Severidade.ATENCAO, Severidade.INFO)
+
+
+@dataclass(frozen=True, slots=True)
+class Formula:
+    """Fórmula em LaTeX (KaTeX) e em texto de reserva; usada na análise, no gerador e no
+    relatório (D152)."""
+
+    chave: str
+    nome: str
+    latex: str
+    texto: str
