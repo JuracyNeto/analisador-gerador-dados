@@ -5,7 +5,8 @@ from typing import Literal
 
 import numpy as np
 
-from app.dominios.analise.resultados import Figura, Formula, Medida
+from app.compartilhado.tipos import Formula
+from app.dominios.analise.resultados import Figura, Medida
 
 type Forca = Literal["fraca", "moderada", "forte"]
 type Sentido = Literal["positiva", "negativa", "nula"]

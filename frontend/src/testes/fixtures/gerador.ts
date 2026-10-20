@@ -70,6 +70,14 @@ export const geradoAltura: Esquemas['Gerado'] = {
     { estatistica: 'Média', original: 1.6861, gerado: 1.6861, diferenca: 0 },
     { estatistica: 'Assimetria', original: 0.245, gerado: 0.021, diferenca: -0.224 },
   ],
+  formulas: [
+    {
+      chave: 'normal',
+      nome: 'Sorteio da Normal',
+      latex: 'g_i \\sim \\mathcal{N}(\\mu, \\sigma^2)',
+      texto: 'gᵢ ~ Normal(μ, σ²)',
+    },
+  ],
   figuras: [
     {
       ...figura('sobreposicao', 'Sobreposição', true),

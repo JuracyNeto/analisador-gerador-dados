@@ -20,7 +20,7 @@ Camada de apresentação: `router.py` + `schemas.py` de cada domínio; `app/main
 | GET | `/datasets/{id}/bivariada` | `?x=&y=` | `Bivariada` (r, teste t, Spearman, reta, R², Sₑ, faixa de X, figuras) | 10 |
 | GET | `/datasets/{id}/bivariada/prever` | `?x=&y=&valor=` | `Previsao {x, y_previsto, extrapolacao, faixa_x, frase, aviso}` | 10 |
 | GET | `/datasets/{id}/correlacoes` | — | `MatrizCorrelacao {colunas, valores, resumo, figura}` | 10 |
-| POST | `/gerador/univariado` | `PedidoUnivariado` (spec 11) | `Gerado` (201) | 11 |
+| POST | `/gerador/univariado` | `PedidoUnivariado` (spec 11) | `Gerado` (201; com `formulas` do método, como a análise, D152) | 11 |
 | POST | `/gerador/bivariado` | `PedidoBivariado` (spec 11) | `Gerado` (201) | 11 |
 | GET | `/gerador/{gid}` | — | `Gerado` | 11 |
 | GET | `/gerador/origem` | `?dataset_id=&coluna=` | `ResumoOrigem {coluna, tipo, n, media, desvio, minimo, maximo, sucesso, fracasso, chance, so_preservar}` | 11 |
@@ -29,7 +29,7 @@ Camada de apresentação: `router.py` + `schemas.py` de cada domínio; `app/main
 | POST | `/gerador/{gid}/adotar` | `{modo: novo \| anexar, dataset_id?}` | `Adotado {dataset_id, nome_arquivo, n_linhas, modo}` (201) | 11 |
 | GET | `/datasets/{id}/detector` | `?regras=R1,R2…` (códigos separados por vírgula; sem o campo = todas; código desconhecido → 422) | `ResultadoDetector {resumo, avisos: AvisoDetector[], nao_aplicadas[]}`; `AvisoDetector.figura` traz o gráfico dos detalhes em R1, R8 e R9 (nulo nas demais, D123) | 12 |
 | GET | `/datasets/{id}/linhas` | `?de=&ate=` (números das linhas, como na prévia; inclusive; no máximo 200, senão 400 `INTERVALO_INVALIDO`) | `LinhaDados[]` da versão atual (linhas removidas na limpeza não voltam) | 12 |
-| GET | `/datasets/{id}/relatorio` | `?colunas=&secoes=&gerado=&offline=` (`secoes`: leitura, tipos, limpeza, analises, distribuicoes, bivariada, gerador, detector; padrão = as 8; outra → 422; `gerado`: id da geração mostrada na seção Gerador; sem ele, ou com a geração descartada, a seção sai sem erro, D141) | `text/html` | 13 |
+| GET | `/datasets/{id}/relatorio` | `?colunas=&secoes=&gerado=&offline=` (`secoes`: leitura, tipos, limpeza, analises, distribuicoes, bivariada, gerador, detector, formulas; padrão = as 9; outra → 422; `gerado`: id da geração mostrada na seção Gerador; sem ele, ou com a geração descartada, a seção sai sem erro, D141) | `text/html` | 13 |
 
 ## Contrato `Analise` (único para todos os tipos)
 ```json

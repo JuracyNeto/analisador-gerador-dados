@@ -4,6 +4,13 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e
 
 ## [Não lançado]
 
+### Adicionado
+- Relatório com o apêndice "Fórmulas usadas": só as fórmulas das seções incluídas, em grupos (análise por coluna, forma e distribuição, bivariada, gerador e detector), sem repetir e com as colunas em que cada uma aparece; na tela Relatório, a caixa "Fórmulas".
+- API do gerador: cada geração traz as fórmulas do método (o sorteio, a reescala, Cholesky e o ajuste exato).
+
+### Alterado
+- As fórmulas saem do fim de cada coluna e da seção Bivariada do relatório e passam para o apêndice.
+
 ## [0.3.0] - 2026-10-16
 
 ### Adicionado

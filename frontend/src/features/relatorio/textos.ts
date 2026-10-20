@@ -18,6 +18,7 @@ export const TEXTOS_RELATORIO = {
     bivariada: 'Bivariada',
     gerador: 'Gerador',
     detector: 'Detector',
+    formulas: 'Fórmulas',
   } satisfies Record<SecaoRelatorio, string>,
   semGeracao: 'Gere dados na etapa Gerador para incluir esta seção.',
   contador: (marcados: number, total: number) => `${String(marcados)} de ${String(total)}`,

@@ -1,7 +1,10 @@
 from app.dominios.relatorio.conteudo import (
+    ApendiceFormulas,
     AvisoRelatorio,
     ConteudoRelatorio,
     FiguraRelatorio,
+    FormulaApendice,
+    GrupoFormulas,
     ItemMedida,
     LinhaTipo,
     ParRelatorio,
@@ -49,7 +52,7 @@ def test_renderizar_forma_e_bivariada_numera_figuras_em_ordem() -> None:
         gerado_em="09/10/2026 10:00",
         subtitulo="a.csv",
         script_plotly="",
-        colunas=(SecaoColuna("x", "Quantitativa contínua", 3, 0, None, forma, ()),),
+        colunas=(SecaoColuna("x", "Quantitativa contínua", 3, 0, None, forma),),
         bivariada=SecaoBivariada(_figura("Matriz"), "Resumo da matriz.", (par,), None, ()),
     )
 
@@ -167,5 +170,46 @@ def test_estilos_de_severidade_e_impressao() -> None:
         assert token in html
     # O texto do alerta não se divide; a figura pode ir para a página seguinte.
     assert ".aviso-texto { break-inside: avoid; }" in html
-    quebra = "section.coluna, section.bivariada, section.gerador, section.detector"
+    quebra = (
+        "section.coluna, section.bivariada, section.gerador, section.detector, section.apendice"
+    )
+    assert ".formulas li { margin: 3px 0; break-inside: avoid; }" in html
     assert f"{quebra} {{ break-before: page; }}" in html
+
+
+def test_apendice_e_a_ultima_secao_com_latex_so_onde_ha() -> None:
+    media = FormulaApendice("Média", "x̄ = Σxᵢ / n", r"\bar{x} = \frac{\sum x_i}{n}", "em <b>x</b>")
+    r4 = FormulaApendice("R4 · Valores redondos", "P(X ≥ k)")
+    apendice = ApendiceFormulas(
+        (GrupoFormulas("Análise por coluna", (media,)), GrupoFormulas("Detector", (r4,)))
+    )
+    detector = SecaoDetector("Nenhum alerta", "11 regras", "0", (), (), "Nada.")
+    conteudo = ConteudoRelatorio(
+        "a.csv", "18/10/2026", "a.csv", "", leitura="CSV.", detector=detector, formulas=apendice
+    )
+
+    html = renderizar(conteudo)
+
+    marcos = [
+        "<h2>2. Detector de dados artificiais</h2>",
+        "<h2>3. Fórmulas usadas</h2>",
+        "<h3>Análise por coluna</h3>",
+        "<h3>Detector</h3>",
+    ]
+    posicoes = [html.index(marco) for marco in marcos]
+    assert posicoes == sorted(posicoes)
+    latex = r'data-latex="\bar{x} = \frac{\sum x_i}{n}">x̄ = Σxᵢ / n</span>'
+    assert f'<span class="formula" {latex}' in html
+    assert '<span class="nota">· em &lt;b&gt;x&lt;/b&gt;</span>' in html
+    assert '<span class="formula-texto">P(X ≥ k)</span>' in html
+    assert html.count("data-latex=") == 1
+
+
+def test_colunas_sem_lista_de_formulas() -> None:
+    forma = SecaoForma(medidas=(ItemMedida("Assimetria (G₁)", "0,32"),))
+    coluna = SecaoColuna("x", "Quantitativa contínua", 3, 0, None, forma)
+    conteudo = ConteudoRelatorio("a.csv", "18/10/2026", "a.csv", "", colunas=(coluna,))
+
+    html = renderizar(conteudo)
+
+    assert "Fórmulas usadas" not in html

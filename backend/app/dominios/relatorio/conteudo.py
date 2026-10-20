@@ -3,8 +3,18 @@
 from dataclasses import dataclass
 from typing import Literal
 
+from app.compartilhado.tipos import Formula
+
 type Secao = Literal[
-    "leitura", "tipos", "limpeza", "analises", "distribuicoes", "bivariada", "gerador", "detector"
+    "leitura",
+    "tipos",
+    "limpeza",
+    "analises",
+    "distribuicoes",
+    "bivariada",
+    "gerador",
+    "detector",
+    "formulas",
 ]
 
 SECOES_PADRAO: tuple[Secao, ...] = (
@@ -16,6 +26,7 @@ SECOES_PADRAO: tuple[Secao, ...] = (
     "bivariada",
     "gerador",
     "detector",
+    "formulas",
 )
 
 
@@ -45,10 +56,26 @@ class ItemMedida:
 
 
 @dataclass(frozen=True, slots=True)
-class FormulaTexto:
+class FormulaApendice:
+    """Uma fórmula do apêndice; sem LaTeX (detector), só o texto; `onde` diz as colunas."""
+
     nome: str
-    latex: str
     texto: str
+    latex: str | None = None
+    onde: str | None = None
+
+
+@dataclass(frozen=True, slots=True)
+class GrupoFormulas:
+    titulo: str
+    formulas: tuple[FormulaApendice, ...]
+
+
+@dataclass(frozen=True, slots=True)
+class ApendiceFormulas:
+    """Item 10 da spec 13: só as fórmulas das seções incluídas, agrupadas e sem repetir (D151)."""
+
+    grupos: tuple[GrupoFormulas, ...]
 
 
 @dataclass(frozen=True, slots=True)
@@ -68,6 +95,7 @@ class BlocoAnalises:
     separatrizes: str | None
     interpretacoes: tuple[str, ...]
     figura: FiguraRelatorio | None
+    formulas: tuple[Formula, ...] = ()
 
 
 @dataclass(frozen=True, slots=True)
@@ -79,6 +107,7 @@ class SecaoForma:
     interpretacao: str | None = None
     figura: FiguraRelatorio | None = None
     motivo: str | None = None
+    formulas: tuple[Formula, ...] = ()
 
 
 @dataclass(frozen=True, slots=True)
@@ -91,7 +120,6 @@ class SecaoColuna:
     n_faltantes: int
     analises: BlocoAnalises | None
     forma: SecaoForma | None
-    formulas: tuple[FormulaTexto, ...]
 
 
 @dataclass(frozen=True, slots=True)
@@ -112,7 +140,7 @@ class SecaoBivariada:
     resumo: str
     pares: tuple[ParRelatorio, ...]
     vazio: str | None
-    formulas: tuple[FormulaTexto, ...]
+    formulas: tuple[Formula, ...]
 
 
 @dataclass(frozen=True, slots=True)
@@ -126,6 +154,7 @@ class SecaoGerador:
     cabecalho_comparacao: tuple[str, ...]
     linhas_comparacao: tuple[tuple[str, ...], ...]
     figura: FiguraRelatorio | None
+    formulas: tuple[Formula, ...] = ()
 
 
 @dataclass(frozen=True, slots=True)
@@ -142,6 +171,9 @@ class AvisoRelatorio:
     o_que_fazer: str
     detalhes: tuple[ItemMedida, ...]
     figura: FiguraRelatorio | None
+    formula: FormulaApendice | None = None
+    colunas: tuple[str, ...] = ()
+    """Colunas do alerta (o apêndice diz onde cada regra deu alerta)."""
 
 
 @dataclass(frozen=True, slots=True)
@@ -169,3 +201,4 @@ class ConteudoRelatorio:
     bivariada: SecaoBivariada | None = None
     gerador: SecaoGerador | None = None
     detector: SecaoDetector | None = None
+    formulas: ApendiceFormulas | None = None

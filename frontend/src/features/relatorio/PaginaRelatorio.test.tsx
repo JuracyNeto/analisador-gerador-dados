@@ -33,13 +33,14 @@ describe('PaginaRelatorio', () => {
     ]);
   });
 
-  it('sem geração, começa com 7 de 8 seções e a caixa Gerador desabilitada', async () => {
+  it('sem geração, começa com 8 de 9 seções e a caixa Gerador desabilitada', async () => {
     renderizarPagina();
 
     const secoes = await screen.findByRole('group', { name: /^Seções/ });
-    expect(within(secoes).getAllByRole('checkbox')).toHaveLength(8);
-    expect(within(secoes).getAllByRole('checkbox', { checked: true })).toHaveLength(7);
-    expect(within(secoes).getByText('7 de 8')).toBeInTheDocument();
+    expect(within(secoes).getAllByRole('checkbox')).toHaveLength(9);
+    expect(within(secoes).getAllByRole('checkbox', { checked: true })).toHaveLength(8);
+    expect(within(secoes).getByText('8 de 9')).toBeInTheDocument();
+    expect(within(secoes).getByRole('checkbox', { name: T.rotulosSecoes.formulas })).toBeChecked();
     const gerador = within(secoes).getByRole('checkbox', { name: T.rotulosSecoes.gerador });
     expect(gerador).toBeDisabled();
     expect(gerador).not.toBeChecked();
@@ -54,22 +55,24 @@ describe('PaginaRelatorio', () => {
 
     await waitFor(() => {
       expect(previa().getAttribute('src')).toBe(
-        `/api${BASE}/relatorio?secoes=leitura&secoes=tipos&secoes=limpeza&secoes=analises&secoes=distribuicoes&secoes=bivariada&secoes=detector&colunas=sexo&colunas=peso_kg&colunas=cidade&offline=true`,
+        `/api${BASE}/relatorio?secoes=leitura&secoes=tipos&secoes=limpeza&secoes=analises&secoes=distribuicoes&secoes=bivariada&secoes=detector&secoes=formulas&colunas=sexo&colunas=peso_kg&colunas=cidade&offline=true`,
       );
     });
   });
 
-  it('com geração na sessão, as 8 seções começam marcadas e a prévia leva a geração', async () => {
+  it('com geração na sessão, as 9 seções começam marcadas e a prévia leva a geração', async () => {
     renderizarPagina(GERADO);
 
     const secoes = await screen.findByRole('group', { name: /^Seções/ });
     await waitFor(() => {
-      expect(within(secoes).getByText('8 de 8')).toBeInTheDocument();
+      expect(within(secoes).getByText('9 de 9')).toBeInTheDocument();
     });
     expect(within(secoes).getByRole('checkbox', { name: T.rotulosSecoes.gerador })).toBeEnabled();
     expect(within(secoes).queryByText(T.semGeracao)).toBeNull();
     await waitFor(() => {
-      expect(previa().getAttribute('src')).toContain('&secoes=gerador&secoes=detector&');
+      expect(previa().getAttribute('src')).toContain(
+        '&secoes=gerador&secoes=detector&secoes=formulas&',
+      );
     });
     expect(previa().getAttribute('src')).toContain('&gerado=g-1&offline=true');
   });
