@@ -4,7 +4,10 @@
   border-radius: var(--raio-lg);
   background: var(--cor-superficie);
 }
+/* `position: relative`: elementos absolutos das células (rótulo oculto, seta do seletor) passam a
+   ser cortados pela rolagem; sem isso, a 200% de zoom eles alargavam a página (WCAG 1.4.10, D153). */
 .rolagem {
+  position: relative;
   overflow: auto;
 }
 .tabela {
