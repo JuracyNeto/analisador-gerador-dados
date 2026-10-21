@@ -86,6 +86,8 @@ describe('PaginaGerador', () => {
 
     expect(screen.getByText(T.erros.quantidade)).toBeInTheDocument();
     expect(chamadasPara(api, 'POST', '/gerador/univariado')).toHaveLength(0);
+    // O foco vai para o 1º campo com erro (o botão não diz o que corrigir).
+    expect(quantidade).toHaveFocus();
   });
 
   it('coluna nominal só preserva: "Novos parâmetros" fica desabilitado com o motivo', async () => {
