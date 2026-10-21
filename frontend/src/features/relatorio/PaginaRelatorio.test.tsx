@@ -4,6 +4,7 @@ import { chamadasPara, type FetchFalso, simularApi } from '../../testes/api';
 import { simularDownload } from '../../testes/downloadFalso';
 import { exigir } from '../../testes/exigir';
 import { colunasPesquisa } from '../../testes/fixturesAnalise';
+import { esperarSemViolacoes, TEMPO_AXE } from '../../testes/acessibilidade';
 import { DATASET_TESTE, renderizarComProvedores } from '../../testes/renderizar';
 import PaginaRelatorio from './PaginaRelatorio';
 import { TEXTOS_RELATORIO } from './textos';
@@ -32,6 +33,17 @@ describe('PaginaRelatorio', () => {
       { caminho: `${BASE}/relatorio`, corpo: '<html></html>' },
     ]);
   });
+
+  it(
+    'não tem violações de acessibilidade',
+    async () => {
+      const { container } = renderizarPagina(GERADO);
+      await screen.findByRole('group', { name: /^Colunas/ });
+
+      await esperarSemViolacoes(container);
+    },
+    TEMPO_AXE,
+  );
 
   it('sem geração, começa com 8 de 9 seções e a caixa Gerador desabilitada', async () => {
     renderizarPagina();

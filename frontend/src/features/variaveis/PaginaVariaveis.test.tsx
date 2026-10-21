@@ -2,6 +2,7 @@ import { screen, waitFor } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 import { chamadasPara, simularApi } from '../../testes/api';
 import { COLUNAS_SAUDE, criarColuna, ID_DATASET } from '../../testes/fixtures/datasets';
+import { esperarSemViolacoes, TEMPO_AXE } from '../../testes/acessibilidade';
 import { DATASET_TESTE, renderizarComProvedores } from '../../testes/renderizar';
 import PaginaVariaveis from './PaginaVariaveis';
 
@@ -10,6 +11,21 @@ const CAMINHO_CIDADE = `${CAMINHO_COLUNAS}/cidade`;
 const SELECT_CIDADE = { name: 'Tipo de cidade' };
 
 describe('PaginaVariaveis', () => {
+  it(
+    'não tem violações de acessibilidade',
+    async () => {
+      simularApi([{ caminho: CAMINHO_COLUNAS, corpo: COLUNAS_SAUDE }]);
+      const { container } = renderizarComProvedores(<PaginaVariaveis />, {
+        rota: '/variaveis',
+        dataset: DATASET_TESTE,
+      });
+      await screen.findByText('Tipos detectados por coluna');
+
+      await esperarSemViolacoes(container);
+    },
+    TEMPO_AXE,
+  );
+
   it('mostra o resumo, a tabela e um editor por ordinal', async () => {
     simularApi([{ caminho: CAMINHO_COLUNAS, corpo: COLUNAS_SAUDE }]);
     renderizarComProvedores(<PaginaVariaveis />, { rota: '/variaveis', dataset: DATASET_TESTE });

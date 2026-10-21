@@ -1,6 +1,7 @@
 import { screen, within } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 import { type RotaFalsa, simularApi } from '../../testes/api';
+import { exigir } from '../../testes/exigir';
 import { criarPagina } from '../../testes/fixtures/datasets';
 import {
   avisoR1,
@@ -11,6 +12,7 @@ import {
   resultadoVazio,
   VAZIO_DETECTOR,
 } from '../../testes/fixtures/detector';
+import { esperarSemViolacoes, TEMPO_AXE } from '../../testes/acessibilidade';
 import { DATASET_TESTE, renderizarComProvedores } from '../../testes/renderizar';
 import PaginaDetector from './PaginaDetector';
 import { TEXTOS_DETECTOR as T } from './textos';
@@ -37,6 +39,33 @@ function titulosDosGrupos(): string[] {
 }
 
 describe('PaginaDetector', () => {
+  it(
+    'não tem violações de acessibilidade, com alertas e com o drawer aberto',
+    async () => {
+      const { container, usuario } = renderizarPagina();
+      await screen.findByRole('heading', { name: resultadoDetector.resumo.frase });
+      await esperarSemViolacoes(container);
+
+      const [primeiro] = screen.getAllByRole('button', { name: 'Ver na tabela' });
+      await usuario.click(exigir(primeiro, 'botão "Ver na tabela"'));
+      await screen.findByRole('dialog');
+
+      await esperarSemViolacoes(document.body);
+    },
+    TEMPO_AXE,
+  );
+
+  it(
+    'sem alertas, não tem violações de acessibilidade',
+    async () => {
+      const { container } = renderizarPagina('/detector', resultadoVazio);
+      await screen.findByText(VAZIO_DETECTOR);
+
+      await esperarSemViolacoes(container);
+    },
+    TEMPO_AXE,
+  );
+
   it('"Analisar de novo" anuncia o resultado num aviso (leitor de tela)', async () => {
     const { usuario } = renderizarPagina();
     await screen.findByRole('heading', { name: resultadoDetector.resumo.frase });
