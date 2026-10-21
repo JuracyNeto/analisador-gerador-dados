@@ -26,3 +26,10 @@ Carregando (skeleton), vazio (com orientação do próximo passo), erro (mensage
 
 ## Acessibilidade
 Navegação por teclado completa; foco visível; `aria-live` para toasts e resultados; contraste AA; severidade e tipo nunca só por cor; gráficos com título e resumo textual (`aria-label`).
+
+Como fica garantido (M4, D153–D155):
+- **Testes automáticos:** o axe-core (WCAG 2.0 e 2.1, A e AA, e as boas práticas) roda nas 8 telas (cada aba da Análise, o Gerador com resultado, o Detector com alertas e com o drawer aberto), no layout (com as regras da página inteira: `main`, h1, link de pular) e nos componentes de `shared/ui`. O jsdom não calcula cores: o contraste fica com o teste dos tokens (66 pares por tema; texto ≥ 4,5:1; bordas de campos, foco e marcas dos gráficos ≥ 3:1) e com um teste que só deixa `--cor-texto-desab` em estados desabilitados ou decorativos.
+- **Foco:** trocar de etapa por link ou botão leva o foco ao título da etapa (h1 com `tabIndex=-1`, sem contorno), e o leitor de tela anuncia a etapa nova; na primeira carga e no voltar do navegador, o foco fica onde está. Enviar um formulário com erro (Gerador, Prever, número de tentativas) leva o foco ao primeiro campo com `aria-invalid`, que já aponta para a mensagem.
+- **Estrutura:** onde os cartões (h3) vinham logo depois do h1 (abas da Análise, Bivariada, Limpeza), um h2 visualmente oculto nomeia o grupo; as áreas laterais têm nome ("Barra lateral", "Sobre o gráfico", "Como ler os resíduos"); o drawer é um `div` com papel de diálogo, sem `header`/`footer` soltos no `body`; o balão do tooltip é só visual (o texto chega pela descrição do alvo); "Analisar de novo" avisa o resultado num toast.
+- **Zoom de 200%:** nenhuma tela rola a página na horizontal; tabelas largas rolam dentro do próprio contêiner.
+- **Conferido à mão** (antes de cada release): teclado em todas as telas, nos temas claro e escuro, e o axe no navegador (com as animações terminadas: com o painel do navegador em segundo plano, as transições congelam e o axe acusa cores no meio delas).

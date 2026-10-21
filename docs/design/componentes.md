@@ -36,7 +36,7 @@ Props: `rotulo, valor, unidade?, interpretacao, selo?, formula?: {expressao, cal
 **Não aplicável:** borda 1 tracejada borda-forte, bg superficie-2, sem sombra; rótulo + selo "Não se aplica" (11,5/600, borda 1 borda-forte, raio 4); valor "—" em texto desab; motivo 14 texto-2 no formato "{medida} não se aplica a {tipo}: {motivo}."
 
 ## Tabela
-Container borda 1 borda raio 10–12 overflow hidden. Cabeçalho fixo (`position: sticky; top: 0`) bg superficie-2, 12,5/600, borda inferior 1 borda-forte; nomes de coluna em mono. Células padding 8–10 × 16–20, 13,5–14, números à direita com tabular-nums. Zebra: linhas pares `--cor-zebra`. Destacada: bg `--cor-destaque-linha` + `box-shadow: inset 3px 0 0 var(--sev-atencao)` (ou cor da severidade) + valor em 600. Faltante: "—" ou "vazio" itálico texto-2. Rodapé: "Linhas 119–123 de 230", contagem de destacadas com ícone, paginação com botões 32×32 (`chevron_left/right`, `aria-label`). Mais de 200 linhas → virtualizar.
+Container borda 1 borda raio 10–12 overflow hidden. Cabeçalho fixo (`position: sticky; top: 0`) bg superficie-2, 12,5/600, borda inferior 1 borda-forte; nomes de coluna em mono. Células padding 8–10 × 16–20, 13,5–14, números à direita com tabular-nums. Zebra: linhas pares `--cor-zebra`. Destacada: bg `--cor-destaque-linha` + `box-shadow: inset 3px 0 0 var(--sev-atencao)` (ou cor da severidade) + valor em 600. Faltante: "—" ou "vazio" itálico texto-2. O contêiner de rolagem tem `position: relative`: elementos absolutos das células (rótulo oculto, seta do seletor) ficam dentro da rolagem e não alargam a página. Rodapé: "Linhas 119–123 de 230", contagem de destacadas com ícone, paginação com botões 32×32 (`chevron_left/right`, `aria-label`). Mais de 200 linhas → virtualizar.
 
 ## AreaUpload
 Borda 2 tracejada borda-forte, raio 16, bg superficie, min-height 400, conteúdo centralizado gap 16: círculo 72 bg primaria-suave com `upload_file` 36; "Arraste e solte seu arquivo aqui" 20/600; "ou escolha no computador. Tamanho máximo: 50 MB." 15 texto-2; Botao primário lg "Escolher arquivo" (`folder_open`); formatos como etiquetas mono 13 (padding 4 10, raio 6, bg superficie-2, borda). Arrastando: borda primaria, bg primaria-suave, texto "Solte para enviar". Enviando: barra de progresso 6 px. Erro: borda erro, bg erro-suave. Também acessível por teclado (é um `<button>`/`<label>` do input file).
@@ -58,13 +58,16 @@ Com etapas bloqueadas, frase 12 texto-2: "As etapas 2 a 8 ficam disponíveis dep
 Canto superior direito abaixo do cabeçalho (top 80, right 32), largura 380, bg superficie-elevada, borda, raio 10, sombra-2, padding 14 16, gap 12. Ícone 22 preenchido (`check_circle` sucesso / `error` erro), título 14/600 no formato "verbo no passado + quantidade" ("Limpeza aplicada: 12 linhas removidas."), apoio 13 texto-2, fechar `close`. Sucesso `role="status"`; erro `role="alert"` com ação fantasma ("Tentar de novo").
 
 ## Drawer
-Lateral direita, largura 600, altura total, bg superficie-elevada, sombra-3, overlay `--cor-overlay`. Cabeçalho padding 20 24 com badge, título 18/600, subtítulo 14 texto-2, fechar 40×40. Corpo rolável (tabela). Rodapé padding 14 24 com contagem e ação secundária.
+Lateral direita, largura 600, altura total, bg superficie-elevada, sombra-3, overlay `--cor-overlay`. Cabeçalho padding 20 24 com badge, título 18/600, subtítulo 14 texto-2, fechar 40×40. Corpo rolável (tabela). Rodapé padding 14 24 com contagem e ação secundária. Implementação: `div` com `role="dialog"`, `aria-modal` e nome pelo título; cabeçalho e rodapé em `div` (no `body`, `header`/`footer` virariam landmarks da página); foco no Fechar ao abrir, Tab preso no painel, Esc fecha e devolve o foco a quem abriu.
 
 ## Accordion "Detalhes técnicos"
 Gatilho 44 alto, 14/500 texto-2, `chevron_right` (fechado) / `expand_more` (aberto), `aria-expanded`. Conteúdo: `<dl>` em grid 120px/1fr gap 8 16, 13,5; valores em mono; fórmula em bloco superficie-2 raio 6 padding 8 12. Começa recolhido.
 
 ## Tooltip
-bg `--cor-texto`, texto `--cor-superficie`, 13/1,45, padding 8 12, raio 6, max 260, seta 6. Abre em hover e foco, fecha com Esc.
+bg `--cor-texto`, texto `--cor-superficie`, 13/1,45, padding 8 12, raio 6, max 260, seta 6. Abre em hover e foco, fecha com Esc. O balão é `aria-hidden`: o leitor de tela lê o texto pela descrição (`aria-describedby`) do alvo, sem leitura dupla e sem virar filho de uma lista de abas.
+
+## SecaoTituloOculto
+`<SecaoTituloOculto titulo="Resumo dos problemas">` — `section` nomeada por um h2 visualmente oculto, para cartões (h3) que vêm logo depois do título da etapa (h1) não pularem nível. Usada nas abas da Análise (nome da aba), na Bivariada ("Medidas do par") e na Limpeza ("Resumo dos problemas").
 
 ## EstadoVazio
 Borda 1 tracejada borda-forte (ou card normal na tela inteira), padding 24–56, centralizado: círculo 44–64 com ícone, título 15–20/600, frase 13–15 texto-2 com o próximo passo, ação opcional.
