@@ -1,6 +1,9 @@
 import axe from 'axe-core';
 import { expect } from 'vitest';
 
+/** Limite dos testes que rodam o axe em telas inteiras (vários segundos com a suíte toda). */
+export const TEMPO_AXE = 20_000;
+
 /** WCAG 2.0 e 2.1, níveis A e AA, e as boas práticas do axe (D153). */
 const ETIQUETAS = ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'best-practice'];
 

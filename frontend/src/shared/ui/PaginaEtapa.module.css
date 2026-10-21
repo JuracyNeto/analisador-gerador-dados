@@ -22,6 +22,10 @@
   line-height: 1.4;
   color: var(--cor-texto-2);
 }
+/* O título recebe o foco só para o leitor de tela anunciar a etapa; não é um controle. */
+.titulo:focus {
+  outline: none;
+}
 .titulo {
   font-size: 28px;
   font-weight: 700;

@@ -7,7 +7,7 @@ import {
   analiseNominal,
   colunasPesquisa,
 } from '../../testes/fixturesAnalise';
-import { esperarSemViolacoes } from '../../testes/acessibilidade';
+import { esperarSemViolacoes, TEMPO_AXE } from '../../testes/acessibilidade';
 import { DATASET_TESTE, renderizarComProvedores } from '../../testes/renderizar';
 import PaginaAnalise from './PaginaAnalise';
 import { TEXTOS_ANALISE } from './textos';
@@ -53,6 +53,7 @@ describe('PaginaAnalise', () => {
         await esperarSemViolacoes(container);
       }
     },
+    TEMPO_AXE,
   );
 
   it('o seletor lista só colunas analisáveis e escreve a escolha na URL', async () => {
