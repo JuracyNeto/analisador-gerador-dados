@@ -147,6 +147,7 @@ export const TEXTOS_ANALISE = {
     recomendado: 'recomendado',
     porque: 'Por que este gráfico?',
     resumo: 'Resumo do gráfico',
+    sobreOGrafico: 'Sobre o gráfico',
     semFiguras: {
       titulo: 'Nenhum gráfico disponível',
       descricao: 'Não há gráficos para esta coluna.',

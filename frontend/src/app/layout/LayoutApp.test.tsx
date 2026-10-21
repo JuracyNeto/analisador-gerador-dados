@@ -23,6 +23,7 @@ it('monta barra, cabeçalho e conteúdo no <main>', async () => {
   expect(await screen.findByText('Página de importar')).toBeInTheDocument();
   expect(screen.getByRole('main')).toContainElement(screen.getByText('Página de importar'));
   expect(screen.getByRole('navigation', { name: 'Etapas da análise' })).toBeInTheDocument();
+  expect(screen.getByRole('complementary', { name: 'Barra lateral' })).toBeInTheDocument();
   expect(screen.getByText('Nenhum arquivo importado')).toBeInTheDocument();
   expect(screen.getByRole('link', { name: 'Pular para o conteúdo' })).toHaveAttribute(
     'href',

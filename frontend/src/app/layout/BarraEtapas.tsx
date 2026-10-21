@@ -29,6 +29,7 @@ export default function BarraEtapas({
   };
   return (
     <aside
+      aria-label={TEXTOS_APP.barraLateral}
       className={juntarClasses(
         estilos.barra,
         recolhida && estilos.recolhida,

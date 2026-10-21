@@ -57,6 +57,9 @@ describe('CardResiduos', () => {
 
     expect(screen.getByRole('figure', { name: 'Resíduos da regressão' })).toBeInTheDocument();
     expect(
+      screen.getByRole('complementary', { name: TEXTOS_BIVARIADA.residuos.comoLer }),
+    ).toBeInTheDocument();
+    expect(
       screen.getByRole('heading', { name: TEXTOS_BIVARIADA.residuos.comoLer }),
     ).toBeInTheDocument();
     expect(screen.getByText(figura.resumo)).toBeInTheDocument();
