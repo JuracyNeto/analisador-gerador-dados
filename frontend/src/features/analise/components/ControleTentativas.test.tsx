@@ -43,6 +43,7 @@ describe('ControleTentativas', () => {
     expect(aoAplicar).not.toHaveBeenCalled();
     expect(screen.getByText(T.erroMinimo('8'))).toBeInTheDocument();
     expect(campo).toHaveAttribute('aria-invalid', 'true');
+    expect(campo).toHaveFocus();
   });
 
   it('mostra o padrão na ajuda', () => {
