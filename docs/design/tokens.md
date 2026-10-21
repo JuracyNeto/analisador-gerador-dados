@@ -11,7 +11,7 @@ Fonte única: `frontend/src/shared/ui/tokens.css`. Tema por atributo `data-tema=
 | `--cor-superficie-2` | #f0f2f5 | #20262e | Cabeçalho de tabela, preenchimentos, skeleton |
 | `--cor-zebra` | #f7f8fa | #1a1f26 | Linhas pares de tabela |
 | `--cor-borda` | #dadee4 | #2f3640 | Divisórias, borda de card |
-| `--cor-borda-forte` | #868f9c | #707a89 | Borda de campo/botão secundário (≥ 3:1) |
+| `--cor-borda-forte` | #818a97 | #707a89 | Borda de campo/botão secundário (≥ 3:1 sobre `--cor-superficie-2`, D153) |
 | `--cor-texto` | #161a20 | #e8ebef | Texto primário |
 | `--cor-texto-2` | #4b5462 | #a9b2be | Texto secundário (≥ 4,5:1) |
 | `--cor-texto-desab` | #8c94a1 | #636c79 | Desabilitado |

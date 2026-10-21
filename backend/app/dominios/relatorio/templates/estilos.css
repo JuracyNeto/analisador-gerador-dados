@@ -1,5 +1,5 @@
 /* Relatório sempre no tema claro (D47); valores de docs/design/tokens.md e telas.md §8. */
-:root { --texto: #161a20; --texto-2: #4b5462; --borda: #dadee4; --borda-forte: #868f9c; --fundo-2: #f0f2f5; --zebra: #f7f8fa;
+:root { --texto: #161a20; --texto-2: #4b5462; --borda: #dadee4; --borda-forte: #818a97; --fundo-2: #f0f2f5; --zebra: #f7f8fa;
   --sev-info: #1d5fd1; --sev-info-suave: #e8f0fd; --sev-atencao: #995700; --sev-atencao-suave: #fff3df; --sev-alta: #b42318; --sev-alta-suave: #fdeceb; }
 * { box-sizing: border-box; }
 body { margin: 0 auto; max-width: 820px; padding: 48px 52px; background: #fff; color: var(--texto); font: 11pt/1.55 Inter, system-ui, sans-serif; }
