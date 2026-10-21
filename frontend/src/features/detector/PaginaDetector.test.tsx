@@ -37,6 +37,17 @@ function titulosDosGrupos(): string[] {
 }
 
 describe('PaginaDetector', () => {
+  it('"Analisar de novo" anuncia o resultado num aviso (leitor de tela)', async () => {
+    const { usuario } = renderizarPagina();
+    await screen.findByRole('heading', { name: resultadoDetector.resumo.frase });
+
+    await usuario.click(screen.getByRole('button', { name: T.analisarDeNovo }));
+
+    expect(
+      await screen.findByText(T.analisadoDeNovo(resultadoDetector.resumo.frase)),
+    ).toBeInTheDocument();
+  });
+
   it('resumo, filtros e alertas agrupados por coluna; o 1º de cada grupo aberto (7a)', async () => {
     renderizarPagina();
 

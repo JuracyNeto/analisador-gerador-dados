@@ -3,6 +3,7 @@ import SemDataset from '../../shared/sessao/SemDataset';
 import { useSessao } from '../../shared/sessao/useSessao';
 import Botao from '../../shared/ui/Botao';
 import PaginaEtapa from '../../shared/ui/PaginaEtapa';
+import { useToast } from '../../shared/ui/useToast';
 import { useDetector } from './api';
 import ConteudoDetector from './components/ConteudoDetector';
 import DrawerLinhas from './components/DrawerLinhas';
@@ -23,6 +24,7 @@ function DetectorDoDataset({ datasetId, nomeArquivo }: Readonly<Props>) {
   const consulta = useDetector(datasetId);
   const filtros = useFiltrosDetector();
   const [avisoNaTabela, setAvisoNaTabela] = useState<Aviso | null>(null);
+  const { mostrar } = useToast();
   const analisarDeNovo = (
     <Botao
       variante="secundario"
@@ -30,7 +32,11 @@ function DetectorDoDataset({ datasetId, nomeArquivo }: Readonly<Props>) {
       carregando={consulta.isFetching}
       textoCarregando={T.analisando}
       onClick={() => {
-        void consulta.refetch();
+        // A lista pode sair igual: o aviso diz ao leitor de tela que a análise terminou (D153).
+        void consulta.refetch().then(({ data }) => {
+          if (data !== undefined)
+            mostrar({ tipo: 'sucesso', titulo: T.analisadoDeNovo(data.resumo.frase) });
+        });
       }}
     >
       {T.analisarDeNovo}
