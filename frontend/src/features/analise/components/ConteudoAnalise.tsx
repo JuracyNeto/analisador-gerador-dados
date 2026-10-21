@@ -1,5 +1,6 @@
 import { useState, type ComponentType } from 'react';
 import Abas from '../../../shared/ui/Abas';
+import SecaoTituloOculto from '../../../shared/ui/SecaoTituloOculto';
 import { abaEfetiva, abasDaAnalise } from '../abas';
 import { TEXTOS_ANALISE } from '../textos';
 import type { IdAba, PropsPainel } from '../tipos';
@@ -27,7 +28,9 @@ export default function ConteudoAnalise(props: Readonly<PropsPainel>) {
 
   return (
     <Abas rotulo={TEXTOS_ANALISE.rotuloAbas} abas={abas} ativa={ativa} aoMudar={setPedida}>
-      <Painel key={props.analise.coluna} {...props} />
+      <SecaoTituloOculto titulo={TEXTOS_ANALISE.abas[ativa]}>
+        <Painel key={props.analise.coluna} {...props} />
+      </SecaoTituloOculto>
     </Abas>
   );
 }

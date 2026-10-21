@@ -2,7 +2,9 @@ import type { UseQueryResult } from '@tanstack/react-query';
 import Grafico from '../../../shared/graficos/Grafico';
 import GradeCardsMetrica from '../../../shared/metricas/GradeCardsMetrica';
 import Card from '../../../shared/ui/Card';
+import SecaoTituloOculto from '../../../shared/ui/SecaoTituloOculto';
 import { cartoesBivariada } from '../cartoes';
+import { TEXTOS_BIVARIADA } from '../textos';
 import type { Bivariada, Figura, MatrizCorrelacao } from '../tipos';
 import CardMatriz from './CardMatriz';
 import CardResiduos from './CardResiduos';
@@ -29,7 +31,9 @@ export default function ConteudoBivariada({ bivariada, datasetId, matriz }: Read
 
   return (
     <div className={estilos.conteudo}>
-      <GradeCardsMetrica cartoes={cartoesBivariada(bivariada)} formulas={bivariada.formulas} />
+      <SecaoTituloOculto titulo={TEXTOS_BIVARIADA.tituloMedidas}>
+        <GradeCardsMetrica cartoes={cartoesBivariada(bivariada)} formulas={bivariada.formulas} />
+      </SecaoTituloOculto>
       <div className={estilos.grade}>
         {dispersao === undefined ? null : (
           <Card>

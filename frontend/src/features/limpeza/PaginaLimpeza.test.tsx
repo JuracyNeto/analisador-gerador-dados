@@ -13,6 +13,7 @@ import {
   DIAGNOSTICO_SAUDE,
   DIAGNOSTICO_VAZIO,
 } from '../../testes/fixtures/limpeza';
+import { esperarSemViolacoes } from '../../testes/acessibilidade';
 import { DATASET_TESTE, renderizarComProvedores } from '../../testes/renderizar';
 import PaginaLimpeza from './PaginaLimpeza';
 
@@ -37,6 +38,14 @@ function renderizar() {
 }
 
 describe('PaginaLimpeza', () => {
+  it('não tem violações de acessibilidade', async () => {
+    simularApi(rotas());
+    const { container } = renderizar();
+    await screen.findByRole('region', { name: 'Faltantes' });
+
+    await esperarSemViolacoes(container);
+  });
+
   it('mostra cards e seções com tudo em "Manter" e o aplicar desabilitado', async () => {
     simularApi(rotas());
     renderizar();

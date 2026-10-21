@@ -7,6 +7,7 @@ import {
   EQUACAO,
   matrizExemplo,
 } from '../../testes/fixtures/bivariada';
+import { esperarSemViolacoes } from '../../testes/acessibilidade';
 import { DATASET_TESTE, renderizarComProvedores } from '../../testes/renderizar';
 import PaginaBivariada from './PaginaBivariada';
 import { TEXTOS_BIVARIADA } from './textos';
@@ -43,6 +44,13 @@ describe('PaginaBivariada', () => {
       await screen.findByRole('figure', { name: 'Matriz de correlação (Pearson)' }),
     ).toBeInTheDocument();
     expect(screen.getByRole('textbox', { name: 'altura_m' })).toBeInTheDocument();
+  });
+
+  it('não tem violações de acessibilidade', async () => {
+    const { container } = renderizarPagina();
+    await screen.findByRole('figure', { name: 'Matriz de correlação (Pearson)' });
+
+    await esperarSemViolacoes(container);
   });
 
   it('pede a bivariada do par da URL', async () => {

@@ -5,6 +5,7 @@ export const TEXTOS_BIVARIADA = {
   semDataset: 'Importe um arquivo para comparar duas colunas numéricas.',
   carregandoColunas: 'Carregando as colunas…',
   calculando: (x: string, y: string) => `Calculando a relação entre ${x} e ${y}…`,
+  tituloMedidas: 'Medidas do par',
   vazio: {
     titulo: 'Escolha duas colunas numéricas',
     descricao:
