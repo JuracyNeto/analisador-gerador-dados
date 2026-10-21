@@ -36,9 +36,12 @@ export default function Tooltip({ texto, posicao = 'acima', children }: Readonly
       onBlur={fechar}
     >
       {cloneElement(children, { 'aria-describedby': id })}
+      {/* O leitor de tela lê o texto pela descrição do alvo; o balão é só visual. Sem o aria-hidden,
+          o balão aberto contava duas vezes e, numa lista de abas, virava um filho que não é aba (D153). */}
       <span
         role="tooltip"
         id={id}
+        aria-hidden="true"
         hidden={!aberto}
         className={juntarClasses(estilos.balao, posicao === 'direita' && estilos.direita)}
       >

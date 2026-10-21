@@ -29,6 +29,15 @@ it('liga o texto ao alvo e abre com o mouse', async () => {
   expect(dica).not.toBeVisible();
 });
 
+it('o balão é só visual: o leitor de tela lê o texto pela descrição do alvo', async () => {
+  const { alvo, dica } = renderizar();
+
+  await userEvent.hover(alvo);
+
+  expect(dica).toHaveAttribute('aria-hidden', 'true');
+  expect(alvo).toHaveAccessibleDescription('Disponível na versão v0.2.');
+});
+
 it('abre com o foco do teclado e fecha com Esc', async () => {
   const { dica } = renderizar();
 
