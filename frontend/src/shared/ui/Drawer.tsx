@@ -70,7 +70,7 @@ function CabecalhoDrawer({
   ref,
 }: Readonly<PropsCabecalho>) {
   return (
-    <header className={estilos.cabecalho}>
+    <div className={estilos.cabecalho}>
       <div className={estilos.textos}>
         {topo}
         <h2 id={idTitulo} className={estilos.titulo}>
@@ -87,7 +87,7 @@ function CabecalhoDrawer({
       >
         <Icone nome="close" tamanho={22} />
       </button>
-    </header>
+    </div>
   );
 }
 
@@ -108,7 +108,7 @@ export default function Drawer({
   ...cabecalho
 }: Readonly<PropsDrawer>) {
   const idTitulo = useId();
-  const painel = useRef<HTMLElement>(null);
+  const painel = useRef<HTMLDivElement>(null);
   const fechar = useRef<HTMLButtonElement>(null);
   useFocoDoDrawer(aberto, { painel, fechar });
   useTeclaEsc(aberto, cabecalho.aoFechar);
@@ -124,7 +124,9 @@ export default function Drawer({
         data-testid="fundo-drawer"
         onClick={cabecalho.aoFechar}
       />
-      <aside
+      {/* div, e não aside: aside não aceita o papel dialog, e header/footer soltos no body viram
+          landmarks da página (D153). */}
+      <div
         ref={painel}
         role="dialog"
         aria-modal="true"
@@ -140,8 +142,8 @@ export default function Drawer({
         >
           {children}
         </div>
-        {rodape === undefined ? null : <footer className={estilos.rodape}>{rodape}</footer>}
-      </aside>
+        {rodape === undefined ? null : <div className={estilos.rodape}>{rodape}</div>}
+      </div>
     </>,
     document.body,
   );
