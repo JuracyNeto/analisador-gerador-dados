@@ -3,10 +3,14 @@
 from collections.abc import Mapping
 from dataclasses import dataclass, field
 from datetime import datetime
+from typing import TYPE_CHECKING
 
 import pandas as pd
 
 from app.compartilhado.tipos import OrigemTipo, TipoVariavel
+
+if TYPE_CHECKING:
+    from app.dominios.datasets.classificacao import ColunaLida
 
 type Celula = str | float | int | bool | None
 
@@ -109,3 +113,7 @@ class Dataset:
     conteudo: bytes = field(default=b"", repr=False)
     """Bytes do arquivo enviado, para ler de novo com outras opções (D88)."""
     opcoes: OpcoesLeitura = field(default_factory=OpcoesLeitura)
+    colunas_lidas: "dict[str, tuple[pd.DataFrame, ColunaLida]]" = field(
+        default_factory=dict, repr=False
+    )
+    """Coluna já convertida, com a versão `atual` de onde saiu (vale enquanto ela não muda)."""
