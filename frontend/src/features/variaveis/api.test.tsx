@@ -13,6 +13,7 @@ function prepararCliente() {
   const cliente = criarClienteTeste();
   cliente.setQueryData(chavesDataset.colunas(ID_DATASET), COLUNAS_SAUDE);
   cliente.setQueryData(chavesDataset.diagnostico(ID_DATASET), { qualquer: true });
+  cliente.setQueryData(chavesDataset.primeiraPagina(ID_DATASET), { qualquer: true });
   return cliente;
 }
 
@@ -43,6 +44,10 @@ describe('useAlterarTipo', () => {
     });
     expect(chamadasPara(falso, 'PATCH', CAMINHO_PATCH)[0]?.corpo).toEqual({ tipo: 'ordinal' });
     expect(cliente.getQueryState(chavesDataset.diagnostico(ID_DATASET))?.isInvalidated).toBe(true);
+    // O resumo (`tem_ajustes`) decide se "Trocar arquivo" e "Ler de novo" pedem confirmação.
+    expect(cliente.getQueryState(chavesDataset.primeiraPagina(ID_DATASET))?.isInvalidated).toBe(
+      true,
+    );
   });
 
   it('desfaz a mudança otimista quando a API recusa', async () => {
