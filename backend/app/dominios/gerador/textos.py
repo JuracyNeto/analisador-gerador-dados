@@ -3,7 +3,7 @@
 from collections.abc import Callable
 from dataclasses import dataclass
 
-from app.compartilhado.numeros import formatar_com_sinal, formatar_inteiro
+from app.compartilhado.numeros import formatar_inteiro, formatar_numero
 from app.compartilhado.textos import pluralizar
 
 NOMES_METODOS = {
@@ -50,7 +50,7 @@ def estatisticas_par(x: str, y: str) -> tuple[str, ...]:
 
 
 def numero(valor: float) -> str:
-    return formatar_com_sinal(valor)
+    return formatar_numero(valor)
 
 
 def quantidade(n: int, singular: str, plural: str) -> str:

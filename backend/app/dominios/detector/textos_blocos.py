@@ -6,7 +6,6 @@ Continua `textos.py` (que passaria de 500 linhas) com os mesmos formatadores.
 from collections.abc import Sequence
 
 from app.compartilhado.numeros import (
-    com_sinal_de_menos,
     formatar_fixo,
     formatar_inteiro,
     formatar_numero,
@@ -98,7 +97,7 @@ BLOCO_SEM_VARIACAO = "os valores não variam em algum dos 5 blocos"
 
 def correlacao(r: float) -> str:
     """r com 2 casas e o sinal de menos: −0,41."""
-    return com_sinal_de_menos(formatar_fixo(r, CASAS_CORRELACAO))
+    return formatar_fixo(r, CASAS_CORRELACAO)
 
 
 def poucos_pares(minimo: int, n: int) -> str:
@@ -279,7 +278,7 @@ CASAS_FORMA = 3
 
 def medida_de_forma(valor: float) -> str:
     """G₁ e G₂ com 3 casas: 0,009 · −0,045 (somar 0,0 tira o "−0,000")."""
-    return com_sinal_de_menos(formatar_fixo(round(valor, CASAS_FORMA) + 0.0, CASAS_FORMA))
+    return formatar_fixo(round(valor, CASAS_FORMA) + 0.0, CASAS_FORMA)
 
 
 def r10_textos(coluna: str, assimetria: float, curtose: float) -> TextosAviso:

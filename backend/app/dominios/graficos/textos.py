@@ -1,6 +1,6 @@
 """Títulos, "Por que este gráfico?" e resumos textuais das figuras (spec 08, spec 16)."""
 
-from app.compartilhado.numeros import formatar_com_sinal, formatar_numero, formatar_percentual
+from app.compartilhado.numeros import formatar_numero, formatar_percentual
 from app.dominios.graficos.entradas import Barra, DadosUnivariados, ResumoCaixa
 
 METADE_PCT = 50
@@ -231,7 +231,7 @@ def titulo_pares_gerados(n: int) -> str:
 
 
 def resumo_pares_gerados(r: float, n: int, mostrados: int) -> str:
-    resumo = f"Correlação obtida: r = {formatar_com_sinal(r)}."
+    resumo = f"Correlação obtida: r = {formatar_numero(r)}."
     if mostrados < n:
         resumo += f" Mostramos {formatar_numero(mostrados)} dos {formatar_numero(n)} pontos."
     return resumo
@@ -253,7 +253,7 @@ def titulo_blocos(coluna: str, k: int) -> str:
 def resumo_blocos(linhas: tuple[int, int], media: float) -> str:
     return (
         f"A média das linhas {linhas[0]}–{linhas[1]} fica em cima da média geral "
-        f"({formatar_com_sinal(media)})."
+        f"({formatar_numero(media)})."
     )
 
 

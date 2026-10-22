@@ -11,7 +11,7 @@ from dataclasses import dataclass
 import pandas as pd
 
 from app.compartilhado.datas import FormatoData, formatar_data, reconhecer_datas
-from app.compartilhado.numeros import formatar_numero
+from app.compartilhado.numeros import com_sinal_de_menos, formatar_numero
 from app.compartilhado.series import (
     TipoUnidade,
     Unidade,
@@ -98,9 +98,9 @@ def serie_numerica(serie: pd.Series, decimal: str | None, limiar: float) -> pd.S
 
 
 def texto_do_numero(valor: float) -> str:
-    """Inteiros sem separador de milhar (códigos, contagens); decimais com vírgula."""
+    """Inteiros sem separador de milhar (códigos, contagens); decimais com vírgula; sinal "−"."""
     if float(valor).is_integer():
-        return str(int(valor))
+        return com_sinal_de_menos(str(int(valor)))
     return formatar_numero(float(valor), PRECISAO_TEXTO)
 
 

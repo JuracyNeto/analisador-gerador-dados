@@ -3,7 +3,7 @@ from pathlib import Path
 import pytest
 from markupsafe import escape
 
-from app.compartilhado.numeros import formatar_com_sinal
+from app.compartilhado.numeros import formatar_numero
 from app.compartilhado.tipos import TipoVariavel
 from app.core.config import Configuracao
 from app.dominios.analise.servico import ServicoAnalise
@@ -298,7 +298,7 @@ def test_secao_gerador_com_a_ultima_geracao(
     media = next(linha for linha in gerado.comparacao if linha.estatistica == "Média")
     assert media.original is not None
     assert media.gerado is not None
-    valor_original = formatar_com_sinal(media.original)
+    valor_original = formatar_numero(media.original)
     assert f'<td>Média</td><td class="numero">{valor_original}</td>' in html
     assert "Figura 1 · " in html
     assert html.count("Plotly.newPlot(") == 1

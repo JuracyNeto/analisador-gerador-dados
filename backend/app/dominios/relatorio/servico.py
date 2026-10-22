@@ -6,7 +6,7 @@ from datetime import datetime
 from itertools import combinations
 from typing import Any, Protocol
 
-from app.compartilhado.numeros import formatar_com_sinal, formatar_p_valor, formatar_percentual
+from app.compartilhado.numeros import formatar_numero, formatar_p_valor, formatar_percentual
 from app.compartilhado.tipos import TIPOS_AUXILIARES, Formula, TipoVariavel
 from app.core.erros import EntradaInvalida, NaoEncontrado
 from app.dominios.analise.servico import (
@@ -92,7 +92,7 @@ def _limpeza(resumo: Resumo) -> tuple[str, ...]:
 
 
 def _valor(valor: float | str | None, sufixo: str = "") -> str:
-    return f"{formatar_com_sinal(valor)}{sufixo}" if isinstance(valor, float) else str(valor)
+    return f"{formatar_numero(valor)}{sufixo}" if isinstance(valor, float) else str(valor)
 
 
 def _itens(candidatas: Iterable[tuple[str, Medida, str]]) -> list[ItemMedida]:

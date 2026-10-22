@@ -3,7 +3,7 @@
 from itertools import combinations
 
 from app.compartilhado.estatistica import ALFA
-from app.compartilhado.numeros import MENOS, formatar_com_sinal, formatar_numero
+from app.compartilhado.numeros import MENOS, formatar_numero
 from app.compartilhado.textos import juntar_lista, p_valor_em_palavras
 from app.dominios.analise.resultados_bivariada import Faixa, Forca, Sentido
 
@@ -15,7 +15,7 @@ SEM_PARES = "Precisa de pelo menos duas colunas numéricas para montar a matriz.
 
 
 def numero(valor: float) -> str:
-    return formatar_com_sinal(valor)
+    return formatar_numero(valor)
 
 
 def formatar_equacao(a: float, b: float) -> str:

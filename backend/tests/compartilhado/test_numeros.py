@@ -1,7 +1,6 @@
 import pytest
 
 from app.compartilhado.numeros import (
-    formatar_com_sinal,
     formatar_fixo,
     formatar_inteiro,
     formatar_numero,
@@ -18,7 +17,7 @@ from app.compartilhado.numeros import (
         (0.0012346, "0,001235"),
         (72.0, "72"),
         (0.0, "0"),
-        (-3.14159, "-3,142"),
+        (-3.14159, "−3,142"),
         (1.5, "1,5"),
     ],
 )
@@ -55,7 +54,15 @@ def test_formatar_p_valor(p: float, esperado: str) -> None:
 
 
 @pytest.mark.parametrize(
-    ("valor", "texto"), [(-0.394, "−0,394"), (0.394, "0,394"), (-1234.5, "−1.234")]
+    ("formatado", "texto"),
+    [
+        (formatar_numero(-0.394), "−0,394"),
+        (formatar_numero(-1234.5), "−1.234"),
+        (formatar_fixo(-5.0, 1), "−5,0"),
+        (formatar_inteiro(-1500), "−1.500"),
+        (formatar_percentual(-12.5), "−12,5%"),
+    ],
 )
-def test_formatar_com_sinal_usa_o_sinal_de_menos(valor: float, texto: str) -> None:
-    assert formatar_com_sinal(valor) == texto
+def test_negativos_saem_com_o_sinal_de_menos(formatado: str, texto: str) -> None:
+    """D107: todo número exibido usa o sinal de menos (−), não o hífen."""
+    assert formatado == texto

@@ -136,3 +136,10 @@ def test_classificar_tabela_descreve_cada_coluna() -> None:
     assert sexo.contagens == {"F": 2, "M": 1}
     assert tipos["peso"].exemplos == ("58,2", "79,6", "63")
     assert tipos["peso"].contagens == {}
+
+
+def test_numeros_negativos_viram_texto_com_o_sinal_de_menos() -> None:
+    """D107: exemplos e categorias saem como o usuário leria (−3, −2,5), sem o hífen."""
+    coluna = ler_coluna("saldo", pd.Series(["-3", "-2,5", "4"]), ",", LIMIARES)
+
+    assert list(coluna.textos) == ["−3", "−2,5", "4"]

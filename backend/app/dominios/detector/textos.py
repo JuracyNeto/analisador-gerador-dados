@@ -7,9 +7,9 @@ from collections.abc import Sequence
 from itertools import pairwise
 
 from app.compartilhado.numeros import (
-    formatar_com_sinal,
     formatar_fixo,
     formatar_inteiro,
+    formatar_numero,
     formatar_percentual,
 )
 from app.compartilhado.textos import juntar_lista, p_valor_em_palavras, pluralizar
@@ -28,12 +28,12 @@ RETICENCIAS = "…"
 
 def valor(numero: float) -> str:
     """Valor de uma célula como o usuário escreveria: 70 · 1,62 · −3,5."""
-    return formatar_com_sinal(numero, CASAS_SIGNIFICATIVAS_VALOR)
+    return formatar_numero(numero, CASAS_SIGNIFICATIVAS_VALOR)
 
 
 def numero(medida: float) -> str:
     """Medida calculada com até 4 algarismos significativos: 80,5 · 0,0881."""
-    return formatar_com_sinal(medida)
+    return formatar_numero(medida)
 
 
 def percentual(fracao: float) -> str:

@@ -8,9 +8,14 @@ CASAS_SIGNIFICATIVAS_PADRAO = 4
 MENOS = "−"
 
 
+def com_sinal_de_menos(texto: str) -> str:
+    """Troca o hífen do número negativo pelo sinal de menos tipográfico (−, D107)."""
+    return f"{MENOS}{texto[1:]}" if texto.startswith("-") else texto
+
+
 def _trocar_separadores(texto: str) -> str:
-    """Converte '1,234.5' (formato do Python) em '1.234,5'."""
-    return texto.replace(",", "_").replace(".", ",").replace("_", ".")
+    """Converte '1,234.5' (formato do Python) em '1.234,5', com o sinal de menos (−)."""
+    return com_sinal_de_menos(texto.replace(",", "_").replace(".", ",").replace("_", "."))
 
 
 def casas_para_significativos(valor: float, casas_significativas: int) -> int:
@@ -22,24 +27,12 @@ def casas_para_significativos(valor: float, casas_significativas: int) -> int:
 
 
 def formatar_numero(valor: float, casas_significativas: int = CASAS_SIGNIFICATIVAS_PADRAO) -> str:
-    """Número com até 4 dígitos significativos, sem zeros à direita: 70,31 · 12.346 · 0,001235."""
+    """Até 4 dígitos significativos, sem zeros à direita: 70,31 · 12.346 · 0,001235 · −0,394."""
     casas = casas_para_significativos(valor, casas_significativas)
     texto = f"{valor:,.{casas}f}"
     if "." in texto:
         texto = texto.rstrip("0").rstrip(".")
     return _trocar_separadores(texto)
-
-
-def com_sinal_de_menos(texto: str) -> str:
-    """Troca o hífen do número negativo pelo sinal de menos tipográfico (−)."""
-    return f"{MENOS}{texto[1:]}" if texto.startswith("-") else texto
-
-
-def formatar_com_sinal(
-    valor: float, casas_significativas: int = CASAS_SIGNIFICATIVAS_PADRAO
-) -> str:
-    """Como `formatar_numero`, com o sinal de menos (−) nos negativos: −0,394."""
-    return com_sinal_de_menos(formatar_numero(valor, casas_significativas))
 
 
 def formatar_inteiro(valor: int) -> str:

@@ -4,7 +4,6 @@ import re
 
 from app.compartilhado.numeros import (
     MENOS,
-    formatar_com_sinal,
     formatar_fixo,
     formatar_inteiro,
     formatar_numero,
@@ -27,7 +26,7 @@ def _valor(estatistica: str, valor: float | None) -> str:
         return VAZIO
     if estatistica == ESTATISTICA_N:
         return formatar_inteiro(round(valor))
-    return formatar_percentual(valor) if _eh_frequencia(estatistica) else formatar_com_sinal(valor)
+    return formatar_percentual(valor) if _eh_frequencia(estatistica) else formatar_numero(valor)
 
 
 def _casas(texto: str) -> int:
