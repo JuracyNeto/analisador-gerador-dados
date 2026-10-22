@@ -39,8 +39,9 @@ def test_bloco_final_que_puxa_a_correlacao_dispara_alta() -> None:
     assert aviso.resumo.startswith("A correlação geral entre x e y é 0,")
     assert ", mas a média dos blocos é só 0," in aviso.resumo
     assert aviso.exemplo is not None
-    assert aviso.exemplo.linhas == tuple(range(101, 121))
-    assert aviso.exemplo.texto.startswith("Linhas 101 a 120: −4 · −")
+    assert aviso.exemplo.linhas == tuple(range(101, 126))
+    assert aviso.exemplo.total_linhas == 25
+    assert aviso.exemplo.texto.startswith("Linhas 101 a 125: −4 · −")
     assert aviso.detalhes.formula == "r = Σ(x − x̄)(y − ȳ) / √[Σ(x − x̄)² · Σ(y − ȳ)²]"
 
 

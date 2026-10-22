@@ -49,8 +49,8 @@ def test_bloco_com_media_e_desvio_do_restante_dispara_alta() -> None:
     assert aviso.exemplo is not None
     assert aviso.exemplo.linhas == tuple(range(181, 201))
     assert aviso.exemplo.texto.startswith("Linhas 181 a 200: média ")
-    assert " · DP " in aviso.exemplo.texto
-    assert "(resto " in aviso.exemplo.texto
+    assert " · desvio padrão " in aviso.exemplo.texto
+    assert "(restante " in aviso.exemplo.texto
     grafico = aviso.grafico
     assert isinstance(grafico, GraficoBlocos)
     assert grafico.tamanho == 20
@@ -124,13 +124,15 @@ def test_detalhes_trazem_a_simulacao() -> None:
     )
 
 
-def test_exemplo_cita_o_bloco_inteiro_mesmo_com_mais_de_20_linhas() -> None:
+def test_exemplo_traz_o_bloco_inteiro_mesmo_com_mais_de_20_linhas() -> None:
+    """O "Ver na tabela" destaca as linhas que o resumo cita (achado D-c do M4.3, D172)."""
     valores = alinhar_bloco(_normal(440), 400, 22)
 
     (aviso,) = RegraBlocoAlinhado().executar(tabela_numerica(valores)).avisos
 
     assert aviso.exemplo is not None
-    assert len(aviso.exemplo.linhas) == 20
+    assert aviso.exemplo.linhas == tuple(range(401, 423))
+    assert aviso.exemplo.total_linhas == 22
     assert aviso.exemplo.texto.startswith("Linhas 401 a 422: média ")
 
 
@@ -145,7 +147,9 @@ def test_mesma_media_aparece_igual_no_bloco_e_no_restante() -> None:
     (aviso,) = RegraBlocoAlinhado().executar(tabela_numerica(np.concatenate([resto, bloco]))).avisos
 
     assert aviso.exemplo is not None
-    assert aviso.exemplo.texto.startswith("Linhas 381 a 400: média 70,12 (resto 70,12) · DP ")
+    assert aviso.exemplo.texto.startswith(
+        "Linhas 381 a 400: média 70,12 (restante 70,12) · desvio padrão "
+    )
 
 
 def test_normal_sem_bloco_nao_dispara() -> None:

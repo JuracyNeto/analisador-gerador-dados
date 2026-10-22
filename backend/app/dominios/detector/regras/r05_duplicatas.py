@@ -5,7 +5,7 @@ from dataclasses import dataclass, replace
 import numpy as np
 
 from app.compartilhado.tipos import Severidade, TipoVariavel
-from app.dominios.detector import textos
+from app.dominios.detector import textos, textos_duplicatas
 from app.dominios.detector.duplicatas import (
     SEM_PARES,
     TRINCA,
@@ -13,7 +13,7 @@ from app.dominios.detector.duplicatas import (
     GrupoRepetido,
     acaso_das_repeticoes,
     chaves_das_colunas,
-    linhas_com_numero,
+    linhas_comparaveis,
     pares_quase_iguais,
     repetidos,
     seguidas_contra_o_acaso,
@@ -33,7 +33,8 @@ MINIMO_LINHAS = 2
 class AlvoArquivo:
     """O arquivo todo: as colunas comparáveis (todas menos os identificadores, D50).
 
-    Só as linhas com algum número entram (D138); o limite das quase iguais vale para o arquivo.
+    Só as linhas com algum número e 2 células preenchidas entram (D138, D171); o limite das
+    quase iguais vale para o arquivo.
     """
 
     linhas: np.ndarray
@@ -57,14 +58,14 @@ class AlvoArquivo:
         return self.linhas_no_arquivo <= LIMITE_QUASE and self.n_numericas > 0
 
     def linha_como_texto(self, posicao: int) -> str:
-        return textos.linha_como_texto([coluna.textos[posicao] for coluna in self.colunas])
+        return textos.linha_como_texto(self.colunas, posicao)
 
 
 @dataclass(frozen=True, slots=True)
 class ArquivoTodo:
     """Seletor da R5: um alvo só, com as colunas que não são identificadores."""
 
-    motivo_sem_alvos: str = textos.SO_IDENTIFICADORES
+    motivo_sem_alvos: str = textos_duplicatas.SO_IDENTIFICADORES
 
     def __call__(self, tabela: TabelaDetector) -> tuple[AlvoArquivo, ...]:
         colunas = tuple(
@@ -74,10 +75,11 @@ class ArquivoTodo:
         )
         if not colunas:
             return ()
-        # Linhas sem nenhum número (estação desligada) não são cópias umas das outras (D138).
-        com_medida = linhas_com_numero(colunas)
-        recortadas = tuple(coluna.nas_linhas(com_medida) for coluna in colunas)
-        return (AlvoArquivo(tabela.linhas[com_medida], recortadas, tabela.n_linhas),)
+        # Linhas sem nenhum número (estação desligada, D138) ou com uma célula só (valores
+        # anexados pelo Gerador, D171) não são cópias umas das outras.
+        comparaveis = linhas_comparaveis(colunas)
+        recortadas = tuple(coluna.nas_linhas(comparaveis) for coluna in colunas)
+        return (AlvoArquivo(tabela.linhas[comparaveis], recortadas, tabela.n_linhas),)
 
 
 @dataclass(frozen=True, slots=True, eq=False)
@@ -135,7 +137,7 @@ class MedicaoDuplicatas:
 
 
 def _colunas_suficientes(alvo: AlvoArquivo) -> str | None:
-    return textos.POUCAS_COLUNAS if len(alvo.colunas) < MINIMO_COLUNAS else None
+    return textos_duplicatas.POUCAS_COLUNAS if len(alvo.colunas) < MINIMO_COLUNAS else None
 
 
 def _linhas_suficientes(alvo: AlvoArquivo) -> str | None:
@@ -146,18 +148,24 @@ def _exemplo(alvo: AlvoArquivo, grupo: GrupoRepetido) -> ExemploAviso:
     posicoes = grupo.posicoes[:MAX_LINHAS_EXEMPLO]
     linhas = tuple(int(linha) for linha in alvo.linhas[posicoes])
     valores = tuple(alvo.linha_como_texto(int(posicao)) for posicao in posicoes)
-    escrever = textos.r05_texto_exemplo if grupo.exato else textos.r05_texto_exemplo_quase
-    return ExemploAviso(linhas, valores, escrever(linhas, valores[0]))
+    escrever = (
+        textos_duplicatas.r05_texto_exemplo
+        if grupo.exato
+        else textos_duplicatas.r05_texto_exemplo_quase
+    )
+    return ExemploAviso(linhas, valores, escrever(linhas, valores[0]), len(grupo.posicoes))
 
 
 def _detalhes(alvo: AlvoArquivo, medicao: MedicaoDuplicatas) -> DetalhesAviso:
     formula = (
-        textos.r05_formula_quase(alvo.n_numericas)
+        textos_duplicatas.r05_formula_quase(alvo.n_numericas)
         if medicao.quase is not None
-        else textos.R05_FORMULA_IDENTICAS
+        else textos_duplicatas.R05_FORMULA_IDENTICAS
     )
     tipo, acaso = medicao.teste
-    return textos.r05_detalhes(medicao.copias, len(medicao.avisados), formula, tipo, acaso)
+    return textos_duplicatas.r05_detalhes(
+        medicao.copias, len(medicao.avisados), formula, tipo, acaso
+    )
 
 
 class RegraDuplicatas(base.RegraBase[AlvoArquivo, MedicaoDuplicatas]):
@@ -173,7 +181,7 @@ class RegraDuplicatas(base.RegraBase[AlvoArquivo, MedicaoDuplicatas]):
         resultado = super().executar(tabela)
         if not resultado.verificada or tabela.n_linhas <= LIMITE_QUASE or not tabela.numericas():
             return resultado
-        motivo, frase = textos.r05_ressalva(tabela.n_linhas, LIMITE_QUASE)
+        motivo, frase = textos_duplicatas.r05_ressalva(tabela.n_linhas, LIMITE_QUASE)
         ressalva = self.nao_aplicada(None, motivo, frase)
         return replace(resultado, nao_aplicadas=(*resultado.nao_aplicadas, ressalva))
 
@@ -204,7 +212,7 @@ class RegraDuplicatas(base.RegraBase[AlvoArquivo, MedicaoDuplicatas]):
         return base.ConteudoAviso(
             severidade=Severidade.ALTA if seguidas else Severidade.ATENCAO,
             colunas=(),
-            textos=textos.r05_textos(medicao.copias, medicao.grupos_quase, seguidas),
+            textos=textos_duplicatas.r05_textos(medicao.copias, medicao.grupos_quase, seguidas),
             exemplo=_exemplo(alvo, destaque),
             detalhes=_detalhes(alvo, medicao),
         )

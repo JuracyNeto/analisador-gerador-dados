@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+import pytest
 
 from app.compartilhado.tipos import Severidade, TipoVariavel
 from app.dominios.detector.regras.r05_duplicatas import RegraDuplicatas
@@ -50,7 +51,7 @@ def test_tres_linhas_iguais_seguidas_disparam_suspeita_alta() -> None:
     )
     assert aviso.exemplo is not None
     assert aviso.exemplo.linhas == (11, 12, 13, 14)
-    assert aviso.exemplo.texto == "Linhas 11 a 14: 57.0 · 1.511 · F"
+    assert aviso.exemplo.texto == "Linhas 11 a 14: peso 57.0 · altura 1.511 · sexo F"
     assert aviso.detalhes.teste == "Poisson: pares de linhas iguais × acaso (densidade local)"
 
 
@@ -76,7 +77,7 @@ def test_linhas_quase_iguais_tambem_disparam() -> None:
     assert aviso.severidade == Severidade.ATENCAO
     assert aviso.resumo == "Encontramos 1 linha igual ou quase igual a outra do arquivo."
     assert aviso.exemplo is not None
-    assert aviso.exemplo.texto == "Linhas 5 e 31 (quase iguais): 52.8 · 1.5044 · F"
+    assert aviso.exemplo.texto == "Linhas 5 e 31 (quase iguais): peso 52.8 · altura 1.5044 · sexo F"
     assert aviso.detalhes.teste == "Poisson: pares quase iguais × acaso (densidade local)"
     assert aviso.detalhes.p_valor is not None
     assert aviso.detalhes.p_valor < 0.01
@@ -173,3 +174,39 @@ def test_linhas_sem_nenhuma_medida_nao_contam_como_iguais() -> None:
     dados.loc[20:30, ["peso", "altura"]] = np.nan
 
     assert RegraDuplicatas().executar(_tabela(dados)).avisos == ()
+
+
+@pytest.mark.parametrize("semente", [2, 3])
+def test_linhas_anexadas_com_uma_coluna_se_comparam_so_nela(semente: int) -> None:
+    """ "Anexar ao arquivo atual" preenche só a coluna gerada (achado D-b do M4.3). Pesos com 1
+    casa coincidem por acaso, e o acaso tem de sair dessa coluna só, não das 3 comparadas."""
+    rng = np.random.default_rng(semente)
+    anexadas = pd.DataFrame({"peso": np.round(rng.normal(70, 12, 30), 1)})
+
+    tabela = _tabela(pd.concat([_dados(200), anexadas], ignore_index=True))
+
+    assert RegraDuplicatas().executar(tabela).avisos == ()
+
+
+def test_celulas_vazias_ao_acaso_nao_viram_duplicatas() -> None:
+    """Com 30% das células vazias, linhas com uma ou duas colunas preenchidas coincidem nelas."""
+    rng = np.random.default_rng(2)
+    dados = pd.DataFrame({f"c{j}": np.round(rng.normal(50, 10, 300), 2) for j in range(4)})
+    dados["g"] = rng.choice(["a", "b", "c"], 300)
+    tipos = {f"c{j}": TipoVariavel.CONTINUA for j in range(4)} | {"g": TipoVariavel.NOMINAL}
+
+    tabela = tabela_de(dados.mask(rng.random(dados.shape) < 0.3), tipos)
+
+    assert RegraDuplicatas().executar(tabela).avisos == ()
+
+
+def test_copias_com_celulas_vazias_continuam_disparando() -> None:
+    dados = _dados()
+    dados["altura"] = dados["altura"].astype("float64")
+    dados.loc[10, "altura"] = np.nan
+
+    (aviso,) = RegraDuplicatas().executar(_tabela(_copiar(dados, 10, 11, 12, 13))).avisos
+
+    assert aviso.severidade == Severidade.ALTA
+    assert aviso.exemplo is not None
+    assert aviso.exemplo.texto == "Linhas 11 a 14: peso 57.0 · sexo F (altura vazia)"

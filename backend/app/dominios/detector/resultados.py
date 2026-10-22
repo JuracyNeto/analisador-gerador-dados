@@ -14,6 +14,8 @@ class ExemploAviso:
     linhas: tuple[int, ...]
     valores: tuple[str, ...]
     texto: str
+    total_linhas: int
+    """Linhas do padrão: `linhas` traz até 20 (um bloco seguido, até 194; D172)."""
 
 
 @dataclass(frozen=True, slots=True)

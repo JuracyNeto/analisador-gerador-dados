@@ -9,6 +9,7 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e
 - API do gerador: cada geração traz as fórmulas do método (o sorteio, a reescala, Cholesky e o ajuste exato).
 - Testes automáticos de acessibilidade (axe) nas 8 telas, no layout e nos componentes, e de contraste das cores nos dois temas.
 - Script de medição de desempenho (`backend/scripts/medir_desempenho.py`): leitura, análise de cada coluna, bivariada, detector e relatório com 10 mil e 100 mil linhas.
+- API do detector: o exemplo de cada alerta diz quantas linhas o alerta tem (`total_linhas`).
 
 ### Alterado
 - As fórmulas saem do fim de cada coluna e da seção Bivariada do relatório e passam para o apêndice.
@@ -26,6 +27,9 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e
 - Concordância no singular: "Marcamos 1 valor … como faltante por estar fora da faixa.", "Geramos 1 valor.", "A única linha do arquivo"; o registro da limpeza mostra todos os valores mudados.
 - "Onde está meu valor?" fora da faixa não repete o aviso e diz "Todos os dados são menores que ele."; "Prever" com o campo inválido não deixa o resultado anterior na tela.
 - Planilhas com mais de uma aba avisam que há outras abas para escolher.
+- Detector, valores distantes: o resumo diz o que marcou o exemplo (o limite, ajustado à assimetria da coluna quando for o caso, ou a distância de mais de 3 desvios padrão da média), e "O que fazer" manda corrigir no arquivo ou remover na Limpeza, que não corrige valores. O exemplo do bloco alinhado fala em "restante" e "desvio padrão", sem siglas.
+- Detector, duplicatas: as linhas anexadas pelo Gerador (só com a coluna gerada) e as linhas com células vazias não viram mais "quase iguais" por acaso; a comparação usa só as colunas preenchidas, e o exemplo mostra o nome das colunas.
+- Detector, "Ver na tabela": o bloco alinhado e o bloco da correlação aparecem inteiros (até 194 linhas), como no texto do alerta; quando o painel mostra só parte das linhas, ele diz quantas são; o rodapé não junta mais o número da linha com o total do arquivo; números de linha com ponto de milhar nos textos.
 - Acessibilidade (WCAG 2.1 AA): títulos sem pular nível na Análise, na Bivariada e na Limpeza; áreas laterais com nome; o painel "Ver na tabela" sem um segundo cabeçalho de página; o balão de ajuda das abas desabilitadas não entra mais na lista de abas; "não se aplica" na tabela de frequências com contraste suficiente; borda dos campos um pouco mais escura no tema claro; com zoom de 200%, a tabela de Variáveis rola dentro dela e não alarga mais a página.
 
 ## [0.3.0] - 2026-10-16

@@ -10,7 +10,7 @@ import numpy as np
 
 from app.compartilhado.tipos import Severidade
 from app.dominios.detector import blocos, textos, textos_blocos
-from app.dominios.detector.exemplos import exemplo_de_textos
+from app.dominios.detector.exemplos import MAX_LINHAS_BLOCO, exemplo_de_textos
 from app.dominios.detector.regras import base
 from app.dominios.detector.resultados import ExemploAviso
 
@@ -76,10 +76,10 @@ def _blocos_variam(alvo: base.AlvoPar) -> str | None:
 
 
 def _exemplo(alvo: base.AlvoPar, parte: slice) -> ExemploAviso:
-    """As linhas do bloco, cada uma como "x · y"."""
+    """As linhas do bloco inteiro (até 194, D172), cada uma como "x · y"."""
     pares = zip(alvo.valores_x[parte], alvo.valores_y[parte], strict=True)
     valores = [f"{textos.valor(float(x))} · {textos.valor(float(y))}" for x, y in pares]
-    return exemplo_de_textos(alvo.linhas[parte], valores)
+    return exemplo_de_textos(alvo.linhas[parte], valores, MAX_LINHAS_BLOCO)
 
 
 class RegraCorrelacaoBlocos(base.RegraBase[base.AlvoPar, MedicaoBlocos]):
