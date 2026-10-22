@@ -55,6 +55,19 @@ export function descreverLinhas(linhas: readonly number[]): string {
   return T.lista(listar(ordenadas));
 }
 
+/** Da 1ª à última linha que veio de cada trecho: perto do fim, o arquivo acaba antes do contexto. */
+export function trechosMostrados(
+  carregados: readonly { linhas: readonly { linha: number }[] }[],
+): Trecho[] {
+  return carregados.flatMap(({ linhas }) => {
+    const [primeira] = linhas;
+    const ultima = linhas.at(-1);
+    return primeira === undefined || ultima === undefined
+      ? []
+      : [{ de: primeira.linha, ate: ultima.linha }];
+  });
+}
+
 /** Rodapé do drawer: "117–141" ou "1.196–1.241, 1.257–1.263 e 1.275–1.281". */
 export function descreverTrechos(trechos: readonly Trecho[]): string {
   return juntarComE(trechos.map(({ de, ate }) => `${formatarInteiro(de)}–${formatarInteiro(ate)}`));

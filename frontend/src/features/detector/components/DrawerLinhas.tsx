@@ -7,7 +7,7 @@ import EstadoErro from '../../../shared/ui/EstadoErro';
 import { exportarLinhas, nomeDoCsv } from '../exportarLinhas';
 import { type EstadoLinhas, useLinhasDoAviso } from '../hooks/useLinhasDoAviso';
 import { TEXTOS_DETECTOR } from '../textos';
-import { descreverLinhas, descreverTrechos } from '../trechos';
+import { descreverLinhas, descreverTrechos, trechosMostrados } from '../trechos';
 import type { Aviso } from '../tipos';
 import estilos from './DrawerLinhas.module.css';
 import TabelaLinhas from './TabelaLinhas';
@@ -75,6 +75,7 @@ export default function DrawerLinhas({ datasetId, aviso, aoFechar }: Readonly<Pr
   const { trechos, destacadas, estado } = useLinhasDoAviso(datasetId, aviso);
   if (aviso === null) return null;
   const total = aviso.exemplo?.total_linhas ?? destacadas.size;
+  const mostrados = estado.status === 'pronto' ? trechosMostrados(estado.trechos) : trechos;
   return (
     <Drawer
       aberto
@@ -85,7 +86,7 @@ export default function DrawerLinhas({ datasetId, aviso, aoFechar }: Readonly<Pr
       rotuloCorpo={T.drawer.rotuloCorpo}
       rodape={
         <>
-          <span className={estilos.contagem}>{T.drawer.rodape(descreverTrechos(trechos))}</span>
+          <span className={estilos.contagem}>{T.drawer.rodape(descreverTrechos(mostrados))}</span>
           <Botao
             variante="secundario"
             tamanho="sm"

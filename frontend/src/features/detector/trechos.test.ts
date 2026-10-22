@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { descreverLinhas, descreverTrechos, trechosDoExemplo } from './trechos';
+import { descreverLinhas, descreverTrechos, trechosDoExemplo, trechosMostrados } from './trechos';
 
 describe('trechosDoExemplo', () => {
   it('bloco seguido: um trecho com 3 linhas de contexto de cada lado', () => {
@@ -50,5 +50,20 @@ describe('descreverTrechos', () => {
 
   it('números de linha com ponto de milhar, como nos exemplos da API', () => {
     expect(descreverTrechos([{ de: 1197, ate: 1241 }])).toBe('1.197–1.241');
+  });
+});
+
+describe('trechosMostrados', () => {
+  it('cada trecho vai da 1ª à última linha que veio da API (o arquivo pode acabar antes)', () => {
+    const carregados = [
+      { linhas: [{ linha: 96 }, { linha: 109 }] },
+      { linhas: [{ linha: 228 }, { linha: 260 }] },
+      { linhas: [] },
+    ];
+
+    expect(trechosMostrados(carregados)).toEqual([
+      { de: 96, ate: 109 },
+      { de: 228, ate: 260 },
+    ]);
   });
 });

@@ -38,6 +38,14 @@ describe('DrawerLinhas', () => {
     expect(chamadasPara(api, 'GET', `${BASE}/linhas`)[0]?.url).toContain('de=117&ate=125');
   });
 
+  it('no fim do arquivo, o rodapé para na última linha que existe', async () => {
+    const exemplo = { linhas: [259, 260], valores: ['70', '75'], texto: '', total_linhas: 2 };
+
+    renderizar({ ...avisoR4, exemplo }, linhasDados(256, 260));
+
+    expect(await screen.findByText('Linhas 256–260')).toBeInTheDocument();
+  });
+
   it('exemplo com parte das linhas do alerta: diz quantas são ao todo (D172)', () => {
     const exemplo = { linhas: [1, 160], valores: ['89', '94'], texto: '', total_linhas: 45 };
 
