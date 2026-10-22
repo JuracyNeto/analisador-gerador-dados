@@ -63,18 +63,33 @@ describe('PaginaBivariada', () => {
     expect(screen.getByLabelText(T.seletores.x)).toHaveValue('peso_kg');
   });
 
-  it('sem URL usa as duas primeiras numéricas e "Trocar X e Y" grava na URL', async () => {
+  it('sem URL abre no par mais forte da matriz e "Trocar X e Y" grava na URL', async () => {
     const { usuario, roteador } = renderizarPagina('/bivariada');
     await screen.findByText(EQUACAO);
-    expect(chamadasPara(api, 'GET', `${BASE}/bivariada`)[0]?.url).toBe(
-      `/api${BASE}/bivariada?x=idade&y=altura_m`,
-    );
+    const pedidos = chamadasPara(api, 'GET', `${BASE}/bivariada`);
+    expect(pedidos.map((pedido) => pedido.url)).toEqual([
+      `/api${BASE}/bivariada?x=altura_m&y=peso_kg`,
+    ]);
 
     await usuario.click(screen.getByRole('button', { name: T.seletores.trocar }));
 
     await waitFor(() => {
-      expect(roteador.state.location.search).toBe('?x=altura_m&y=idade');
+      expect(roteador.state.location.search).toBe('?x=peso_kg&y=altura_m');
     });
+  });
+
+  it('sem URL e com erro na matriz, usa as duas primeiras numéricas', async () => {
+    api = simularApi([
+      ROTA_COLUNAS,
+      ROTA_BIVARIADA,
+      { caminho: `${BASE}/correlacoes`, status: 400, corpo: { codigo: 'X', mensagem: 'Erro.' } },
+    ]);
+    renderizarPagina('/bivariada');
+
+    await screen.findByText(EQUACAO);
+    expect(chamadasPara(api, 'GET', `${BASE}/bivariada`)[0]?.url).toBe(
+      `/api${BASE}/bivariada?x=idade&y=altura_m`,
+    );
   });
 
   it('com menos de duas numéricas orienta a corrigir os tipos', async () => {
