@@ -25,8 +25,8 @@ TIPOS_LEGIVEIS = {
     "discreta": "Quantitativa discreta",
     "continua": "Quantitativa contínua",
     "binaria": "Binária",
-    "identificador": "Identificador (fora das análises)",
-    "data": "Data ou hora (fora das análises)",
+    "identificador": "Identificador (ignorado)",
+    "data": "Data ou hora (ignorada)",
 }
 SEM_LIMPEZA = "Não aplicamos nenhuma ação de limpeza."
 TITULOS_SECOES = {

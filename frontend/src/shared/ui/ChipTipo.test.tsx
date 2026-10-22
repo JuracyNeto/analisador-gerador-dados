@@ -32,7 +32,7 @@ describe('ChipTipo', () => {
     await usuario.hover(screen.getByText('Data'));
 
     expect(await screen.findByRole('tooltip', { hidden: true })).toHaveTextContent(
-      'Data ou hora (fora das análises)',
+      'Data ou hora (ignorada)',
     );
   });
 

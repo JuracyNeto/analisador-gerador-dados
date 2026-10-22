@@ -53,4 +53,4 @@ Aplica-se a: avisos do detector, motivos de classificação, "não se aplica", i
 - Erros: "{o que aconteceu}. {como resolver}." Ex.: "Não encontramos a coluna *peso*. Ela pode ter sido renomeada — recarregue a página."
 - Toasts: verbo no passado + quantidade, no singular quando é 1 ("Geramos 1 valor."). "Limpeza aplicada: 12 linhas removidas."
 - Números: sinal de menos (−) e ponto de milhar em todo texto exibido, inclusive cálculos e títulos de figura (D156); nas tabelas, as mesmas casas em cada coluna (D157); códigos e números de linha das células de dados como no arquivo, sem ponto de milhar.
-- Termos únicos (D159): "arquivo" (não "dataset") na interface, "desvio padrão", "Amplitude interquartil (IQR)", "Coeficiente de variação", tipos auxiliares "(fora das análises)".
+- Termos únicos (D159): "arquivo" (não "dataset") na interface, "desvio padrão", "Amplitude interquartil (IQR)", "Coeficiente de variação", tipos auxiliares "Identificador (ignorado)" e "Data ou hora (ignorada)".
