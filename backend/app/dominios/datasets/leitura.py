@@ -202,6 +202,15 @@ def _abrir_aba(conteudo: bytes, aba_escolhida: str | None) -> tuple[pd.DataFrame
     return bruto, abas
 
 
+def _motivo_aba(abas: tuple[str, ...], aba_escolhida: str | None) -> str:
+    """A 1ª aba é lida por padrão (spec 01); com outras abas, a tela diz que dá para trocar."""
+    if aba_escolhida is not None:
+        return ESCOLHIDO
+    if len(abas) == 1:
+        return "A planilha tem uma aba só."
+    return f"1ª de {len(abas)} abas. Se os dados estiverem em outra, escolha acima."
+
+
 def _linha_valida(bruto: pd.DataFrame, linha: int) -> bool:
     return linha == 0 or (linha <= len(bruto) and bool(_celulas_planilha(bruto.iloc[linha - 1])))
 
@@ -221,7 +230,7 @@ def _ler_xlsx(conteudo: bytes, _formato: str, opcoes: OpcoesLeitura) -> _Leitura
         dados=dados,
         linha_cabecalho=linha,
         abas=abas,
-        motivos={"cabecalho": cabecalho.motivo},
+        motivos={"aba": _motivo_aba(abas, opcoes.aba), "cabecalho": cabecalho.motivo},
         linhas_iniciais=tuple(LinhaArquivo(n, _celulas_planilha(v)) for n, (_, v) in iniciais),
     )
 

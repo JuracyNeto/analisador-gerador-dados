@@ -90,6 +90,8 @@ def test_xlsx_le_a_primeira_aba_e_lista_as_abas() -> None:
 
     assert resultado.metadados.abas == ("dados", "outra")
     assert resultado.dados["x"].tolist() == [1, 2]
+    motivo = "1ª de 2 abas. Se os dados estiverem em outra, escolha acima."
+    assert resultado.metadados.motivos["aba"] == motivo
 
 
 def test_xlsx_escolhe_a_aba() -> None:
@@ -101,6 +103,13 @@ def test_xlsx_escolhe_a_aba() -> None:
     resultado = ler_arquivo(buffer.getvalue(), "dados.xlsx", OpcoesLeitura(aba="outra"))
 
     assert list(resultado.dados.columns) == ["z"]
+    assert resultado.metadados.motivos["aba"] == "Escolhido por você."
+
+
+def test_xlsx_com_uma_aba_diz_que_e_a_unica() -> None:
+    resultado = ler_arquivo(_planilha(["x"], [1], [2]), "dados.xlsx", SEM_OPCOES)
+
+    assert resultado.metadados.motivos["aba"] == "A planilha tem uma aba só."
 
 
 def _planilha(*linhas: list[object]) -> bytes:
