@@ -221,7 +221,11 @@ def test_uma_coluna_com_separador_suspeito_gera_aviso() -> None:
 
     resultado = ler_arquivo(b"a;b\n1;2\n3;4\n", "dados.txt", opcoes)
 
-    assert [a.codigo for a in resultado.metadados.avisos] == ["UMA_COLUNA"]
+    [aviso] = resultado.metadados.avisos
+    assert (aviso.codigo, aviso.mensagem) == (
+        "UMA_COLUNA",
+        "Encontramos só uma coluna. O separador pode ser outro: escolha um em Separador.",
+    )
 
 
 @pytest.mark.parametrize("marcador", ["NA", "N/A", "NaN", "null", "None", "-", "?", "—", " "])

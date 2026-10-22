@@ -278,9 +278,7 @@ def padronizar_dados(dados: pd.DataFrame) -> pd.DataFrame:
 def _avisos(bruta: _LeituraBruta, n_colunas: int) -> tuple[Aviso, ...]:
     suspeita = any(s in linha for linha in bruta.amostra for s in SEPARADORES_SUSPEITOS)
     if n_colunas == 1 and suspeita:
-        mensagem = (
-            "Encontramos só uma coluna. O separador pode estar errado — tente escolher outro."
-        )
+        mensagem = "Encontramos só uma coluna. O separador pode ser outro: escolha um em Separador."
         return (Aviso("UMA_COLUNA", mensagem),)
     return ()
 

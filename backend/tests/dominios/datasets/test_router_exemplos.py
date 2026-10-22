@@ -17,6 +17,11 @@ def test_lista_os_exemplos_com_descricao(cliente: TestClient) -> None:
     assert [exemplo["arquivo"] for exemplo in exemplos] == ARQUIVOS
     assert exemplos[0]["descricao"] == "Pesquisa de saúde (valores fora de faixa e duplicados)"
     assert all(exemplo["descricao"] for exemplo in exemplos)
+    # Spec 16: tom neutro, com os termos do Detector ("dados inseridos").
+    assert [exemplo["descricao"] for exemplo in exemplos[1:3]] == [
+        "Alturas reais (sem dados inseridos)",
+        "Alturas com dados inseridos",
+    ]
 
 
 @pytest.mark.parametrize("arquivo", ARQUIVOS)

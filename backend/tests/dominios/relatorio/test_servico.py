@@ -128,7 +128,7 @@ def test_coluna_de_datas_so_aparece_nos_tipos(
 
     html = servico.gerar(dataset_id, PedidoRelatorio(secoes=("tipos", "analises")))
 
-    assert "Data ou hora (ignorada)" in html
+    assert "Data ou hora (fora das análises)" in html
     assert 'Análise de <span class="mono">quando</span>' not in html
     assert 'Análise de <span class="mono">peso</span>' in html
 

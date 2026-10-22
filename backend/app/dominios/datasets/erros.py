@@ -94,8 +94,8 @@ def acao_incompativel(coluna: str | None, motivo: str) -> EntradaInvalida:
 def colunas_incompativeis(coluna: str) -> EntradaInvalida:
     return EntradaInvalida(
         "COLUNAS_INCOMPATIVEIS",
-        f"O dataset não tem a coluna {coluna}.",
-        'Use "Usar como novo dataset".',
+        f"O arquivo atual não tem a coluna {coluna}.",
+        'Use "Usar como novo arquivo".',
     )
 
 
