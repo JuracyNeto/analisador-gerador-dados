@@ -87,6 +87,9 @@ def test_mini_relatorio_completo(servico: ServicoRelatorio, dataset_id: str) -> 
     assert html.count("Plotly.newPlot(") == 11
     assert "cdn.plot.ly/plotly-" in html
     assert '<dd class="mono">-' not in html  # negativos com o sinal de menos (−)
+    for rotulo in ("Coeficiente de variação", "Amplitude interquartil (IQR)"):
+        assert rotulo in html  # os mesmos rótulos da tela 4
+    assert "<dt>CV</dt>" not in html
     assert "inteligência artificial" not in html.lower()
 
 
@@ -113,7 +116,7 @@ def test_sem_limpeza_avisa(servico: ServicoRelatorio, servico_datasets: ServicoD
 
     html = servico.gerar(dataset_id, PedidoRelatorio(secoes=("limpeza", "tipos")))
 
-    assert "Nenhuma ação de limpeza foi aplicada." in html
+    assert "Não aplicamos nenhuma ação de limpeza." in html
     assert "Tipo escolhido por você." in html
 
 
@@ -246,6 +249,8 @@ def test_bivariada_com_notas(servico: ServicoRelatorio, servico_datasets: Servic
     titulo_par = '<span class="mono">nota_p2</span> em função de <span class="mono">nota_p1</span>'
     assert titulo_par in html
     assert "Ŷ = " in html
+    assert "Correlação de Pearson (r)" in html  # o rótulo da tela 5
+    assert "Correlação positiva forte" in html
     assert "Fórmulas usadas" not in html  # as fórmulas ficam no apêndice (D151)
     assert html.count("Plotly.newPlot(") >= 2
     com_formulas = servico.gerar(dataset_id, PedidoRelatorio(secoes=("bivariada", "formulas")))
@@ -260,7 +265,7 @@ def test_bivariada_com_uma_coluna_numerica(
 
     html = servico.gerar(dataset_id, PedidoRelatorio(secoes=("bivariada",)))
 
-    assert "Precisa de pelo menos duas colunas numéricas" in html
+    assert "A matriz precisa de pelo menos duas colunas numéricas" in html
     assert "Plotly.newPlot(" not in html
 
 

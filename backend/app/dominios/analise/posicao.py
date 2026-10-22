@@ -58,12 +58,13 @@ def _fora(valor: float, minimo: float, maximo: float) -> Literal["abaixo", "acim
     return "acima" if valor > maximo else None
 
 
-def _aviso_fora(fora: str | None, minimo: float, maximo: float) -> str:
+def _menores(fora: str | None, pr: float) -> str:
+    """Quantos dados ficam abaixo; o aviso "fora da faixa" fica com a tela (banner)."""
     if fora == "abaixo":
-        return f" O valor está abaixo do menor dado observado ({formatar_numero(minimo)})."
+        return "Nenhum dado é menor que ele."
     if fora == "acima":
-        return f" O valor está acima do maior dado observado ({formatar_numero(maximo)})."
-    return ""
+        return "Todos os dados são menores que ele."
+    return f"Cerca de {round(pr)}% dos dados são menores que ele."
 
 
 def calcular_posicao(valores: np.ndarray, valor: float, tipo: TipoSeparatriz) -> Posicao:
@@ -77,8 +78,7 @@ def calcular_posicao(valores: np.ndarray, valor: float, tipo: TipoSeparatriz) ->
     regiao = _regiao(tipo, indice)
     frase = (
         f"O valor {formatar_numero(valor)} está no {regiao} ({_trecho(inferior, superior)}). "
-        f"Cerca de {round(pr)}% dos dados são menores que ele."
-        f"{_aviso_fora(fora, minimo, maximo)}"
+        f"{_menores(fora, pr)}"
     )
     marcas = tuple(m for m in todas if m.rotulo in DESTAQUES) if tipo == "percentil" else todas
     return Posicao(

@@ -101,14 +101,16 @@ def test_frase_conjunta_completa() -> None:
     )
 
     assert frase == (
-        "Distribuição aproximadamente simétrica e mesocúrtica; compatível com a Normal (p = 0,399)."
+        "Distribuição aproximadamente simétrica e mesocúrtica; compatível com a Normal "
+        "(chance de acontecer por acaso: cerca de 1 em 3)."
     )
 
 
 def test_frase_conjunta_com_partes() -> None:
     assert (
         textos_forma.frase_conjunta(("forte", "esquerda"), None, ("Normal", REPROVADO))
-        == "Distribuição fortemente assimétrica à esquerda; se afasta da Normal (p < 0,001)."
+        == "Distribuição fortemente assimétrica à esquerda; se afasta da Normal "
+        "(chance de acontecer por acaso: menos de 1 em 1.000)."
     )
     assert (
         textos_forma.frase_conjunta(("moderada", "direita"), "leptocurtica", None)

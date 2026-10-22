@@ -137,7 +137,7 @@ def resumo_caixa(caixa: ResumoCaixa) -> str:
 def resumo_acumulada(dados: DadosUnivariados) -> str:
     """Onde a frequência acumulada chega a 50%."""
     metade = next(b for b in dados.barras if (b.acumulado_pct or 0) >= METADE_PCT)
-    return f"Metade dos valores chega até {metade.rotulo}."
+    return f"A metade dos valores é alcançada na classe {metade.rotulo}, onde está a mediana."
 
 
 RESUMOS_CURVA = {

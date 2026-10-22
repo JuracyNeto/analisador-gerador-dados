@@ -46,14 +46,16 @@ def test_um_valor_so_nao_tem_variancia(criar_amostra: CriarAmostra) -> None:
 def test_media_zero_nao_tem_cv(criar_amostra: CriarAmostra) -> None:
     resultado = _dispersao(criar_amostra, TipoVariavel.CONTINUA, [-1.0, 1.0])
 
-    assert resultado.cv.motivo == "O CV não pode ser calculado porque a média é zero."
+    assert resultado.cv.motivo == "Coeficiente de variação não se aplica: a média é zero."
 
 
 def test_cv_com_negativos_avisa(criar_amostra: CriarAmostra) -> None:
     resultado = _dispersao(criar_amostra, TipoVariavel.CONTINUA, [-2.0, 4.0, 6.0])
 
     assert resultado.cv.interpretacao is not None
-    assert resultado.cv.interpretacao.endswith("CV pouco interpretável com valores negativos.")
+    assert resultado.cv.interpretacao.endswith(
+        "Com valores negativos, o coeficiente de variação perde o sentido; use o desvio padrão."
+    )
 
 
 def test_valores_iguais_nao_tem_dispersao(criar_amostra: CriarAmostra) -> None:

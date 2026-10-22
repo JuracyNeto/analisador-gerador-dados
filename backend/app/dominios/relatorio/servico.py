@@ -112,12 +112,12 @@ def _medidas(analise: Analise) -> tuple[ItemMedida, ...]:
         candidatas += [
             ("Desvio padrão", disp.desvio_padrao, ""),
             ("Variância", disp.variancia, ""),
-            ("CV", disp.cv, "%"),
-            ("IQR", disp.iqr, ""),
+            ("Coeficiente de variação", disp.cv, "%"),
+            ("Amplitude interquartil (IQR)", disp.iqr, ""),
             ("Amplitude", disp.amplitude, ""),
         ]
     itens = _itens(candidatas)
-    modas = ", ".join(_valor(v) for v in tend.moda.valores) or "não há (amodal)"
+    modas = ", ".join(_valor(v) for v in tend.moda.valores) or "Sem moda"
     return (*itens[:2], ItemMedida("Moda", modas), *itens[2:])
 
 
@@ -253,7 +253,7 @@ def pares_mais_fortes(
 def _medidas_par(bivariada: Bivariada) -> tuple[ItemMedida, ...]:
     reta = bivariada.regressao
     selo = textos.selo_correlacao(bivariada.forca, bivariada.sentido)
-    pearson = ItemMedida("r de Pearson", _valor(bivariada.pearson.valor), selo)
+    pearson = ItemMedida("Correlação de Pearson (r)", _valor(bivariada.pearson.valor), selo)
     p_valor = bivariada.teste_t.valor
     teste = ItemMedida("Teste t", formatar_p_valor(p_valor) if isinstance(p_valor, float) else "")
     candidatas = [("ρ de Spearman", bivariada.spearman, ""), ("R²", reta.r2, "%")]

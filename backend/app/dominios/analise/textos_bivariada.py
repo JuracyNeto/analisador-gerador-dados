@@ -11,7 +11,9 @@ __all__ = ["Forca", "Sentido"]
 
 LIMIAR_FRACA = 0.3
 CASAS_MATRIZ = 2
-SEM_PARES = "Precisa de pelo menos duas colunas numéricas para montar a matriz."
+SEM_PARES = (
+    "A matriz precisa de pelo menos duas colunas numéricas. Confira os tipos na etapa Variáveis."
+)
 
 
 def numero(valor: float) -> str:

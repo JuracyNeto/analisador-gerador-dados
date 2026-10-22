@@ -60,7 +60,9 @@ def test_complementares_nao_sao_recomendadas() -> None:
     _, boxplot, ogiva = figuras_univariadas(_dados(TipoVariavel.CONTINUA, CLASSES, VALORES))
 
     assert not boxplot.recomendado
-    assert ogiva.resumo == "Metade dos valores chega até 3,9 ⊢ 5,8."
+    assert (
+        ogiva.resumo == "A metade dos valores é alcançada na classe 3,9 ⊢ 5,8, onde está a mediana."
+    )
 
 
 def test_titulo_com_n_grande_usa_ponto_de_milhar() -> None:

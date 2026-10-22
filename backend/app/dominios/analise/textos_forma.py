@@ -2,6 +2,7 @@
 
 from app.compartilhado.estatistica import ALFA
 from app.compartilhado.numeros import formatar_numero, formatar_p_valor
+from app.compartilhado.textos import p_valor_em_palavras
 from app.compartilhado.tipos import TipoVariavel
 from app.dominios.analise.resultados import (
     ClasseAssimetria,
@@ -138,10 +139,11 @@ def _descrever_assimetria(assimetria: Assimetria) -> str:
 
 def _descrever_aderencia(aderencia: Aderencia) -> str:
     nome, teste = aderencia
-    p = formatar_p_valor(teste.p_valor)
+    # Spec 16, princípio 4: o p traduzido; o "p = 0,21" fica no card e no cálculo.
+    acaso = f"chance de acontecer por acaso: {p_valor_em_palavras(teste.p_valor)}"
     if teste.compativel:
-        return f"compatível com a {nome} ({p})"
-    return f"se afasta da {nome} ({p})"
+        return f"compatível com a {nome} ({acaso})"
+    return f"se afasta da {nome} ({acaso})"
 
 
 def frase_conjunta(

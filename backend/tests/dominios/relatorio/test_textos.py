@@ -19,7 +19,7 @@ def test_descrever_leitura_de_txt() -> None:
 
     assert descrever_leitura(dados) == (
         "Arquivo de texto separado por ponto e vírgula, decimal com vírgula, codificação UTF-8 "
-        "e cabeçalho na primeira linha. Foram lidas 230 linhas e 8 colunas."
+        "e cabeçalho na primeira linha. Lemos 230 linhas e 8 colunas."
     )
 
 
@@ -27,7 +27,7 @@ def test_descrever_leitura_de_planilha() -> None:
     dados = DadosLeitura("xlsx", None, None, None, 1, 1, 1)
 
     assert descrever_leitura(dados) == (
-        "Planilha do Excel com cabeçalho na primeira linha. Foram lidas 1 linha e 1 coluna."
+        "Planilha do Excel com cabeçalho na primeira linha. Lemos 1 linha e 1 coluna."
     )
 
 
@@ -65,9 +65,9 @@ def test_selo_assimetria(classe: str, sentido: str | None, esperado: str) -> Non
 @pytest.mark.parametrize(
     ("forca", "sentido", "esperado"),
     [
-        ("forte", "positiva", "Positiva forte"),
-        ("moderada", "nula", "Fraca"),
-        ("fraca", "negativa", "Fraca"),
+        ("forte", "positiva", "Correlação positiva forte"),
+        ("moderada", "nula", "Correlação fraca"),
+        ("fraca", "negativa", "Correlação fraca"),
     ],
 )
 def test_selo_correlacao(forca: str, sentido: str, esperado: str) -> None:

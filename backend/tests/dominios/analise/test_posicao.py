@@ -30,11 +30,20 @@ def test_valor_igual_a_q1_fica_no_primeiro_quartil() -> None:
     assert "(até Q1 = 3,25)" in posicao.frase
 
 
-def test_valor_abaixo_do_minimo_avisa() -> None:
+def test_valor_abaixo_do_minimo_avisa_sem_repetir_o_aviso_na_frase() -> None:
+    """O aviso "fora da faixa" fica com a tela (banner); a frase diz quantos dados ficam abaixo."""
     posicao = calcular_posicao(np.array(UM_A_DEZ), 0.0, "quartil")
 
     assert posicao.fora_da_faixa == "abaixo"
-    assert posicao.frase.endswith("O valor está abaixo do menor dado observado (1).")
+    assert posicao.frase.endswith("Nenhum dado é menor que ele.")
+    assert "observado" not in posicao.frase
+
+
+def test_valor_acima_do_maximo_diz_todos() -> None:
+    posicao = calcular_posicao(np.array(UM_A_DEZ), 200.0, "quartil")
+
+    assert posicao.fora_da_faixa == "acima"
+    assert posicao.frase.endswith("Todos os dados são menores que ele.")
 
 
 def test_decil_acima_do_ultimo() -> None:

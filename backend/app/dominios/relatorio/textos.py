@@ -1,7 +1,7 @@
 """Frases do relatório (spec 13 e 16)."""
 
 from app.compartilhado.numeros import formatar_inteiro
-from app.compartilhado.textos import juntar_lista, pluralizar, quantidade
+from app.compartilhado.textos import juntar_lista, quantidade
 from app.dominios.relatorio.conteudo import DadosLeitura
 
 FORMATOS = {
@@ -28,7 +28,7 @@ TIPOS_LEGIVEIS = {
     "identificador": "Identificador (ignorada)",
     "data": "Data ou hora (ignorada)",
 }
-SEM_LIMPEZA = "Nenhuma ação de limpeza foi aplicada."
+SEM_LIMPEZA = "Não aplicamos nenhuma ação de limpeza."
 TITULOS_SECOES = {
     "leitura": "Leitura do arquivo",
     "tipos": "Tipos de variável",
@@ -47,10 +47,6 @@ GRUPOS_FORMULAS = {
     "detector": "Detector",
 }
 EM_TODAS_AS_COLUNAS = "em todas as colunas"
-
-
-def _quantidade(n: int, singular: str, plural: str) -> str:
-    return f"{formatar_inteiro(n)} {pluralizar(n, singular, plural)}"
 
 
 def _texto_cabecalho(linha: int) -> str:
@@ -74,17 +70,17 @@ def descrever_leitura(dados: DadosLeitura) -> str:
         partes[0] = f"com {partes[0]}"
     inicio = FORMATOS.get(dados.formato, "Arquivo")
     descricao = f"{inicio} {juntar_lista(partes)}." if partes else f"{inicio}."
-    linhas = _quantidade(dados.n_linhas, "linha", "linhas")
-    colunas = _quantidade(dados.n_colunas, "coluna", "colunas")
-    return f"{descricao} Foram lidas {linhas} e {colunas}."
+    linhas = quantidade(dados.n_linhas, "linha", "linhas")
+    colunas = quantidade(dados.n_colunas, "coluna", "colunas")
+    return f"{descricao} Lemos {linhas} e {colunas}."
 
 
 def subtitulo(nome_arquivo: str, n_linhas: int, n_linhas_original: int, n_colunas: int) -> str:
     """Ex.: "pesquisa_saude.txt · 227 linhas após limpeza × 8 colunas"."""
-    linhas = _quantidade(n_linhas, "linha", "linhas")
+    linhas = quantidade(n_linhas, "linha", "linhas")
     if n_linhas != n_linhas_original:
         linhas += " após limpeza"
-    return f"{nome_arquivo} · {linhas} × {_quantidade(n_colunas, 'coluna', 'colunas')}"
+    return f"{nome_arquivo} · {linhas} × {quantidade(n_colunas, 'coluna', 'colunas')}"
 
 
 ROTULOS_FORMA = {
@@ -125,7 +121,7 @@ TIPOS_GERACAO = {
 def subtitulo_gerador(tipo: str, n: int, semente: int) -> str:
     """Ex.: "Univariado · 500 valores · semente 42"; no bivariado, "300 pares"."""
     nome, singular, plural = TIPOS_GERACAO[tipo]
-    return f"{nome} · {_quantidade(n, singular, plural)} · semente {semente}"
+    return f"{nome} · {quantidade(n, singular, plural)} · semente {semente}"
 
 
 def cabecalho_comparacao(n: int) -> tuple[str, ...]:
@@ -134,10 +130,10 @@ def cabecalho_comparacao(n: int) -> tuple[str, ...]:
 
 
 def selo_correlacao(forca: str, sentido: str) -> str:
-    """Como o selo da tela Bivariada: "Positiva forte", "Fraca"."""
+    """Como o selo da tela Bivariada: "Correlação positiva forte", "Correlação fraca"."""
     if forca == "fraca" or sentido == "nula":
-        return "Fraca"
-    return f"{sentido.capitalize()} {forca}"
+        return "Correlação fraca"
+    return f"Correlação {sentido} {forca}"
 
 
 # Spec 16: ícone + palavra (a cor vem do CSS; o selo não depende só dela).
@@ -159,9 +155,9 @@ ROTULOS_DETALHES = {
 def contadores_severidade(alta: int, atencao: int, info: int) -> str:
     """Ex.: "2 suspeitas altas · 2 de atenção · 1 informativo" (os contadores da tela 7)."""
     partes = (
-        _quantidade(alta, "suspeita alta", "suspeitas altas"),
+        quantidade(alta, "suspeita alta", "suspeitas altas"),
         f"{formatar_inteiro(atencao)} de atenção",
-        _quantidade(info, "informativo", "informativos"),
+        quantidade(info, "informativo", "informativos"),
     )
     return " · ".join(partes)
 
