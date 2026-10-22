@@ -216,7 +216,9 @@ class AlvoCopias:
         return self.periodos.n
 
     def linha_como_texto(self, posicao: int) -> str:
-        return textos.linha_como_texto([coluna.textos[posicao] for coluna in self.colunas])
+        return textos.linha_como_texto(
+            [(coluna.nome, coluna.textos[posicao]) for coluna in self.colunas]
+        )
 
 
 @dataclass(frozen=True, slots=True)

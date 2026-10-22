@@ -86,8 +86,8 @@ export const avisoR5 = criarAviso({
     'Encontramos 3 linhas iguais a outras do arquivo; as linhas 44 a 47 são iguais e seguidas.',
   exemplo: {
     linhas: [44, 45, 46, 47],
-    valores: ['M · 39 · 1,9', 'M · 39 · 1,9', 'M · 39 · 1,9', 'M · 39 · 1,9'],
-    texto: 'Linhas 44 a 47: M · 39 · 1,9',
+    valores: linhasDe(44, 47).map(() => 'sexo M · idade 39 · altura_m 1,9'),
+    texto: 'Linhas 44 a 47: sexo M · idade 39 · altura_m 1,9',
   },
 });
 

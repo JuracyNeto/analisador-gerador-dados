@@ -1,6 +1,7 @@
 """Textos do detector (spec 16, ADR 0005): tom neutro, número com contexto, p em palavras.
 
-Nenhuma regra monta texto fora deste módulo (D118).
+Nenhuma regra monta texto fora deste módulo, de `textos_blocos.py` e de `textos_duplicatas.py`
+(D118).
 """
 
 from collections.abc import Sequence
@@ -18,7 +19,6 @@ from app.compartilhado.textos import (
     pluralizar,
     quantidade,
 )
-from app.dominios.detector.duplicatas import ContraOAcaso
 from app.dominios.detector.resultados import DetalhesAviso, TextosAviso
 
 MAX_ITENS_TEXTO = 8
@@ -106,6 +106,27 @@ def poucos_valores_diferentes(k: int) -> str:
 def fora_os_zeros(motivo: str) -> str:
     """R4 e R9 não olham os zeros (D134): "…; a coluna tem 40, fora os zeros"."""
     return f"{motivo}, fora os zeros"
+
+
+SEPARADOR_CELULAS = " · "
+
+
+def poucas_linhas(minimo: int, n: int) -> str:
+    return (
+        f"precisa de {formatar_inteiro(minimo)} linhas ou mais; o arquivo tem {formatar_inteiro(n)}"
+    )
+
+
+def linha_como_texto(celulas: Sequence[tuple[str, str | None]]) -> str:
+    """Uma linha do arquivo, com o nome das colunas (D171).
+
+    "sexo F · idade 34 · peso_kg 58,2"; as vazias no fim: "peso_kg 70,1 (sexo e idade vazias)".
+    """
+    preenchidas = SEPARADOR_CELULAS.join(f"{nome} {texto}" for nome, texto in celulas if texto)
+    vazias = [nome for nome, texto in celulas if not texto]
+    if not vazias:
+        return preenchidas
+    return f"{preenchidas} ({juntar_lista(vazias)} {pluralizar(len(vazias), 'vazia', 'vazias')})"
 
 
 SEM_NUMERICAS = "o arquivo não tem colunas numéricas"
@@ -344,127 +365,6 @@ def r03_detalhes(proporcao: float, k: int, passo: int, p: float) -> DetalhesAvis
         p_valor=p,
         p_em_palavras=p_em_palavras(p),
     )
-
-
-# R5 — Duplicatas ----------------------------------------------------------------------------
-
-SO_IDENTIFICADORES = "o arquivo só tem identificadores"
-POUCAS_COLUNAS = "precisa de 2 colunas ou mais (fora os identificadores)"
-SEM_VALOR = "—"
-SEPARADOR_CELULAS = " · "
-
-
-def poucas_linhas(minimo: int, n: int) -> str:
-    return (
-        f"precisa de {formatar_inteiro(minimo)} linhas ou mais; o arquivo tem {formatar_inteiro(n)}"
-    )
-
-
-def linha_como_texto(celulas: Sequence[str | None]) -> str:
-    """Uma linha do arquivo: "F · 34 · 1,62 · 58,2"."""
-    return SEPARADOR_CELULAS.join(SEM_VALOR if celula is None else celula for celula in celulas)
-
-
-def r05_texto_exemplo(linhas: Sequence[int], primeira: str) -> str:
-    """ "Linhas 44 a 47: F · 34 · …" (as linhas são iguais: mostra uma só)."""
-    return f"{faixa_de_linhas(linhas)}: {primeira}"
-
-
-def r05_texto_exemplo_quase(linhas: Sequence[int], primeira: str) -> str:
-    return f"{faixa_de_linhas(linhas)} (quase iguais): {primeira}"
-
-
-def _iguais(k: int, grupos_quase: int) -> str:
-    """ "iguais" ou, se algum grupo só é quase igual, "iguais ou quase iguais"."""
-    igual = pluralizar(k, "igual", "iguais")
-    return f"{igual} ou quase {igual}" if grupos_quase else igual
-
-
-def r05_textos(copias: int, grupos_quase: int, seguidas: tuple[int, int] | None) -> TextosAviso:
-    """ "Encontramos {k} linhas iguais (ou quase), {em_sequencia}." (spec 16)."""
-    linhas = quantidade(copias, "linha", "linhas")
-    outras = pluralizar(copias, "outra", "outras")
-    sequencia = (
-        f"; as linhas {seguidas[0]} a {seguidas[1]} são {_iguais(2, grupos_quase)} e seguidas"
-        if seguidas
-        else ""
-    )
-    return TextosAviso(
-        titulo="Linhas iguais em sequência" if seguidas else "Linhas repetidas no arquivo",
-        resumo=(
-            f"Encontramos {linhas} {_iguais(copias, grupos_quase)} a {outras} do arquivo"
-            f"{sequencia}."
-        ),
-        por_que=(
-            "Cópias seguidas costumam surgir de 'copiar e colar'."
-            if seguidas
-            else "Linhas repetidas podem ter sido copiadas de outras partes do arquivo."
-        ),
-        pode_ser_normal="…são registros legítimos repetidos (ex.: a mesma compra).",
-        o_que_fazer=(
-            "Confira se essas linhas são registros diferentes; "
-            "se forem cópias, remova os duplicados na etapa Limpeza."
-        ),
-    )
-
-
-def r05_formula_quase(numericas: int) -> str:
-    return (
-        "Quase iguais: distância entre as linhas padronizadas < 0,01·√p "
-        f"(p = {numericas} colunas numéricas) e as demais colunas iguais; "
-        "contam quando passam do acaso, estimado pelos pares vizinhos na precisão de cada coluna"
-    )
-
-
-R05_FORMULA_IDENTICAS = "Só linhas idênticas"
-
-
-R05_TESTES = {
-    "iguais": (
-        "Poisson: pares de linhas iguais × acaso (densidade local)",
-        "par igual",
-        "pares iguais",
-    ),
-    "quase": (
-        "Poisson: pares quase iguais × acaso (densidade local)",
-        "par quase igual",
-        "pares quase iguais",
-    ),
-    "seguidas": (
-        "Poisson: linhas iguais seguidas × acaso (ordem aleatória)",
-        "trinca seguida",
-        "trincas seguidas",
-    ),
-}
-
-
-def r05_detalhes(
-    copias: int, grupos: int, formula: str, tipo: str, acaso: ContraOAcaso
-) -> DetalhesAviso:
-    """Detalhes com a comparação com o acaso que justificou o aviso (D120)."""
-    teste, singular, plural = R05_TESTES[tipo]
-    return DetalhesAviso(
-        medida="Linhas iguais ou quase iguais em todas as colunas (fora os identificadores)",
-        valor=(
-            f"{quantidade(copias, 'cópia', 'cópias')} em {quantidade(grupos, 'grupo', 'grupos')}"
-            f" · {quantidade(acaso.observados, singular, plural)} "
-            f"(o acaso daria {numero(acaso.esperados)})"
-        ),
-        limiar=(
-            "Repetições além do acaso, p < 0,01 (atenção); "
-            "3 linhas iguais seguidas, improváveis ao acaso (suspeita alta)"
-        ),
-        teste=teste,
-        formula=formula,
-        p_valor=acaso.p_valor,
-        p_em_palavras=p_em_palavras(acaso.p_valor),
-    )
-
-
-def r05_ressalva(n: int, limite: int) -> tuple[str, str]:
-    """(motivo, frase) das quase duplicatas não verificadas em arquivos grandes (D120)."""
-    motivo = f"o arquivo tem {formatar_inteiro(n)} linhas e o limite é {formatar_inteiro(limite)}"
-    return motivo, f"Quase duplicatas não verificadas: {motivo}."
 
 
 # Resumo -------------------------------------------------------------------------------------
