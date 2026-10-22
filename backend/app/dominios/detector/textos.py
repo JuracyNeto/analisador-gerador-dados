@@ -20,6 +20,7 @@ from app.compartilhado.textos import (
     quantidade,
 )
 from app.dominios.detector.resultados import DetalhesAviso, TextosAviso
+from app.dominios.detector.tabela import ColunaDetector
 
 MAX_ITENS_TEXTO = 8
 MIN_LINHAS_FAIXA = 3
@@ -127,11 +128,12 @@ def poucas_linhas(minimo: int, n: int) -> str:
     )
 
 
-def linha_como_texto(celulas: Sequence[tuple[str, str | None]]) -> str:
-    """Uma linha do arquivo, com o nome das colunas (D171).
+def linha_como_texto(colunas: Sequence[ColunaDetector], posicao: int) -> str:
+    """A linha na `posicao` das colunas, com o nome delas (R5, R6; D171).
 
     "sexo F · idade 34 · peso_kg 58,2"; as vazias no fim: "peso_kg 70,1 (sexo e idade vazias)".
     """
+    celulas = [(coluna.nome, coluna.textos[posicao]) for coluna in colunas]
     preenchidas = SEPARADOR_CELULAS.join(f"{nome} {texto}" for nome, texto in celulas if texto)
     vazias = [nome for nome, texto in celulas if not texto]
     if not vazias:

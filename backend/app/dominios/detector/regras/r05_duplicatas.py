@@ -58,9 +58,7 @@ class AlvoArquivo:
         return self.linhas_no_arquivo <= LIMITE_QUASE and self.n_numericas > 0
 
     def linha_como_texto(self, posicao: int) -> str:
-        return textos.linha_como_texto(
-            [(coluna.nome, coluna.textos[posicao]) for coluna in self.colunas]
-        )
+        return textos.linha_como_texto(self.colunas, posicao)
 
 
 @dataclass(frozen=True, slots=True)
