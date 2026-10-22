@@ -50,7 +50,8 @@ export const avisoR1 = criarAviso({
   exemplo: {
     linhas: linhasDe(181, 200),
     valores: linhasDe(181, 200).map(() => '1,7'),
-    texto: 'Linhas 181 a 200: média 1,702 (resto 1,702) · DP 0,09034 (resto 0,09036)',
+    texto:
+      'Linhas 181 a 200: média 1,702 (restante 1,702) · desvio padrão 0,09034 (restante 0,09036)',
   },
   detalhes: {
     medida:

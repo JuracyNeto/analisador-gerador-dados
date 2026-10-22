@@ -66,7 +66,7 @@ def test_bloco_alinhado_nos_pesos(plantadas: dict[Any, dict[str, Any]]) -> None:
     assert aviso["severidade"] == "alta"
     assert aviso["exemplo"]["linhas"] == list(range(181, 201))
     assert aviso["exemplo"]["texto"] == (
-        "Linhas 181 a 200: média 71,26 (resto 71,26) · DP 12,01 (resto 12,01)"
+        "Linhas 181 a 200: média 71,26 (restante 71,26) · desvio padrão 12,01 (restante 12,01)"
     )
     assert aviso["detalhes"]["valor"] == "dᵤ = 0 · dₛ = 0"
     assert aviso["detalhes"]["p_valor"] == 0.0

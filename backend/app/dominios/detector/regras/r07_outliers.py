@@ -45,6 +45,10 @@ class MedicaoDistantes:
     def cercas(self, fator: float) -> tuple[float, float]:
         return _cercas(self.q1, self.q3, fator, self.mc)
 
+    def cercas_de_tukey(self, fator: float) -> tuple[float, float]:
+        """Sem o ajuste à assimetria: as da etapa Limpeza (com fator 1,5)."""
+        return _cercas(self.q1, self.q3, fator, 0.0)
+
 
 def _cercas(q1: float, q3: float, fator: float, mc: float) -> tuple[float, float]:
     """[Q1 − fator·e^(−4·MC)·IQR, Q3 + fator·e^(3·MC)·IQR] com MC ≥ 0 (espelhado com MC < 0).
@@ -74,6 +78,18 @@ def _quartis(valores: np.ndarray) -> tuple[float, float]:
 def _centro_varia(alvo: base.AlvoColuna) -> str | None:
     q1, q3 = _quartis(alvo.valores)
     return textos.METADE_CENTRAL_IGUAL if q1 == q3 else None
+
+
+def _exemplo_com_criterio(medicao: MedicaoDistantes, exemplo: float) -> str:
+    """O exemplo e o que o marcou: a cerca (de Tukey ou alargada) ou só |z| > 3."""
+    baixo, alto = medicao.cercas(FATOR_MODERADO)
+    if baixo <= exemplo <= alto:
+        return textos.r07_exemplo_pelo_z(exemplo)
+    lado = 1 if exemplo > alto else 0
+    limite = (baixo, alto)[lado]
+    if math.isclose(limite, medicao.cercas_de_tukey(FATOR_MODERADO)[lado]):
+        return textos.r07_exemplo_fora(exemplo, limite)
+    return textos.r07_exemplo_fora_ajustado(exemplo, limite)
 
 
 class RegraOutliers(base.RegraBase[base.AlvoColuna, MedicaoDistantes]):
@@ -112,7 +128,7 @@ class RegraOutliers(base.RegraBase[base.AlvoColuna, MedicaoDistantes]):
             severidade=Severidade.ATENCAO if extremos else Severidade.INFO,
             colunas=(alvo.nome,),
             textos=textos.r07_textos(
-                alvo.nome, int(distantes.sum()), exemplo, alto if exemplo > medicao.q3 else baixo
+                alvo.nome, int(distantes.sum()), _exemplo_com_criterio(medicao, exemplo)
             ),
             exemplo=exemplo_de_valores(alvo.linhas[distantes], alvo.valores[distantes]),
             detalhes=textos.r07_detalhes(

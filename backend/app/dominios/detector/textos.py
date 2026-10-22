@@ -121,19 +121,36 @@ METADE_CENTRAL_IGUAL = "a metade central dos valores é toda igual"
 # R7 — Valores distantes ---------------------------------------------------------------------
 
 
-def r07_textos(coluna: str, k: int, exemplo: float, limite: float) -> TextosAviso:
-    """ "{k} valores de {col} estão muito longe dos demais (ex.: {v})" (spec 16)."""
+def r07_exemplo_fora(exemplo: float, limite: float) -> str:
+    """Exemplo fora da cerca de 1,5·IQR, a mesma da etapa Limpeza: "(ex.: 712); o limite…"."""
+    return f"(ex.: {valor(exemplo)}); o limite usual seria {numero(limite)}"
+
+
+def r07_exemplo_fora_ajustado(exemplo: float, limite: float) -> str:
+    """Exemplo fora da cerca alargada pela cauda longa (D136), que a etapa Limpeza não usa."""
+    limite_ajustado = f"o limite, ajustado à assimetria da coluna, seria {numero(limite)}"
+    return f"(ex.: {valor(exemplo)}); {limite_ajustado}"
+
+
+def r07_exemplo_pelo_z(exemplo: float) -> str:
+    """Exemplo dentro das cercas, marcado só por |z| > 3 (achado D-a do M4.3)."""
+    return f"(ex.: {valor(exemplo)}, a mais de 3 desvios padrão da média)"
+
+
+def r07_textos(coluna: str, k: int, exemplo: str) -> TextosAviso:
+    """ "{k} valores de {col} estão muito longe dos demais (ex.: {v}); …" (spec 16).
+
+    `exemplo` diz o critério que marcou o valor (`r07_exemplo_*`).
+    """
     longe = f"{pluralizar(k, 'está', 'estão')} muito longe dos demais"
     return TextosAviso(
         titulo=f"{quantidade(k, 'valor distante', 'valores distantes')} dos demais em {coluna}",
-        resumo=(
-            f"{quantidade(k, 'valor', 'valores')} de {coluna} {longe} (ex.: {valor(exemplo)}); "
-            f"o limite usual seria {numero(limite)}."
-        ),
+        resumo=f"{quantidade(k, 'valor', 'valores')} de {coluna} {longe} {exemplo}.",
         por_que="Valores extremos podem ser erros de digitação ou casos especiais.",
         pode_ser_normal="…são casos raros, mas reais.",
         o_que_fazer=(
-            "Confira esses valores na fonte; se forem erros de digitação, corrija na etapa Limpeza."
+            "Confira esses valores na fonte; se forem erros de digitação, corrija no arquivo e "
+            "envie de novo, ou remova-os na etapa Limpeza."
         ),
     )
 
@@ -156,7 +173,8 @@ def r07_detalhes(
         ),
         formula=(
             f"IQR = Q3 − Q1 · z = (x − x̄) / s · MC = {numero(mc)} (medcouple); "
-            "com MC > 0 a cerca de cima vai a Q3 + k·e^(3·MC)·IQR, nunca abaixo de Q3 + k·IQR"
+            "com MC > 0 a cerca de cima vai a Q3 + k·e^(3·MC)·IQR, nunca abaixo de Q3 + k·IQR; "
+            "a etapa Limpeza usa as cercas sem o ajuste"
         ),
     )
 

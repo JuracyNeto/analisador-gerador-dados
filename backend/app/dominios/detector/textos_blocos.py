@@ -52,11 +52,11 @@ def r01_textos(coluna: str, k: int, linhas: tuple[int, int], diferenca: float) -
 def r01_texto_exemplo(
     linhas: tuple[int, int], bloco: tuple[float, float], resto: tuple[float, float]
 ) -> str:
-    """ "Linhas 401 a 421: média 71,12 (resto 71,12) · DP 11,94 (resto 11,94)"."""
+    """ "Linhas 401 a 421: média 71,12 (restante 71,12) · desvio padrão 11,94 (restante 11,94)"."""
     return (
         f"Linhas {linhas[0]} a {linhas[1]}: média {textos.numero(bloco[0])} "
-        f"(resto {textos.numero(resto[0])}) · DP {textos.numero(bloco[1])} "
-        f"(resto {textos.numero(resto[1])})"
+        f"(restante {textos.numero(resto[0])}) · desvio padrão {textos.numero(bloco[1])} "
+        f"(restante {textos.numero(resto[1])})"
     )
 
 
