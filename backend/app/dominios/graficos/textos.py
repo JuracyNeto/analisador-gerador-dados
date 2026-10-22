@@ -197,14 +197,14 @@ def resumo_dispersao(forca: str, sentido: str, n: int, mostrados: int) -> str:
     """Direção dos pontos (força e sentido de r) e o aviso de amostra, quando houver (D101)."""
     texto = RESUMOS_DISPERSAO.get((forca, sentido), SEM_DIRECAO)
     if mostrados < n:
-        texto += f" Mostramos {formatar_numero(mostrados)} dos {formatar_numero(n)} pontos."
+        texto += f" Mostramos {formatar_inteiro(mostrados)} dos {formatar_inteiro(n)} pontos."
     return texto
 
 
 def resumo_residuos(y: str) -> str:
     return (
-        f"Resíduo é a diferença entre o {y} real e o previsto. Pontos espalhados em volta do "
-        "zero, sem formar curva, indicam que a reta é um bom resumo da relação."
+        f"Resíduo é a diferença entre o valor real de {y} e o previsto. Pontos espalhados em "
+        "volta do zero, sem formar curva, indicam que a reta é um bom resumo da relação."
     )
 
 

@@ -74,7 +74,7 @@ export const bivariadaAlturaPeso: Esquemas['Bivariada'] = {
     {
       ...figura('residuos', 'Resíduos', false),
       titulo: 'Resíduos da regressão',
-      resumo: 'Resíduo é a diferença entre o peso_kg real e o previsto.',
+      resumo: 'Resíduo é a diferença entre o valor real de peso_kg e o previsto.',
     },
   ],
 };
