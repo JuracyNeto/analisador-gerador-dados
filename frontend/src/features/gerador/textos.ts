@@ -15,7 +15,7 @@ export const TEXTOS_GERADOR = {
     univariado: { coluna: 'Coluna do dataset', manual: 'Parâmetros manuais' },
     bivariado: { coluna: 'Par do dataset', manual: 'Parâmetros manuais' },
     semPar: 'Este arquivo tem menos de duas colunas numéricas; gere o par com parâmetros manuais.',
-  } satisfies { rotulo: string } & Record<IdAba, Record<Origem, string>>,
+  } satisfies { rotulo: string; semPar: string } & Record<IdAba, Record<Origem, string>>,
   coluna: 'Coluna',
   tipo: 'Tipo',
   tipos: {
