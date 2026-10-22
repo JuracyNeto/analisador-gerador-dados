@@ -7,9 +7,14 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e
 ### Adicionado
 - Relatório com o apêndice "Fórmulas usadas": só as fórmulas das seções incluídas, em grupos (análise por coluna, forma e distribuição, bivariada, gerador e detector), sem repetir e com as colunas em que cada uma aparece; na tela Relatório, a caixa "Fórmulas".
 - API do gerador: cada geração traz as fórmulas do método (o sorteio, a reescala, Cholesky e o ajuste exato).
+- Testes automáticos de acessibilidade (axe) nas 8 telas, no layout e nos componentes, e de contraste das cores nos dois temas.
 
 ### Alterado
 - As fórmulas saem do fim de cada coluna e da seção Bivariada do relatório e passam para o apêndice.
+- Ao trocar de etapa, o foco vai para o título, e o leitor de tela anuncia a etapa nova; ao enviar um formulário com erro, o foco vai para o primeiro campo a corrigir; "Analisar de novo" no Detector avisa o resultado.
+
+### Corrigido
+- Acessibilidade (WCAG 2.1 AA): títulos sem pular nível na Análise, na Bivariada e na Limpeza; áreas laterais com nome; o painel "Ver na tabela" sem um segundo cabeçalho de página; o balão de ajuda das abas desabilitadas não entra mais na lista de abas; "não se aplica" na tabela de frequências com contraste suficiente; borda dos campos um pouco mais escura no tema claro; com zoom de 200%, a tabela de Variáveis rola dentro dela e não alarga mais a página.
 
 ## [0.3.0] - 2026-10-16
 

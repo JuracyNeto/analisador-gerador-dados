@@ -1,5 +1,7 @@
+import { useRef } from 'react';
 import { textoDoErro } from '../../../shared/api/erros';
 import { formatarNumero } from '../../../shared/lib/formatar';
+import { useFocoNoPrimeiroErro } from '../../../shared/lib/useFocoNoPrimeiroErro';
 import Banner from '../../../shared/ui/Banner';
 import Botao from '../../../shared/ui/Botao';
 import CampoNumero from '../../../shared/ui/CampoNumero';
@@ -35,17 +37,21 @@ interface Props {
 /** Tela 5a: "Prever Y para X =" com o resultado e o aviso de extrapolação. */
 export default function PainelPrevisao({ datasetId, par }: Readonly<Props>) {
   const { texto, mudarTexto, erro, prever, consulta } = usePrevisao(datasetId, par);
+  const formulario = useRef<HTMLFormElement>(null);
+  const marcarEnvio = useFocoNoPrimeiroErro(formulario);
   const previsao = consulta.data;
 
   return (
     <Card titulo={P.titulo}>
       <div className={estilos.corpo}>
         <form
+          ref={formulario}
           className={estilos.controles}
           noValidate
           onSubmit={(evento) => {
             evento.preventDefault();
             prever();
+            marcarEnvio();
           }}
         >
           <CampoNumero rotulo={par.x} valor={texto} aoMudar={mudarTexto} erro={erro} />

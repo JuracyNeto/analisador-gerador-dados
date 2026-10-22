@@ -6,6 +6,7 @@ export const TEXTOS_LIMPEZA = {
   ajuda:
     'Encontramos alguns problemas comuns. Escolha o que fazer com cada um; nada muda até você clicar em "Aplicar limpeza".',
   carregando: 'Procurando problemas nos dados…',
+  tituloResumo: 'Resumo dos problemas',
   linhas: {
     singular: 'linha',
     plural: 'linhas',

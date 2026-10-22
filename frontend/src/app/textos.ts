@@ -5,6 +5,7 @@ export const TEXTOS_APP = {
   marcaLinha2: 'de Dados',
   simboloMarca: 'x̄',
   etapasDaAnalise: 'Etapas da análise',
+  barraLateral: 'Barra lateral',
   etapasBloqueadas: 'As etapas 2 a 8 ficam disponíveis depois que você importar um arquivo.',
   concluida: 'Concluída',
   bloqueada: 'Bloqueada',

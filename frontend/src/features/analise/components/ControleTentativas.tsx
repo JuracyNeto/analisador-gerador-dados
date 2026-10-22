@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { formatarInteiro } from '../../../shared/lib/formatar';
+import { useFocoNoPrimeiroErro } from '../../../shared/lib/useFocoNoPrimeiroErro';
 import Botao from '../../../shared/ui/Botao';
 import CampoNumero from '../../../shared/ui/CampoNumero';
 import { validarTentativas } from '../tentativas';
@@ -18,9 +19,12 @@ interface Props {
 export default function ControleTentativas({ tentativas, maximo, aoAplicar }: Readonly<Props>) {
   const [texto, setTexto] = useState(() => String(tentativas));
   const [erro, setErro] = useState<string | undefined>(undefined);
+  const formulario = useRef<HTMLFormElement>(null);
+  const marcarEnvio = useFocoNoPrimeiroErro(formulario);
 
   return (
     <form
+      ref={formulario}
       className={estilos.controle}
       noValidate
       onSubmit={(evento) => {
@@ -28,6 +32,7 @@ export default function ControleTentativas({ tentativas, maximo, aoAplicar }: Re
         const resultado = validarTentativas(texto, maximo);
         if (resultado.status === 'erro') {
           setErro(resultado.mensagem);
+          marcarEnvio();
           return;
         }
         setErro(undefined);

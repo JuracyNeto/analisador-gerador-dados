@@ -10,6 +10,7 @@ import {
   origemCidade,
   origemPar,
 } from '../../testes/fixtures/gerador';
+import { esperarSemViolacoes, TEMPO_AXE } from '../../testes/acessibilidade';
 import { DATASET_TESTE, renderizarComProvedores } from '../../testes/renderizar';
 import PaginaGerador from './PaginaGerador';
 import { TEXTOS_GERADOR } from './textos';
@@ -31,6 +32,22 @@ function renderizarPagina(rota = '/gerador', dataset: typeof DATASET_TESTE | nul
 }
 
 describe('PaginaGerador', () => {
+  it(
+    'não tem violações de acessibilidade, no formulário e no resultado',
+    async () => {
+      simularApi(ROTAS);
+      const { container, usuario } = renderizarPagina();
+      await screen.findByText(/Mesma média/);
+      await esperarSemViolacoes(container);
+
+      await usuario.click(screen.getByRole('button', { name: T.gerar }));
+      await screen.findByText(EXPLICACAO);
+
+      await esperarSemViolacoes(container);
+    },
+    TEMPO_AXE,
+  );
+
   it('abre no Univariado com a 1ª coluna e as medidas dela (6a)', async () => {
     simularApi(ROTAS);
     renderizarPagina();
@@ -86,6 +103,8 @@ describe('PaginaGerador', () => {
 
     expect(screen.getByText(T.erros.quantidade)).toBeInTheDocument();
     expect(chamadasPara(api, 'POST', '/gerador/univariado')).toHaveLength(0);
+    // O foco vai para o 1º campo com erro (o botão não diz o que corrigir).
+    expect(quantidade).toHaveFocus();
   });
 
   it('coluna nominal só preserva: "Novos parâmetros" fica desabilitado com o motivo', async () => {

@@ -7,6 +7,7 @@ import {
   analiseNominal,
   colunasPesquisa,
 } from '../../testes/fixturesAnalise';
+import { esperarSemViolacoes, TEMPO_AXE } from '../../testes/acessibilidade';
 import { DATASET_TESTE, renderizarComProvedores } from '../../testes/renderizar';
 import PaginaAnalise from './PaginaAnalise';
 import { TEXTOS_ANALISE } from './textos';
@@ -40,6 +41,20 @@ describe('PaginaAnalise', () => {
     expect(await screen.findByText('60,0 ⊢ 76,5')).toBeInTheDocument();
     expect(screen.getByLabelText('Coluna')).toHaveValue('peso_kg');
   });
+
+  it.each(['peso_kg', 'cidade'])(
+    'não tem violações de acessibilidade em nenhuma aba (%s)',
+    async (coluna) => {
+      const { container, usuario } = renderizarPagina(`/analise?coluna=${coluna}`);
+      const abas = await screen.findAllByRole('tab');
+
+      for (const aba of abas) {
+        await usuario.click(aba);
+        await esperarSemViolacoes(container);
+      }
+    },
+    TEMPO_AXE,
+  );
 
   it('o seletor lista só colunas analisáveis e escreve a escolha na URL', async () => {
     const { usuario, roteador } = renderizarPagina();

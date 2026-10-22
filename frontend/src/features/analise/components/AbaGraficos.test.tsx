@@ -18,6 +18,7 @@ describe('AbaGraficos', () => {
     expect(screen.getByText('recomendado')).toBeInTheDocument();
     expect(screen.getAllByRole('figure')).toHaveLength(3);
     expect(screen.getByText('Por que principal.')).toBeInTheDocument();
+    expect(screen.getByRole('complementary', { name: 'Sobre o gráfico' })).toBeInTheDocument();
   });
 
   it('trocar o gráfico troca o "Por que" e o resumo', async () => {

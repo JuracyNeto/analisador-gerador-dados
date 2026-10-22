@@ -23,7 +23,7 @@ const TITULO_PORQUE = (
 /** "Por que este gráfico?" e o resumo da figura ativa, à direita. */
 function CardsLaterais({ figura }: Readonly<{ figura: Figura }>) {
   return (
-    <aside className={estilos.lateral}>
+    <aside className={estilos.lateral} aria-label={G.sobreOGrafico}>
       <Card titulo={TITULO_PORQUE}>
         <p className={estilos.texto}>{figura.porque}</p>
       </Card>

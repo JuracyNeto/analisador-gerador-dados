@@ -2,6 +2,7 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { useState } from 'react';
 import { describe, expect, it } from 'vitest';
+import { esperarSemViolacoes } from '../../testes/acessibilidade';
 import Drawer from './Drawer';
 
 function Tela() {
@@ -40,6 +41,16 @@ async function abrir() {
 }
 
 describe('Drawer', () => {
+  it('aberto, não tem violações de acessibilidade nem landmarks soltos', async () => {
+    await abrir();
+
+    const dialogo = screen.getByRole('dialog');
+    expect(dialogo.tagName).toBe('DIV');
+    expect(screen.queryByRole('banner')).toBeNull();
+    expect(screen.queryByRole('contentinfo')).toBeNull();
+    await esperarSemViolacoes(document.body);
+  });
+
   it('abre como diálogo nomeado pelo título, com o foco no botão Fechar', async () => {
     await abrir();
 

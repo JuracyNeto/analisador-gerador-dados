@@ -1,6 +1,7 @@
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { expect, it } from 'vitest';
+import { esperarPaginaSemViolacoes, TEMPO_AXE } from '../../testes/acessibilidade';
 import { simularApi } from '../../testes/api';
 import { ID_DATASET, criarPagina, criarResumo } from '../../testes/fixtures/datasets';
 import { simularMatchMedia } from '../../testes/matchMedia';
@@ -23,6 +24,7 @@ it('monta barra, cabeçalho e conteúdo no <main>', async () => {
   expect(await screen.findByText('Página de importar')).toBeInTheDocument();
   expect(screen.getByRole('main')).toContainElement(screen.getByText('Página de importar'));
   expect(screen.getByRole('navigation', { name: 'Etapas da análise' })).toBeInTheDocument();
+  expect(screen.getByRole('complementary', { name: 'Barra lateral' })).toBeInTheDocument();
   expect(screen.getByText('Nenhum arquivo importado')).toBeInTheDocument();
   expect(screen.getByRole('link', { name: 'Pular para o conteúdo' })).toHaveAttribute(
     'href',
@@ -70,3 +72,26 @@ it('mostra linhas atuais × colunas do dataset da sessão', async () => {
 
   expect(await screen.findByText('227 linhas × 8 colunas')).toBeInTheDocument();
 });
+
+const ROTAS_COM_TITULO = [
+  {
+    path: '/',
+    element: <LayoutApp />,
+    children: [{ path: 'importar', element: <h1>Importar arquivo</h1> }],
+  },
+];
+
+it.each([
+  ['larga', ['(min-width: 1280px)']],
+  ['média', []],
+])(
+  'a página com o layout não tem violações de acessibilidade (tela %s)',
+  async (_tela, consultas) => {
+    simularMatchMedia(consultas);
+    renderizarComRotas(ROTAS_COM_TITULO, '/importar');
+    await screen.findByRole('heading', { level: 1, name: 'Importar arquivo' });
+
+    await esperarPaginaSemViolacoes();
+  },
+  TEMPO_AXE,
+);

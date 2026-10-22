@@ -8,6 +8,7 @@ import {
   DATASET_CRIADO,
   ID_DATASET,
 } from '../../testes/fixtures/datasets';
+import { esperarSemViolacoes, TEMPO_AXE } from '../../testes/acessibilidade';
 import { DATASET_TESTE, renderizarComProvedores } from '../../testes/renderizar';
 import PaginaImportar from './PaginaImportar';
 import { TEXTOS_IMPORTAR as T } from './textos';
@@ -39,6 +40,21 @@ async function enviarComSucesso() {
 }
 
 describe('PaginaImportar', () => {
+  it(
+    'não tem violações de acessibilidade, antes e depois do envio',
+    async () => {
+      const { container } = renderizarPagina();
+      await esperarSemViolacoes(container);
+      container.remove();
+
+      await enviarComSucesso();
+      await screen.findByRole('table', { name: 'Prévia dos dados importados' });
+
+      await esperarSemViolacoes(document.body);
+    },
+    TEMPO_AXE,
+  );
+
   it('sem arquivo (1b): área de envio e link do exemplo', () => {
     renderizarPagina();
 

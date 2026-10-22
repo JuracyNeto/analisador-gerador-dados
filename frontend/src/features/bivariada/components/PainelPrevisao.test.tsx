@@ -47,10 +47,12 @@ describe('PainelPrevisao', () => {
   it('valor inválido mostra o erro no campo e não consulta a API', async () => {
     const { usuario, api } = renderizar(previsaoDentro);
 
-    await usuario.type(screen.getByRole('textbox', { name: 'altura_m' }), 'abc');
+    const campo = screen.getByRole('textbox', { name: 'altura_m' });
+    await usuario.type(campo, 'abc');
     await usuario.click(screen.getByRole('button', { name: P.prever }));
 
     expect(screen.getByText(P.erroValor)).toBeInTheDocument();
+    expect(campo).toHaveFocus();
     expect(chamadasPara(api, 'GET', CAMINHO)).toHaveLength(0);
   });
 

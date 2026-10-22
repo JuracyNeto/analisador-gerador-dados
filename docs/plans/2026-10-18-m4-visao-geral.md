@@ -102,22 +102,23 @@ Nenhum.
 | M4.4 | `frontend/scripts/prints.ts` + `npm run prints` (fora do CI) |
 
 ## Decisões previstas (entram em `docs/decisions.md` no bloco indicado; use o próximo número livre)
-Escolhas do usuário em 18/10/2026, ao aprovar o plano: fórmulas só no apêndice (D151), relatório final em Markdown (D156), `axe-core` e `playwright-core` como dependências de desenvolvimento (D153, D155).
+Escolhas do usuário em 18/10/2026, ao aprovar o plano: fórmulas só no apêndice (D151), relatório final em Markdown (D157), `axe-core` e `playwright-core` como dependências de desenvolvimento (D153, D156).
 
 | # | Decisão | Bloco |
 |---|---|---|
 | D150 | R1 sem o começo do arquivo de qualquer tamanho (no começo e no meio, só janelas de k linhas; o fim como na D148), com as medições das duas alternativas (escolha do usuário em 18/10/2026) | M4.0 ✓ |
 | D151 | Apêndice de fórmulas como 9ª seção (`formulas`, caixa "Fórmulas" do print 8a), só com as fórmulas das seções incluídas, agrupadas e sem repetir; as listas por coluna e da Bivariada saem (o apêndice as substitui) | M4.1 |
 | D152 | `Formula` em `compartilhado/tipos.py` (value object usado por análise, gerador e relatório); catálogo do gerador por método em `gerador/formulas.py` e `Gerado.formulas` na API; detector usa a fórmula em texto dos alertas | M4.1 |
-| D153 | Acessibilidade testada com o axe (`axe-core` em dev) em cada tela e componente; contraste dos tokens testado à parte (o jsdom não mede cor) | M4.2 |
-| D154 | Foco no título da etapa ao trocar de rota e `prefers-reduced-motion` sem animações (achados previstos da auditoria; a numeração final segue o que a auditoria achar) | M4.2 |
-| D155 | Prints reproduzíveis com `playwright-core` usando o Edge instalado (sem baixar navegador), por `npm run prints`, fora do CI | M4.4 |
-| D156 | Relatório final do grupo em Markdown (`docs/relatorio-final/relatorio-final.md`, fórmulas com `$$…$$`, que o GitHub renderiza); fórmulas exportadas do catálogo por `backend/scripts/exportar_formulas.py` (fonte única) | M4.4 |
-| D157+ | Achados do teste de UX (M4.3) e do teste manual do release (M4.5) | M4.3, M4.5 |
+| D153 ✓ | Acessibilidade testada com o axe (`axe-core` em dev) em cada tela e componente; contraste dos tokens testado à parte (o jsdom não mede cor) | M4.2 |
+| D154 ✓ | Foco no título da etapa ao trocar de rota e no primeiro campo com erro ao enviar (o `prefers-reduced-motion` já existia em `base.css`) | M4.2 |
+| D155 | Estrutura para leitor de tela (títulos, áreas laterais, drawer, tooltip, aviso do Detector, rolagem da tabela) — achados da auditoria | M4.2 ✓ |
+| D156 | Prints reproduzíveis com `playwright-core` usando o Edge instalado (sem baixar navegador), por `npm run prints`, fora do CI | M4.4 |
+| D157 | Relatório final do grupo em Markdown (`docs/relatorio-final/relatorio-final.md`, fórmulas com `$$…$$`, que o GitHub renderiza); fórmulas exportadas do catálogo por `backend/scripts/exportar_formulas.py` (fonte única) | M4.4 |
+| D158+ | Achados do teste de UX (M4.3) e do teste manual do release (M4.5) | M4.3, M4.5 |
 
 ## Dependências novas
 - `axe-core` (dev, frontend) — M4.2, D153.
-- `playwright-core` (dev, frontend; usa o Edge do Windows pelo `channel: "msedge"`, nada a baixar além do pacote) — M4.4, D155.
+- `playwright-core` (dev, frontend; usa o Edge do Windows pelo `channel: "msedge"`, nada a baixar além do pacote) — M4.4, D156.
 - Backend: nenhuma.
 
 ## Tamanho dos PRs

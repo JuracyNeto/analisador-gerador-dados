@@ -16,6 +16,7 @@ export const TEXTOS_DETECTOR = {
   linhasInteiras: 'Linhas inteiras',
   analisarDeNovo: 'Analisar de novo',
   analisando: 'Analisando…',
+  analisadoDeNovo: (frase: string): string => `Análise refeita: ${frase}.`,
   carregando: (arquivo: string): string => `Aplicando as 11 regras em ${arquivo}…`,
   alertasNoGrupo: (quantidade: number): string => pluralizar(quantidade, 'alerta', 'alertas'),
   semSeveridade: 'Marque ao menos uma severidade para ver os alertas.',

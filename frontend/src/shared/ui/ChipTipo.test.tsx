@@ -10,7 +10,9 @@ describe('ChipTipo', () => {
 
     await usuario.hover(screen.getByText('Contínua'));
 
-    expect(await screen.findByRole('tooltip')).toHaveTextContent('Quantitativa contínua');
+    expect(await screen.findByRole('tooltip', { hidden: true })).toHaveTextContent(
+      'Quantitativa contínua',
+    );
   });
 
   it('usa o rótulo completo por padrão', () => {
@@ -29,7 +31,9 @@ describe('ChipTipo', () => {
 
     await usuario.hover(screen.getByText('Data'));
 
-    expect(await screen.findByRole('tooltip')).toHaveTextContent('Data ou hora (ignorada)');
+    expect(await screen.findByRole('tooltip', { hidden: true })).toHaveTextContent(
+      'Data ou hora (ignorada)',
+    );
   });
 
   it('expõe o tipo em data-tipo (identificador ganha borda tracejada no CSS)', () => {

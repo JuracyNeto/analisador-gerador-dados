@@ -2,6 +2,7 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { useState } from 'react';
 import { expect, it } from 'vitest';
+import { esperarSemViolacoes } from '../../testes/acessibilidade';
 import Abas from './Abas';
 
 const ABAS = [
@@ -60,7 +61,7 @@ it('setas passam pela aba desabilitada sem selecioná-la', async () => {
 });
 
 it('aba desabilitada não abre e explica o motivo no tooltip', async () => {
-  render(<AbasControladas />);
+  const { container } = render(<AbasControladas />);
   const desabilitada = screen.getByRole('tab', { name: 'Separatrizes' });
 
   await userEvent.click(desabilitada);
@@ -68,5 +69,8 @@ it('aba desabilitada não abre e explica o motivo no tooltip', async () => {
 
   expect(desabilitada).toHaveAttribute('aria-disabled', 'true');
   expect(screen.getByRole('tab', { name: 'Frequências' })).toHaveAttribute('aria-selected', 'true');
-  expect(screen.getByRole('tooltip')).toHaveTextContent('as categorias não têm ordem.');
+  expect(screen.getByRole('tooltip', { hidden: true })).toBeVisible();
+  expect(desabilitada).toHaveAccessibleDescription(/as categorias não têm ordem\.$/u);
+  // Com o balão aberto, a lista de abas continua só com abas (aria-required-children).
+  await esperarSemViolacoes(container);
 });
