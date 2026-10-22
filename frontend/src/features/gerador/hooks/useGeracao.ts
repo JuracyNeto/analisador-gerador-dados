@@ -1,8 +1,9 @@
+import { useQueryClient } from '@tanstack/react-query';
 import { formatarInteiro } from '../../../shared/lib/formatar';
 import { useSessao } from '../../../shared/sessao/useSessao';
 import { useAvisarErro } from '../../../shared/ui/useAvisarErro';
 import { useToast } from '../../../shared/ui/useToast';
-import { useGerarBivariado, useGerarUnivariado } from '../api';
+import { chavesGerador, useGerarBivariado, useGerarUnivariado } from '../api';
 import { TEXTOS_GERADOR } from '../textos';
 import type { Gerado, PedidoBivariado, PedidoUnivariado } from '../tipos';
 
@@ -29,7 +30,10 @@ function refazerCom<P extends { semente?: number | null }>(
 function useConcluirGeracao(): (gerado: Gerado) => void {
   const { mostrar } = useToast();
   const { definirUltimoGerado } = useSessao();
+  const clienteConsultas = useQueryClient();
   return (gerado) => {
+    // A volta à etapa mostra a última geração sem pedir de novo ao servidor.
+    clienteConsultas.setQueryData(chavesGerador.geracao(gerado.gerado_id), gerado);
     const n = formatarInteiro(gerado.n);
     const titulo = gerado.tipo === 'bivariado' ? T.toast.pares(n) : T.toast.valores(n);
     mostrar({ tipo: 'sucesso', titulo });

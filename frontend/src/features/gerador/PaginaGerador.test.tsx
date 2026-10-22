@@ -198,4 +198,42 @@ describe('PaginaGerador', () => {
     const [primeiro, segundo] = chamadasPara(api, 'POST', '/gerador/univariado');
     expect(segundo?.corpo).toEqual({ ...(primeiro?.corpo as object), semente: 42 });
   });
+
+  it('ao voltar para a etapa, mostra a última geração da sessão na aba do tipo dela', async () => {
+    simularApi([...ROTAS, { caminho: `/gerador/${geradoPares.gerado_id}`, corpo: geradoPares }]);
+    const ultimoGerado = { id: geradoPares.gerado_id, descricao: 'altura_m × peso_kg · 500 pares' };
+
+    const { usuario } = renderizarComProvedores(<PaginaGerador />, {
+      rota: '/gerador?aba=bivariado',
+      dataset: DATASET_TESTE,
+      ultimoGerado,
+    });
+
+    expect(await screen.findByText(T.resultado.titulo)).toBeInTheDocument();
+    expect(screen.getByText(EXPLICACAO)).toBeInTheDocument();
+    await usuario.click(screen.getByRole('tab', { name: T.abas.univariado }));
+    expect(await screen.findByText(T.resultado.vazio.titulo)).toBeInTheDocument();
+  });
+
+  it('a última geração que saiu da memória do servidor não aparece', async () => {
+    simularApi([
+      ...ROTAS,
+      {
+        caminho: `/gerador/${geradoAltura.gerado_id}`,
+        status: 404,
+        corpo: { codigo: 'GERADO_NAO_ENCONTRADO', mensagem: 'Sumiu.', sugestao: 'Gere de novo.' },
+      },
+    ]);
+    const ultimoGerado = { id: geradoAltura.gerado_id, descricao: 'altura_m · 500 valores' };
+
+    renderizarComProvedores(<PaginaGerador />, {
+      rota: '/gerador',
+      dataset: DATASET_TESTE,
+      ultimoGerado,
+    });
+
+    await screen.findByText(/Mesma média/);
+    expect(screen.getByText(T.resultado.vazio.titulo)).toBeInTheDocument();
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+  });
 });
