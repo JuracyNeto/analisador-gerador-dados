@@ -45,10 +45,12 @@ Aplica-se a: avisos do detector, motivos de classificação, "não se aplica", i
 
 ## Estado vazio e regras não aplicadas
 - Sem avisos: "Nenhuma das 11 regras encontrou suspeitas. Isso não garante que os dados sejam reais, mas não vimos sinais comuns de dados artificiais." (o número é o de regras pedidas; com uma só: "A regra pedida não encontrou suspeitas. …"; se nenhuma se aplica: "Nenhuma das regras se aplica a este arquivo; os motivos estão em Regras não verificadas.")
-- Exemplo: até 8 valores, com "…" se houver mais; com decimais, separados por "; " ("Linhas 99 e 160: 6,8; 712").
+- Exemplo: até 8 valores, com "…" se houver mais; separados por "; " ("Linhas 99 e 160: 6,8; 712"). A Limpeza segue o mesmo formato, com até 3 ocorrências ("Linhas 99, 106, 160 e mais 1: 6,8; 106,4; 712…").
 - Não aplicada: "{regra} não verificada em *{col}*: {motivo}." Ex.: "precisa de 100 valores ou mais; a coluna tem 48." Quando a regra tirou valores da coluna, o motivo diz quais: ", fora os zeros" (R4, R9; R6 e R7 com muitos zeros, D143, D144) e ", fora os valores abaixo de 2 (10 vezes o passo de 0,2 do instrumento)" (R8, D145).
 
 ## Outros textos
 - "Não se aplica": "{medida} não se aplica a {tipo_legivel}: {motivo}."
 - Erros: "{o que aconteceu}. {como resolver}." Ex.: "Não encontramos a coluna *peso*. Ela pode ter sido renomeada — recarregue a página."
-- Toasts: verbo no passado + quantidade. "Limpeza aplicada: 12 linhas removidas."
+- Toasts: verbo no passado + quantidade, no singular quando é 1 ("Geramos 1 valor."). "Limpeza aplicada: 12 linhas removidas."
+- Números: sinal de menos (−) e ponto de milhar em todo texto exibido, inclusive cálculos e títulos de figura (D156); nas tabelas, as mesmas casas em cada coluna (D157); códigos e números de linha das células de dados como no arquivo, sem ponto de milhar.
+- Termos únicos (D159): "arquivo" (não "dataset") na interface, "desvio padrão", "Amplitude interquartil (IQR)", "Coeficiente de variação", tipos auxiliares "(fora das análises)".

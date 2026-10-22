@@ -8,12 +8,24 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e
 - Relatório com o apêndice "Fórmulas usadas": só as fórmulas das seções incluídas, em grupos (análise por coluna, forma e distribuição, bivariada, gerador e detector), sem repetir e com as colunas em que cada uma aparece; na tela Relatório, a caixa "Fórmulas".
 - API do gerador: cada geração traz as fórmulas do método (o sorteio, a reescala, Cholesky e o ajuste exato).
 - Testes automáticos de acessibilidade (axe) nas 8 telas, no layout e nos componentes, e de contraste das cores nos dois temas.
+- Script de medição de desempenho (`backend/scripts/medir_desempenho.py`): leitura, análise de cada coluna, bivariada, detector e relatório com 10 mil e 100 mil linhas.
 
 ### Alterado
 - As fórmulas saem do fim de cada coluna e da seção Bivariada do relatório e passam para o apêndice.
 - Ao trocar de etapa, o foco vai para o título, e o leitor de tela anuncia a etapa nova; ao enviar um formulário com erro, o foco vai para o primeiro campo a corrigir; "Analisar de novo" no Detector avisa o resultado.
+- Bivariada: sem colunas escolhidas, a tela abre no par mais correlacionado (o que o mapa de calor aponta).
+- "Trocar arquivo" pede confirmação quando já há tipos corrigidos, limpeza ou dados gerados.
+- Gerador: ao voltar para a etapa, a última geração aparece de novo; com menos de duas colunas numéricas, o bivariado usa só parâmetros manuais.
+- Análise univariada: a aba escolhida fica no endereço da página e continua depois de recarregar.
+- Relatório: a prévia anterior continua visível enquanto a nova é montada; arquivos grandes montam o relatório mais rápido.
+- Textos revisados pela redação do projeto: "arquivo" no lugar de "dataset", "desvio padrão" e "Amplitude interquartil (IQR)" em todas as telas, o relatório com os mesmos nomes da tela, a chance de acontecer por acaso no lugar do valor p na frase da forma, "Como geramos" em frases curtas e mensagens de erro sem termos técnicos.
 
 ### Corrigido
+- Números negativos com o sinal de menos (−) e contagens com ponto de milhar em todos os textos (cálculos, classes, títulos dos gráficos, registro da limpeza e relatório).
+- Tabelas com as mesmas casas decimais em cada coluna (ponto médio, separatrizes, Original × Gerado); na prévia, códigos como a matrícula 2026001 não ganham mais ponto de milhar.
+- Concordância no singular: "Marcamos 1 valor … como faltante por estar fora da faixa.", "Geramos 1 valor.", "A única linha do arquivo"; o registro da limpeza mostra todos os valores mudados.
+- "Onde está meu valor?" fora da faixa não repete o aviso e diz "Todos os dados são menores que ele."; "Prever" com o campo inválido não deixa o resultado anterior na tela.
+- Planilhas com mais de uma aba avisam que há outras abas para escolher.
 - Acessibilidade (WCAG 2.1 AA): títulos sem pular nível na Análise, na Bivariada e na Limpeza; áreas laterais com nome; o painel "Ver na tabela" sem um segundo cabeçalho de página; o balão de ajuda das abas desabilitadas não entra mais na lista de abas; "não se aplica" na tabela de frequências com contraste suficiente; borda dos campos um pouco mais escura no tema claro; com zoom de 200%, a tabela de Variáveis rola dentro dela e não alarga mais a página.
 
 ## [0.3.0] - 2026-10-16

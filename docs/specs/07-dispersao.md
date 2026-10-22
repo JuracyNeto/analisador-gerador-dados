@@ -14,8 +14,8 @@ Discreta e contínua: todas. Binária: variância p(1−p) e DP √(p(1−p)). O
 
 ## Casos de borda
 - n < 2 → variância/DP: "{medida} não se aplica: precisa de pelo menos 2 valores."
-- x̄ = 0 → CV indefinido: "O CV não pode ser calculado porque a média é zero."
-- Dados com valores negativos → CV calculado com |x̄| e aviso "CV pouco interpretável com valores negativos".
+- x̄ = 0 → CV indefinido: "Coeficiente de variação não se aplica: a média é zero."
+- Dados com valores negativos → CV calculado com |x̄| e aviso "Com valores negativos, o coeficiente de variação perde o sentido; use o desvio padrão."
 - s = 0 → "Todos os valores são iguais; não há dispersão."
 
 ## Interpretação automática do CV

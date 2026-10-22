@@ -102,7 +102,7 @@ Nenhum.
 | M4.4 | `frontend/scripts/prints.ts` + `npm run prints` (fora do CI) |
 
 ## Decisões previstas (entram em `docs/decisions.md` no bloco indicado; use o próximo número livre)
-Escolhas do usuário em 18/10/2026, ao aprovar o plano: fórmulas só no apêndice (D151), relatório final em Markdown (D157), `axe-core` e `playwright-core` como dependências de desenvolvimento (D153, D156).
+Escolhas do usuário em 18/10/2026, ao aprovar o plano: fórmulas só no apêndice (D151), relatório final em Markdown (D169), `axe-core` e `playwright-core` como dependências de desenvolvimento (D153, D168). O M4.3 usou D156–D167 e o M4.4 andou (prints D168, relatório final D169).
 
 | # | Decisão | Bloco |
 |---|---|---|
@@ -112,13 +112,14 @@ Escolhas do usuário em 18/10/2026, ao aprovar o plano: fórmulas só no apêndi
 | D153 ✓ | Acessibilidade testada com o axe (`axe-core` em dev) em cada tela e componente; contraste dos tokens testado à parte (o jsdom não mede cor) | M4.2 |
 | D154 ✓ | Foco no título da etapa ao trocar de rota e no primeiro campo com erro ao enviar (o `prefers-reduced-motion` já existia em `base.css`) | M4.2 |
 | D155 | Estrutura para leitor de tela (títulos, áreas laterais, drawer, tooltip, aviso do Detector, rolagem da tabela) — achados da auditoria | M4.2 ✓ |
-| D156 | Prints reproduzíveis com `playwright-core` usando o Edge instalado (sem baixar navegador), por `npm run prints`, fora do CI | M4.4 |
-| D157 | Relatório final do grupo em Markdown (`docs/relatorio-final/relatorio-final.md`, fórmulas com `$$…$$`, que o GitHub renderiza); fórmulas exportadas do catálogo por `backend/scripts/exportar_formulas.py` (fonte única) | M4.4 |
-| D158+ | Achados do teste de UX (M4.3) e do teste manual do release (M4.5) | M4.3, M4.5 |
+| D156–D167 ✓ | Achados do teste de UX (M4.3): sinal de menos e milhar na API, casas por coluna, p traduzido na Forma, nomes únicos, última geração, aba na URL, par mais forte, confirmar a troca de arquivo, prévia do relatório, Gerador sem par, motivo da aba do XLSX, desempenho medido | M4.3 |
+| D168 | Prints reproduzíveis com `playwright-core` usando o Edge instalado (sem baixar navegador), por `npm run prints`, fora do CI | M4.4 |
+| D169 | Relatório final do grupo em Markdown (`docs/relatorio-final/relatorio-final.md`, fórmulas com `$$…$$`, que o GitHub renderiza); fórmulas exportadas do catálogo por `backend/scripts/exportar_formulas.py` (fonte única) | M4.4 |
+| D170+ | Achados dos blocos `fix/` do detector (se houver) e do teste manual do release (M4.5) | M4.5 |
 
 ## Dependências novas
 - `axe-core` (dev, frontend) — M4.2, D153.
-- `playwright-core` (dev, frontend; usa o Edge do Windows pelo `channel: "msedge"`, nada a baixar além do pacote) — M4.4, D156.
+- `playwright-core` (dev, frontend; usa o Edge do Windows pelo `channel: "msedge"`, nada a baixar além do pacote) — M4.4, D168.
 - Backend: nenhuma.
 
 ## Tamanho dos PRs

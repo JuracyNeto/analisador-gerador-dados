@@ -7,7 +7,7 @@ Domínio: `app/dominios/datasets/` (`leitura.py`) · Endpoint: `POST /api/datase
 | TXT (obrigatório) | Texto delimitado; separador detectado |
 | CSV | `,` ou `;` |
 | TSV | tab |
-| XLSX | `openpyxl`; primeira aba por padrão, opção de escolher a aba |
+| XLSX | `openpyxl`; primeira aba por padrão, opção de escolher a aba; o motivo diz quantas abas há ("1ª de 2 abas. Se os dados estiverem em outra, escolha acima.", "A planilha tem uma aba só.", D166) |
 | JSON | lista de objetos (`[{...}]`) ou `{coluna: [valores]}`; objetos aninhados → `pandas.json_normalize` |
 
 ## Detecção automática
@@ -29,7 +29,7 @@ Domínio: `app/dominios/datasets/` (`leitura.py`) · Endpoint: `POST /api/datase
 |---|---|---|
 | `ARQUIVO_VAZIO` | 0 linhas | "O arquivo está vazio." |
 | `FORMATO_NAO_SUPORTADO` | extensão desconhecida | "Este tipo de arquivo não é aceito. Use TXT, CSV, TSV, XLSX ou JSON." |
-| `UMA_COLUNA` | só 1 coluna detectada e linhas contêm `;`/`,`/tab | aviso (não erro): "Encontramos só uma coluna. O separador pode estar errado — tente escolher outro." |
+| `UMA_COLUNA` | só 1 coluna detectada e linhas contêm `;`/`,`/tab | aviso (não erro): "Encontramos só uma coluna. O separador pode ser outro: escolha um em Separador." |
 | `ARQUIVO_GRANDE` | > 50 MB | "O arquivo passa de 50 MB." |
 | `LINHA_CABECALHO_INVALIDA` | linha escolhida vazia ou além do fim do arquivo | "A linha N não existe no arquivo ou está vazia." |
 | `JSON_INVALIDO` | parse falhou | "Não conseguimos ler este JSON. Verifique se é uma lista de registros." |
