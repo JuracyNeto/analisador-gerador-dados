@@ -1,5 +1,4 @@
 import { useQueryClient } from '@tanstack/react-query';
-import { formatarInteiro } from '../../../shared/lib/formatar';
 import { useSessao } from '../../../shared/sessao/useSessao';
 import { useAvisarErro } from '../../../shared/ui/useAvisarErro';
 import { useToast } from '../../../shared/ui/useToast';
@@ -34,13 +33,12 @@ function useConcluirGeracao(): (gerado: Gerado) => void {
   return (gerado) => {
     // A volta à etapa mostra a última geração sem pedir de novo ao servidor.
     clienteConsultas.setQueryData(chavesGerador.geracao(gerado.gerado_id), gerado);
-    const n = formatarInteiro(gerado.n);
-    const titulo = gerado.tipo === 'bivariado' ? T.toast.pares(n) : T.toast.valores(n);
+    const titulo =
+      gerado.tipo === 'bivariado' ? T.toast.pares(gerado.n) : T.toast.valores(gerado.n);
     mostrar({ tipo: 'sucesso', titulo });
-    const quantidade = gerado.tipo === 'bivariado' ? `${n} pares` : `${n} valores`;
     definirUltimoGerado({
       id: gerado.gerado_id,
-      descricao: T.descricaoSessao(gerado.colunas.join(' × '), quantidade),
+      descricao: T.descricaoSessao(gerado.colunas.join(' × '), gerado.n, gerado.tipo),
     });
   };
 }

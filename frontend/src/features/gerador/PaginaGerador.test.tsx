@@ -53,7 +53,7 @@ describe('PaginaGerador', () => {
     renderizarPagina();
 
     expect(
-      await screen.findByText('Mesma média (1,686) e desvio (0,0931) da coluna.'),
+      await screen.findByText('Mesma média (1,686) e desvio padrão (0,0931) da coluna.'),
     ).toBeInTheDocument();
     expect(screen.getByRole('tab', { name: T.abas.univariado })).toHaveAttribute(
       'aria-selected',
@@ -87,7 +87,7 @@ describe('PaginaGerador', () => {
     expect(
       screen.getByRole('figure', { name: 'altura_m: original e gerado sobrepostos' }),
     ).toBeInTheDocument();
-    expect(screen.getByText(T.toast.valores('500'))).toBeInTheDocument();
+    expect(screen.getByText(T.toast.valores(500))).toBeInTheDocument();
     expect(localStorage.getItem('sessao')).toContain('"ultimoGerado":{"id":"g-1"');
   });
 
@@ -127,7 +127,7 @@ describe('PaginaGerador', () => {
     expect(screen.getByRole('slider', { name: T.rho })).toHaveAttribute('aria-valuetext', '0,70');
     await usuario.click(screen.getByRole('button', { name: T.gerar }));
 
-    await screen.findByText(T.toast.pares('500'));
+    await screen.findByText(T.toast.pares(500));
     expect(chamadasPara(api, 'POST', '/gerador/bivariado')[0]?.corpo).toMatchObject({
       origem: { dataset_id: DATASET_TESTE.id, x: 'altura_m', y: 'peso_kg' },
       media_x: null,
