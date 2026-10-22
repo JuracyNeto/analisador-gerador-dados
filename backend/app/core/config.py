@@ -19,8 +19,8 @@ class Exemplo:
 
 EXEMPLOS = (
     Exemplo("pesquisa_saude.txt", "Pesquisa de saúde (valores fora de faixa e duplicados)"),
-    Exemplo("alturas_reais.txt", "Alturas reais (sem manipulação)"),
-    Exemplo("alturas_plantadas.txt", "Alturas com dados plantados"),
+    Exemplo("alturas_reais.txt", "Alturas reais (sem dados inseridos)"),
+    Exemplo("alturas_plantadas.txt", "Alturas com dados inseridos"),
     Exemplo("vendas_correlacao_puxada.txt", "Vendas com correlação puxada"),
 )
 

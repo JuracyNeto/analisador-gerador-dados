@@ -19,6 +19,8 @@ export const chavesGerador = {
     [...chavesDataset.todas(id), 'gerador', 'origem', coluna] as const,
   origemPar: (id: string, x: string, y: string) =>
     [...chavesDataset.todas(id), 'gerador', 'origem-par', x, y] as const,
+  /** Fora das chaves do dataset: a geração com parâmetros manuais não tem dataset. */
+  geracao: (geradoId: string) => ['gerador', 'geracao', geradoId] as const,
 };
 
 export function caminhoOrigem(id: string, coluna: string): string {
@@ -59,6 +61,15 @@ export function useOrigemPar(
     queryKey: chavesGerador.origemPar(id ?? '', x ?? '', y ?? ''),
     queryFn: () => requisitar<ResumoOrigemPar>(caminhoOrigemPar(id ?? '', x ?? '', y ?? '')),
     enabled: id !== null && x !== null && y !== null && x !== y,
+  });
+}
+
+/** A geração guardada no servidor (a última da sessão, para mostrar ao voltar à etapa). */
+export function useGeracaoGuardada(geradoId: string | null): UseQueryResult<Gerado> {
+  return useQuery({
+    queryKey: chavesGerador.geracao(geradoId ?? ''),
+    queryFn: () => requisitar<Gerado>(`/gerador/${encodeURIComponent(geradoId ?? '')}`),
+    enabled: geradoId !== null,
   });
 }
 

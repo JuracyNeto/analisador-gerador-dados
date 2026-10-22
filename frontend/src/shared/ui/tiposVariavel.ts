@@ -51,7 +51,7 @@ export const TIPOS_VARIAVEL = {
   identificador: {
     icone: 'fingerprint',
     rotuloCurto: 'Identificador',
-    rotuloCompleto: 'Identificador (ignorada)',
+    rotuloCompleto: 'Identificador (ignorado)',
     token: '--tipo-identificador',
   },
 } as const satisfies Record<TipoVariavel, ConfiguracaoTipo>;

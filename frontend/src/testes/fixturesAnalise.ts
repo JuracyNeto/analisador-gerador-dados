@@ -231,6 +231,11 @@ export const analiseNominal: Analise = {
       motivo: 'Separatrizes não se aplicam a qualitativas nominais: as categorias não têm ordem.',
     },
     { item: 'dispersao', motivo: MOTIVO_DISPERSAO },
+    {
+      item: 'desvio_padrao',
+      motivo:
+        'Desvio padrão não se aplica a qualitativas nominais: precisa de distâncias entre números.',
+    },
     { item: 'posicao', motivo: '"Onde está meu valor?" só funciona com colunas numéricas.' },
     { item: 'forma', motivo: MOTIVO_FORMA_NOMINAL },
   ],

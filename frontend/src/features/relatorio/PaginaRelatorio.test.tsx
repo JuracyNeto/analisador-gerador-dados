@@ -113,6 +113,24 @@ describe('PaginaRelatorio', () => {
     });
   });
 
+  it('com uma prévia já carregada, mudar a seleção não a esconde enquanto a nova chega', async () => {
+    const { usuario } = renderizarPagina();
+    await waitFor(() => {
+      expect(previa().getAttribute('src')).toContain('colunas=peso_kg');
+    });
+    expect(screen.getByText(T.montando)).toBeInTheDocument();
+    fireEvent.load(previa());
+    expect(screen.queryByText(T.montando)).not.toBeInTheDocument();
+
+    await usuario.click(screen.getByRole('checkbox', { name: /peso_kg/ }));
+    await waitFor(() => {
+      expect(previa().getAttribute('src')).not.toContain('peso_kg');
+    });
+
+    expect(screen.getByRole('status')).toHaveTextContent(T.atualizando);
+    expect(screen.queryByText(T.montando)).not.toBeInTheDocument();
+  });
+
   it('sem "Análises por coluna" e sem "Distribuições", as colunas ficam desabilitadas', async () => {
     const { usuario } = renderizarPagina();
     await screen.findByRole('checkbox', { name: /peso_kg/ });

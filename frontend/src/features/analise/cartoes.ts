@@ -91,7 +91,7 @@ export function cartoesResumoCategorico(analise: Analise): DefinicaoCartao[] {
     {
       id: 'desvio_padrao',
       rotulo: C.desvioPadrao,
-      medida: medidaAusente(motivoNaoAplicavel(analise, 'dispersao')),
+      medida: medidaAusente(motivoNaoAplicavel(analise, 'desvio_padrao')),
     },
   ];
 }

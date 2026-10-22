@@ -10,7 +10,7 @@ function linhasEColunas(linhas: number, colunas: number): string {
 export const TEXTOS_IMPORTAR = {
   titulo: 'Importar arquivo',
   ajuda:
-    'Envie sua tabela de dados. Nós descobrimos sozinhos como ela foi escrita, e você confere antes de seguir.',
+    'Envie sua tabela de dados. Descobrimos sozinhos como ela foi escrita; confira antes de seguir.',
   area: {
     titulo: 'Arraste e solte seu arquivo aqui',
     soltar: 'Solte para enviar',
@@ -54,8 +54,13 @@ export const TEXTOS_IMPORTAR = {
   valorDetectado: (valor: string) => `Outro ( ${valor} )`,
   previa: {
     titulo: 'Prévia',
-    subtitulo: (n: number, total: number) =>
-      `${formatarInteiro(n)} primeiras linhas de ${formatarInteiro(total)}`,
+    subtitulo: (n: number, total: number) => {
+      if (n === total)
+        return n === 1 ? 'A única linha do arquivo' : `Todas as ${formatarInteiro(n)} linhas`;
+      return n === 1
+        ? `A primeira linha de ${formatarInteiro(total)}`
+        : `${formatarInteiro(n)} primeiras linhas de ${formatarInteiro(total)}`;
+    },
     legenda: 'Prévia dos dados importados',
     carregando: 'Carregando a prévia do arquivo…',
   },

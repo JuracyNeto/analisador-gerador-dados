@@ -14,7 +14,7 @@
 |---|---|
 | Execução | Local (`uvicorn` + `vite`), 1 usuário por vez |
 | Escala | Até ~100 mil linhas × 50 colunas; arquivo ≤ 50 MB |
-| Desempenho | Análise de uma coluna < 2 s; detector completo < 10 s para 10 mil linhas |
+| Desempenho | Análise de uma coluna < 2 s; detector completo < 10 s para 10 mil linhas. Medido no M4.3 (D167, `backend/scripts/medir_desempenho.py`, CSV de 8 colunas; os tempos variam com a carga da máquina): com 10 mil linhas, análise de uma coluna em 0,02–0,11 s e detector em 0,7–0,9 s; com 100 mil, leitura em 5–11 s, análise ≤ 0,6 s e detector em 11–17 s (a R1, com 1.000 embaralhamentos, leva ~7 s) |
 | Segurança | Sem login; dados ficam na máquina; sem dados sensíveis |
 | Disponibilidade | Não aplicável (local); reinício perde estado (ADR 0004) |
 | Acessibilidade | WCAG 2.1 AA: contraste, foco visível, não depender só de cor, teclado |

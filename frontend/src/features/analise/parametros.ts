@@ -1,4 +1,5 @@
-import type { TipoColuna } from './tipos';
+import { ORDEM_ABAS } from './abas';
+import type { IdAba, TipoColuna } from './tipos';
 
 export const LIMITES_CLASSES = { minimo: 3, maximo: 30 } as const;
 
@@ -7,6 +8,8 @@ export interface ParametrosAnalise {
   classes: number | null;
   /** Nº de tentativas da Binomial (discreta); null = máximo observado (D96). */
   tentativas: number | null;
+  /** Aba da tela 4; null = Frequências. Recarregar mantém a aba, como no Gerador. */
+  aba: IdAba | null;
 }
 
 export function limitarClasses(k: number): number {
@@ -25,11 +28,16 @@ function lerTentativas(texto: string | null): number | null {
   return Number.isInteger(n) && n >= 1 ? n : null;
 }
 
+function lerAba(texto: string | null): IdAba | null {
+  return ORDEM_ABAS.find((aba) => aba === texto) ?? null;
+}
+
 export function lerParametros(busca: URLSearchParams): ParametrosAnalise {
   return {
     coluna: busca.get('coluna'),
     classes: lerClasses(busca.get('classes')),
     tentativas: lerTentativas(busca.get('tentativas')),
+    aba: lerAba(busca.get('aba')),
   };
 }
 
@@ -51,6 +59,12 @@ export function comClasses(busca: URLSearchParams, k: number): URLSearchParams {
 export function comTentativas(busca: URLSearchParams, n: number): URLSearchParams {
   const nova = new URLSearchParams(busca);
   nova.set('tentativas', String(n));
+  return nova;
+}
+
+export function comAba(busca: URLSearchParams, aba: IdAba): URLSearchParams {
+  const nova = new URLSearchParams(busca);
+  nova.set('aba', aba);
   return nova;
 }
 

@@ -35,7 +35,7 @@ function DetectorDoDataset({ datasetId, nomeArquivo }: Readonly<Props>) {
         // A lista pode sair igual: o aviso diz ao leitor de tela que a análise terminou (D153).
         void consulta.refetch().then(({ data }) => {
           if (data !== undefined)
-            mostrar({ tipo: 'sucesso', titulo: T.analisadoDeNovo(data.resumo.frase) });
+            mostrar({ tipo: 'sucesso', titulo: T.analisadoDeNovo(data.resumo) });
         });
       }}
     >

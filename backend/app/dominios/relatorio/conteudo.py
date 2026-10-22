@@ -116,8 +116,7 @@ class SecaoColuna:
 
     coluna: str
     tipo: str
-    n: int
-    n_faltantes: int
+    contagem: str
     analises: BlocoAnalises | None
     forma: SecaoForma | None
 

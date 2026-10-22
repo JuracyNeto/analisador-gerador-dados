@@ -39,7 +39,7 @@ it('sem arquivo: só Importar abre e a frase explica o bloqueio', () => {
   );
   expect(within(nav).getAllByRole('img', { name: 'Bloqueada' })).toHaveLength(7);
   expect(
-    screen.getByText('As etapas 2 a 8 ficam disponíveis depois que você importar um arquivo.'),
+    screen.getByText('As etapas 2 a 8 ficam disponíveis depois de importar um arquivo.'),
   ).toBeInTheDocument();
 });
 

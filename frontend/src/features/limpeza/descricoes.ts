@@ -16,10 +16,9 @@ export function listarComE(itens: readonly string[]): string {
   return LISTA_PT.format(itens);
 }
 
-/** "6,8; 106,4 e 712": com vírgula decimal, a vírgula não pode separar os itens. */
+/** Valores separados por "; " (a vírgula já é o decimal), como o exemplo do Detector (spec 16). */
 export function listarValores(itens: readonly string[]): string {
-  if (itens.length <= 1) return itens.join('');
-  return `${itens.slice(0, -1).join('; ')} e ${String(itens.at(-1))}`;
+  return itens.join('; ');
 }
 
 export function primeiraMaiuscula(texto: string): string {
@@ -38,16 +37,17 @@ export function descreverLinhas(linhas: readonly number[]): string {
   return `${escolherForma(linhas.length, T.linhas.singular, T.linhas.plural)} ${listarNumeros(linhas)}`;
 }
 
-/** "Linhas 19 e 201: 0 e 230" (até 3 ocorrências + "e mais N"). */
+/** "Linhas 19 e 201: 0; 230" · "Linhas 99, 106, 160 e mais 1: 6,8; 106,4; 712…" (até 3). */
 export function descreverOcorrencias(ocorrencias: readonly Ocorrencia[]): string {
   const visiveis = ocorrencias.slice(0, MAX_OCORRENCIAS);
   const prefixo = primeiraMaiuscula(
     escolherForma(ocorrencias.length, T.linhas.singular, T.linhas.plural),
   );
-  const linhas = listarComE(visiveis.map((o) => formatarInteiro(o.linha)));
+  const numeros = visiveis.map((o) => formatarInteiro(o.linha));
   const valores = listarValores(visiveis.map((o) => formatarCelula(o.valor)));
   const resto = ocorrencias.length - visiveis.length;
-  return `${prefixo} ${linhas}: ${valores}${resto > 0 ? T.linhas.eMais(resto) : ''}`;
+  if (resto === 0) return `${prefixo} ${listarComE(numeros)}: ${valores}`;
+  return `${prefixo} ${numeros.join(', ')}${T.linhas.eMais(resto)}: ${valores}…`;
 }
 
 /** Detalhe mono do log: "linhas 45, 46, 47" · "17,2 → 1,72". */

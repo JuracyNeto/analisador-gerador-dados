@@ -203,6 +203,8 @@ export interface ContextoBivariado {
   x: string | null;
   y: string | null;
   par: ResumoOrigemPar | undefined;
+  /** O arquivo tem duas colunas numéricas (ou elas ainda estão chegando). */
+  parPossivel: boolean;
 }
 
 export const ESTADO_INICIAL_BIVARIADO: EstadoBivariado = {
@@ -220,7 +222,7 @@ export const ESTADO_INICIAL_BIVARIADO: EstadoBivariado = {
 };
 
 export function origemBivariada(estado: EstadoBivariado, contexto: ContextoBivariado): Origem {
-  return contexto.datasetId === null ? 'manual' : estado.origem;
+  return contexto.datasetId === null || !contexto.parPossivel ? 'manual' : estado.origem;
 }
 
 type LeitorCampo = (

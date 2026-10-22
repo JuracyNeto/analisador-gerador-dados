@@ -9,11 +9,13 @@ import CorpoBivariada from './components/CorpoBivariada';
 import SeletoresPar from './components/SeletoresPar';
 import { estadoDaBivariada } from './estadoBivariada';
 import { useParametrosBivariada } from './hooks/useParametrosBivariada';
-import { parEscolhido } from './parametros';
+import { esperaAMatriz, parEscolhido } from './parametros';
 import { TEXTOS_BIVARIADA } from './textos';
 
 const ETAPA_BIVARIADA = 5;
 const T = TEXTOS_BIVARIADA;
+
+const ESPERANDO = { status: 'carregando-colunas' } as const;
 
 const ACOES_BIVARIADA = (
   <AcoesEtapa
@@ -25,10 +27,11 @@ const ACOES_BIVARIADA = (
 function BivariadaDoDataset({ datasetId }: Readonly<{ datasetId: string }>) {
   const colunas = useColunasNumericas(datasetId);
   const { pedido, escolher } = useParametrosBivariada();
-  const par = parEscolhido(pedido, colunas.data ?? []);
-  // Bivariada e matriz são independentes: as duas consultas saem juntas (§6).
-  const bivariada = useBivariada(datasetId, par);
   const matriz = useMatriz(datasetId);
+  // Com o par na URL, bivariada e matriz saem juntas (§6); sem ele, o par vem da matriz.
+  const esperando = esperaAMatriz(pedido, colunas.data ?? [], matriz.isPending);
+  const par = esperando ? null : parEscolhido(pedido, colunas.data ?? [], matriz.data ?? null);
+  const bivariada = useBivariada(datasetId, par);
   const seletores =
     colunas.data !== undefined && par !== null ? (
       <SeletoresPar colunas={colunas.data} par={par} aoMudar={escolher} />
@@ -37,7 +40,7 @@ function BivariadaDoDataset({ datasetId }: Readonly<{ datasetId: string }>) {
   return (
     <PaginaEtapa etapa={ETAPA_BIVARIADA} titulo={T.titulo} ajuda={T.ajuda} acoesTopo={seletores}>
       <CorpoBivariada
-        estado={estadoDaBivariada(colunas, bivariada, par)}
+        estado={esperando ? ESPERANDO : estadoDaBivariada(colunas, bivariada, par)}
         datasetId={datasetId}
         matriz={matriz}
       />

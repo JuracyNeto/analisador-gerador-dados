@@ -23,6 +23,6 @@ it('mostra mensagem e sugestão da API e permite tentar de novo', async () => {
 it('usa texto genérico para erro que não veio da API e não mostra botão sem callback', () => {
   render(<EstadoErro erro={new Error('falha interna')} />);
 
-  expect(screen.getByRole('alert')).toHaveTextContent('Algo deu errado do nosso lado.');
+  expect(screen.getByRole('alert')).toHaveTextContent('Não conseguimos concluir esta ação.');
   expect(screen.queryByRole('button')).not.toBeInTheDocument();
 });

@@ -6,7 +6,7 @@ export const TEXTOS_APP = {
   simboloMarca: 'x̄',
   etapasDaAnalise: 'Etapas da análise',
   barraLateral: 'Barra lateral',
-  etapasBloqueadas: 'As etapas 2 a 8 ficam disponíveis depois que você importar um arquivo.',
+  etapasBloqueadas: 'As etapas 2 a 8 ficam disponíveis depois de importar um arquivo.',
   concluida: 'Concluída',
   bloqueada: 'Bloqueada',
   recolherBarra: 'Recolher barra',
@@ -14,6 +14,12 @@ export const TEXTOS_APP = {
   fecharBarra: 'Fechar a barra de etapas',
   nenhumArquivo: 'Nenhum arquivo importado',
   trocarArquivo: 'Trocar arquivo',
+  trocaComAjustes: {
+    aviso: 'Trocar de arquivo desfaz o trabalho feito neste.',
+    detalhe: 'Os tipos corrigidos, a limpeza e os dados gerados não vêm junto.',
+    confirmar: 'Trocar mesmo assim',
+    cancelar: 'Cancelar',
+  },
   dimensoes: (linhas: number, colunas: number): string =>
     `${contarLinhas(linhas)} × ${contarColunas(colunas)}`,
   tema: 'Tema',

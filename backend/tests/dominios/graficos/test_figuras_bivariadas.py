@@ -103,7 +103,9 @@ def test_fabrica_da_bivariada() -> None:
     assert (dispersao.id, residuos.id) == ("dispersao", "residuos")
     assert dispersao.titulo == "peso_kg em função de altura_m (n = 4)"
     assert residuos.titulo == "Resíduos da regressão"
-    assert "peso_kg real e o previsto" in residuos.resumo
+    assert residuos.resumo.startswith(
+        "Resíduo é a diferença entre o valor real de peso_kg e o previsto."
+    )
 
 
 def test_fabrica_da_matriz() -> None:

@@ -1,5 +1,5 @@
 import CartaoOpcao from '../../../shared/ui/CartaoOpcao';
-import { formatarNumero } from '../../../shared/lib/formatar';
+import { formatarNumero, formatarPercentual } from '../../../shared/lib/formatar';
 import type { FormularioUnivariado } from '../hooks/useFormularioUnivariado';
 import { modoUnivariado } from '../pedidos';
 import { TEXTOS_GERADOR } from '../textos';
@@ -19,7 +19,7 @@ function descricaoPreservar(resumo: ResumoOrigem | undefined): string {
     return T.descricaoPreservar(formatarNumero(resumo.media), formatarNumero(resumo.desvio));
   }
   if (resumo.sucesso !== null && resumo.chance !== null) {
-    return T.descricaoPreservarBinaria(resumo.sucesso, formatarNumero(resumo.chance));
+    return T.descricaoPreservarBinaria(resumo.sucesso, formatarPercentual(resumo.chance * 100));
   }
   return T.descricaoPreservarCategorias;
 }

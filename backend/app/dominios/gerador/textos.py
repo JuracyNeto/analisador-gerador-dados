@@ -3,8 +3,8 @@
 from collections.abc import Callable
 from dataclasses import dataclass
 
-from app.compartilhado.numeros import formatar_com_sinal, formatar_inteiro
-from app.compartilhado.textos import pluralizar
+from app.compartilhado.numeros import formatar_numero, formatar_percentual
+from app.compartilhado.textos import quantidade
 
 NOMES_METODOS = {
     "normal": "Normal com reescala",
@@ -43,18 +43,14 @@ def estatisticas_par(x: str, y: str) -> tuple[str, ...]:
         ESTATISTICA_N,
         f"Média de {x}",
         f"Média de {y}",
-        f"Desvio de {x}",
-        f"Desvio de {y}",
+        f"Desvio padrão de {x}",
+        f"Desvio padrão de {y}",
         "Correlação (r)",
     )
 
 
 def numero(valor: float) -> str:
-    return formatar_com_sinal(valor)
-
-
-def quantidade(n: int, singular: str, plural: str) -> str:
-    return f"{formatar_inteiro(n)} {pluralizar(n, singular, plural)}"
+    return formatar_numero(valor)
 
 
 @dataclass(frozen=True, slots=True)
@@ -80,6 +76,10 @@ def _de_coluna(contexto: ContextoExplicacao) -> str:
     return f" de {contexto.coluna}" if contexto.coluna else ""
 
 
+def _em_coluna(contexto: ContextoExplicacao) -> str:
+    return f" em {contexto.coluna}" if contexto.coluna else ""
+
+
 def _semente(contexto: ContextoExplicacao) -> str:
     return f"usando a semente {contexto.semente}"
 
@@ -91,23 +91,23 @@ def _quantos(contexto: ContextoExplicacao) -> str:
 def _medidas(contexto: ContextoExplicacao) -> str:
     media, desvio = numero(contexto.media or 0.0), numero(contexto.desvio or 0.0)
     if contexto.preservar:
-        return f"a mesma média ({media}) e desvio ({desvio}){_de_coluna(contexto)}"
-    return f"média {media} e desvio {desvio}"
+        return f"a mesma média ({media}) e desvio padrão ({desvio}){_de_coluna(contexto)}"
+    return f"média {media} e desvio padrão {desvio}"
 
 
 def _normal(contexto: ContextoExplicacao) -> str:
     return (
         f"Sorteamos {_quantos(contexto)} de uma curva Normal com {_medidas(contexto)}, "
-        f"{_semente(contexto)}, e ajustamos para bater exatamente essas medidas."
+        f"{_semente(contexto)}. Depois, ajustamos os valores para bater exatamente essas medidas."
     )
 
 
 def _kde(contexto: ContextoExplicacao) -> str:
     return (
-        f"Os dados{_de_coluna(contexto)} não seguem uma curva Normal, então sorteamos "
+        f"Os dados{_de_coluna(contexto)} não seguem uma curva Normal. Sorteamos "
         f"{_quantos(contexto)} parecidos com os originais (estimativa de densidade, KDE), "
         f"{_semente(contexto)}, e ajustamos a média ({numero(contexto.media or 0.0)}) "
-        f"e o desvio ({numero(contexto.desvio or 0.0)})."
+        f"e o desvio padrão ({numero(contexto.desvio or 0.0)})."
     )
 
 
@@ -115,14 +115,14 @@ def _poisson(contexto: ContextoExplicacao) -> str:
     media = numero(contexto.media or 0.0)
     return (
         f"A média ({media}) e a variância{_de_coluna(contexto)} são parecidas, como numa "
-        f"distribuição de Poisson; sorteamos {_quantos(contexto)} de uma Poisson com média "
+        f"distribuição de Poisson. Sorteamos {_quantos(contexto)} de uma Poisson com média "
         f"{media}, {_semente(contexto)}."
     )
 
 
 def _empirica(contexto: ContextoExplicacao) -> str:
     return (
-        f"Sorteamos {_quantos(contexto)} entre os que aparecem{_de_coluna(contexto)}, cada um "
+        f"Sorteamos {_quantos(contexto)} entre os que aparecem{_em_coluna(contexto)}, cada um "
         f"com a mesma frequência relativa do original, {_semente(contexto)}."
     )
 
@@ -131,15 +131,15 @@ def _normal_inteira(contexto: ContextoExplicacao) -> str:
     final = ", sem valores negativos, como no original" if contexto.sem_negativos else ""
     return (
         f"Sorteamos {_quantos(contexto)} de uma curva Normal com {_medidas(contexto)}, "
-        f"{_semente(contexto)}, e arredondamos para inteiros{final}."
+        f"{_semente(contexto)}. Depois, arredondamos para inteiros{final}."
     )
 
 
 def _bernoulli(contexto: ContextoExplicacao) -> str:
-    chance = numero(contexto.chance or 0.0)
+    chance = formatar_percentual((contexto.chance or 0.0) * 100)
     origem = " (a mesma proporção do original)" if contexto.preservar else ""
     return (
-        f"Sorteamos {_quantos(contexto)}: cada um é {contexto.sucesso} com chance "
+        f"Sorteamos {_quantos(contexto)}: cada um é {contexto.sucesso} com chance de "
         f"{chance}{origem} ou {contexto.fracasso} nos demais casos, {_semente(contexto)}."
     )
 
@@ -176,7 +176,7 @@ def frase_casas(casas: int | None, preservar: bool) -> str:
 def frase_faixa(faixa: tuple[float, float] | None) -> str:
     if faixa is None:
         return ""
-    return f"Valores fora de {numero(faixa[0])} a {numero(faixa[1])} foram sorteados de novo."
+    return f"Sorteamos de novo os valores fora de {numero(faixa[0])} a {numero(faixa[1])}."
 
 
 def explicacao_univariada(contexto: ContextoExplicacao) -> str:
@@ -204,19 +204,19 @@ class ContextoPares:
 
 AJUSTE_EXATO = (
     "Com o ajuste exato, as médias, os desvios e a correlação dos dados gerados ficam "
-    "exatamente iguais aos pedidos; por isso os valores não são arredondados."
+    "exatamente iguais aos pedidos; por isso, não arredondamos os valores."
 )
 
 
 def explicacao_bivariada(contexto: ContextoPares) -> str:
     """Cholesky em linguagem simples, com o efeito do ajuste exato."""
+    x, y = contexto.x, contexto.y
     inicio = (
-        f"Sorteamos {quantidade(contexto.n, 'par', 'pares')} de duas curvas Normais e "
-        f"combinamos as duas (método de Cholesky) para que {contexto.y} acompanhe "
-        f"{contexto.x} com correlação {numero(contexto.rho)}, médias "
-        f"{numero(contexto.media_x)} e {numero(contexto.media_y)} e desvios "
-        f"{numero(contexto.desvio_x)} e {numero(contexto.desvio_y)}, "
-        f"usando a semente {contexto.semente}."
+        f"Sorteamos {quantidade(contexto.n, 'par', 'pares')} de duas curvas Normais e as "
+        f"combinamos (método de Cholesky), usando a semente {contexto.semente}. Assim, {y} "
+        f"acompanha {x} com correlação {numero(contexto.rho)}; {x} tem média "
+        f"{numero(contexto.media_x)} e desvio padrão {numero(contexto.desvio_x)}, e {y}, "
+        f"média {numero(contexto.media_y)} e desvio padrão {numero(contexto.desvio_y)}."
     )
     if contexto.exato:
         return f"{inicio} {AJUSTE_EXATO}"

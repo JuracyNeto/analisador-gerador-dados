@@ -28,7 +28,8 @@ export function usePrevisao(datasetId: string, par: Par): PrevisaoNaTela {
     prever: () => {
       const numero = lerNumeroPtBr(texto);
       setErro(numero === null ? TEXTOS_BIVARIADA.previsao.erroValor : undefined);
-      if (numero !== null) setValor(numero);
+      // Com o campo inválido, o resultado anterior sai da tela (não fica ao lado do erro).
+      setValor(numero);
     },
   };
 }

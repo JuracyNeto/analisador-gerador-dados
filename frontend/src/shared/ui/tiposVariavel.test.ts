@@ -13,7 +13,7 @@ describe('tiposVariavel', () => {
       rotuloCompleto: 'Quantitativa contínua',
       token: '--tipo-continua',
     });
-    expect(TIPOS_VARIAVEL.identificador.rotuloCompleto).toBe('Identificador (ignorada)');
+    expect(TIPOS_VARIAVEL.identificador.rotuloCompleto).toBe('Identificador (ignorado)');
   });
 
   it('cores saem dos tokens do tipo', () => {

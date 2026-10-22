@@ -1,6 +1,7 @@
 import { startTransition } from 'react';
 import { useSearchParams } from 'react-router';
 import {
+  comAba,
   comClasses,
   comColuna,
   comTentativas,
@@ -8,12 +9,14 @@ import {
   semTentativas,
   type ParametrosAnalise,
 } from '../parametros';
+import type { IdAba } from '../tipos';
 
 export interface ParametrosAnaliseNaUrl extends ParametrosAnalise {
   escolherColuna: (coluna: string) => void;
   mudarClasses: (k: number) => void;
   mudarTentativas: (n: number) => void;
   usarTentativasPadrao: () => void;
+  mudarAba: (aba: IdAba) => void;
 }
 
 export function useParametrosAnalise(): ParametrosAnaliseNaUrl {
@@ -35,6 +38,9 @@ export function useParametrosAnalise(): ParametrosAnaliseNaUrl {
     },
     usarTentativasPadrao: () => {
       definirBusca((atual) => semTentativas(atual), { replace: true });
+    },
+    mudarAba: (aba) => {
+      definirBusca((atual) => comAba(atual, aba), { replace: true });
     },
   };
 }

@@ -88,5 +88,6 @@ def test_resumo_da_matriz_com_varias_fracas_e_vazios() -> None:
 
 def test_resumo_da_matriz_sem_pares() -> None:
     assert t.resumo_matriz(("a",), ((1.0,),)) == (
-        "Precisa de pelo menos duas colunas numéricas para montar a matriz."
+        "A matriz precisa de pelo menos duas colunas numéricas. "
+        "Confira os tipos na etapa Variáveis."
     )

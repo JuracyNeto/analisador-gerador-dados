@@ -49,3 +49,6 @@
     display: none;
   }
 }
+.confirmacao {
+  padding: var(--esp-16) var(--esp-32) 0;
+}

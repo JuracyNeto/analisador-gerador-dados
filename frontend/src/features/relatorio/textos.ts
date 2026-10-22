@@ -30,6 +30,7 @@ export const TEXTOS_RELATORIO = {
   previa: 'Prévia · A4 retrato',
   tituloPrevia: 'Prévia do relatório',
   montando: 'Montando a prévia do relatório…',
+  atualizando: 'Atualizando a prévia…',
   vazio: {
     titulo: 'Nada para mostrar',
     descricao: 'Marque ao menos uma seção para ver a prévia do relatório.',

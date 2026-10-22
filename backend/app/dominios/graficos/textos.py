@@ -1,6 +1,6 @@
 """Títulos, "Por que este gráfico?" e resumos textuais das figuras (spec 08, spec 16)."""
 
-from app.compartilhado.numeros import formatar_com_sinal, formatar_numero, formatar_percentual
+from app.compartilhado.numeros import formatar_inteiro, formatar_numero, formatar_percentual
 from app.dominios.graficos.entradas import Barra, DadosUnivariados, ResumoCaixa
 
 METADE_PCT = 50
@@ -86,11 +86,11 @@ PORQUE = {
 
 
 def titulo_distribuicao(dados: DadosUnivariados) -> str:
-    return f"Distribuição de {dados.coluna} (n = {dados.n})"
+    return f"Distribuição de {dados.coluna} (n = {formatar_inteiro(dados.n)})"
 
 
 def titulo_categorias(dados: DadosUnivariados) -> str:
-    return f"Frequência de {dados.coluna} (n = {dados.n}), da maior para a menor"
+    return f"Frequência de {dados.coluna} (n = {formatar_inteiro(dados.n)}), da maior para a menor"
 
 
 def titulo_boxplot(dados: DadosUnivariados) -> str:
@@ -137,7 +137,7 @@ def resumo_caixa(caixa: ResumoCaixa) -> str:
 def resumo_acumulada(dados: DadosUnivariados) -> str:
     """Onde a frequência acumulada chega a 50%."""
     metade = next(b for b in dados.barras if (b.acumulado_pct or 0) >= METADE_PCT)
-    return f"Metade dos valores chega até {metade.rotulo}."
+    return f"A metade dos valores é alcançada na classe {metade.rotulo}, onde está a mediana."
 
 
 RESUMOS_CURVA = {
@@ -158,11 +158,11 @@ RESUMOS_BINOMIAL = {
 
 
 def titulo_histograma_normal(coluna: str, n: int) -> str:
-    return f"Histograma de {coluna} com curva Normal (n = {n})"
+    return f"Histograma de {coluna} com curva Normal (n = {formatar_inteiro(n)})"
 
 
 def titulo_bastoes_normal(coluna: str, n: int) -> str:
-    return f"Distribuição de {coluna} com curva Normal (n = {n})"
+    return f"Distribuição de {coluna} com curva Normal (n = {formatar_inteiro(n)})"
 
 
 def titulo_qqplot(coluna: str) -> str:
@@ -170,7 +170,8 @@ def titulo_qqplot(coluna: str) -> str:
 
 
 def titulo_binomial(coluna: str, tentativas: int, p: float) -> str:
-    return f"{coluna}: observado × Binomial (n = {tentativas}; p = {formatar_numero(p)})"
+    n, chance = formatar_inteiro(tentativas), formatar_numero(p)
+    return f"{coluna}: observado × Binomial (n = {n}; p = {chance})"
 
 
 RESUMOS_DISPERSAO = {
@@ -189,21 +190,21 @@ TITULO_MATRIZ = "Matriz de correlação (Pearson)"
 
 
 def titulo_dispersao(x: str, y: str, n: int) -> str:
-    return f"{y} em função de {x} (n = {formatar_numero(n)})"
+    return f"{y} em função de {x} (n = {formatar_inteiro(n)})"
 
 
 def resumo_dispersao(forca: str, sentido: str, n: int, mostrados: int) -> str:
     """Direção dos pontos (força e sentido de r) e o aviso de amostra, quando houver (D101)."""
     texto = RESUMOS_DISPERSAO.get((forca, sentido), SEM_DIRECAO)
     if mostrados < n:
-        texto += f" Mostramos {formatar_numero(mostrados)} dos {formatar_numero(n)} pontos."
+        texto += f" Mostramos {formatar_inteiro(mostrados)} dos {formatar_inteiro(n)} pontos."
     return texto
 
 
 def resumo_residuos(y: str) -> str:
     return (
-        f"Resíduo é a diferença entre o {y} real e o previsto. Pontos espalhados em volta do "
-        "zero, sem formar curva, indicam que a reta é um bom resumo da relação."
+        f"Resíduo é a diferença entre o valor real de {y} e o previsto. Pontos espalhados em "
+        "volta do zero, sem formar curva, indicam que a reta é um bom resumo da relação."
     )
 
 
@@ -227,11 +228,11 @@ def resumo_sobreposicao(maior_diferenca: float | None, n_gerado: int) -> str:
 
 
 def titulo_pares_gerados(n: int) -> str:
-    return f"Pares gerados (n = {formatar_numero(n)})"
+    return f"Pares gerados (n = {formatar_inteiro(n)})"
 
 
 def resumo_pares_gerados(r: float, n: int, mostrados: int) -> str:
-    resumo = f"Correlação obtida: r = {formatar_com_sinal(r)}."
+    resumo = f"Correlação obtida: r = {formatar_numero(r)}."
     if mostrados < n:
         resumo += f" Mostramos {formatar_numero(mostrados)} dos {formatar_numero(n)} pontos."
     return resumo
@@ -253,7 +254,7 @@ def titulo_blocos(coluna: str, k: int) -> str:
 def resumo_blocos(linhas: tuple[int, int], media: float) -> str:
     return (
         f"A média das linhas {linhas[0]}–{linhas[1]} fica em cima da média geral "
-        f"({formatar_com_sinal(media)})."
+        f"({formatar_numero(media)})."
     )
 
 

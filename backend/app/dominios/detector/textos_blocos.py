@@ -6,12 +6,11 @@ Continua `textos.py` (que passaria de 500 linhas) com os mesmos formatadores.
 from collections.abc import Sequence
 
 from app.compartilhado.numeros import (
-    com_sinal_de_menos,
     formatar_fixo,
     formatar_inteiro,
     formatar_numero,
 )
-from app.compartilhado.textos import p_valor_em_palavras, pluralizar
+from app.compartilhado.textos import p_valor_em_palavras, pluralizar, quantidade
 from app.dominios.detector import textos
 from app.dominios.detector.resultados import DetalhesAviso, TextosAviso
 
@@ -74,7 +73,7 @@ def r01_detalhes(
     `tamanhos` = (k das janelas, menor e maior fim do arquivo) (D148).
     """
     k, menor, maior = tamanhos
-    embaralhamentos = textos.quantidade(simulacoes, "embaralhamento", "embaralhamentos")
+    embaralhamentos = quantidade(simulacoes, "embaralhamento", "embaralhamentos")
     return DetalhesAviso(
         medida=(
             f"Janelas de {k} linhas seguidas e o fim do arquivo (de {menor} a "
@@ -98,7 +97,7 @@ BLOCO_SEM_VARIACAO = "os valores não variam em algum dos 5 blocos"
 
 def correlacao(r: float) -> str:
     """r com 2 casas e o sinal de menos: −0,41."""
-    return com_sinal_de_menos(formatar_fixo(r, CASAS_CORRELACAO))
+    return formatar_fixo(r, CASAS_CORRELACAO)
 
 
 def poucos_pares(minimo: int, n: int) -> str:
@@ -210,9 +209,9 @@ def r06_detalhes_variacao(
     return DetalhesAviso(
         medida=f"Desvio padrão antes e depois de {referencia}{sem_zeros}",
         valor=(
-            f"antes: {textos.numero(antes)} ({textos.quantidade(linhas[0], 'linha', 'linhas')}) · "
+            f"antes: {textos.numero(antes)} ({quantidade(linhas[0], 'linha', 'linhas')}) · "
             f"depois: {textos.numero(depois)} "
-            f"({textos.quantidade(linhas[1], 'linha', 'linhas')}) · "
+            f"({quantidade(linhas[1], 'linha', 'linhas')}) · "
             f"razão {textos.numero(depois / antes)}"
         ),
         limiar="DP depois < 0,5 × DP antes, improvável ao acaso (p < 0,01)",
@@ -279,7 +278,7 @@ CASAS_FORMA = 3
 
 def medida_de_forma(valor: float) -> str:
     """G₁ e G₂ com 3 casas: 0,009 · −0,045 (somar 0,0 tira o "−0,000")."""
-    return com_sinal_de_menos(formatar_fixo(round(valor, CASAS_FORMA) + 0.0, CASAS_FORMA))
+    return formatar_fixo(round(valor, CASAS_FORMA) + 0.0, CASAS_FORMA)
 
 
 def r10_textos(coluna: str, assimetria: float, curtose: float) -> TextosAviso:
@@ -371,9 +370,9 @@ def r11_detalhes(
             "progressões aritméticas e autocorrelação"
         ),
         valor=(
-            f"{textos.quantidade(runs, 'sequência', 'sequências')} (z = {textos.numero(z)}) · "
+            f"{quantidade(runs, 'sequência', 'sequências')} (z = {textos.numero(z)}) · "
             f"ρ₁ = {textos.numero(autocorrelacao)} · "
-            f"{textos.quantidade(progressoes, 'progressão', 'progressões')}"
+            f"{quantidade(progressoes, 'progressão', 'progressões')}"
         ),
         limiar=(
             "Runs com p < 0,01, progressão de 6 valores ou mais improvável ao acaso "

@@ -22,6 +22,7 @@ Parâmetros: `secoes` (leitura, tipos, limpeza, analises, distribuicoes, bivaria
 - Fórmulas renderizadas com KaTeX (CDN) e fallback em texto
 - CSS `@media print`: quebra de página por seção, gráficos com largura total, sem elementos interativos; o texto de cada alerta do detector não se divide entre páginas (`break-inside: avoid`), e a figura dele (que também não se divide) pode ir para a página seguinte
 - O usuário escolhe colunas e seções na tela Relatório
+- Os mesmos rótulos e selos da tela (Coeficiente de variação, Amplitude interquartil (IQR), Correlação de Pearson (r), Correlação positiva forte, Sem moda), frases na 1ª pessoa do plural ("Lemos 230 linhas e 8 colunas.") e contagens com concordância e milhar ("1.500 valores válidos · 1 faltante"), D159
 - A prévia da tela usa sempre `offline=true`; o arquivo baixado segue a opção "Funciona sem internet" (D84)
 - Sem seção sobre uso de IA
 

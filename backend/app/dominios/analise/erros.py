@@ -1,5 +1,6 @@
 """Erros do domínio analise (spec 14, formato da spec 16)."""
 
+from app.compartilhado.textos import quantidade
 from app.compartilhado.tipos import TipoVariavel
 from app.core.erros import EntradaInvalida
 
@@ -48,7 +49,7 @@ SUGESTAO_NUMERICAS = "Escolha colunas discretas ou contínuas."
 def coluna_nao_numerica(coluna: str) -> EntradaInvalida:
     return EntradaInvalida(
         "COLUNA_NAO_NUMERICA",
-        f"Escolha duas colunas numéricas: {coluna} não é numérica.",
+        f"A coluna {coluna} não é numérica.",
         SUGESTAO_NUMERICAS,
     )
 
@@ -61,10 +62,16 @@ def colunas_iguais() -> EntradaInvalida:
     )
 
 
+def _linhas_preenchidas(n: int, x: str, y: str) -> str:
+    if n == 0:
+        return f"Nenhuma linha tem {x} e {y} preenchidos"
+    return f"Só {quantidade(n, 'linha tem', 'linhas têm')} {x} e {y} preenchidos"
+
+
 def poucos_pares(n: int, x: str, y: str) -> EntradaInvalida:
     return EntradaInvalida(
         "POUCOS_PARES",
-        f"Só há {n} linhas com {x} e {y} preenchidas; são precisas pelo menos 3.",
+        f"{_linhas_preenchidas(n, x, y)}; precisamos de pelo menos 3.",
         "Confira os faltantes na etapa Limpeza.",
     )
 

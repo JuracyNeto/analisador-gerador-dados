@@ -27,10 +27,10 @@ describe('descricoes', () => {
         { linha: 19, valor: 0 },
         { linha: 201, valor: 230 },
       ]),
-    ).toBe('Linhas 19 e 201: 0 e 230');
+    ).toBe('Linhas 19 e 201: 0; 230');
   });
 
-  it('separa valores decimais com ponto e vírgula (a vírgula já é o decimal)', () => {
+  it('separa valores com ponto e vírgula, como o exemplo do Detector (spec 16)', () => {
     expect(
       descreverOcorrencias([
         { linha: 99, valor: 6.8 },
@@ -38,7 +38,7 @@ describe('descricoes', () => {
         { linha: 160, valor: 712 },
         { linha: 161, valor: 800 },
       ]),
-    ).toBe('Linhas 99, 106 e 160: 6,8; 106,4 e 712 e mais 1');
+    ).toBe('Linhas 99, 106, 160 e mais 1: 6,8; 106,4; 712…');
   });
 
   it('detalhe do log junta linhas e antes → depois', () => {

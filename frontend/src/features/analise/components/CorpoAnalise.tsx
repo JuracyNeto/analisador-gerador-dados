@@ -6,6 +6,7 @@ import EstadoErro from '../../../shared/ui/EstadoErro';
 import EstadoVazio from '../../../shared/ui/EstadoVazio';
 import type { EstadoAnalise } from '../estadoAnalise';
 import { TEXTOS_ANALISE } from '../textos';
+import type { IdAba } from '../tipos';
 import ConteudoAnalise from './ConteudoAnalise';
 
 const T = TEXTOS_ANALISE;
@@ -39,6 +40,8 @@ interface Props {
   classes: number | null;
   aoMudarClasses: (k: number) => void;
   aoMudarTentativas: (n: number) => void;
+  aba: IdAba | null;
+  aoMudarAba: (aba: IdAba) => void;
 }
 
 export default function CorpoAnalise({ estado, ...resto }: Readonly<Props>) {

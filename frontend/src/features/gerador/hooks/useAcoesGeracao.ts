@@ -2,7 +2,6 @@ import { useQueryClient } from '@tanstack/react-query';
 import { ErroApi } from '../../../shared/api/cliente';
 import { textoDoErro } from '../../../shared/api/erros';
 import { chavesDataset } from '../../../shared/api/dataset';
-import { formatarInteiro } from '../../../shared/lib/formatar';
 import { useSessao } from '../../../shared/sessao/useSessao';
 import { useAvisarErro } from '../../../shared/ui/useAvisarErro';
 import { useToast } from '../../../shared/ui/useToast';
@@ -56,12 +55,12 @@ export function useAcoesGeracao(gerado: Gerado, aoPerder: AoPerder) {
     void cliente.invalidateQueries({ queryKey: chavesDataset.todas(adotado.dataset_id) });
     mostrar({
       tipo: 'sucesso',
-      titulo: T.toast.anexado(formatarInteiro(gerado.n), adotado.nome_arquivo),
+      titulo: T.toast.anexado(gerado.n, adotado.nome_arquivo),
     });
   };
   const aoUsar = (adotado: Adotado) => {
     definirDataset({ id: adotado.dataset_id, nomeArquivo: adotado.nome_arquivo });
-    mostrar({ tipo: 'sucesso', titulo: T.toast.novo(formatarInteiro(adotado.n_linhas)) });
+    mostrar({ tipo: 'sucesso', titulo: T.toast.novo(adotado.n_linhas) });
   };
 
   return {

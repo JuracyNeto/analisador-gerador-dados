@@ -107,7 +107,10 @@ def test_matriz_com_uma_coluna() -> None:
     matriz = matriz_correlacao(pd.DataFrame({"a": [1.0, 2.0, 3.0]}))
 
     assert matriz.colunas == ("a",)
-    assert matriz.resumo == "Precisa de pelo menos duas colunas numéricas para montar a matriz."
+    assert matriz.resumo == (
+        "A matriz precisa de pelo menos duas colunas numéricas. "
+        "Confira os tipos na etapa Variáveis."
+    )
 
 
 def test_t_negativo_usa_o_sinal_de_menos() -> None:

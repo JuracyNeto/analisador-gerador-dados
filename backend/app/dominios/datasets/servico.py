@@ -214,8 +214,13 @@ class ServicoDatasets:
     def _coluna_lida(self, dataset: Dataset, coluna: str) -> ColunaLida:
         if coluna not in dataset.tipos:
             raise erros.coluna_nao_encontrada(coluna)
-        serie = dataset.atual[coluna]
-        return ler_coluna(coluna, serie, dataset.metadados.decimal, self.limiares)
+        # Converter 100 mil valores leva ~0,4 s; o relatório pedia a mesma coluna até 19 vezes.
+        guardada = dataset.colunas_lidas.get(coluna)
+        if guardada is not None and guardada[0] is dataset.atual:
+            return guardada[1]
+        lida = ler_coluna(coluna, dataset.atual[coluna], dataset.metadados.decimal, self.limiares)
+        dataset.colunas_lidas[coluna] = (dataset.atual, lida)
+        return lida
 
     def alterar_tipo(
         self,

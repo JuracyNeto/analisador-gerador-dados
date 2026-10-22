@@ -120,6 +120,30 @@ def test_fora_de_faixa_limitar_marcar_e_remover() -> None:
     assert 6 not in remover.dados.index
 
 
+def test_marcar_fora_de_faixa_concorda_com_um_valor() -> None:
+    limites = Limites(min=1, max=110)
+
+    marcar = _aplicar(AcaoLimpeza("fora_de_faixa", "marcar_faltante", "idade", limites=limites))
+
+    frase = "Marcamos 1 valor de idade como faltante por estar fora da faixa."
+    assert marcar.log[0].frase == frase
+
+
+def test_fora_de_faixa_mostra_todos_os_valores_mudados() -> None:
+    limites = Limites(min=35, max=110)
+
+    marcar = _aplicar(AcaoLimpeza("fora_de_faixa", "marcar_faltante", "idade", limites=limites))
+    limitar = _aplicar(AcaoLimpeza("fora_de_faixa", "limitar", "idade", limites=limites))
+
+    frase = "Marcamos 4 valores de idade como faltantes por estarem fora da faixa."
+    assert marcar.log[0].frase == frase
+    assert marcar.log[0].antes_exemplo == "30; 30; 30; 230"
+    assert (limitar.log[0].antes_exemplo, limitar.log[0].depois_exemplo) == (
+        "30; 30; 30; 230",
+        "35; 35; 35; 110",
+    )
+
+
 def test_unificar_grafias() -> None:
     resultado = _aplicar(AcaoLimpeza("inconsistencia", "unificar", "cidade"))
 
@@ -139,7 +163,7 @@ def test_tipo_misto_vira_faltante_e_coluna_vira_numero() -> None:
 
     assert pd.api.types.is_numeric_dtype(resultado.dados["nota"])
     assert math.isnan(resultado.dados.loc[5, "nota"])
-    assert resultado.log[0].frase == "Marcamos 1 texto de nota como faltantes."
+    assert resultado.log[0].frase == "Marcamos 1 texto de nota como faltante."
 
 
 def test_preencher_coluna_numerica_que_ainda_tem_texto_mantem_o_formato() -> None:

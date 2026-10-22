@@ -4,7 +4,7 @@
 
 **Objetivo:** entregar ao grupo, em `docs/relatorio-final/`, o relatório final do trabalho pedido pelo professor — "prints das telas e gráficos, fórmulas, explicação do gerador e do detector, documentação do trabalho" — já escrito (rascunho completo para o grupo revisar), com prints reproduzíveis da versão final, as fórmulas tiradas do catálogo do app, um exemplo do relatório HTML e o roteiro da apresentação.
 
-**Arquitetura:** documentação em Markdown (D157); scripts: `frontend/scripts/prints.ts` (`playwright-core` com o Edge instalado, D156; fora do CI), `backend/scripts/exportar_formulas.py` e `backend/scripts/exportar_relatorio_exemplo.py` (ambos com `TestClient`, sem servidor). Fórmulas do detector num catálogo (`detector/formulas.py`) usado pelos textos dos detalhes e pela exportação.
+**Arquitetura:** documentação em Markdown (D169); scripts: `frontend/scripts/prints.ts` (`playwright-core` com o Edge instalado, D168; fora do CI), `backend/scripts/exportar_formulas.py` e `backend/scripts/exportar_relatorio_exemplo.py` (ambos com `TestClient`, sem servidor). Fórmulas do detector num catálogo (`detector/formulas.py`) usado pelos textos dos detalhes e pela exportação.
 
 **Branch:** `docs/relatorio-final` (sai de `develop` depois do merge do M4.3) → PR para `develop`. **Prazo sugerido:** 20/11/2026.
 
@@ -72,9 +72,9 @@ Escrever `relatorio-final.md` na estrutura acima, com os prints e as fórmulas (
 **Commit:** `docs: roteiro de apresentação`
 
 ### Tarefa 7: guia da pasta e documentação
-`docs/relatorio-final/README.md` (o que é cada arquivo, como refazer prints, fórmulas e o exemplo, como gerar o PDF — imprimir pelo navegador a partir do GitHub ou do VS Code); spec 13 (seção "Relatório final do trabalho" aponta para a pasta); `decisions.md` D156–D157; CHANGELOG › Adicionado: "Relatório final do trabalho em `docs/relatorio-final/`, com prints das telas, fórmulas, explicação do gerador e do detector e roteiro de apresentação."
+`docs/relatorio-final/README.md` (o que é cada arquivo, como refazer prints, fórmulas e o exemplo, como gerar o PDF — imprimir pelo navegador a partir do GitHub ou do VS Code); spec 13 (seção "Relatório final do trabalho" aponta para a pasta); `decisions.md` D168–D169; CHANGELOG › Adicionado: "Relatório final do trabalho em `docs/relatorio-final/`, com prints das telas, fórmulas, explicação do gerador e do detector e roteiro de apresentação."
 
-**Commit:** `docs: guia do relatório final (spec 13, D156–D157)`
+**Commit:** `docs: guia do relatório final (spec 13, D168–D169)`
 
 ### Tarefa 8: verificação e PR
 1. Verificação completa (os scripts novos passam no ruff/mypy; o `prints.ts` no lint e no `tsc`).

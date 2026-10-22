@@ -8,7 +8,7 @@ export interface DefinicaoAba {
   motivo?: string;
 }
 
-const ORDEM_ABAS: readonly IdAba[] = [
+export const ORDEM_ABAS: readonly IdAba[] = [
   'frequencias',
   'tendencia',
   'separatrizes',

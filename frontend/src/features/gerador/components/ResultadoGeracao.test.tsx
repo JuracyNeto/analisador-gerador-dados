@@ -43,22 +43,20 @@ describe('ResultadoGeracao', () => {
 
     await usuario.click(await screen.findByRole('button', { name: T.acoes.anexar }));
 
-    expect(
-      await screen.findByText(T.toast.anexado('500', 'pesquisa_saude.txt')),
-    ).toBeInTheDocument();
+    expect(await screen.findByText(T.toast.anexado(500, 'pesquisa_saude.txt'))).toBeInTheDocument();
     expect(chamadasPara(api, 'POST', ADOTAR)[0]?.corpo).toEqual({
       modo: 'anexar',
       dataset_id: DATASET_TESTE.id,
     });
   });
 
-  it('usar como novo dataset troca o dataset da sessão', async () => {
+  it('usar como novo arquivo troca o dataset da sessão', async () => {
     simularApi([{ metodo: 'POST', caminho: ADOTAR, status: 201, corpo: adotadoNovo }]);
     const { usuario } = renderizar();
 
     await usuario.click(screen.getByRole('button', { name: T.acoes.usar }));
 
-    expect(await screen.findByText(T.toast.novo('500'))).toBeInTheDocument();
+    expect(await screen.findByText(T.toast.novo(500))).toBeInTheDocument();
     expect(localStorage.getItem('sessao')).toContain('"id":"ds-novo"');
   });
 

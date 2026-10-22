@@ -5,7 +5,7 @@ from app.compartilhado.tipos import TipoVariavel
 from app.core.config import Configuracao
 from app.core.erros import ArquivoGrande, NaoEncontrado
 from app.dominios.datasets.repositorio import RepositorioDatasets
-from app.dominios.datasets.servico import OpcoesLeitura, ServicoDatasets
+from app.dominios.datasets.servico import AcaoLimpeza, OpcoesLeitura, ServicoDatasets
 
 CONTEUDO = b"id;sexo;peso\n1;F;58,2\n2;M;79,6\n3;F;\n4;M;63,0\n"
 
@@ -82,3 +82,17 @@ def test_coluna_para_analise_entrega_numeros_ou_textos(servico_datasets: Servico
     assert sexo.numeros is None
     assert sexo.textos.tolist() == ["F", "M", "F", "M"]
     assert isinstance(sexo.textos, pd.Series)
+
+
+def test_coluna_lida_uma_vez_por_versao_dos_dados(servico_datasets: ServicoDatasets) -> None:
+    """O relatório e o detector pedem a mesma coluna várias vezes (perfil do M4.3)."""
+    dataset_id = _importar(servico_datasets)
+
+    primeira = servico_datasets.coluna_para_analise(dataset_id, "peso")
+    segunda = servico_datasets.coluna_para_analise(dataset_id, "peso")
+    servico_datasets.limpar(dataset_id, [AcaoLimpeza("faltantes", "remover_linhas", "peso")])
+    depois = servico_datasets.coluna_para_analise(dataset_id, "peso")
+
+    assert segunda.textos is primeira.textos
+    assert depois.textos is not primeira.textos
+    assert depois.textos.tolist() == ["58,2", "79,6", "63"]

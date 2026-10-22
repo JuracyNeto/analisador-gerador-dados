@@ -10,6 +10,7 @@ from fastapi.responses import JSONResponse
 from app.core.erros import ErroAplicacao
 
 logger = logging.getLogger(__name__)
+LOCAIS_GENERICOS = frozenset({"body", "query", "path"})
 
 
 def _resposta(status: HTTPStatus, codigo: str, mensagem: str, sugestao: str) -> JSONResponse:
@@ -18,9 +19,12 @@ def _resposta(status: HTTPStatus, codigo: str, mensagem: str, sugestao: str) -> 
 
 
 def _campos_invalidos(erro: Exception) -> str:
+    """Os campos do pedido, sem os nomes genéricos do FastAPI ("body", "query")."""
     if not isinstance(erro, RequestValidationError):
         return ""
-    return ", ".join(str(item["loc"][-1]) for item in erro.errors())
+    campos = dict.fromkeys(str(item["loc"][-1]) for item in erro.errors())
+    nomes = [campo for campo in campos if campo not in LOCAIS_GENERICOS]
+    return f" ({', '.join(nomes)})" if nomes else ""
 
 
 def _tratar_erro_aplicacao(_: Request, erro: Exception) -> JSONResponse:
@@ -33,8 +37,8 @@ def _tratar_validacao(_: Request, erro: Exception) -> JSONResponse:
     return _resposta(
         HTTPStatus.UNPROCESSABLE_ENTITY,
         "ENTRADA_INVALIDA",
-        f"Alguns campos não estão corretos: {_campos_invalidos(erro)}.",
-        "Confira os valores informados e tente novamente.",
+        f"Não conseguimos usar alguns valores do pedido{_campos_invalidos(erro)}.",
+        "Confira esses campos e tente de novo.",
     )
 
 
@@ -43,8 +47,8 @@ def _tratar_inesperado(_: Request, erro: Exception) -> JSONResponse:
     return _resposta(
         HTTPStatus.INTERNAL_SERVER_ERROR,
         "ERRO_INTERNO",
-        "Algo deu errado do nosso lado.",
-        "Tente novamente. Se continuar, reinicie o servidor.",
+        "Não conseguimos concluir esta ação.",
+        "Tente de novo. Se continuar, reinicie o servidor e recarregue a página.",
     )
 
 

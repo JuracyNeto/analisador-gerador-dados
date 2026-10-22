@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
+  formatadorDaColuna,
   formatarDecimal,
   formatarInteiro,
   formatarNumero,
@@ -93,5 +94,21 @@ describe('formatarPValor', () => {
     [0.05, 'p = 0,05'],
   ])('%s → %s', (p, esperado) => {
     expect(formatarPValor(p)).toBe(esperado);
+  });
+});
+
+describe('formatadorDaColuna', () => {
+  it('as mesmas casas para todos os valores da coluna (as do valor que pede mais)', () => {
+    const pontoMedio = formatadorDaColuna([46.05, 98.55, 106.05]);
+    const quartis = formatadorDaColuna([62.3, 68.8, 77.95]);
+
+    expect([46.05, 106.05].map(pontoMedio)).toEqual(['46,05', '106,05']);
+    expect([62.3, 77.95].map(quartis)).toEqual(['62,30', '77,95']);
+  });
+
+  it('inteiros ficam sem casas; negativos com o sinal de menos', () => {
+    expect(formatadorDaColuna([1, 2, 30])(30)).toBe('30');
+    expect(formatadorDaColuna([-0.5, 1.25])(-0.5)).toBe('−0,50');
+    expect(formatarDecimal(-2.5)).toBe('−2,5');
   });
 });

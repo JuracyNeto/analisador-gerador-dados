@@ -27,7 +27,9 @@ FRASES_CV: dict[ClassificacaoCV, str] = {
     "media": "Variação moderada em relação à média.",
     "alta": "Os dados são heterogêneos (muita variação em relação à média).",
 }
-CV_NEGATIVOS = "CV pouco interpretável com valores negativos."
+CV_NEGATIVOS = (
+    "Com valores negativos, o coeficiente de variação perde o sentido; use o desvio padrão."
+)
 SEM_DISPERSAO = "Todos os valores são iguais; não há dispersão."
 ITENS_NUMERICOS = (
     "amplitude",

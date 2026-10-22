@@ -41,6 +41,9 @@ def test_nominal_explica_cada_item_que_nao_se_aplica(criar_amostra: CriarAmostra
         "Separatrizes não se aplicam a qualitativas nominais: "
         "as categorias não têm ordem para dividir em partes."
     )
+    assert itens["desvio_padrao"] == (
+        "Desvio padrão não se aplica a qualitativas nominais: precisa de distâncias entre números."
+    )
     assert analise.separatrizes is None
     assert analise.dispersao is None
     assert not any(analise.aplicavel.values())

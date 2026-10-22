@@ -10,7 +10,7 @@ from typing import Any
 import numpy as np
 import pandas as pd
 
-from app.compartilhado.numeros import formatar_numero
+from app.compartilhado.numeros import formatar_inteiro
 from app.dominios.graficos.entradas import DadosParesGerados, DadosSobreposicao
 from app.dominios.graficos.figuras import Figura, figura_basica
 from app.dominios.graficos.figuras_bivariadas import (
@@ -26,7 +26,7 @@ EIXO_RELATIVA = "Frequência relativa (%)"
 
 
 def nome_serie(rotulo: str, n: int) -> str:
-    return f"{rotulo} (n = {formatar_numero(n)})"
+    return f"{rotulo} (n = {formatar_inteiro(n)})"
 
 
 def classes_comuns(original: pd.Series | None, gerado: pd.Series) -> np.ndarray:

@@ -67,7 +67,9 @@ def _nao_aplicaveis(
     if amostra.tipo not in TIPOS_NUMERICOS:
         itens.append(_secao("posicao", amostra.tipo))
     if "amplitude" not in medidas:
-        itens.append(_secao("dispersao", amostra.tipo))
+        # O card "Desvio padrão" da aba Frequências (design 4g) cita a medida, não a aba.
+        desvio = textos.nao_se_aplica("desvio_padrao", amostra.tipo, "dispersao")
+        itens += [_secao("dispersao", amostra.tipo), NaoAplicavel("desvio_padrao", desvio)]
     return tuple(itens)
 
 

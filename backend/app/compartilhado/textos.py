@@ -21,6 +21,11 @@ def pluralizar(quantidade: int, singular: str, plural: str) -> str:
     return singular if quantidade == 1 else plural
 
 
+def quantidade(n: int, singular: str, plural: str) -> str:
+    """Contagem com ponto de milhar e concordância: 1 linha · 1.500 linhas."""
+    return f"{formatar_inteiro(n)} {pluralizar(n, singular, plural)}"
+
+
 def juntar_lista(itens: list[str]) -> str:
     """Junta itens em português: 'a', 'a e b', 'a, b e c'."""
     if len(itens) <= 1:

@@ -52,7 +52,7 @@ def test_renderizar_forma_e_bivariada_numera_figuras_em_ordem() -> None:
         gerado_em="09/10/2026 10:00",
         subtitulo="a.csv",
         script_plotly="",
-        colunas=(SecaoColuna("x", "Quantitativa contínua", 3, 0, None, forma),),
+        colunas=(SecaoColuna("x", "Quantitativa contínua", "3 valores válidos", None, forma),),
         bivariada=SecaoBivariada(_figura("Matriz"), "Resumo da matriz.", (par,), None, ()),
     )
 
@@ -207,7 +207,7 @@ def test_apendice_e_a_ultima_secao_com_latex_so_onde_ha() -> None:
 
 def test_colunas_sem_lista_de_formulas() -> None:
     forma = SecaoForma(medidas=(ItemMedida("Assimetria (G₁)", "0,32"),))
-    coluna = SecaoColuna("x", "Quantitativa contínua", 3, 0, None, forma)
+    coluna = SecaoColuna("x", "Quantitativa contínua", "3 valores válidos", None, forma)
     conteudo = ConteudoRelatorio("a.csv", "18/10/2026", "a.csv", "", colunas=(coluna,))
 
     html = renderizar(conteudo)

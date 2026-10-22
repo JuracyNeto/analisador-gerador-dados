@@ -11,6 +11,7 @@ import { useAbaGerador } from './hooks/useAbaGerador';
 import { useFormularioBivariado } from './hooks/useFormularioBivariado';
 import { useFormularioUnivariado } from './hooks/useFormularioUnivariado';
 import { useGeracao } from './hooks/useGeracao';
+import { useResultadoGeracao } from './hooks/useResultadoGeracao';
 import estilos from './PaginaGerador.module.css';
 import { TEXTOS_GERADOR } from './textos';
 
@@ -33,7 +34,7 @@ export default function PaginaGerador() {
   const univariado = useFormularioUnivariado(datasetId);
   const bivariado = useFormularioBivariado(datasetId);
   const geracao = useGeracao();
-  const mutacao = aba === 'univariado' ? geracao.univariado : geracao.bivariado;
+  const resultado = useResultadoGeracao(aba, geracao);
   const gerarUnivariado = () => {
     const pedido = univariado.confirmar();
     if (pedido !== null) geracao.gerarUnivariado(pedido);
@@ -46,13 +47,13 @@ export default function PaginaGerador() {
     aba === 'univariado' ? (
       <FormularioUnivariado
         formulario={univariado}
-        gerando={mutacao.isPending}
+        gerando={resultado.gerando}
         aoGerar={gerarUnivariado}
       />
     ) : (
       <FormularioBivariado
         formulario={bivariado}
-        gerando={mutacao.isPending}
+        gerando={resultado.gerando}
         aoGerar={gerarBivariado}
       />
     );
@@ -63,10 +64,10 @@ export default function PaginaGerador() {
         <div className={estilos.grade}>
           <Card>{formulario}</Card>
           <ResultadoGeracao
-            gerado={mutacao.data}
-            gerando={mutacao.isPending}
-            aoExpirar={mutacao.reset}
-            aoGerarDeNovo={mutacao.data === undefined ? null : geracao.refazer(mutacao.data)}
+            gerado={resultado.gerado}
+            gerando={resultado.gerando}
+            aoExpirar={resultado.expirar}
+            aoGerarDeNovo={resultado.gerarDeNovo}
           />
         </div>
       </Abas>

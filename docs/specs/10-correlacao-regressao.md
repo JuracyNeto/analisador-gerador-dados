@@ -2,7 +2,7 @@
 Domínio: `app/dominios/analise/` (`correlacao.py`, `regressao.py`) · Endpoints: `GET /api/datasets/{id}/bivariada?x=&y=`, `GET .../bivariada/prever?x=&y=&valor=` · Marco M2
 
 ## Pré-condições
-X e Y discretas ou contínuas e diferentes; usar apenas pares com ambos não faltantes (`n_descartados` conta os outros); n ≥ 3; X e Y com variação. Caso contrário, erro 400: `COLUNA_NAO_NUMERICA` ("Escolha duas colunas numéricas: {col} não é numérica."), `COLUNAS_IGUAIS`, `POUCOS_PARES` ou `SEM_VARIACAO` (D100).
+X e Y discretas ou contínuas e diferentes; usar apenas pares com ambos não faltantes (`n_descartados` conta os outros); n ≥ 3; X e Y com variação. Caso contrário, erro 400: `COLUNA_NAO_NUMERICA` ("A coluna {col} não é numérica." / "Escolha colunas discretas ou contínuas."), `COLUNAS_IGUAIS`, `POUCOS_PARES` ("Só 2 linhas têm x e y preenchidos; precisamos de pelo menos 3.") ou `SEM_VARIACAO` (D100). Matriz sem pares: "A matriz precisa de pelo menos duas colunas numéricas. Confira os tipos na etapa Variáveis."
 
 ## Correlação
 - Pearson: **r = Σ(xᵢ − x̄)(yᵢ − ȳ) / √[Σ(xᵢ − x̄)² · Σ(yᵢ − ȳ)²]**

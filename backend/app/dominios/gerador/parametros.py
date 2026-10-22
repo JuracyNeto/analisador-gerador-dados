@@ -25,7 +25,7 @@ def _opcionais(descricao: DescricaoUnivariada) -> list[Parametro]:
     if descricao.media is not None:
         itens.append(Parametro("Média", textos.numero(descricao.media)))
     if descricao.desvio is not None:
-        itens.append(Parametro("Desvio", textos.numero(descricao.desvio)))
+        itens.append(Parametro("Desvio padrão", textos.numero(descricao.desvio)))
     if descricao.chance is not None:
         itens.append(Parametro(f"Chance de {descricao.sucesso}", textos.numero(descricao.chance)))
     if descricao.limitar_faixa:
@@ -57,8 +57,8 @@ def parametros_bivariados(descricao: DescricaoBivariada) -> tuple[Parametro, ...
         Parametro("Pares", formatar_inteiro(pares.n)),
         Parametro(f"Média de {pares.x}", textos.numero(pares.media_x)),
         Parametro(f"Média de {pares.y}", textos.numero(pares.media_y)),
-        Parametro(f"Desvio de {pares.x}", textos.numero(pares.desvio_x)),
-        Parametro(f"Desvio de {pares.y}", textos.numero(pares.desvio_y)),
+        Parametro(f"Desvio padrão de {pares.x}", textos.numero(pares.desvio_x)),
+        Parametro(f"Desvio padrão de {pares.y}", textos.numero(pares.desvio_y)),
         Parametro("Correlação alvo (ρ)", textos.numero(pares.rho)),
         Parametro("Ajuste exato", textos.SIM if pares.exato else textos.NAO),
         Parametro("Semente", str(pares.semente)),

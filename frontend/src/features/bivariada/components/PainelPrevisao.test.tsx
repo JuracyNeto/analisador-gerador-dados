@@ -56,6 +56,20 @@ describe('PainelPrevisao', () => {
     expect(chamadasPara(api, 'GET', CAMINHO)).toHaveLength(0);
   });
 
+  it('depois de uma previsão, um valor inválido tira o resultado antigo da tela', async () => {
+    const { usuario } = renderizar(previsaoDentro);
+    const campo = screen.getByRole('textbox', { name: 'altura_m' });
+    await usuario.type(campo, '1,7{Enter}');
+    await screen.findByText('68,37');
+
+    await usuario.clear(campo);
+    await usuario.type(campo, 'abc{Enter}');
+
+    expect(screen.getByText(P.erroValor)).toBeInTheDocument();
+    expect(screen.queryByText('68,37')).not.toBeInTheDocument();
+    expect(screen.getByText(P.dica)).toBeInTheDocument();
+  });
+
   it('antes de prever mostra a dica', () => {
     renderizar(previsaoDentro);
 

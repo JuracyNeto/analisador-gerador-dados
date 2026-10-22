@@ -53,7 +53,7 @@ describe('PaginaGerador', () => {
     renderizarPagina();
 
     expect(
-      await screen.findByText('Mesma média (1,686) e desvio (0,0931) da coluna.'),
+      await screen.findByText('Mesma média (1,686) e desvio padrão (0,0931) da coluna.'),
     ).toBeInTheDocument();
     expect(screen.getByRole('tab', { name: T.abas.univariado })).toHaveAttribute(
       'aria-selected',
@@ -87,7 +87,7 @@ describe('PaginaGerador', () => {
     expect(
       screen.getByRole('figure', { name: 'altura_m: original e gerado sobrepostos' }),
     ).toBeInTheDocument();
-    expect(screen.getByText(T.toast.valores('500'))).toBeInTheDocument();
+    expect(screen.getByText(T.toast.valores(500))).toBeInTheDocument();
     expect(localStorage.getItem('sessao')).toContain('"ultimoGerado":{"id":"g-1"');
   });
 
@@ -127,7 +127,7 @@ describe('PaginaGerador', () => {
     expect(screen.getByRole('slider', { name: T.rho })).toHaveAttribute('aria-valuetext', '0,70');
     await usuario.click(screen.getByRole('button', { name: T.gerar }));
 
-    await screen.findByText(T.toast.pares('500'));
+    await screen.findByText(T.toast.pares(500));
     expect(chamadasPara(api, 'POST', '/gerador/bivariado')[0]?.corpo).toMatchObject({
       origem: { dataset_id: DATASET_TESTE.id, x: 'altura_m', y: 'peso_kg' },
       media_x: null,
@@ -136,6 +136,18 @@ describe('PaginaGerador', () => {
     });
     await usuario.click(screen.getByRole('tab', { name: T.abas.univariado }));
     expect(roteador.state.location.search).toBe('?aba=univariado');
+  });
+
+  it('bivariado com menos de duas colunas numéricas: só parâmetros manuais, com a nota', async () => {
+    const umaNumerica = colunasGerador.filter((coluna) => coluna.coluna !== 'peso_kg');
+    simularApi([{ caminho: `${BASE}/colunas`, corpo: umaNumerica }, ...ROTAS.slice(1)]);
+
+    renderizarPagina('/gerador?aba=bivariado');
+
+    expect(await screen.findByText(T.origem.semPar)).toBeInTheDocument();
+    expect(screen.queryByRole('radiogroup', { name: T.origem.rotulo })).not.toBeInTheDocument();
+    expect(screen.queryByLabelText(T.y)).not.toBeInTheDocument();
+    expect(screen.getByRole('textbox', { name: T.mediaDe(T.x) })).toBeEnabled();
   });
 
   it('sem dataset, só parâmetros manuais com o tipo', async () => {
@@ -197,5 +209,43 @@ describe('PaginaGerador', () => {
     });
     const [primeiro, segundo] = chamadasPara(api, 'POST', '/gerador/univariado');
     expect(segundo?.corpo).toEqual({ ...(primeiro?.corpo as object), semente: 42 });
+  });
+
+  it('ao voltar para a etapa, mostra a última geração da sessão na aba do tipo dela', async () => {
+    simularApi([...ROTAS, { caminho: `/gerador/${geradoPares.gerado_id}`, corpo: geradoPares }]);
+    const ultimoGerado = { id: geradoPares.gerado_id, descricao: 'altura_m × peso_kg · 500 pares' };
+
+    const { usuario } = renderizarComProvedores(<PaginaGerador />, {
+      rota: '/gerador?aba=bivariado',
+      dataset: DATASET_TESTE,
+      ultimoGerado,
+    });
+
+    expect(await screen.findByText(T.resultado.titulo)).toBeInTheDocument();
+    expect(screen.getByText(EXPLICACAO)).toBeInTheDocument();
+    await usuario.click(screen.getByRole('tab', { name: T.abas.univariado }));
+    expect(await screen.findByText(T.resultado.vazio.titulo)).toBeInTheDocument();
+  });
+
+  it('a última geração que saiu da memória do servidor não aparece', async () => {
+    simularApi([
+      ...ROTAS,
+      {
+        caminho: `/gerador/${geradoAltura.gerado_id}`,
+        status: 404,
+        corpo: { codigo: 'GERADO_NAO_ENCONTRADO', mensagem: 'Sumiu.', sugestao: 'Gere de novo.' },
+      },
+    ]);
+    const ultimoGerado = { id: geradoAltura.gerado_id, descricao: 'altura_m · 500 valores' };
+
+    renderizarComProvedores(<PaginaGerador />, {
+      rota: '/gerador',
+      dataset: DATASET_TESTE,
+      ultimoGerado,
+    });
+
+    await screen.findByText(/Mesma média/);
+    expect(screen.getByText(T.resultado.vazio.titulo)).toBeInTheDocument();
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
   });
 });

@@ -108,7 +108,8 @@ describe('cartoesResumoCategorico', () => {
     expect(cartoes.map((c) => c.rotulo)).toEqual(['Moda', 'Média', 'Mediana', 'Desvio padrão']);
     expect(cartoes[3]?.medida).toMatchObject({
       aplicavel: false,
-      motivo: analiseNominal.nao_aplicavel[1]?.motivo,
+      motivo:
+        'Desvio padrão não se aplica a qualitativas nominais: precisa de distâncias entre números.',
     });
   });
 });

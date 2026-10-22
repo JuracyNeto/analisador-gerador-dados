@@ -109,11 +109,7 @@ function RelatorioDoDataset({ datasetId, nomeArquivo }: Readonly<Props>) {
             offline={offline}
             aoMudarOffline={setOffline}
           />
-          <PreviaRelatorio
-            src={previa.src}
-            carregando={previa.carregando}
-            aoCarregar={previa.aoCarregar}
-          />
+          <PreviaRelatorio {...previa.pagina} />
         </div>
       )}
       {ACOES_RODAPE}

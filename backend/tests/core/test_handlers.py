@@ -43,7 +43,11 @@ def test_erro_inesperado_nao_vaza_detalhes() -> None:
     resposta = cliente.get("/teste/inesperado")
 
     assert resposta.status_code == 500
-    assert resposta.json()["codigo"] == "ERRO_INTERNO"
+    assert resposta.json() == {
+        "codigo": "ERRO_INTERNO",
+        "mensagem": "Não conseguimos concluir esta ação.",
+        "sugestao": "Tente de novo. Se continuar, reinicie o servidor e recarregue a página.",
+    }
     assert "detalhe interno" not in resposta.text
 
 
@@ -51,5 +55,8 @@ def test_validacao_cita_o_campo_em_portugues() -> None:
     resposta = cliente.get("/teste/validacao", params={"quantidade": "abc"})
 
     assert resposta.status_code == 422
-    assert resposta.json()["codigo"] == "ENTRADA_INVALIDA"
-    assert "quantidade" in resposta.json()["mensagem"]
+    assert resposta.json() == {
+        "codigo": "ENTRADA_INVALIDA",
+        "mensagem": "Não conseguimos usar alguns valores do pedido (quantidade).",
+        "sugestao": "Confira esses campos e tente de novo.",
+    }

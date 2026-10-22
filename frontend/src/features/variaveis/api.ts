@@ -31,9 +31,13 @@ function alterarTipo(
   return requisitar<TipoColuna>(caminho, corpoJson('PATCH', alteracao));
 }
 
-/** Tipo e ordem das categorias mudam análises, diagnóstico e relatório (tabela de invalidação, D68). */
+/**
+ * Tipo e ordem das categorias mudam análises, diagnóstico e relatório (tabela de invalidação, D68)
+ * e o `tem_ajustes` do resumo (confirmação de "Trocar arquivo" e "Ler de novo", D163).
+ */
 function invalidarDerivados(cliente: QueryClient, id: string): Promise<unknown> {
   const chaves = [
+    chavesDataset.primeiraPagina(id),
     chavesDataset.colunas(id),
     chavesDataset.diagnostico(id),
     chavesDataset.analises(id),

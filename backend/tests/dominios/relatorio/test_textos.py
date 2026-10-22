@@ -4,6 +4,7 @@ from app.dominios.relatorio.conteudo import DadosLeitura
 from app.dominios.relatorio.textos import (
     SELOS_SEVERIDADE,
     contadores_severidade,
+    contagem_coluna,
     descrever_leitura,
     selo_assimetria,
     selo_correlacao,
@@ -18,7 +19,7 @@ def test_descrever_leitura_de_txt() -> None:
 
     assert descrever_leitura(dados) == (
         "Arquivo de texto separado por ponto e vírgula, decimal com vírgula, codificação UTF-8 "
-        "e cabeçalho na primeira linha. Foram lidas 230 linhas e 8 colunas."
+        "e cabeçalho na primeira linha. Lemos 230 linhas e 8 colunas."
     )
 
 
@@ -26,7 +27,7 @@ def test_descrever_leitura_de_planilha() -> None:
     dados = DadosLeitura("xlsx", None, None, None, 1, 1, 1)
 
     assert descrever_leitura(dados) == (
-        "Planilha do Excel com cabeçalho na primeira linha. Foram lidas 1 linha e 1 coluna."
+        "Planilha do Excel com cabeçalho na primeira linha. Lemos 1 linha e 1 coluna."
     )
 
 
@@ -64,9 +65,9 @@ def test_selo_assimetria(classe: str, sentido: str | None, esperado: str) -> Non
 @pytest.mark.parametrize(
     ("forca", "sentido", "esperado"),
     [
-        ("forte", "positiva", "Positiva forte"),
-        ("moderada", "nula", "Fraca"),
-        ("fraca", "negativa", "Fraca"),
+        ("forte", "positiva", "Correlação positiva forte"),
+        ("moderada", "nula", "Correlação fraca"),
+        ("fraca", "negativa", "Correlação fraca"),
     ],
 )
 def test_selo_correlacao(forca: str, sentido: str, esperado: str) -> None:
@@ -105,3 +106,15 @@ def test_selos_com_icone_e_palavra() -> None:
     assert titulo_aviso("R4", "Muitos valores redondos em peso_kg") == (
         "R4 · Muitos valores redondos em peso_kg"
     )
+
+
+@pytest.mark.parametrize(
+    ("n", "faltantes", "esperado"),
+    [
+        (1500, 0, "1.500 valores válidos"),
+        (1, 1, "1 valor válido · 1 faltante"),
+        (227, 3, "227 valores válidos · 3 faltantes"),
+    ],
+)
+def test_contagem_coluna(n: int, faltantes: int, esperado: str) -> None:
+    assert contagem_coluna(n, faltantes) == esperado

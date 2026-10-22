@@ -22,7 +22,7 @@ Trabalho da disciplina de Estatística.
 **Gerador**
 - Univariado: gera X novos dados a partir de uma coluna (preservando a média e o desvio exatos, ou com novos parâmetros) ou só com parâmetros; o método segue o tipo da coluna (Normal ou KDE com reescala, Poisson, empírica, Bernoulli, sorteio pelas frequências)
 - Bivariado: gera pares com médias, desvios e correlação alvo (Cholesky; com ajuste exato, r = ρ)
-- Semente para repetir o resultado, tabela Original × Gerado, gráfico, explicação do método em linguagem simples, Baixar CSV, Anexar ao dataset atual e Usar como novo dataset
+- Semente para repetir o resultado, tabela Original × Gerado, gráfico, explicação do método em linguagem simples, Baixar CSV, Anexar ao arquivo atual e Usar como novo arquivo
 
 **Detector**
 - 11 regras de suspeita (bloco alinhado, correlação por blocos, formato numérico, valores redondos, duplicatas, comparação temporal, valores distantes, Lei de Benford, último dígito, Normal perfeita demais e sequência), cada uma comparada com o que o acaso produziria

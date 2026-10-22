@@ -1,6 +1,7 @@
 """Ajuste manual do tipo de uma coluna (spec 02, "Ajuste manual")."""
 
 from app.compartilhado.datas import reconhecer_datas
+from app.compartilhado.numeros import formatar_inteiro
 from app.compartilhado.tipos import TIPOS_NUMERICOS, OrigemTipo, TipoVariavel
 from app.dominios.datasets import erros
 from app.dominios.datasets.classificacao import (
@@ -31,7 +32,8 @@ def _validar(coluna: ColunaLida, tipo: TipoVariavel) -> None:
     if tipo in TIPOS_NUMERICOS and coluna.numeros is None:
         raise erros.tipo_incompativel("Esta coluna tem textos; não pode ser numérica.")
     if tipo == TipoVariavel.BINARIA and coluna.n_distintos != VALORES_BINARIA:
-        mensagem = f"Binária precisa de exatamente 2 valores; esta coluna tem {coluna.n_distintos}."
+        distintos = formatar_inteiro(coluna.n_distintos)
+        mensagem = f"Binária precisa de exatamente 2 valores; esta coluna tem {distintos}."
         raise erros.tipo_incompativel(mensagem)
 
 

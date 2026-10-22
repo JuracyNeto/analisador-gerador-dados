@@ -5,6 +5,8 @@ export const TEXTOS_UI = {
   ocultarFormula: 'Ocultar fórmula',
   naoSeAplica: 'Não se aplica',
   valorAusente: '—',
+  sim: 'Sim',
+  nao: 'Não',
   tentarDeNovo: 'Tentar de novo',
   fecharAviso: 'Fechar aviso',
   fechar: 'Fechar',

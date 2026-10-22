@@ -1,8 +1,9 @@
 import { useQuery } from '@tanstack/react-query';
 import { Suspense } from 'react';
 import { Outlet } from 'react-router';
-import { opcoesPrimeiraPagina } from '../../shared/api/dataset';
+import { opcoesPrimeiraPagina, type ResumoDataset } from '../../shared/api/dataset';
 import { juntarClasses } from '../../shared/lib/classes';
+import type { GeradoSessao } from '../../shared/sessao/tipos';
 import { useSessao } from '../../shared/sessao/useSessao';
 import EstadoCarregando from '../../shared/ui/EstadoCarregando';
 import { TEXTOS_APP } from '../textos';
@@ -12,8 +13,13 @@ import estilos from './LayoutApp.module.css';
 import { useBarraRecolhivel } from './useBarraRecolhivel';
 import { useSessaoExpirada } from './useSessaoExpirada';
 
+/** Tipos corrigidos, limpeza ou dados gerados: o que "Trocar arquivo" desfaria. */
+function temTrabalho(resumo: ResumoDataset | undefined, gerado: GeradoSessao | null): boolean {
+  return resumo?.tem_ajustes === true || gerado !== null;
+}
+
 export default function LayoutApp() {
-  const { dataset } = useSessao();
+  const { dataset, ultimoGerado } = useSessao();
   const { data: resumo } = useQuery({
     ...opcoesPrimeiraPagina(dataset?.id ?? null),
     select: (pagina) => pagina.resumo,
@@ -50,6 +56,7 @@ export default function LayoutApp() {
           nomeArquivo={dataset?.nomeArquivo}
           nLinhas={resumo?.n_linhas}
           nColunas={resumo?.n_colunas}
+          temAjustes={temTrabalho(resumo, ultimoGerado)}
         />
         <main id="conteudo" className={estilos.principal}>
           <Suspense fallback={<EstadoCarregando mensagem={TEXTOS_APP.abrindoEtapa} />}>

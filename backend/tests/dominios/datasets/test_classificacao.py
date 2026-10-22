@@ -136,3 +136,19 @@ def test_classificar_tabela_descreve_cada_coluna() -> None:
     assert sexo.contagens == {"F": 2, "M": 1}
     assert tipos["peso"].exemplos == ("58,2", "79,6", "63")
     assert tipos["peso"].contagens == {}
+
+
+def test_numeros_negativos_viram_texto_com_o_sinal_de_menos() -> None:
+    """D107: exemplos e categorias saem como o usuário leria (−3, −2,5), sem o hífen."""
+    coluna = ler_coluna("saldo", pd.Series(["-3", "-2,5", "4"]), ",", LIMIARES)
+
+    assert list(coluna.textos) == ["−3", "−2,5", "4"]
+
+
+def test_motivo_da_continua_com_muitos_inteiros_usa_ponto_de_milhar() -> None:
+    classificacao = _classificar("valor", list(range(1500)) * 2)
+
+    assert (
+        classificacao.motivo
+        == "Inteiros com muitos valores diferentes (1.500); tratada como contínua."
+    )

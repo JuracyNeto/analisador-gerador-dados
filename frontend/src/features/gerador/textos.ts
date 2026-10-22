@@ -1,3 +1,4 @@
+import { pluralizar } from '../../shared/lib/pluralizar';
 import type { IdAba, Modo, Origem, TipoManual } from './tipos';
 
 const TIPOS_NO_PLURAL = new Map([
@@ -12,9 +13,10 @@ export const TEXTOS_GERADOR = {
   rotuloAbas: 'Tipo de geração',
   origem: {
     rotulo: 'Origem',
-    univariado: { coluna: 'Coluna do dataset', manual: 'Parâmetros manuais' },
-    bivariado: { coluna: 'Par do dataset', manual: 'Parâmetros manuais' },
-  } satisfies { rotulo: string } & Record<IdAba, Record<Origem, string>>,
+    univariado: { coluna: 'Coluna do arquivo', manual: 'Parâmetros manuais' },
+    bivariado: { coluna: 'Par do arquivo', manual: 'Parâmetros manuais' },
+    semPar: 'Este arquivo tem menos de duas colunas numéricas; gere o par com parâmetros manuais.',
+  } satisfies { rotulo: string; semPar: string } & Record<IdAba, Record<Origem, string>>,
   coluna: 'Coluna',
   tipo: 'Tipo',
   tipos: {
@@ -30,7 +32,7 @@ export const TEXTOS_GERADOR = {
     parametros: 'Novos parâmetros',
   } satisfies Record<Modo, string>,
   descricaoPreservar: (media: string, desvio: string) =>
-    `Mesma média (${media}) e desvio (${desvio}) da coluna.`,
+    `Mesma média (${media}) e desvio padrão (${desvio}) da coluna.`,
   descricaoPreservarCategorias: 'Mesmas frequências da coluna.',
   descricaoPreservarBinaria: (sucesso: string, chance: string) =>
     `Mesma chance de ${sucesso} (${chance}) da coluna.`,
@@ -38,9 +40,9 @@ export const TEXTOS_GERADOR = {
   soPreservar: (tipo: string) =>
     `Novos parâmetros não se aplicam a ${tipo}: só dá para preservar as frequências.`,
   media: 'Média',
-  desvio: 'Desvio',
-  chance: (sucesso: string) => `Chance de ${sucesso}`,
-  chanceSemOrigem: 'Chance de 1',
+  desvio: 'Desvio padrão',
+  chance: (sucesso: string) => `Chance de ${sucesso} (de 0 a 1)`,
+  chanceSemOrigem: 'Chance de 1 (de 0 a 1)',
   semente: 'Semente',
   sementeAjuda: '(repete o mesmo resultado)',
   limitar: 'Limitar à faixa original',
@@ -49,7 +51,7 @@ export const TEXTOS_GERADOR = {
   x: 'X',
   y: 'Y',
   mediaDe: (coluna: string) => `Média de ${coluna}`,
-  desvioDe: (coluna: string) => `Desvio de ${coluna}`,
+  desvioDe: (coluna: string) => `Desvio padrão de ${coluna}`,
   rho: 'Correlação alvo (ρ)',
   exato: 'Ajuste exato',
   exatoAjuda: 'A correlação dos dados gerados fica exatamente igual a ρ.',
@@ -60,7 +62,7 @@ export const TEXTOS_GERADOR = {
     quantidade: 'Digite um número inteiro entre 1 e 1.000.000.',
     quantidadePares: 'Digite um número inteiro entre 3 e 1.000.000.',
     numero: 'Digite um número, por exemplo 70,3.',
-    desvio: 'O desvio precisa ser maior que zero.',
+    desvio: 'O desvio padrão precisa ser maior que zero.',
     chance: 'Use um valor entre 0 e 1, por exemplo 0,5.',
     semente: 'A semente precisa ser um número inteiro entre 0 e 4.294.967.295.',
   },
@@ -82,17 +84,20 @@ export const TEXTOS_GERADOR = {
   modoNoSubtitulo: { bivariado: 'correlação alvo' },
   acoes: {
     baixar: 'Baixar CSV',
-    anexar: 'Anexar ao dataset atual',
-    usar: 'Usar como novo dataset',
+    anexar: 'Anexar ao arquivo atual',
+    usar: 'Usar como novo arquivo',
   },
   toast: {
-    valores: (n: string) => `Geramos ${n} valores.`,
-    pares: (n: string) => `Geramos ${n} pares.`,
+    valores: (n: number) => `Geramos ${pluralizar(n, 'valor', 'valores')}.`,
+    pares: (n: number) => `Geramos ${pluralizar(n, 'par', 'pares')}.`,
     baixado: (nome: string) => `CSV baixado: ${nome}.`,
-    anexado: (n: string, arquivo: string) => `Anexamos ${n} linhas a ${arquivo}.`,
-    novo: (n: string) => `Novo dataset criado: ${n} linhas.`,
+    anexado: (n: number, arquivo: string) =>
+      `Anexamos ${pluralizar(n, 'linha', 'linhas')} a ${arquivo}.`,
+    novo: (n: number) => `Novo arquivo criado: ${pluralizar(n, 'linha', 'linhas')}.`,
   },
-  descricaoSessao: (colunas: string, n: string) => `${colunas} · ${n}`,
+  /** "altura_m × peso_kg · 300 pares" (a última geração, no Relatório). */
+  descricaoSessao: (colunas: string, n: number, tipo: IdAba) =>
+    `${colunas} · ${tipo === 'bivariado' ? pluralizar(n, 'par', 'pares') : pluralizar(n, 'valor', 'valores')}`,
   /** Geração que saiu da memória do servidor (D149): refaz o mesmo pedido, com a mesma semente. */
   expirado: {
     descricao: (semente: number) =>

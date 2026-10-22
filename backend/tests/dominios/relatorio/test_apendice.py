@@ -30,7 +30,7 @@ def _bloco(*formulas: Formula) -> BlocoAnalises:
 
 
 def _coluna(nome: str, analises: BlocoAnalises | None, forma: SecaoForma | None) -> SecaoColuna:
-    return SecaoColuna(nome, "Quantitativa contínua", 10, 0, analises, forma)
+    return SecaoColuna(nome, "Quantitativa contínua", "10 valores válidos", analises, forma)
 
 
 def _aviso(formula: FormulaApendice | None, colunas: tuple[str, ...] = ()) -> AvisoRelatorio:

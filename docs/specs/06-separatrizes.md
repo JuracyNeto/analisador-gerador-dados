@@ -18,7 +18,7 @@ Entrada: `valor` (número) e `tipo` ∈ {quartil, decil, percentil}.
    - quartil: v ≤ Q1 → "1º quartil (até Q1)"; Q1 < v ≤ Q2 → "2º quartil (entre Q1 e Q2)"; …; v > Q3 → "4º quartil (acima de Q3)"
    - decil: entre Dₖ₋₁ e Dₖ → "k-ésimo decil"
    - percentil: ⌈PR⌉ limitado a 1..100 → "percentil k"
-3. Fora do intervalo observado: avisar "O valor está abaixo do menor dado observado ({mín})" / acima do maior.
+3. Fora do intervalo observado: a tela avisa "O valor está abaixo do menor dado observado ({mín})" / acima do maior, e a frase diz "Nenhum dado é menor que ele." / "Todos os dados são menores que ele." (sem repetir o aviso, M4.3).
 
 Saída: `{valor, tipo, regiao, indice, limite_inferior, limite_superior, posicao_percentil, fora_da_faixa, minimo, maximo, marcas, frase}` — `marcas` tem 3 (quartil), 9 (decil) ou os 9 destaques P1, P5, P10, P25, P50, P75, P90, P95, P99 (percentil); `fora_da_faixa` é `abaixo`, `acima` ou vazio.
 Frase exemplo: "O valor 37 está no **2º quartil** (entre Q1 = 30 e Q2 = 41). Cerca de 42% dos dados são menores que ele."

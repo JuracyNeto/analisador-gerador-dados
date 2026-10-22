@@ -6,7 +6,12 @@ from datetime import datetime
 from itertools import combinations
 from typing import Any, Protocol
 
-from app.compartilhado.numeros import formatar_com_sinal, formatar_p_valor, formatar_percentual
+from app.compartilhado.numeros import (
+    formatar_inteiro,
+    formatar_numero,
+    formatar_p_valor,
+    formatar_percentual,
+)
 from app.compartilhado.tipos import TIPOS_AUXILIARES, Formula, TipoVariavel
 from app.core.erros import EntradaInvalida, NaoEncontrado
 from app.dominios.analise.servico import (
@@ -92,7 +97,7 @@ def _limpeza(resumo: Resumo) -> tuple[str, ...]:
 
 
 def _valor(valor: float | str | None, sufixo: str = "") -> str:
-    return f"{formatar_com_sinal(valor)}{sufixo}" if isinstance(valor, float) else str(valor)
+    return f"{formatar_numero(valor)}{sufixo}" if isinstance(valor, float) else str(valor)
 
 
 def _itens(candidatas: Iterable[tuple[str, Medida, str]]) -> list[ItemMedida]:
@@ -107,12 +112,12 @@ def _medidas(analise: Analise) -> tuple[ItemMedida, ...]:
         candidatas += [
             ("Desvio padrão", disp.desvio_padrao, ""),
             ("Variância", disp.variancia, ""),
-            ("CV", disp.cv, "%"),
-            ("IQR", disp.iqr, ""),
+            ("Coeficiente de variação", disp.cv, "%"),
+            ("Amplitude interquartil (IQR)", disp.iqr, ""),
             ("Amplitude", disp.amplitude, ""),
         ]
     itens = _itens(candidatas)
-    modas = ", ".join(_valor(v) for v in tend.moda.valores) or "não há (amodal)"
+    modas = ", ".join(_valor(v) for v in tend.moda.valores) or "Sem moda"
     return (*itens[:2], ItemMedida("Moda", modas), *itens[2:])
 
 
@@ -122,7 +127,7 @@ def _tabela(analise: Analise) -> tuple[tuple[str, ...], tuple[tuple[str, ...], .
     cabecalho = (primeira, "fᵢ", "fr%") + (("Fr%",) if tabela.acumulada_aplicavel else ())
     acumular = tabela.acumulada_aplicavel
     linhas = tuple(
-        (linha.rotulo, str(linha.fi), formatar_percentual(linha.fr_pct))
+        (linha.rotulo, formatar_inteiro(linha.fi), formatar_percentual(linha.fr_pct))
         + ((formatar_percentual(linha.fr_acum_pct or 0.0),) if acumular else ())
         for linha in tabela.linhas
     )
@@ -224,8 +229,7 @@ def _secao_coluna(analise: Analise, ordem: int, secoes: frozenset[Secao]) -> Sec
     return SecaoColuna(
         coluna=analise.coluna,
         tipo=textos.TIPOS_LEGIVEIS[analise.tipo],
-        n=analise.n,
-        n_faltantes=analise.n_faltantes,
+        contagem=textos.contagem_coluna(analise.n, analise.n_faltantes),
         analises=_bloco_analises(analise, ordem) if "analises" in secoes else None,
         forma=_secao_forma(analise, ordem) if "distribuicoes" in secoes else None,
     )
@@ -249,12 +253,12 @@ def pares_mais_fortes(
 def _medidas_par(bivariada: Bivariada) -> tuple[ItemMedida, ...]:
     reta = bivariada.regressao
     selo = textos.selo_correlacao(bivariada.forca, bivariada.sentido)
-    pearson = ItemMedida("r de Pearson", _valor(bivariada.pearson.valor), selo)
+    pearson = ItemMedida("Correlação de Pearson (r)", _valor(bivariada.pearson.valor), selo)
     p_valor = bivariada.teste_t.valor
     teste = ItemMedida("Teste t", formatar_p_valor(p_valor) if isinstance(p_valor, float) else "")
     candidatas = [("ρ de Spearman", bivariada.spearman, ""), ("R²", reta.r2, "%")]
     candidatas += [("Sₑ", reta.se, "")]
-    pares = ItemMedida("Pares (n)", str(bivariada.n))
+    pares = ItemMedida("Pares (n)", formatar_inteiro(bivariada.n))
     return (pearson, teste, *_itens(candidatas), pares)
 
 

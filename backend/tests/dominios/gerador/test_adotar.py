@@ -90,6 +90,8 @@ def test_anexar_coluna_que_nao_existe(cliente: TestClient) -> None:
 
     assert resposta.status_code == 400
     assert resposta.json()["codigo"] == "COLUNAS_INCOMPATIVEIS"
+    assert resposta.json()["sugestao"] == 'Use "Usar como novo arquivo".'
+    assert "arquivo atual" in resposta.json()["mensagem"]
 
 
 def test_anexar_sem_dataset(cliente: TestClient) -> None:

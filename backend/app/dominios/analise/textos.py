@@ -74,4 +74,4 @@ def interpretar_media_mediana(media: float, mediana: float, desvio: float) -> st
     return "Média menor que a mediana: há valores baixos puxando a média (assimetria à esquerda)."
 
 
-CV_MEDIA_ZERO = "O CV não pode ser calculado porque a média é zero."
+CV_MEDIA_ZERO = "Coeficiente de variação não se aplica: a média é zero."

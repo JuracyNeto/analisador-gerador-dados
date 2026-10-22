@@ -44,9 +44,9 @@ describe('montarSecoes', () => {
 
   it('fora de faixa: ocorrências, faixa usada e limites na ação', () => {
     const [idade, peso] = porId('fora_de_faixa')?.linhas ?? [];
-    expect(idade?.descricao).toBe('Linhas 19 e 201: 0 e 230');
+    expect(idade?.descricao).toBe('Linhas 19 e 201: 0; 230');
     expect(idade?.detalhe).toBe('Faixa aceita: 1 a 110 (seus limites)');
-    expect(peso?.detalhe).toBe('Faixa aceita: 38,5 a 102,1 (regra do IQR)');
+    expect(peso?.detalhe).toBe('Faixa aceita: 38,5 a 102,1 (calculada pelos quartis)');
     expect(idade?.acaoBase.limites).toEqual({ min: 1, max: 110 });
   });
 
@@ -54,7 +54,7 @@ describe('montarSecoes', () => {
     const [goiania] = porId('inconsistencia')?.linhas ?? [];
     expect(porId('inconsistencia')?.subtitulo).toBe('2 grupos em cidade');
     expect(goiania?.descricao).toBe('"Goiania" (6), "goiânia" (2)');
-    expect(goiania?.opcoes[0]?.rotulo).toBe("Unificar 'Goiania', 'goiânia' → 'Goiânia'");
+    expect(goiania?.opcoes[0]?.rotulo).toBe('Unificar "Goiania", "goiânia" → "Goiânia"');
   });
 });
 

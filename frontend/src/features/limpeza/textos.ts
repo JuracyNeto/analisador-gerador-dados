@@ -62,7 +62,7 @@ export const TEXTOS_LIMPEZA = {
       subtitulo: (n: number) => pluralizar(n, 'valor', 'valores'),
       faixa: (min: string, max: string, origem: string) =>
         `Faixa aceita: ${min} a ${max} (${origem})`,
-      origem: { iqr: 'regra do IQR', usuario: 'seus limites' },
+      origem: { iqr: 'calculada pelos quartis', usuario: 'seus limites' },
     },
     grafias: {
       titulo: 'Grafias diferentes',
@@ -86,8 +86,8 @@ export const TEXTOS_LIMPEZA = {
     removerLinha: 'Remover a linha',
     remover: 'Remover',
     removerValor: 'Remover o valor',
-    limitar: (min: string, max: string) => `Limitar ao limite (${min} a ${max})`,
-    unificar: (variacoes: string, forma: string) => `Unificar ${variacoes} → '${forma}'`,
+    limitar: (min: string, max: string) => `Limitar à faixa (${min} a ${max})`,
+    unificar: (variacoes: string, forma: string) => `Unificar ${variacoes} → "${forma}"`,
   },
   limites: {
     titulo: 'Limites por coluna',
@@ -113,13 +113,13 @@ export const TEXTOS_LIMPEZA = {
     aplicando: 'Aplicando…',
     semAcoes: 'Escolha ao menos uma ação diferente de "Manter".',
     voltar: 'Voltar para Variáveis',
-    continuar: 'Continuar para Análise',
+    continuar: 'Continuar para Análise univariada',
   },
   vazio: {
     titulo: 'Nenhum problema encontrado',
     descricao:
       'Não encontramos problemas comuns: sem faltantes, duplicados, valores fora de faixa ou grafias diferentes.',
-    continuar: 'Continuar para Análise',
+    continuar: 'Continuar para Análise univariada',
   },
   toast: {
     aplicada: (removidas: number) =>

@@ -9,6 +9,7 @@ describe('lerParametros', () => {
       coluna: 'peso_kg',
       classes: 12,
       tentativas: null,
+      aba: null,
     });
   });
 
@@ -17,7 +18,16 @@ describe('lerParametros', () => {
       coluna: null,
       classes: null,
       tentativas: null,
+      aba: null,
     });
+  });
+
+  it.each([
+    ['graficos', 'graficos'],
+    ['forma', 'forma'],
+    ['outra', null],
+  ])('aba=%s vira %s', (texto, esperado) => {
+    expect(lerParametros(new URLSearchParams({ aba: texto })).aba).toBe(esperado);
   });
 
   it.each([

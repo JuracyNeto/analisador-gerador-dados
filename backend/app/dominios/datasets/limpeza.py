@@ -8,6 +8,7 @@ import pandas as pd
 
 from app.compartilhado.numeros import formatar_numero
 from app.compartilhado.series import converter_para_numero, na_precisao
+from app.compartilhado.textos import quantidade
 from app.compartilhado.tipos import TIPOS_NUMERICOS
 from app.dominios.datasets import erros
 from app.dominios.datasets import frases_limpeza as frases
@@ -23,6 +24,7 @@ from app.dominios.datasets.tabela import celula
 ORDEM_PROBLEMAS = ("inconsistencia", "tipo_misto", "duplicados", "fora_de_faixa", "faltantes")
 MANTER = "manter"
 VAZIO = "vazio"
+MAX_VALORES_LOG = 8
 
 
 @dataclass(frozen=True, slots=True)
@@ -106,7 +108,10 @@ def _com_coluna(ctx: _Contexto, coluna: str, serie: pd.Series) -> pd.DataFrame:
 
 def _remocao(ctx: _Contexto, mascara: pd.Series, frase: str) -> _Efeito:
     restantes = ctx.dados[~mascara]
-    antes, depois = f"{len(ctx.dados)} linhas", f"{len(restantes)} linhas"
+    antes, depois = (
+        quantidade(len(ctx.dados), "linha", "linhas"),
+        quantidade(len(restantes), "linha", "linhas"),
+    )
     return _Efeito(restantes, _linhas(mascara), antes, depois, frase)
 
 
@@ -114,6 +119,12 @@ def _texto(valor: Celula) -> str:
     if isinstance(valor, float | int) and not isinstance(valor, bool):
         return formatar_numero(float(valor))
     return str(valor)
+
+
+def _textos(valores: pd.Series) -> str:
+    """Os valores mudados no log, como no exemplo da spec 16: "6,8; 712" (até 8, com "…")."""
+    escritos = "; ".join(_texto(celula(v)) for v in valores.iloc[:MAX_VALORES_LOG])
+    return f"{escritos}…" if len(valores) > MAX_VALORES_LOG else escritos
 
 
 # Faltantes ---------------------------------------------------------------------------------
@@ -217,8 +228,7 @@ def _limitar(ctx: _Contexto, acao: AcaoLimpeza) -> _Efeito:
     limitados = faixa.numeros.clip(faixa.inferior, faixa.superior)
     serie = _substituir(ctx.dados[faixa.coluna], faixa.fora, limitados, ctx.decimal)
     linhas = _linhas(faixa.fora)
-    antes = _texto(celula(faixa.numeros[faixa.fora].iloc[0])) if linhas else ""
-    depois = _texto(celula(limitados[faixa.fora].iloc[0])) if linhas else ""
+    antes, depois = _textos(faixa.numeros[faixa.fora]), _textos(limitados[faixa.fora])
     inferior, superior = formatar_numero(faixa.inferior), formatar_numero(faixa.superior)
     frase = frases.fora_limitados(len(linhas), faixa.coluna, inferior, superior)
     return _Efeito(_com_coluna(ctx, faixa.coluna, serie), linhas, antes, depois, frase)
@@ -228,8 +238,8 @@ def _marcar_fora(ctx: _Contexto, acao: AcaoLimpeza) -> _Efeito:
     faixa = _faixa(ctx, acao)
     serie = ctx.dados[faixa.coluna].mask(faixa.fora)
     linhas = _linhas(faixa.fora)
-    antes = _texto(celula(faixa.numeros[faixa.fora].iloc[0])) if linhas else ""
     frase = frases.fora_marcados(len(linhas), faixa.coluna)
+    antes = _textos(faixa.numeros[faixa.fora])
     return _Efeito(_com_coluna(ctx, faixa.coluna, serie), linhas, antes, VAZIO, frase)
 
 
