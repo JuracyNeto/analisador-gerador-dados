@@ -98,7 +98,7 @@
   {% set numero.secao = numero.secao + 1 %}
   <section class="coluna">
     <h2>{{ numero.secao }}. Análise de <span class="mono">{{ col.coluna }}</span></h2>
-    <p class="nota">{{ col.tipo }} · {{ col.n }} valores válidos{% if col.n_faltantes %} · {{ col.n_faltantes }} faltantes{% endif %}</p>
+    <p class="nota">{{ col.tipo }} · {{ col.contagem }}</p>
     {% set a = col.analises %}
     {% if a %}
     {% if a.medidas %}{{ medidas(a.medidas) }}{% endif %}

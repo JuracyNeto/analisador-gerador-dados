@@ -1,6 +1,6 @@
 """Títulos, "Por que este gráfico?" e resumos textuais das figuras (spec 08, spec 16)."""
 
-from app.compartilhado.numeros import formatar_numero, formatar_percentual
+from app.compartilhado.numeros import formatar_inteiro, formatar_numero, formatar_percentual
 from app.dominios.graficos.entradas import Barra, DadosUnivariados, ResumoCaixa
 
 METADE_PCT = 50
@@ -86,11 +86,11 @@ PORQUE = {
 
 
 def titulo_distribuicao(dados: DadosUnivariados) -> str:
-    return f"Distribuição de {dados.coluna} (n = {dados.n})"
+    return f"Distribuição de {dados.coluna} (n = {formatar_inteiro(dados.n)})"
 
 
 def titulo_categorias(dados: DadosUnivariados) -> str:
-    return f"Frequência de {dados.coluna} (n = {dados.n}), da maior para a menor"
+    return f"Frequência de {dados.coluna} (n = {formatar_inteiro(dados.n)}), da maior para a menor"
 
 
 def titulo_boxplot(dados: DadosUnivariados) -> str:
@@ -158,11 +158,11 @@ RESUMOS_BINOMIAL = {
 
 
 def titulo_histograma_normal(coluna: str, n: int) -> str:
-    return f"Histograma de {coluna} com curva Normal (n = {n})"
+    return f"Histograma de {coluna} com curva Normal (n = {formatar_inteiro(n)})"
 
 
 def titulo_bastoes_normal(coluna: str, n: int) -> str:
-    return f"Distribuição de {coluna} com curva Normal (n = {n})"
+    return f"Distribuição de {coluna} com curva Normal (n = {formatar_inteiro(n)})"
 
 
 def titulo_qqplot(coluna: str) -> str:
@@ -170,7 +170,8 @@ def titulo_qqplot(coluna: str) -> str:
 
 
 def titulo_binomial(coluna: str, tentativas: int, p: float) -> str:
-    return f"{coluna}: observado × Binomial (n = {tentativas}; p = {formatar_numero(p)})"
+    n, chance = formatar_inteiro(tentativas), formatar_numero(p)
+    return f"{coluna}: observado × Binomial (n = {n}; p = {chance})"
 
 
 RESUMOS_DISPERSAO = {
@@ -189,7 +190,7 @@ TITULO_MATRIZ = "Matriz de correlação (Pearson)"
 
 
 def titulo_dispersao(x: str, y: str, n: int) -> str:
-    return f"{y} em função de {x} (n = {formatar_numero(n)})"
+    return f"{y} em função de {x} (n = {formatar_inteiro(n)})"
 
 
 def resumo_dispersao(forca: str, sentido: str, n: int, mostrados: int) -> str:
@@ -227,7 +228,7 @@ def resumo_sobreposicao(maior_diferenca: float | None, n_gerado: int) -> str:
 
 
 def titulo_pares_gerados(n: int) -> str:
-    return f"Pares gerados (n = {formatar_numero(n)})"
+    return f"Pares gerados (n = {formatar_inteiro(n)})"
 
 
 def resumo_pares_gerados(r: float, n: int, mostrados: int) -> str:

@@ -1,14 +1,14 @@
 """Frases do log de limpeza: 1ª pessoa do plural, verbo no passado + quantidade (spec 16)."""
 
-from app.compartilhado.textos import pluralizar
+from app.compartilhado.textos import pluralizar, quantidade
 
 
 def _linhas(n: int) -> str:
-    return f"{n} {pluralizar(n, 'linha', 'linhas')}"
+    return quantidade(n, "linha", "linhas")
 
 
 def _valores(n: int) -> str:
-    return f"{n} {pluralizar(n, 'valor', 'valores')}"
+    return quantidade(n, "valor", "valores")
 
 
 def duplicadas_removidas(n: int) -> str:
@@ -37,8 +37,8 @@ def fora_marcados(n: int, coluna: str) -> str:
 
 
 def grafias_unificadas(n: int, coluna: str) -> str:
-    return f"Unificamos {n} {pluralizar(n, 'grafia', 'grafias')} de {coluna}."
+    return f"Unificamos {quantidade(n, 'grafia', 'grafias')} de {coluna}."
 
 
 def textos_marcados(n: int, coluna: str) -> str:
-    return f"Marcamos {n} {pluralizar(n, 'texto', 'textos')} de {coluna} como faltantes."
+    return f"Marcamos {quantidade(n, 'texto', 'textos')} de {coluna} como faltantes."

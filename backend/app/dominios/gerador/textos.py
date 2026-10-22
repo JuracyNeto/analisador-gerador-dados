@@ -3,8 +3,8 @@
 from collections.abc import Callable
 from dataclasses import dataclass
 
-from app.compartilhado.numeros import formatar_inteiro, formatar_numero
-from app.compartilhado.textos import pluralizar
+from app.compartilhado.numeros import formatar_numero
+from app.compartilhado.textos import quantidade
 
 NOMES_METODOS = {
     "normal": "Normal com reescala",
@@ -51,10 +51,6 @@ def estatisticas_par(x: str, y: str) -> tuple[str, ...]:
 
 def numero(valor: float) -> str:
     return formatar_numero(valor)
-
-
-def quantidade(n: int, singular: str, plural: str) -> str:
-    return f"{formatar_inteiro(n)} {pluralizar(n, singular, plural)}"
 
 
 @dataclass(frozen=True, slots=True)

@@ -61,3 +61,12 @@ def test_complementares_nao_sao_recomendadas() -> None:
 
     assert not boxplot.recomendado
     assert ogiva.resumo == "Metade dos valores chega até 3,9 ⊢ 5,8."
+
+
+def test_titulo_com_n_grande_usa_ponto_de_milhar() -> None:
+    barras = (Barra("A", 1000, 66.7, 66.7), Barra("B", 500, 33.3, 100.0))
+    dados = DadosUnivariados("x", TipoVariavel.NOMINAL, 1500, barras)
+
+    principal = figuras_univariadas(dados)[0]
+
+    assert principal.titulo == "Frequência de x (n = 1.500), da maior para a menor"

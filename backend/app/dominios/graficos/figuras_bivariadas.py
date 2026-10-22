@@ -8,7 +8,7 @@ from typing import Any
 
 import numpy as np
 
-from app.compartilhado.numeros import formatar_numero
+from app.compartilhado.numeros import formatar_inteiro, formatar_numero
 from app.dominios.graficos.entradas import DadosBivariados, DadosMatriz
 from app.dominios.graficos.figuras import LARGURA_LINHA, Figura, figura_basica
 from app.dominios.graficos.tema import PAPEL_DIVERGENTE, PAPEL_PRINCIPAL, PAPEL_REFERENCIA
@@ -75,7 +75,7 @@ def dispersao(dados: DadosBivariados) -> Figura:
     extremos = _extremos(dados)
     reta = [dados.a + dados.b * valor for valor in extremos]
     tracos = [
-        _pontos(x, y, f"Pontos (n = {formatar_numero(len(dados.x))})"),
+        _pontos(x, y, f"Pontos (n = {formatar_inteiro(len(dados.x))})"),
         _linha(extremos, reta, dados.equacao),
     ]
     return _com_legenda(figura_basica(tracos, f"{dados.x_nome} (X)", f"{dados.y_nome} (Y)"))

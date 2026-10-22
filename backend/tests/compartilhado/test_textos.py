@@ -5,6 +5,7 @@ from app.compartilhado.textos import (
     normalizar_texto,
     p_valor_em_palavras,
     pluralizar,
+    quantidade,
 )
 
 
@@ -41,3 +42,10 @@ def test_juntar_lista_em_portugues(itens: list[str], esperado: str) -> None:
 )
 def test_p_valor_em_palavras(p: float, esperado: str) -> None:
     assert p_valor_em_palavras(p) == esperado
+
+
+@pytest.mark.parametrize(
+    ("n", "esperado"), [(1, "1 linha"), (3, "3 linhas"), (1500, "1.500 linhas")]
+)
+def test_quantidade_usa_ponto_de_milhar_e_concorda(n: int, esperado: str) -> None:
+    assert quantidade(n, "linha", "linhas") == esperado

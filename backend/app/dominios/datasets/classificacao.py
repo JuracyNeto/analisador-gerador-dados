@@ -11,7 +11,7 @@ from dataclasses import dataclass
 import pandas as pd
 
 from app.compartilhado.datas import FormatoData, formatar_data, reconhecer_datas
-from app.compartilhado.numeros import com_sinal_de_menos, formatar_numero
+from app.compartilhado.numeros import com_sinal_de_menos, formatar_inteiro, formatar_numero
 from app.compartilhado.series import (
     TipoUnidade,
     Unidade,
@@ -197,7 +197,9 @@ def _continua(coluna: ColunaLida) -> Classificacao:
     if _eh_decimal(coluna):
         return _numerica(coluna, TipoVariavel.CONTINUA, "Números com casas decimais.")
     k = coluna.n_distintos
-    motivo = f"Inteiros com muitos valores diferentes ({k}); tratada como contínua."
+    motivo = (
+        f"Inteiros com muitos valores diferentes ({formatar_inteiro(k)}); tratada como contínua."
+    )
     return _numerica(coluna, TipoVariavel.CONTINUA, motivo)
 
 

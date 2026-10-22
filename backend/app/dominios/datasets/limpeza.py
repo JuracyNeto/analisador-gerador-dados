@@ -8,6 +8,7 @@ import pandas as pd
 
 from app.compartilhado.numeros import formatar_numero
 from app.compartilhado.series import converter_para_numero, na_precisao
+from app.compartilhado.textos import quantidade
 from app.compartilhado.tipos import TIPOS_NUMERICOS
 from app.dominios.datasets import erros
 from app.dominios.datasets import frases_limpeza as frases
@@ -106,7 +107,10 @@ def _com_coluna(ctx: _Contexto, coluna: str, serie: pd.Series) -> pd.DataFrame:
 
 def _remocao(ctx: _Contexto, mascara: pd.Series, frase: str) -> _Efeito:
     restantes = ctx.dados[~mascara]
-    antes, depois = f"{len(ctx.dados)} linhas", f"{len(restantes)} linhas"
+    antes, depois = (
+        quantidade(len(ctx.dados), "linha", "linhas"),
+        quantidade(len(restantes), "linha", "linhas"),
+    )
     return _Efeito(restantes, _linhas(mascara), antes, depois, frase)
 
 

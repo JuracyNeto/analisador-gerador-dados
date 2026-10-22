@@ -143,3 +143,12 @@ def test_numeros_negativos_viram_texto_com_o_sinal_de_menos() -> None:
     coluna = ler_coluna("saldo", pd.Series(["-3", "-2,5", "4"]), ",", LIMIARES)
 
     assert list(coluna.textos) == ["−3", "−2,5", "4"]
+
+
+def test_motivo_da_continua_com_muitos_inteiros_usa_ponto_de_milhar() -> None:
+    classificacao = _classificar("valor", list(range(1500)) * 2)
+
+    assert (
+        classificacao.motivo
+        == "Inteiros com muitos valores diferentes (1.500); tratada como contínua."
+    )

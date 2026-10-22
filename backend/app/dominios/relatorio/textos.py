@@ -1,7 +1,7 @@
 """Frases do relatório (spec 13 e 16)."""
 
 from app.compartilhado.numeros import formatar_inteiro
-from app.compartilhado.textos import juntar_lista, pluralizar
+from app.compartilhado.textos import juntar_lista, pluralizar, quantidade
 from app.dominios.relatorio.conteudo import DadosLeitura
 
 FORMATOS = {
@@ -179,3 +179,9 @@ def nome_formula_regra(regra: str, nome_regra: str) -> str:
 def onde_formula(colunas: list[str]) -> str | None:
     """Ex.: "em peso_kg e idade"; sem colunas (R5), nada."""
     return f"em {juntar_lista(colunas)}" if colunas else None
+
+
+def contagem_coluna(n: int, faltantes: int) -> str:
+    """Nota da seção da coluna: "227 valores válidos · 3 faltantes" (sem faltantes, só válidos)."""
+    validos = quantidade(n, "valor válido", "valores válidos")
+    return f"{validos} · {quantidade(faltantes, 'faltante', 'faltantes')}" if faltantes else validos
