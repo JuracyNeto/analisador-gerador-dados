@@ -102,7 +102,13 @@ const PAR: ResumoOrigemPar = {
   desvio_y: 11.41,
   r: 0.7019,
 };
-const COM_PAR: ContextoBivariado = { datasetId: 'ds-1', x: 'altura_m', y: 'peso_kg', par: PAR };
+const COM_PAR: ContextoBivariado = {
+  datasetId: 'ds-1',
+  x: 'altura_m',
+  y: 'peso_kg',
+  par: PAR,
+  parPossivel: true,
+};
 
 describe('montarPedidoBivariado', () => {
   it('com origem, só o que foi editado vai no pedido', () => {
@@ -128,7 +134,13 @@ describe('montarPedidoBivariado', () => {
   });
 
   it('sem origem, médias e desvios são obrigatórios e ρ começa em 0', () => {
-    const contexto: ContextoBivariado = { datasetId: 'ds-1', x: null, y: null, par: undefined };
+    const contexto: ContextoBivariado = {
+      datasetId: 'ds-1',
+      x: null,
+      y: null,
+      par: undefined,
+      parPossivel: true,
+    };
     const estado = { ...ESTADO_INICIAL_BIVARIADO, origem: 'manual' as const };
 
     expect(montarPedidoBivariado(estado, contexto)).toEqual({

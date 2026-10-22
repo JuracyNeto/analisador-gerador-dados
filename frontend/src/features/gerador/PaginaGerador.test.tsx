@@ -138,6 +138,18 @@ describe('PaginaGerador', () => {
     expect(roteador.state.location.search).toBe('?aba=univariado');
   });
 
+  it('bivariado com menos de duas colunas numéricas: só parâmetros manuais, com a nota', async () => {
+    const umaNumerica = colunasGerador.filter((coluna) => coluna.coluna !== 'peso_kg');
+    simularApi([{ caminho: `${BASE}/colunas`, corpo: umaNumerica }, ...ROTAS.slice(1)]);
+
+    renderizarPagina('/gerador?aba=bivariado');
+
+    expect(await screen.findByText(T.origem.semPar)).toBeInTheDocument();
+    expect(screen.queryByRole('radiogroup', { name: T.origem.rotulo })).not.toBeInTheDocument();
+    expect(screen.queryByLabelText(T.y)).not.toBeInTheDocument();
+    expect(screen.getByRole('textbox', { name: T.mediaDe(T.x) })).toBeEnabled();
+  });
+
   it('sem dataset, só parâmetros manuais com o tipo', async () => {
     const api = simularApi(ROTAS);
     const { usuario } = renderizarPagina('/gerador', null);

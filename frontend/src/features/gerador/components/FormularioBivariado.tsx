@@ -1,3 +1,4 @@
+import Banner from '../../../shared/ui/Banner';
 import CampoNumero from '../../../shared/ui/CampoNumero';
 import Select from '../../../shared/ui/Select';
 import Slider from '../../../shared/ui/Slider';
@@ -121,8 +122,11 @@ export default function FormularioBivariado({ formulario, gerando, aoGerar }: Re
         aoMudar={(origem) => {
           mudar('origem', origem);
         }}
-        temDataset={contexto.datasetId !== null}
+        temDataset={contexto.datasetId !== null && contexto.parPossivel}
       />
+      {contexto.datasetId !== null && !contexto.parPossivel ? (
+        <Banner variante="info">{T.origem.semPar}</Banner>
+      ) : null}
       {origemBivariada(estado, contexto) === 'coluna' ? (
         <SeletoresXY formulario={formulario} />
       ) : null}
