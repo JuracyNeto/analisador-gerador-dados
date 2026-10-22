@@ -3,7 +3,7 @@ import { analiseContinua, analiseNominal, medida } from '../../testes/fixturesAn
 import { formatarNumero } from '../lib/formatar';
 import { medidaAusente, propsDoCartao } from './cartoes';
 
-const C = { media: 'Média', mediana: 'Mediana', iqr: 'Intervalo interquartil (IQR)' };
+const C = { media: 'Média', mediana: 'Mediana', iqr: 'Amplitude interquartil (IQR)' };
 
 describe('propsDoCartao', () => {
   it('formata o valor e acha a fórmula pela chave da medida', () => {

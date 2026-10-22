@@ -57,7 +57,7 @@ export const TEXTOS_ANALISE = {
     proporcao: 'Proporção',
     desvioPadrao: 'Desvio padrão',
     cv: 'Coeficiente de variação',
-    iqr: 'Intervalo interquartil (IQR)',
+    iqr: 'Amplitude interquartil (IQR)',
     amplitude: 'Amplitude',
     variancia: 'Variância',
     semModa: 'Sem moda',
@@ -150,7 +150,7 @@ export const TEXTOS_ANALISE = {
     sobreOGrafico: 'Sobre o gráfico',
     semFiguras: {
       titulo: 'Nenhum gráfico disponível',
-      descricao: 'Não há gráficos para esta coluna.',
+      descricao: 'Não há gráficos para esta coluna. Escolha outra coluna acima.',
     },
   },
 };
