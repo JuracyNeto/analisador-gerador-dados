@@ -150,7 +150,7 @@ function linhasGrafias(item: InconsistenciaColuna): LinhaProblema[] {
   return item.grupos.map((grupo) => {
     const variacoes = grupo.variacoes.filter((v) => v.texto !== grupo.forma_preferida);
     const unificar = T.acoes.unificar(
-      variacoes.map((v) => `'${v.texto}'`).join(', '),
+      variacoes.map((v) => `"${v.texto}"`).join(', '),
       grupo.forma_preferida,
     );
     return {
