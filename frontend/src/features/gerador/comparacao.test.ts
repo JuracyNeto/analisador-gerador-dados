@@ -19,6 +19,15 @@ describe('comparação', () => {
     expect(formatarValor(linha('Média', null, 1), null)).toBe('—');
   });
 
+  it('original e gerado da mesma medida com as mesmas casas', () => {
+    const mediana = linha('Mediana', 68.8, 70.65);
+
+    expect([formatarValor(mediana, 68.8), formatarValor(mediana, 70.65)]).toEqual([
+      '68,80',
+      '70,65',
+    ]);
+  });
+
   it('diferença com sinal; frequências em pontos percentuais', () => {
     expect(formatarDiferenca(linha('Mediana', 69.8, 70.1))).toBe('+0,3');
     expect(formatarDiferenca(linha('Assimetria', 0.32, 0.05))).toBe('−0,27');

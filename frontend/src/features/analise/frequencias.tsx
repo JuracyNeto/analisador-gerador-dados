@@ -1,5 +1,10 @@
 import type { ReactNode } from 'react';
-import { formatarDecimal, formatarInteiro, formatarNumero } from '../../shared/lib/formatar';
+import {
+  formatadorDaColuna,
+  formatarDecimal,
+  formatarInteiro,
+  formatarNumero,
+} from '../../shared/lib/formatar';
 import type { ColunaTabela } from '../../shared/ui/Tabela';
 import { formatarOpcional } from './formatacao';
 import estilos from './frequencias.module.css';
@@ -54,21 +59,28 @@ function colunaRotulo(titulo: string, mono: boolean): Coluna {
   };
 }
 
-const colunaPontoMedio = colunaNumerica('ponto_medio', T.pontoMedio, (linha) =>
-  formatarOpcional(linha.ponto_medio, (valor) => formatarNumero(valor)),
-);
+function colunaPontoMedio(tabela: TabelaFrequencia): Coluna {
+  const pontos = tabela.linhas.flatMap((linha) => linha.ponto_medio ?? []);
+  const formatar = formatadorDaColuna(pontos);
+  return colunaNumerica('ponto_medio', T.pontoMedio, (linha) =>
+    formatarOpcional(linha.ponto_medio, formatar),
+  );
+}
 
 const categorica = (nome: string): Coluna[] => [colunaRotulo(nome, false)];
 
 const PRIMEIRAS_COLUNAS = {
-  continua: () => [colunaRotulo(T.classe, true), colunaPontoMedio],
+  continua: (_nome: string, tabela: TabelaFrequencia) => [
+    colunaRotulo(T.classe, true),
+    colunaPontoMedio(tabela),
+  ],
   discreta: (nome: string) => [colunaRotulo(nome, true)],
   ordinal: categorica,
   nominal: categorica,
   binaria: categorica,
   data: categorica,
   identificador: categorica,
-} satisfies Record<TipoVariavel, (nome: string) => Coluna[]>;
+} satisfies Record<TipoVariavel, (nome: string, tabela: TabelaFrequencia) => Coluna[]>;
 
 function colunasBase(total: number): Coluna[] {
   return [
@@ -105,7 +117,7 @@ const COLUNA_ACUMULADA_ESMAECIDA = colunaNumerica(
 export function colunasDaTabela(tabela: TabelaFrequencia, nomeColuna: string): Coluna[] {
   const acumuladas = tabela.acumulada_aplicavel ? COLUNAS_ACUMULADAS : [COLUNA_ACUMULADA_ESMAECIDA];
   return [
-    ...PRIMEIRAS_COLUNAS[tabela.tipo](nomeColuna),
+    ...PRIMEIRAS_COLUNAS[tabela.tipo](nomeColuna, tabela),
     ...colunasBase(tabela.total),
     ...acumuladas,
   ];

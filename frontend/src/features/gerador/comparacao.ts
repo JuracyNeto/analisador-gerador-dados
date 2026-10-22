@@ -1,5 +1,6 @@
 /** Textos da tabela Original × Gerado (puro). Diferença absoluta com sinal (D110). */
 import {
+  formatadorDaColuna,
   formatarDecimal,
   formatarInteiro,
   formatarNumero,
@@ -19,7 +20,10 @@ function ehFrequencia(linha: LinhaComparacao): boolean {
 export function formatarValor(linha: LinhaComparacao, valor: number | null): string {
   if (valor === null) return VAZIO;
   if (linha.estatistica === ESTATISTICA_N) return formatarInteiro(valor);
-  return ehFrequencia(linha) ? formatarPercentual(valor) : formatarNumero(valor);
+  if (ehFrequencia(linha)) return formatarPercentual(valor);
+  // Original e gerado da mesma medida com as mesmas casas: 68,80 → 70,65.
+  const valores = [linha.original, linha.gerado].filter((v): v is number => v !== null);
+  return formatadorDaColuna(valores)(valor);
 }
 
 const MENOS = '−';

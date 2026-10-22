@@ -21,11 +21,14 @@ export function casasDecimais(valor: number, casasSignificativas: number): numbe
   return Math.max(0, casasSignificativas - 1 - Math.floor(Math.log10(Math.abs(valor))));
 }
 
+function comSinalDeMenos(texto: string): string {
+  return texto.startsWith('-') ? `${MENOS}${texto.slice(1)}` : texto;
+}
+
 /** 70.314 → "70,31"; 12345.6 → "12.346"; −0.394 → "−0,394" (sem zeros à direita). */
 export function formatarNumero(valor: number, casasSignificativas = 4): string {
   if (!Number.isFinite(valor)) return VALOR_AUSENTE;
-  const texto = formatador(casasDecimais(valor, casasSignificativas)).format(valor);
-  return texto.startsWith('-') ? `${MENOS}${texto.slice(1)}` : texto;
+  return comSinalDeMenos(formatador(casasDecimais(valor, casasSignificativas)).format(valor));
 }
 
 /** 1234 → "1.234". */
@@ -48,12 +51,33 @@ export function lerNumeroPtBr(texto: string): number | null {
   return PADRAO_PONTO_DECIMAL.test(limpo) ? Number(limpo) : null;
 }
 
-/** Número com casas decimais fixas, pt-BR: formatarDecimal(4) → "4,0". */
+/** Número com casas decimais fixas, pt-BR: formatarDecimal(4) → "4,0"; −2,5 com "−". */
 export function formatarDecimal(valor: number, casas = 1): string {
-  return new Intl.NumberFormat('pt-BR', {
+  if (!Number.isFinite(valor)) return VALOR_AUSENTE;
+  const formato = new Intl.NumberFormat('pt-BR', {
     minimumFractionDigits: casas,
     maximumFractionDigits: casas,
-  }).format(valor);
+  });
+  return comSinalDeMenos(formato.format(valor));
+}
+
+const CASAS_MOSTRADAS = /,(\d+)/u;
+
+/**
+ * Mesmas casas para todos os valores de uma coluna de tabela: as do valor que pede mais com
+ * 4 algarismos (ponto médio 46,05 · 106,05, e não 106,1; quartis 62,30 · 77,95).
+ */
+export function formatadorDaColuna(
+  valores: readonly number[],
+  casasSignificativas = 4,
+): (valor: number) => string {
+  const casas = valores
+    .filter((valor) => Number.isFinite(valor))
+    .map(
+      (valor) => CASAS_MOSTRADAS.exec(formatarNumero(valor, casasSignificativas))?.[1]?.length ?? 0,
+    );
+  const maximo = Math.max(0, ...casas);
+  return (valor) => formatarDecimal(valor, maximo);
 }
 
 const P_VALOR_MINIMO = 0.001;

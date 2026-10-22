@@ -3,6 +3,7 @@ import { formatarNumero } from '../../shared/lib/formatar';
 import { analiseContinua, analiseNominal } from '../../testes/fixturesAnalise';
 import { colunasDaTabela, ehLinhaModal, linhasComTotal, notasDaTabela } from './frequencias';
 import { TEXTOS_ANALISE } from './textos';
+import { exigir } from '../../testes/exigir';
 
 const T = TEXTOS_ANALISE.frequencias;
 const continua = analiseContinua.frequencias;
@@ -19,6 +20,19 @@ describe('colunasDaTabela', () => {
       'fr_acumulada',
     ]);
     expect(colunasDaTabela(continua, 'peso_kg')[0]?.titulo).toBe(T.classe);
+  });
+
+  it('ponto médio com as mesmas casas em todas as classes', () => {
+    const linhas = [46.05, 98.55, 106.05].map((ponto, i) => ({
+      ...exigir(continua.linhas[0], 'classe'),
+      rotulo: `classe ${String(i)}`,
+      ponto_medio: ponto,
+    }));
+    const coluna = exigir(colunasDaTabela({ ...continua, linhas }, 'peso_kg')[1], 'ponto médio');
+
+    const ultima = coluna.celula({ tipo: 'linha', indice: 2, linha: exigir(linhas[2], 'última') });
+
+    expect(ultima).toBe('106,05');
   });
 
   it('nominal: nome da coluna, fi, fr% e a acumulada esmaecida', () => {
