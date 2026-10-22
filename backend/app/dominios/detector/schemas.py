@@ -19,6 +19,7 @@ class ExemploAviso(Modelo):
     linhas: list[int]
     valores: list[str]
     texto: str
+    total_linhas: int
 
 
 class DetalhesAviso(Modelo):

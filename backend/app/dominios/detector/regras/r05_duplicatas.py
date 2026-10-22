@@ -155,7 +155,7 @@ def _exemplo(alvo: AlvoArquivo, grupo: GrupoRepetido) -> ExemploAviso:
         if grupo.exato
         else textos_duplicatas.r05_texto_exemplo_quase
     )
-    return ExemploAviso(linhas, valores, escrever(linhas, valores[0]))
+    return ExemploAviso(linhas, valores, escrever(linhas, valores[0]), len(grupo.posicoes))
 
 
 def _detalhes(alvo: AlvoArquivo, medicao: MedicaoDuplicatas) -> DetalhesAviso:

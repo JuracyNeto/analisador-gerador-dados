@@ -52,6 +52,7 @@ export const avisoR1 = criarAviso({
     valores: linhasDe(181, 200).map(() => '1,7'),
     texto:
       'Linhas 181 a 200: média 1,702 (restante 1,702) · desvio padrão 0,09034 (restante 0,09036)',
+    total_linhas: 20,
   },
   detalhes: {
     medida:
@@ -73,7 +74,12 @@ export const avisoR2 = criarAviso({
   colunas: ['altura_m', 'peso_kg'],
   titulo: 'Correlação puxada em altura_m e peso_kg',
   resumo: 'A correlação geral entre altura_m e peso_kg é 0,78, mas a média dos blocos é só 0,41.',
-  exemplo: { linhas: [97, 98], valores: ['1,6 · 60,1', '1,9 · 95'], texto: 'Linhas 97 e 98: …' },
+  exemplo: {
+    linhas: [97, 98],
+    valores: ['1,6 · 60,1', '1,9 · 95'],
+    texto: 'Linhas 97 e 98: …',
+    total_linhas: 2,
+  },
 });
 
 export const avisoR5 = criarAviso({
@@ -88,6 +94,7 @@ export const avisoR5 = criarAviso({
     linhas: [44, 45, 46, 47],
     valores: linhasDe(44, 47).map(() => 'sexo M · idade 39 · altura_m 1,9'),
     texto: 'Linhas 44 a 47: sexo M · idade 39 · altura_m 1,9',
+    total_linhas: 4,
   },
 });
 
@@ -101,6 +108,7 @@ export const avisoR4 = criarAviso({
     linhas: [120, 121, 122],
     valores: ['70', '75', '80'],
     texto: 'Linhas 120 a 122: 70, 75, 80',
+    total_linhas: 3,
   },
   detalhes: {
     medida: 'Valores que terminam em 0 ou 5',
@@ -128,7 +136,12 @@ export const avisoR7 = criarAviso({
   colunas: ['idade'],
   titulo: 'Duas idades distantes das demais',
   resumo: '2 valores de idade estão muito longe dos demais (ex.: 94); o limite usual seria 81.',
-  exemplo: { linhas: [1, 160], valores: ['89', '94'], texto: 'Linhas 1 e 160: 89; 94' },
+  exemplo: {
+    linhas: [1, 160],
+    valores: ['89', '94'],
+    texto: 'Linhas 1 e 160: 89; 94',
+    total_linhas: 2,
+  },
 });
 
 /** Na ordem da API: severidade, regra, coluna. */

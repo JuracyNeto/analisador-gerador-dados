@@ -58,6 +58,8 @@ def test_pesos_gerados_e_anexados_disparam_o_bloco_alinhado(
     assert aviso["severidade"] == "alta"
     assert aviso["resumo"].startswith("Um bloco de 21 linhas (401–421) tem média e desvio")
     assert aviso["exemplo"]["texto"].startswith("Linhas 401 a 421: média ")
+    assert aviso["exemplo"]["linhas"] == list(range(401, 422))
+    assert aviso["exemplo"]["total_linhas"] == 21
     assert aviso["figura"]["id"] == "blocos"
 
 

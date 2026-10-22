@@ -1,7 +1,6 @@
 import { screen, within } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 import { chamadasPara, simularApi } from '../../../testes/api';
-import { criarPagina, criarResumo } from '../../../testes/fixtures/datasets';
 import { avisoR4, avisoR5, avisoR7, linhasDados } from '../../../testes/fixtures/detector';
 import { simularDownload } from '../../../testes/downloadFalso';
 import { DATASET_TESTE, renderizarComProvedores } from '../../../testes/renderizar';
@@ -11,10 +10,7 @@ import DrawerLinhas from './DrawerLinhas';
 const BASE = `/datasets/${DATASET_TESTE.id}`;
 
 function renderizar(aviso: Aviso, linhas = linhasDados(117, 125)) {
-  const api = simularApi([
-    { caminho: BASE, corpo: criarPagina(criarResumo({ n_linhas: 230 })) },
-    { caminho: `${BASE}/linhas`, corpo: linhas },
-  ]);
+  const api = simularApi([{ caminho: `${BASE}/linhas`, corpo: linhas }]);
   const aoFechar = vi.fn();
   const resultado = renderizarComProvedores(
     <DrawerLinhas datasetId={DATASET_TESTE.id} aviso={aviso} aoFechar={aoFechar} />,
@@ -38,8 +34,30 @@ describe('DrawerLinhas', () => {
     expect(within(tabela).getByRole('columnheader', { name: 'peso_kg' })).toHaveClass(
       /colunaAfetada/,
     );
-    expect(await within(dialogo).findByText('Linhas 117–125 de 230')).toBeInTheDocument();
+    expect(await within(dialogo).findByText('Linhas 117–125')).toBeInTheDocument();
     expect(chamadasPara(api, 'GET', `${BASE}/linhas`)[0]?.url).toContain('de=117&ate=125');
+  });
+
+  it('exemplo com parte das linhas do alerta: diz quantas são ao todo (D172)', () => {
+    const exemplo = { linhas: [1, 160], valores: ['89', '94'], texto: '', total_linhas: 45 };
+
+    renderizar({ ...avisoR7, exemplo }, linhasDados(1, 4));
+
+    expect(
+      screen.getByText('Destacamos as 2 primeiras das 45 linhas do alerta.'),
+    ).toBeInTheDocument();
+  });
+
+  it('números de linha com ponto de milhar no título e no rodapé; na tabela, como no arquivo', async () => {
+    const linhas = Array.from({ length: 3 }, (_, i) => 1200 + i);
+    const exemplo = { linhas, valores: ['70', '75', '80'], texto: '', total_linhas: 3 };
+
+    renderizar({ ...avisoR4, exemplo }, linhasDados(1197, 1205));
+
+    expect(screen.getByRole('dialog', { name: 'Linhas 1.200 a 1.202 · peso_kg' })).toBeVisible();
+    const tabela = await screen.findByRole('table');
+    expect(within(tabela).getByRole('rowheader', { name: '1197' })).toBeInTheDocument();
+    expect(screen.getByText('Linhas 1.197–1.205')).toBeInTheDocument();
   });
 
   it('linhas distantes viram trechos separados por "…"', async () => {

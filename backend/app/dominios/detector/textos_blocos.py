@@ -37,7 +37,8 @@ def r01_textos(coluna: str, k: int, linhas: tuple[int, int], diferenca: float) -
     return TextosAviso(
         titulo=f"Bloco alinhado ao restante dos dados em {coluna}",
         resumo=(
-            f"Um bloco de {k} linhas ({linhas[0]}–{linhas[1]}) tem média e desvio quase "
+            f"Um bloco de {formatar_inteiro(k)} linhas ({textos.intervalo_de_linhas(linhas)}) "
+            "tem média e desvio quase "
             f"idênticos aos do restante dos dados (diferença de {diferenca_percentual(diferenca)})."
         ),
         por_que=(
@@ -54,7 +55,8 @@ def r01_texto_exemplo(
 ) -> str:
     """ "Linhas 401 a 421: média 71,12 (restante 71,12) · desvio padrão 11,94 (restante 11,94)"."""
     return (
-        f"Linhas {linhas[0]} a {linhas[1]}: média {textos.numero(bloco[0])} "
+        f"Linhas {textos.linha(linhas[0])} a {textos.linha(linhas[1])}: "
+        f"média {textos.numero(bloco[0])} "
         f"(restante {textos.numero(resto[0])}) · desvio padrão {textos.numero(bloco[1])} "
         f"(restante {textos.numero(resto[1])})"
     )
@@ -121,7 +123,8 @@ def r02_textos(
         contraste = f"a média dos blocos é só {correlacao(media_blocos)}"
     else:
         inicio, fim, sem = sem_bloco
-        contraste = f"sem as linhas {inicio}–{fim} ela fica em {correlacao(sem)}"
+        linhas = textos.intervalo_de_linhas((inicio, fim))
+        contraste = f"sem as linhas {linhas} ela fica em {correlacao(sem)}"
     return TextosAviso(
         titulo=f"Correlação puxada em {x} e {y}",
         resumo=f"A correlação geral entre {x} e {y} é {correlacao(r)}, mas {contraste}.",
@@ -152,7 +155,7 @@ def r02_detalhes(
         medida="Correlação de Pearson: geral, em cada um dos 5 blocos seguidos e sem cada bloco",
         valor=(
             f"r = {correlacao(r)} · blocos: {blocos} (média {media}) · "
-            f"sem as linhas {inicio}–{fim}: {correlacao(sem)}"
+            f"sem as linhas {textos.intervalo_de_linhas((inicio, fim))}: {correlacao(sem)}"
         ),
         limiar=(
             "|r| passa |média dos blocos| em mais de 0,3, ou tirar um bloco baixa |r| "
@@ -334,7 +337,7 @@ R11_TESTES = {
 def r11_padrao(padrao: str, linhas: tuple[int, int]) -> str:
     """O padrão em palavras; a progressão diz onde está."""
     if padrao == "progressao":
-        return f"progressão aritmética nas linhas {linhas[0]}–{linhas[1]}"
+        return f"progressão aritmética nas linhas {textos.intervalo_de_linhas(linhas)}"
     return R11_PADROES[padrao]
 
 

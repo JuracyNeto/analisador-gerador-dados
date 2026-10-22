@@ -1,8 +1,10 @@
 import numpy as np
 
 from app.dominios.detector.exemplos import (
+    MAX_LINHAS_BLOCO,
     MAX_LINHAS_EXEMPLO,
     exemplo_de_valores,
+    exemplo_do_bloco,
     exemplo_do_trecho,
     trecho_concentrado,
 )
@@ -40,3 +42,16 @@ def test_exemplo_fica_em_20_linhas_no_maximo() -> None:
     exemplo = exemplo_de_valores(np.arange(1, 101), np.arange(100.0))
 
     assert len(exemplo.linhas) == len(exemplo.valores) == MAX_LINHAS_EXEMPLO
+    assert exemplo.total_linhas == 100
+
+
+def test_bloco_vai_inteiro_ate_caber_num_pedido_do_ver_na_tabela() -> None:
+    """Com 3 linhas de contexto de cada lado, 194 linhas cabem nas 200 da API (D172)."""
+    inteiro = exemplo_do_bloco(np.arange(231, 261), np.full(30, 70.0))
+    cortado = exemplo_do_bloco(np.arange(1, 301), np.full(300, 70.0))
+
+    assert inteiro.linhas == tuple(range(231, 261))
+    assert inteiro.total_linhas == 30
+    assert MAX_LINHAS_BLOCO + 2 * 3 == 200
+    assert cortado.linhas == tuple(range(1, MAX_LINHAS_BLOCO + 1))
+    assert cortado.total_linhas == 300

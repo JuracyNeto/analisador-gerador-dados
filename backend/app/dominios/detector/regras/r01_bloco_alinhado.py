@@ -12,13 +12,13 @@ anexar), onde os embaralhamentos também chegam.
 
 import math
 from collections.abc import Callable
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 
 import numpy as np
 
 from app.compartilhado.tipos import Severidade
 from app.dominios.detector import blocos, textos_blocos
-from app.dominios.detector.exemplos import exemplo_de_valores
+from app.dominios.detector.exemplos import exemplo_do_bloco
 from app.dominios.detector.regras import base
 from app.dominios.detector.resultados import ExemploAviso, GraficoBlocos
 
@@ -191,13 +191,13 @@ def _media_e_desvio(valores: np.ndarray) -> tuple[float, float]:
 
 
 def _exemplo(alvo: base.AlvoColuna, medicao: MedicaoBloco) -> ExemploAviso:
-    """Até 20 linhas do bloco; o texto cita o bloco inteiro, com a média e o DP do restante."""
+    """O bloco inteiro (até 194 linhas, D172), com a média e o DP dele e os do restante."""
     linhas = alvo.linhas[medicao.posicoes]
-    exemplo = exemplo_de_valores(linhas, alvo.valores[medicao.posicoes])
+    exemplo = exemplo_do_bloco(linhas, alvo.valores[medicao.posicoes])
     texto = textos_blocos.r01_texto_exemplo(
         (int(linhas[0]), int(linhas[-1])), medicao.bloco, medicao.resto
     )
-    return ExemploAviso(exemplo.linhas, exemplo.valores, texto)
+    return replace(exemplo, texto=texto)
 
 
 def _grafico(alvo: base.AlvoColuna, medicao: MedicaoBloco) -> GraficoBlocos:

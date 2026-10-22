@@ -124,13 +124,15 @@ def test_detalhes_trazem_a_simulacao() -> None:
     )
 
 
-def test_exemplo_cita_o_bloco_inteiro_mesmo_com_mais_de_20_linhas() -> None:
+def test_exemplo_traz_o_bloco_inteiro_mesmo_com_mais_de_20_linhas() -> None:
+    """O "Ver na tabela" destaca as linhas que o resumo cita (achado D-c do M4.3, D172)."""
     valores = alinhar_bloco(_normal(440), 400, 22)
 
     (aviso,) = RegraBlocoAlinhado().executar(tabela_numerica(valores)).avisos
 
     assert aviso.exemplo is not None
-    assert len(aviso.exemplo.linhas) == 20
+    assert aviso.exemplo.linhas == tuple(range(401, 423))
+    assert aviso.exemplo.total_linhas == 22
     assert aviso.exemplo.texto.startswith("Linhas 401 a 422: média ")
 
 

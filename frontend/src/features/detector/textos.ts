@@ -1,3 +1,4 @@
+import { formatarInteiro } from '../../shared/lib/formatar';
 import { pluralizar } from '../../shared/lib/pluralizar';
 import type { Aviso, ResumoDetector } from './tipos';
 
@@ -46,17 +47,25 @@ export const TEXTOS_DETECTOR = {
     subtitulo: 'Cada regra procura um sinal comum de dados inseridos ou gerados.',
     rotuloCorpo: 'Lista das regras',
   },
+  /** Números de linha já formatados (com ponto de milhar), como nos exemplos da API. */
+  linhas: {
+    uma: (linha: string): string => `Linha ${linha}`,
+    faixa: (primeira: string, ultima: string): string => `Linhas ${primeira} a ${ultima}`,
+    lista: (linhas: string): string => `Linhas ${linhas}`,
+  },
   drawer: {
     rotuloCorpo: 'Linhas do alerta',
     legenda: (titulo: string): string => `${titulo}, com as linhas do alerta destacadas`,
     linha: 'linha',
     destacada: ' (destacada)',
-    destacadas: (quantidade: number): string =>
-      `${pluralizar(quantidade, 'linha destacada', 'linhas destacadas')}.`,
+    /** `total` = linhas do alerta; o exemplo traz até 20 (ou o bloco inteiro, até 194; D172). */
+    destacadas: (quantidade: number, total: number): string =>
+      total > quantidade
+        ? `Destacamos as ${formatarInteiro(quantidade)} primeiras das ${formatarInteiro(total)} linhas do alerta.`
+        : `${pluralizar(quantidade, 'linha destacada', 'linhas destacadas')}.`,
     carregando: 'Buscando as linhas…',
     exportar: 'Exportar estas linhas',
-    rodape: (trechos: string, total: string | null): string =>
-      total === null ? `Linhas ${trechos}` : `Linhas ${trechos} de ${total}`,
+    rodape: (trechos: string): string => `Linhas ${trechos}`,
   },
   cartao: {
     porQue: 'Por que chama atenção',

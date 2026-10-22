@@ -62,16 +62,26 @@ def _seguidas(linhas: Sequence[int]) -> bool:
     return all(b == a + 1 for a, b in pairwise(linhas))
 
 
+def linha(numero_da_linha: int) -> str:
+    """Número de linha com ponto de milhar, como na etapa Limpeza: 1.234."""
+    return formatar_inteiro(numero_da_linha)
+
+
+def intervalo_de_linhas(linhas: tuple[int, int]) -> str:
+    """ "1.201–1.230"."""
+    return f"{linha(linhas[0])}–{linha(linhas[1])}"
+
+
 def faixa_de_linhas(linhas: Sequence[int]) -> str:
-    """ "Linha 12" · "Linhas 120 a 138" · "Linhas 3, 9 e 14" · "Linhas 1, 3, …, 15…"."""
+    """ "Linha 12" · "Linhas 1.200 a 1.238" · "Linhas 3, 9 e 14" · "Linhas 1, 3, …, 15…"."""
+    escritas = [linha(numero_da_linha) for numero_da_linha in linhas]
     if len(linhas) == 1:
-        return f"Linha {linhas[0]}"
+        return f"Linha {escritas[0]}"
     if len(linhas) >= MIN_LINHAS_FAIXA and _seguidas(linhas):
-        return f"Linhas {linhas[0]} a {linhas[-1]}"
+        return f"Linhas {escritas[0]} a {escritas[-1]}"
     if len(linhas) > MAX_ITENS_TEXTO:
-        primeiras = ", ".join(str(linha) for linha in linhas[:MAX_ITENS_TEXTO])
-        return f"Linhas {primeiras}{RETICENCIAS}"
-    return f"Linhas {juntar_lista([str(linha) for linha in linhas])}"
+        return f"Linhas {', '.join(escritas[:MAX_ITENS_TEXTO])}{RETICENCIAS}"
+    return f"Linhas {juntar_lista(escritas)}"
 
 
 def lista_de_valores(valores: Sequence[str]) -> str:
@@ -341,7 +351,7 @@ def r03_textos(
         resumo=(
             f"Em {coluna}, {percentual(proporcao)} dos valores têm casas decimais, "
             f"mas {formatar_inteiro(k)} inteiros {_onde_inteiros(passo)} "
-            f"(linhas {linhas[0]}–{linhas[1]})."
+            f"(linhas {intervalo_de_linhas(linhas)})."
         ),
         por_que="Uma mudança de formato no meio dos dados pode indicar outra origem.",
         pode_ser_normal="…parte dos dados veio de outro instrumento.",

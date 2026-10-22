@@ -9,7 +9,7 @@ from app.compartilhado.numeros import formatar_inteiro
 from app.compartilhado.textos import pluralizar, quantidade
 from app.dominios.detector.duplicatas import ContraOAcaso
 from app.dominios.detector.resultados import DetalhesAviso, TextosAviso
-from app.dominios.detector.textos import faixa_de_linhas, numero, p_em_palavras
+from app.dominios.detector.textos import faixa_de_linhas, linha, numero, p_em_palavras
 
 SO_IDENTIFICADORES = "o arquivo só tem identificadores"
 POUCAS_COLUNAS = "precisa de 2 colunas ou mais (fora os identificadores)"
@@ -35,7 +35,8 @@ def r05_textos(copias: int, grupos_quase: int, seguidas: tuple[int, int] | None)
     linhas = quantidade(copias, "linha", "linhas")
     outras = pluralizar(copias, "outra", "outras")
     sequencia = (
-        f"; as linhas {seguidas[0]} a {seguidas[1]} são {_iguais(2, grupos_quase)} e seguidas"
+        f"; as linhas {linha(seguidas[0])} a {linha(seguidas[1])} são "
+        f"{_iguais(2, grupos_quase)} e seguidas"
         if seguidas
         else ""
     )

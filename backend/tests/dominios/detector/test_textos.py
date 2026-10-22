@@ -1,6 +1,6 @@
 import pytest
 
-from app.dominios.detector import textos
+from app.dominios.detector import textos, textos_blocos, textos_duplicatas
 
 VALORES = ("70", "75", "80", "75", "70", "75", "80", "70", "85", "90")
 
@@ -38,6 +38,23 @@ def test_duas_linhas_seguidas_nao_viram_faixa() -> None:
 
 
 @pytest.mark.parametrize(
+    ("linhas", "esperado"),
+    [
+        ((1234,), "Linha 1.234"),
+        (tuple(range(1200, 1239)), "Linhas 1.200 a 1.238"),
+        ((999, 1500), "Linhas 999 e 1.500"),
+        (
+            tuple(range(1000, 1020, 2)),
+            "Linhas 1.000, 1.002, 1.004, 1.006, 1.008, 1.010, 1.012, 1.014…",
+        ),
+    ],
+)
+def test_numeros_de_linha_com_ponto_de_milhar(linhas: tuple[int, ...], esperado: str) -> None:
+    """Como na etapa Limpeza ("linhas 1.200, 1.201"; revisão de textos do M4.3, T4)."""
+    assert textos.faixa_de_linhas(linhas) == esperado
+
+
+@pytest.mark.parametrize(
     ("coluna", "esperado"),
     [
         ("idade", "Lei de Benford não verificada em idade: precisa de 100 valores ou mais."),
@@ -69,3 +86,22 @@ def test_valor_do_exemplo_sem_zeros_a_direita(valor: float, esperado: str) -> No
 
 def test_razao_com_uma_casa() -> None:
     assert textos.razao(2.3) == "2,3×"
+
+
+@pytest.mark.parametrize(
+    ("texto", "trecho"),
+    [
+        (textos_blocos.r01_textos("x", 30, (1201, 1230), 0.0).resumo, "(1.201–1.230)"),
+        (textos_blocos.r01_texto_exemplo((1201, 1230), (1.0, 2.0), (1.0, 2.0)), "Linhas 1.201 a"),
+        (
+            textos_blocos.r02_textos(("x", "y"), (0.8, 0.4), (1001, 1200, 0.2), None).resumo,
+            "1.001–1.200",
+        ),
+        (textos_blocos.r02_detalhes(0.8, [0.1] * 5, (1001, 1200, 0.2)).valor, "1.001–1.200"),
+        (textos_blocos.r11_padrao("progressao", (1050, 1055)), "nas linhas 1.050–1.055"),
+        (textos.r03_textos("x", 0.9, 6, 1, (1006, 1011)).resumo, "(linhas 1.006–1.011)"),
+        (textos_duplicatas.r05_textos(3, 0, (1011, 1014)).resumo, "as linhas 1.011 a 1.014"),
+    ],
+)
+def test_resumos_com_numeros_de_linha_com_ponto_de_milhar(texto: str, trecho: str) -> None:
+    assert trecho in texto

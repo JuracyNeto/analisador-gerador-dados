@@ -301,7 +301,8 @@ def _exemplo_copias(alvo: AlvoCopias, medicao: MedicaoCopias) -> ExemploAviso:
     linhas = tuple(int(linha) for linha in alvo.linhas[novas])
     antigas = tuple(int(linha) for linha in alvo.linhas[medicao.antigas[:MAX_LINHAS_EXEMPLO]])
     valores = tuple(alvo.linha_como_texto(int(posicao)) for posicao in novas)
-    return ExemploAviso(linhas, valores, textos_blocos.r06_texto_exemplo_copias(linhas, antigas))
+    texto = textos_blocos.r06_texto_exemplo_copias(linhas, antigas)
+    return ExemploAviso(linhas, valores, texto, len(medicao.novas))
 
 
 # A regra ------------------------------------------------------------------------------------

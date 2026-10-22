@@ -253,13 +253,14 @@ def titulo_blocos(coluna: str, k: int) -> str:
 
 def resumo_blocos(linhas: tuple[int, int], media: float) -> str:
     return (
-        f"A média das linhas {linhas[0]}–{linhas[1]} fica em cima da média geral "
+        f"A média das linhas {formatar_inteiro(linhas[0])}–{formatar_inteiro(linhas[1])} fica "
+        "em cima da média geral "
         f"({formatar_numero(media)})."
     )
 
 
 def nome_bloco_destacado(linhas: tuple[int, int]) -> str:
-    return f"Bloco alinhado (linhas {linhas[0]}–{linhas[1]})"
+    return f"Bloco alinhado (linhas {formatar_inteiro(linhas[0])}–{formatar_inteiro(linhas[1])})"
 
 
 def titulo_benford(coluna: str) -> str:
