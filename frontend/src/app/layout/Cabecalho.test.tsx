@@ -3,6 +3,7 @@ import userEvent from '@testing-library/user-event';
 import type { ReactElement } from 'react';
 import { expect, it } from 'vitest';
 import { DATASET_TESTE, renderizarComRotas } from '../../testes/renderizar';
+import { TEXTOS_APP } from '../textos';
 import Cabecalho from './Cabecalho';
 
 function renderizar(cabecalho: ReactElement, dataset: typeof DATASET_TESTE | null = null) {
@@ -35,6 +36,26 @@ it('com arquivo mostra nome e tamanho; "Trocar arquivo" encerra a sessão e leva
   expect(await screen.findByText('Tela de importar')).toBeInTheDocument();
   // Sem sessão, Importar mostra a área de envio (1b) em vez do arquivo atual (1a).
   expect(JSON.parse(localStorage.getItem('sessao') ?? '{}')).toMatchObject({ dataset: null });
+});
+
+it('com ajustes, "Trocar arquivo" pede confirmação antes de encerrar a sessão', async () => {
+  renderizar(
+    <Cabecalho nomeArquivo="pesquisa_saude.txt" nLinhas={230} nColunas={8} temAjustes />,
+    DATASET_TESTE,
+  );
+
+  await userEvent.click(screen.getByRole('button', { name: 'Trocar arquivo' }));
+  const aviso = screen.getByRole('alert');
+  expect(aviso).toHaveTextContent(TEXTOS_APP.trocaComAjustes.aviso);
+  await userEvent.click(
+    within(aviso).getByRole('button', { name: TEXTOS_APP.trocaComAjustes.cancelar }),
+  );
+  expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+  expect(screen.queryByText('Tela de importar')).not.toBeInTheDocument();
+
+  await userEvent.click(screen.getByRole('button', { name: 'Trocar arquivo' }));
+  await userEvent.click(screen.getByRole('button', { name: TEXTOS_APP.trocaComAjustes.confirmar }));
+  expect(await screen.findByText('Tela de importar')).toBeInTheDocument();
 });
 
 it('usa singular e separador de milhar', () => {
