@@ -10,7 +10,7 @@ from app.compartilhado.numeros import (
     formatar_inteiro,
     formatar_numero,
 )
-from app.compartilhado.textos import p_valor_em_palavras, pluralizar
+from app.compartilhado.textos import p_valor_em_palavras, pluralizar, quantidade
 from app.dominios.detector import textos
 from app.dominios.detector.resultados import DetalhesAviso, TextosAviso
 
@@ -73,7 +73,7 @@ def r01_detalhes(
     `tamanhos` = (k das janelas, menor e maior fim do arquivo) (D148).
     """
     k, menor, maior = tamanhos
-    embaralhamentos = textos.quantidade(simulacoes, "embaralhamento", "embaralhamentos")
+    embaralhamentos = quantidade(simulacoes, "embaralhamento", "embaralhamentos")
     return DetalhesAviso(
         medida=(
             f"Janelas de {k} linhas seguidas e o fim do arquivo (de {menor} a "
@@ -209,9 +209,9 @@ def r06_detalhes_variacao(
     return DetalhesAviso(
         medida=f"Desvio padrão antes e depois de {referencia}{sem_zeros}",
         valor=(
-            f"antes: {textos.numero(antes)} ({textos.quantidade(linhas[0], 'linha', 'linhas')}) · "
+            f"antes: {textos.numero(antes)} ({quantidade(linhas[0], 'linha', 'linhas')}) · "
             f"depois: {textos.numero(depois)} "
-            f"({textos.quantidade(linhas[1], 'linha', 'linhas')}) · "
+            f"({quantidade(linhas[1], 'linha', 'linhas')}) · "
             f"razão {textos.numero(depois / antes)}"
         ),
         limiar="DP depois < 0,5 × DP antes, improvável ao acaso (p < 0,01)",
@@ -370,9 +370,9 @@ def r11_detalhes(
             "progressões aritméticas e autocorrelação"
         ),
         valor=(
-            f"{textos.quantidade(runs, 'sequência', 'sequências')} (z = {textos.numero(z)}) · "
+            f"{quantidade(runs, 'sequência', 'sequências')} (z = {textos.numero(z)}) · "
             f"ρ₁ = {textos.numero(autocorrelacao)} · "
-            f"{textos.quantidade(progressoes, 'progressão', 'progressões')}"
+            f"{quantidade(progressoes, 'progressão', 'progressões')}"
         ),
         limiar=(
             "Runs com p < 0,01, progressão de 6 valores ou mais improvável ao acaso "

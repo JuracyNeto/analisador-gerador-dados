@@ -7,7 +7,7 @@ from functools import lru_cache
 import numpy as np
 import pandas as pd
 
-from app.compartilhado.textos import juntar_lista
+from app.compartilhado.textos import juntar_lista, quantidade
 from app.compartilhado.tipos import TIPOS_AUXILIARES, TIPOS_NUMERICOS, Formula, TipoVariavel
 from app.core.config import Configuracao, obter_configuracao
 from app.dominios.analise.servico import Amostra, ServicoAnalise
@@ -400,7 +400,7 @@ class ServicoGerador:
         if dataset_id is None:
             raise erros.parametros_incompletos(["o dataset"])
         frase = (
-            f"Anexamos {textos.quantidade(gerado.n, 'linha gerada', 'linhas geradas')} "
+            f"Anexamos {quantidade(gerado.n, 'linha gerada', 'linhas geradas')} "
             f"em {juntar_lista(list(gerado.colunas))}."
         )
         resultado = self._datasets.anexar_linhas(dataset_id, gerado.dados, frase)
