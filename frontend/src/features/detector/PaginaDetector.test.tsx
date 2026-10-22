@@ -73,7 +73,7 @@ describe('PaginaDetector', () => {
     await usuario.click(screen.getByRole('button', { name: T.analisarDeNovo }));
 
     expect(
-      await screen.findByText(T.analisadoDeNovo(resultadoDetector.resumo.frase)),
+      await screen.findByText(T.analisadoDeNovo(resultadoDetector.resumo)),
     ).toBeInTheDocument();
   });
 

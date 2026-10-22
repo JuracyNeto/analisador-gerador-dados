@@ -13,7 +13,7 @@ describe('tiposVariavel', () => {
       rotuloCompleto: 'Quantitativa contínua',
       token: '--tipo-continua',
     });
-    expect(TIPOS_VARIAVEL.identificador.rotuloCompleto).toBe('Identificador (ignorada)');
+    expect(TIPOS_VARIAVEL.identificador.rotuloCompleto).toBe('Identificador (fora das análises)');
   });
 
   it('cores saem dos tokens do tipo', () => {
@@ -33,7 +33,7 @@ describe('tiposVariavel', () => {
     expect(TIPOS_VARIAVEL.data).toEqual({
       icone: 'calendar_month',
       rotuloCurto: 'Data',
-      rotuloCompleto: 'Data ou hora (ignorada)',
+      rotuloCompleto: 'Data ou hora (fora das análises)',
       token: '--tipo-data',
     });
   });

@@ -1,5 +1,7 @@
 import { pluralizar } from '../../shared/lib/pluralizar';
-import type { Aviso } from './tipos';
+import type { Aviso, ResumoDetector } from './tipos';
+
+type ContagemResumo = Pick<ResumoDetector, 'total' | 'colunas_afetadas'>;
 
 /** Textos da etapa 7 (telas 7a–7d, spec 16). */
 export const TEXTOS_DETECTOR = {
@@ -16,7 +18,14 @@ export const TEXTOS_DETECTOR = {
   linhasInteiras: 'Linhas inteiras',
   analisarDeNovo: 'Analisar de novo',
   analisando: 'Analisando…',
-  analisadoDeNovo: (frase: string): string => `Análise refeita: ${frase}.`,
+  /** "Análise refeita: 5 alertas em 3 colunas." (montado com a contagem, não com a frase). */
+  analisadoDeNovo: ({ total, colunas_afetadas: colunas }: ContagemResumo): string => {
+    if (total === 0) return 'Análise refeita: nenhum alerta.';
+    const alertas = pluralizar(total, 'alerta', 'alertas');
+    const onde =
+      colunas.length === 0 ? '' : ` em ${pluralizar(colunas.length, 'coluna', 'colunas')}`;
+    return `Análise refeita: ${alertas}${onde}.`;
+  },
   carregando: (arquivo: string): string => `Aplicando as 11 regras em ${arquivo}…`,
   alertasNoGrupo: (quantidade: number): string => pluralizar(quantidade, 'alerta', 'alertas'),
   semSeveridade: 'Marque ao menos uma severidade para ver os alertas.',

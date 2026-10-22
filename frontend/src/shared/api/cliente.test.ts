@@ -33,6 +33,7 @@ describe('requisitar', () => {
 
     expect(erro).toBeInstanceOf(ErroApi);
     expect((erro as ErroApi).codigo).toBe('SEM_CONEXAO');
+    expect((erro as ErroApi).sugestao).toBe('Confira se o servidor está ligado e tente de novo.');
   });
 
   it('usa mensagem amigável quando o erro não tem o formato padrão', async () => {

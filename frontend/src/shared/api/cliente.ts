@@ -1,4 +1,5 @@
 /** Cliente HTTP único da aplicação: prefixo /api e erros no formato {codigo, mensagem, sugestao}. */
+import { TEXTOS_API } from './textos';
 
 export interface CorpoErroApi {
   codigo: string;
@@ -8,16 +9,11 @@ export interface CorpoErroApi {
 
 const PREFIXO_API = '/api';
 
-const SEM_CONEXAO: CorpoErroApi = {
-  codigo: 'SEM_CONEXAO',
-  mensagem: 'Não conseguimos falar com o servidor.',
-  sugestao: 'Verifique se o backend está rodando e tente novamente.',
-};
+const SEM_CONEXAO: CorpoErroApi = { codigo: 'SEM_CONEXAO', ...TEXTOS_API.semConexao };
 
 const ERRO_DESCONHECIDO: CorpoErroApi = {
   codigo: 'ERRO_DESCONHECIDO',
-  mensagem: 'O servidor respondeu de um jeito inesperado.',
-  sugestao: 'Tente novamente em instantes.',
+  ...TEXTOS_API.desconhecido,
 };
 
 export class ErroApi extends Error {

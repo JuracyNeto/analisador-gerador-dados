@@ -29,8 +29,9 @@ export const TEXTOS_VARIAVEIS = {
     anuncio: (nome: string, posicao: number, total: number) =>
       `${nome} agora está na posição ${formatarInteiro(posicao)} de ${formatarInteiro(total)}.`,
   },
+  /** O rótulo do tipo entra no meio da frase, em minúsculas (spec 16). */
   toastTipo: (coluna: string, rotuloTipo: string) =>
-    `Tipo de ${coluna} alterado para ${rotuloTipo}.`,
+    `Tipo de ${coluna} alterado para ${rotuloTipo.toLocaleLowerCase('pt-BR')}.`,
   continuar: 'Continuar para Limpeza',
   voltar: 'Voltar para Importar',
 } as const;

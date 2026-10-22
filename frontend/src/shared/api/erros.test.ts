@@ -36,7 +36,7 @@ describe('textoDoErro', () => {
 
     expect(textoDoErro(erro)).toEqual({
       mensagem: 'O arquivo está vazio.',
-      sugestao: 'Tente de novo. Se continuar, recarregue a página.',
+      sugestao: 'Tente de novo. Se continuar, reinicie o servidor e recarregue a página.',
     });
   });
 
@@ -44,8 +44,8 @@ describe('textoDoErro', () => {
     'usa texto genérico para %s',
     (erro) => {
       expect(textoDoErro(erro)).toEqual({
-        mensagem: 'Algo deu errado do nosso lado.',
-        sugestao: 'Tente de novo. Se continuar, recarregue a página.',
+        mensagem: 'Não conseguimos concluir esta ação.',
+        sugestao: 'Tente de novo. Se continuar, reinicie o servidor e recarregue a página.',
       });
     },
   );

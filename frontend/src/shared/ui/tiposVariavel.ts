@@ -45,13 +45,13 @@ export const TIPOS_VARIAVEL = {
   data: {
     icone: 'calendar_month',
     rotuloCurto: 'Data',
-    rotuloCompleto: 'Data ou hora (ignorada)',
+    rotuloCompleto: 'Data ou hora (fora das análises)',
     token: '--tipo-data',
   },
   identificador: {
     icone: 'fingerprint',
     rotuloCurto: 'Identificador',
-    rotuloCompleto: 'Identificador (ignorada)',
+    rotuloCompleto: 'Identificador (fora das análises)',
     token: '--tipo-identificador',
   },
 } as const satisfies Record<TipoVariavel, ConfiguracaoTipo>;

@@ -49,7 +49,7 @@ describe('PaginaVariaveis', () => {
     await usuario.selectOptions(await screen.findByRole('combobox', SELECT_CIDADE), 'ordinal');
 
     expect(
-      await screen.findByText('Tipo de cidade alterado para Qualitativa ordinal.'),
+      await screen.findByText('Tipo de cidade alterado para qualitativa ordinal.'),
     ).toBeInTheDocument();
     expect(chamadasPara(falso, 'PATCH', CAMINHO_CIDADE)[0]?.corpo).toEqual({ tipo: 'ordinal' });
   });
