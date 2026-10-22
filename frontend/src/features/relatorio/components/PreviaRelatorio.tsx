@@ -12,13 +12,27 @@ const COBERTURA = (
   </div>
 );
 
+const ATUALIZANDO = (
+  <div className={estilos.atualizando}>
+    <p role="status" className={estilos.aviso}>
+      {T.atualizando}
+    </p>
+  </div>
+);
+
+function cobertura(carregando: boolean, atualizando: boolean) {
+  if (!carregando) return null;
+  return atualizando ? ATUALIZANDO : COBERTURA;
+}
+
 interface PropsPagina {
   src: string;
   carregando: boolean;
+  atualizando: boolean;
   aoCarregar: (iframe: HTMLIFrameElement) => void;
 }
 
-function PaginaPrevia({ src, carregando, aoCarregar }: Readonly<PropsPagina>) {
+function PaginaPrevia({ src, carregando, atualizando, aoCarregar }: Readonly<PropsPagina>) {
   return (
     <div className={estilos.pagina} aria-busy={carregando}>
       <iframe
@@ -29,7 +43,7 @@ function PaginaPrevia({ src, carregando, aoCarregar }: Readonly<PropsPagina>) {
           aoCarregar(evento.currentTarget);
         }}
       />
-      {carregando ? COBERTURA : null}
+      {cobertura(carregando, atualizando)}
     </div>
   );
 }

@@ -36,3 +36,23 @@
   padding: var(--esp-48);
   background: var(--cor-superficie);
 }
+/* Atualizando: a prévia anterior continua visível, esmaecida, com o aviso no topo. */
+.atualizando {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding-top: var(--esp-24);
+  background: color-mix(in srgb, var(--cor-superficie) 55%, transparent);
+}
+.aviso {
+  margin: 0;
+  padding: var(--esp-8) var(--esp-16);
+  border: 1px solid var(--cor-borda);
+  border-radius: 999px;
+  background: var(--cor-superficie);
+  color: var(--cor-texto);
+  font-size: 13px;
+  box-shadow: var(--sombra-1);
+}

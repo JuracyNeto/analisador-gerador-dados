@@ -3,7 +3,8 @@ import { urlDaApi } from '../../../shared/api/cliente';
 import { useValorAtrasado } from '../../../shared/lib/useValorAtrasado';
 import { caminhoRelatorio, type SelecaoRelatorio } from '../api';
 
-export const ATRASO_PREVIA_MS = 400;
+// Com arquivos grandes cada prévia leva segundos: espera o último clique de uma sequência.
+export const ATRASO_PREVIA_MS = 800;
 
 interface PreviaCarregada {
   src: string;
@@ -20,13 +21,19 @@ export function usePreviaRelatorio(datasetId: string, selecao: SelecaoRelatorio 
   const [carregada, setCarregada] = useState<PreviaCarregada | null>(null);
   const atual = src !== null && carregada?.src === src ? carregada : null;
 
+  const carregando = src !== null && atual === null;
   return {
-    src,
-    carregando: src !== null && atual === null,
-    pronta: atual !== null,
-    aoCarregar: (iframe: HTMLIFrameElement) => {
-      if (src !== null) setCarregada({ src, iframe });
+    /** As props do `PreviaRelatorio`. */
+    pagina: {
+      src,
+      carregando,
+      /** Já há uma prévia na tela: ela fica visível (esmaecida) enquanto a nova chega. */
+      atualizando: carregando && carregada !== null,
+      aoCarregar: (iframe: HTMLIFrameElement) => {
+        if (src !== null) setCarregada({ src, iframe });
+      },
     },
+    pronta: atual !== null,
     imprimir: () => {
       atual?.iframe.contentWindow?.print();
     },
