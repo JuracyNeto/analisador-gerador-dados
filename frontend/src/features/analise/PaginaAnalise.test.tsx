@@ -138,6 +138,24 @@ describe('PaginaAnalise', () => {
     expect(screen.getByText('Compatível com a Normal')).toBeInTheDocument();
   });
 
+  it('a aba escolhida vai para a URL e volta ao recarregar', async () => {
+    const { usuario, roteador } = renderizarPagina();
+    await screen.findByText('60,0 ⊢ 76,5');
+
+    await usuario.click(screen.getByRole('tab', { name: /Forma e distribuição/ }));
+
+    expect(roteador.state.location.search).toBe('?coluna=peso_kg&aba=forma');
+  });
+
+  it('abre na aba da URL; trocar de coluna mantém a aba', async () => {
+    const { usuario, roteador } = renderizarPagina('/analise?coluna=peso_kg&aba=forma');
+
+    const aba = await screen.findByRole('tab', { name: /Forma e distribuição/ });
+    expect(aba).toHaveAttribute('aria-selected', 'true');
+    await usuario.selectOptions(screen.getByLabelText(TEXTOS_ANALISE.rotuloColuna), 'cidade');
+    expect(roteador.state.location.search).toContain('aba=forma');
+  });
+
   it('na nominal a aba "Forma e distribuição" fica desabilitada', async () => {
     renderizarPagina('/analise?coluna=cidade');
 
@@ -158,7 +176,7 @@ describe('PaginaAnalise', () => {
     await usuario.type(campo, '12{Enter}');
 
     await waitFor(() => {
-      expect(roteador.state.location.search).toBe('?coluna=peso_kg&tentativas=12');
+      expect(roteador.state.location.search).toBe('?coluna=peso_kg&aba=forma&tentativas=12');
     });
     await waitFor(() => {
       expect(

@@ -49,6 +49,8 @@ function AnaliseDoDataset({ datasetId }: Readonly<{ datasetId: string }>) {
         classes={classes}
         aoMudarClasses={parametros.mudarClasses}
         aoMudarTentativas={parametros.mudarTentativas}
+        aba={parametros.aba}
+        aoMudarAba={parametros.mudarAba}
       />
       {ACOES_ANALISE}
     </PaginaEtapa>
