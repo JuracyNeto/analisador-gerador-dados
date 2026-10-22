@@ -32,8 +32,13 @@ def fora_limitados(n: int, coluna: str, inferior: str, superior: str) -> str:
     return f"Limitamos {_valores(n)} de {coluna} à faixa de {inferior} a {superior}."
 
 
+def _como_faltantes(n: int) -> str:
+    return pluralizar(n, "como faltante", "como faltantes")
+
+
 def fora_marcados(n: int, coluna: str) -> str:
-    return f"Marcamos {_valores(n)} de {coluna} como faltantes por estarem fora da faixa."
+    por_estar = pluralizar(n, "por estar", "por estarem")
+    return f"Marcamos {_valores(n)} de {coluna} {_como_faltantes(n)} {por_estar} fora da faixa."
 
 
 def grafias_unificadas(n: int, coluna: str) -> str:
@@ -41,4 +46,4 @@ def grafias_unificadas(n: int, coluna: str) -> str:
 
 
 def textos_marcados(n: int, coluna: str) -> str:
-    return f"Marcamos {quantidade(n, 'texto', 'textos')} de {coluna} como faltantes."
+    return f"Marcamos {quantidade(n, 'texto', 'textos')} de {coluna} {_como_faltantes(n)}."
