@@ -20,6 +20,7 @@
 | **M4.1** Apêndice de fórmulas | `2026-10-18-m4-1-apendice-formulas.md` | `feat/relatorio-apendice-formulas` | 9ª seção `formulas` no relatório (módulo `relatorio/apendice.py`); catálogo de fórmulas do gerador (`Gerado.formulas`); fórmulas do detector a partir dos alertas; caixa "Fórmulas" na tela 8 ("9 de 9") |
 | **M4.2** Acessibilidade | `2026-10-18-m4-2-acessibilidade.md` | `fix/acessibilidade` | axe nos testes das 8 telas e dos componentes de `shared/ui`; contraste dos tokens testado; teclado, foco, `aria-live`, foco ao trocar de etapa, `prefers-reduced-motion`, 200% de zoom |
 | **M4.3** Ajustes de UX | `2026-10-18-m4-3-ajustes-ux.md` | `fix/ajustes-ux` | Teste completo com os 5 exemplos e arquivos grandes; lista de achados aprovada pelo usuário; correções; textos conferidos com a spec 16; medição dos tempos da spec 00 |
+| Bloco `fix/` do detector | — (achados D-a a D-d do M4.3) | `fix/detector-textos-anexadas` | R7 cita o critério que marcou o exemplo (D170); R5 com células vazias e linhas anexadas (D171, medido); "Ver na tabela" com o bloco inteiro e `total_linhas` (D172); R11 sem mudança (D173) |
 | **M4.4** Relatório final e prints | `2026-10-18-m4-4-relatorio-final.md` | `docs/relatorio-final` | `docs/relatorio-final/` (relatório do grupo, fórmulas geradas, roteiro de apresentação); script de prints reproduzíveis; exemplo do relatório HTML |
 | **M4.5** Documentação e release | `2026-10-18-m4-5-documentacao-release.md` | `docs/revisao-m4`, `chore/release-v1.0.0` | README final, revisão das specs, teste manual completo, `v1.0.0`, sincronização `main → develop` |
 
@@ -49,7 +50,7 @@ Execução prevista (um bloco por vez): M4.0 → M4.1 → M4.2 → M4.3 → M4.4
   - frontend (em `frontend/`): `npm run lint && npm run format && npm run test && npm run build`
   - raiz: `npx --yes jscpd@4 backend/app backend/tests frontend/src`
 - Worktree novo: `python -m venv .venv` + `.venv/Scripts/python -m pip install -e ".[dev]"` em `backend/`; `npm ci` em `frontend/`.
-- Depois de mudar a API: `python scripts/exportar_openapi.py` (em `backend/`) → `npm run gerar:tipos` (em `frontend/`) → commit do `schema.d.ts` **no mesmo bloco do backend** (só o M4.1 muda a API).
+- Depois de mudar a API: `python scripts/exportar_openapi.py` (em `backend/`) → `npm run gerar:tipos` (em `frontend/`) → commit do `schema.d.ts` **no mesmo bloco do backend** (mudam a API o M4.1 e o bloco `fix/` do detector: `ExemploAviso.total_linhas`).
 - TDD em toda tarefa: teste falhando → código → teste passando → commit (Conventional Commits em português, **sem atribuição de IA**: nada de `Co-Authored-By` nem "Generated with").
 - Nunca silenciar lint, tipos ou complexidade (`noqa`, `eslint-disable`, `type: ignore`, `pragma: no cover`, overrides). Sem parâmetro booleano que escolhe comportamento; o ruff recusa `assert a and b`.
 - Nomes que começam com "test" são coletados pelo pytest: nos testes, importe o módulo.
@@ -88,6 +89,12 @@ ConteudoRelatorio.formulas: ApendiceFormulas | None
 - Com o apêndice, as listas "Fórmulas usadas" de cada coluna e da Bivariada saem do template (D151; ver "Pontos de atenção" 1).
 - Template: seção numerada como as outras, título "Fórmulas usadas", `h3` por grupo, cada fórmula com nome, KaTeX (`data-latex`) e o texto de reserva, e o "onde" em nota; `@media print` com quebra antes do apêndice.
 
+### Detector (bloco `fix/`, depois do M4.3)
+```
+ExemploAviso.total_linhas: int      # linhas do padrão; `linhas` traz até 20 (R1 e R2: o bloco inteiro, até 194; D172)
+```
+- R5: linhas com menos de 2 células preenchidas ficam de fora; raio, grade e acaso só nas numéricas preenchidas, por padrão de vazias (D171). Textos da R5 em `detector/textos_duplicatas.py`.
+
 ### Códigos de erro novos
 Nenhum.
 
@@ -99,6 +106,7 @@ Nenhum.
 | M4.1 | `SECOES_RELATORIO` com `formulas` (rótulo "Fórmulas"), contador "9 de 9"; tipos regenerados (`Gerado.formulas`) |
 | M4.2 | `testes/acessibilidade.ts` (`esperarSemViolacoes(container)` com o axe); teste de contraste lendo `shared/ui/tokens.css`; correções nos componentes de `shared/ui` e nas telas |
 | M4.3 | Correções da lista de achados aprovada (componentes e textos) |
+| `fix/` detector | Tipos regenerados (`ExemploAviso.total_linhas`); "Ver na tabela" com "Destacamos as 20 primeiras das 45 linhas do alerta." e rodapé só com os trechos; fixture com os textos novos da R1, R5 e `total_linhas` |
 | M4.4 | `frontend/scripts/prints.ts` + `npm run prints` (fora do CI) |
 
 ## Decisões previstas (entram em `docs/decisions.md` no bloco indicado; use o próximo número livre)
@@ -115,7 +123,8 @@ Escolhas do usuário em 18/10/2026, ao aprovar o plano: fórmulas só no apêndi
 | D156–D167 ✓ | Achados do teste de UX (M4.3): sinal de menos e milhar na API, casas por coluna, p traduzido na Forma, nomes únicos, última geração, aba na URL, par mais forte, confirmar a troca de arquivo, prévia do relatório, Gerador sem par, motivo da aba do XLSX, desempenho medido | M4.3 |
 | D168 | Prints reproduzíveis com `playwright-core` usando o Edge instalado (sem baixar navegador), por `npm run prints`, fora do CI | M4.4 |
 | D169 | Relatório final do grupo em Markdown (`docs/relatorio-final/relatorio-final.md`, fórmulas com `$$…$$`, que o GitHub renderiza); fórmulas exportadas do catálogo por `backend/scripts/exportar_formulas.py` (fonte única) | M4.4 |
-| D170+ | Achados dos blocos `fix/` do detector (se houver) e do teste manual do release (M4.5) | M4.5 |
+| D170–D173 ✓ | Bloco `fix/` do detector: R7 cita o critério do exemplo; R5 compara só as colunas preenchidas e deixa de fora as linhas com uma célula (medido); exemplo do bloco inteiro e `total_linhas`; R11 sem mudança | `fix/` detector |
+| D174+ | Achados do teste manual do release (M4.5) | M4.5 |
 
 ## Dependências novas
 - `axe-core` (dev, frontend) — M4.2, D153.

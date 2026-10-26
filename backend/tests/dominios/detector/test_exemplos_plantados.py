@@ -66,7 +66,7 @@ def test_bloco_alinhado_nos_pesos(plantadas: dict[Any, dict[str, Any]]) -> None:
     assert aviso["severidade"] == "alta"
     assert aviso["exemplo"]["linhas"] == list(range(181, 201))
     assert aviso["exemplo"]["texto"] == (
-        "Linhas 181 a 200: média 71,26 (resto 71,26) · DP 12,01 (resto 12,01)"
+        "Linhas 181 a 200: média 71,26 (restante 71,26) · desvio padrão 12,01 (restante 12,01)"
     )
     assert aviso["detalhes"]["valor"] == "dᵤ = 0 · dₛ = 0"
     assert aviso["detalhes"]["p_valor"] == 0.0
@@ -116,7 +116,8 @@ def test_vendas_com_correlacao_puxada_e_semanas_copiadas(cliente: TestClient) ->
     # As semanas estão em ordem (série no tempo): a R2 fica em atenção (D137).
     assert puxada["severidade"] == "atencao"
     assert "as linhas seguem a coluna data" in puxada["pode_ser_normal"]
-    assert puxada["exemplo"]["linhas"][0] == 97
+    # O bloco inteiro, como no resumo ("sem as linhas 97–120"), e não só as 20 primeiras (D172).
+    assert puxada["exemplo"]["linhas"] == list(range(97, 121))
     copias = avisos[("R6", ())]
     assert copias["severidade"] == "alta"
     assert "9 das 60 linhas novas (15%)" in copias["resumo"]

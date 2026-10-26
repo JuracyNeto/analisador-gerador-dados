@@ -1,6 +1,7 @@
 """Textos do detector (spec 16, ADR 0005): tom neutro, número com contexto, p em palavras.
 
-Nenhuma regra monta texto fora deste módulo (D118).
+Nenhuma regra monta texto fora deste módulo, de `textos_blocos.py` e de `textos_duplicatas.py`
+(D118).
 """
 
 from collections.abc import Sequence
@@ -18,8 +19,8 @@ from app.compartilhado.textos import (
     pluralizar,
     quantidade,
 )
-from app.dominios.detector.duplicatas import ContraOAcaso
 from app.dominios.detector.resultados import DetalhesAviso, TextosAviso
+from app.dominios.detector.tabela import ColunaDetector
 
 MAX_ITENS_TEXTO = 8
 MIN_LINHAS_FAIXA = 3
@@ -62,16 +63,26 @@ def _seguidas(linhas: Sequence[int]) -> bool:
     return all(b == a + 1 for a, b in pairwise(linhas))
 
 
+def linha(numero_da_linha: int) -> str:
+    """Número de linha com ponto de milhar, como na etapa Limpeza: 1.234."""
+    return formatar_inteiro(numero_da_linha)
+
+
+def intervalo_de_linhas(linhas: tuple[int, int]) -> str:
+    """ "1.201–1.230"."""
+    return f"{linha(linhas[0])}–{linha(linhas[1])}"
+
+
 def faixa_de_linhas(linhas: Sequence[int]) -> str:
-    """ "Linha 12" · "Linhas 120 a 138" · "Linhas 3, 9 e 14" · "Linhas 1, 3, …, 15…"."""
+    """ "Linha 12" · "Linhas 1.200 a 1.238" · "Linhas 3, 9 e 14" · "Linhas 1, 3, …, 15…"."""
+    escritas = [linha(numero_da_linha) for numero_da_linha in linhas]
     if len(linhas) == 1:
-        return f"Linha {linhas[0]}"
+        return f"Linha {escritas[0]}"
     if len(linhas) >= MIN_LINHAS_FAIXA and _seguidas(linhas):
-        return f"Linhas {linhas[0]} a {linhas[-1]}"
+        return f"Linhas {escritas[0]} a {escritas[-1]}"
     if len(linhas) > MAX_ITENS_TEXTO:
-        primeiras = ", ".join(str(linha) for linha in linhas[:MAX_ITENS_TEXTO])
-        return f"Linhas {primeiras}{RETICENCIAS}"
-    return f"Linhas {juntar_lista([str(linha) for linha in linhas])}"
+        return f"Linhas {', '.join(escritas[:MAX_ITENS_TEXTO])}{RETICENCIAS}"
+    return f"Linhas {juntar_lista(escritas)}"
 
 
 def lista_de_valores(valores: Sequence[str]) -> str:
@@ -108,6 +119,28 @@ def fora_os_zeros(motivo: str) -> str:
     return f"{motivo}, fora os zeros"
 
 
+SEPARADOR_CELULAS = " · "
+
+
+def poucas_linhas(minimo: int, n: int) -> str:
+    return (
+        f"precisa de {formatar_inteiro(minimo)} linhas ou mais; o arquivo tem {formatar_inteiro(n)}"
+    )
+
+
+def linha_como_texto(colunas: Sequence[ColunaDetector], posicao: int) -> str:
+    """A linha na `posicao` das colunas, com o nome delas (R5, R6; D171).
+
+    "sexo F · idade 34 · peso_kg 58,2"; as vazias no fim: "peso_kg 70,1 (sexo e idade vazias)".
+    """
+    celulas = [(coluna.nome, coluna.textos[posicao]) for coluna in colunas]
+    preenchidas = SEPARADOR_CELULAS.join(f"{nome} {texto}" for nome, texto in celulas if texto)
+    vazias = [nome for nome, texto in celulas if not texto]
+    if not vazias:
+        return preenchidas
+    return f"{preenchidas} ({juntar_lista(vazias)} {pluralizar(len(vazias), 'vazia', 'vazias')})"
+
+
 SEM_NUMERICAS = "o arquivo não tem colunas numéricas"
 SEM_CONTINUAS = "o arquivo não tem colunas contínuas"
 SEM_PAR_NUMERICO = "o arquivo não tem duas colunas numéricas"
@@ -121,19 +154,36 @@ METADE_CENTRAL_IGUAL = "a metade central dos valores é toda igual"
 # R7 — Valores distantes ---------------------------------------------------------------------
 
 
-def r07_textos(coluna: str, k: int, exemplo: float, limite: float) -> TextosAviso:
-    """ "{k} valores de {col} estão muito longe dos demais (ex.: {v})" (spec 16)."""
+def r07_exemplo_fora(exemplo: float, limite: float) -> str:
+    """Exemplo fora da cerca de 1,5·IQR, a mesma da etapa Limpeza: "(ex.: 712); o limite…"."""
+    return f"(ex.: {valor(exemplo)}); o limite usual seria {numero(limite)}"
+
+
+def r07_exemplo_fora_ajustado(exemplo: float, limite: float) -> str:
+    """Exemplo fora da cerca alargada pela cauda longa (D136), que a etapa Limpeza não usa."""
+    limite_ajustado = f"o limite, ajustado à assimetria da coluna, seria {numero(limite)}"
+    return f"(ex.: {valor(exemplo)}); {limite_ajustado}"
+
+
+def r07_exemplo_pelo_z(exemplo: float) -> str:
+    """Exemplo dentro das cercas, marcado só por |z| > 3 (achado D-a do M4.3)."""
+    return f"(ex.: {valor(exemplo)}, a mais de 3 desvios padrão da média)"
+
+
+def r07_textos(coluna: str, k: int, exemplo: str) -> TextosAviso:
+    """ "{k} valores de {col} estão muito longe dos demais (ex.: {v}); …" (spec 16).
+
+    `exemplo` diz o critério que marcou o valor (`r07_exemplo_*`).
+    """
     longe = f"{pluralizar(k, 'está', 'estão')} muito longe dos demais"
     return TextosAviso(
         titulo=f"{quantidade(k, 'valor distante', 'valores distantes')} dos demais em {coluna}",
-        resumo=(
-            f"{quantidade(k, 'valor', 'valores')} de {coluna} {longe} (ex.: {valor(exemplo)}); "
-            f"o limite usual seria {numero(limite)}."
-        ),
+        resumo=f"{quantidade(k, 'valor', 'valores')} de {coluna} {longe} {exemplo}.",
         por_que="Valores extremos podem ser erros de digitação ou casos especiais.",
         pode_ser_normal="…são casos raros, mas reais.",
         o_que_fazer=(
-            "Confira esses valores na fonte; se forem erros de digitação, corrija na etapa Limpeza."
+            "Confira esses valores na fonte; se forem erros de digitação, corrija no arquivo e "
+            "envie de novo, ou remova-os na etapa Limpeza."
         ),
     )
 
@@ -156,7 +206,8 @@ def r07_detalhes(
         ),
         formula=(
             f"IQR = Q3 − Q1 · z = (x − x̄) / s · MC = {numero(mc)} (medcouple); "
-            "com MC > 0 a cerca de cima vai a Q3 + k·e^(3·MC)·IQR, nunca abaixo de Q3 + k·IQR"
+            "com MC > 0 a cerca de cima vai a Q3 + k·e^(3·MC)·IQR, nunca abaixo de Q3 + k·IQR; "
+            "a etapa Limpeza usa as cercas sem o ajuste"
         ),
     )
 
@@ -302,7 +353,7 @@ def r03_textos(
         resumo=(
             f"Em {coluna}, {percentual(proporcao)} dos valores têm casas decimais, "
             f"mas {formatar_inteiro(k)} inteiros {_onde_inteiros(passo)} "
-            f"(linhas {linhas[0]}–{linhas[1]})."
+            f"(linhas {intervalo_de_linhas(linhas)})."
         ),
         por_que="Uma mudança de formato no meio dos dados pode indicar outra origem.",
         pode_ser_normal="…parte dos dados veio de outro instrumento.",
@@ -326,127 +377,6 @@ def r03_detalhes(proporcao: float, k: int, passo: int, p: float) -> DetalhesAvis
         p_valor=p,
         p_em_palavras=p_em_palavras(p),
     )
-
-
-# R5 — Duplicatas ----------------------------------------------------------------------------
-
-SO_IDENTIFICADORES = "o arquivo só tem identificadores"
-POUCAS_COLUNAS = "precisa de 2 colunas ou mais (fora os identificadores)"
-SEM_VALOR = "—"
-SEPARADOR_CELULAS = " · "
-
-
-def poucas_linhas(minimo: int, n: int) -> str:
-    return (
-        f"precisa de {formatar_inteiro(minimo)} linhas ou mais; o arquivo tem {formatar_inteiro(n)}"
-    )
-
-
-def linha_como_texto(celulas: Sequence[str | None]) -> str:
-    """Uma linha do arquivo: "F · 34 · 1,62 · 58,2"."""
-    return SEPARADOR_CELULAS.join(SEM_VALOR if celula is None else celula for celula in celulas)
-
-
-def r05_texto_exemplo(linhas: Sequence[int], primeira: str) -> str:
-    """ "Linhas 44 a 47: F · 34 · …" (as linhas são iguais: mostra uma só)."""
-    return f"{faixa_de_linhas(linhas)}: {primeira}"
-
-
-def r05_texto_exemplo_quase(linhas: Sequence[int], primeira: str) -> str:
-    return f"{faixa_de_linhas(linhas)} (quase iguais): {primeira}"
-
-
-def _iguais(k: int, grupos_quase: int) -> str:
-    """ "iguais" ou, se algum grupo só é quase igual, "iguais ou quase iguais"."""
-    igual = pluralizar(k, "igual", "iguais")
-    return f"{igual} ou quase {igual}" if grupos_quase else igual
-
-
-def r05_textos(copias: int, grupos_quase: int, seguidas: tuple[int, int] | None) -> TextosAviso:
-    """ "Encontramos {k} linhas iguais (ou quase), {em_sequencia}." (spec 16)."""
-    linhas = quantidade(copias, "linha", "linhas")
-    outras = pluralizar(copias, "outra", "outras")
-    sequencia = (
-        f"; as linhas {seguidas[0]} a {seguidas[1]} são {_iguais(2, grupos_quase)} e seguidas"
-        if seguidas
-        else ""
-    )
-    return TextosAviso(
-        titulo="Linhas iguais em sequência" if seguidas else "Linhas repetidas no arquivo",
-        resumo=(
-            f"Encontramos {linhas} {_iguais(copias, grupos_quase)} a {outras} do arquivo"
-            f"{sequencia}."
-        ),
-        por_que=(
-            "Cópias seguidas costumam surgir de 'copiar e colar'."
-            if seguidas
-            else "Linhas repetidas podem ter sido copiadas de outras partes do arquivo."
-        ),
-        pode_ser_normal="…são registros legítimos repetidos (ex.: a mesma compra).",
-        o_que_fazer=(
-            "Confira se essas linhas são registros diferentes; "
-            "se forem cópias, remova os duplicados na etapa Limpeza."
-        ),
-    )
-
-
-def r05_formula_quase(numericas: int) -> str:
-    return (
-        "Quase iguais: distância entre as linhas padronizadas < 0,01·√p "
-        f"(p = {numericas} colunas numéricas) e as demais colunas iguais; "
-        "contam quando passam do acaso, estimado pelos pares vizinhos na precisão de cada coluna"
-    )
-
-
-R05_FORMULA_IDENTICAS = "Só linhas idênticas"
-
-
-R05_TESTES = {
-    "iguais": (
-        "Poisson: pares de linhas iguais × acaso (densidade local)",
-        "par igual",
-        "pares iguais",
-    ),
-    "quase": (
-        "Poisson: pares quase iguais × acaso (densidade local)",
-        "par quase igual",
-        "pares quase iguais",
-    ),
-    "seguidas": (
-        "Poisson: linhas iguais seguidas × acaso (ordem aleatória)",
-        "trinca seguida",
-        "trincas seguidas",
-    ),
-}
-
-
-def r05_detalhes(
-    copias: int, grupos: int, formula: str, tipo: str, acaso: ContraOAcaso
-) -> DetalhesAviso:
-    """Detalhes com a comparação com o acaso que justificou o aviso (D120)."""
-    teste, singular, plural = R05_TESTES[tipo]
-    return DetalhesAviso(
-        medida="Linhas iguais ou quase iguais em todas as colunas (fora os identificadores)",
-        valor=(
-            f"{quantidade(copias, 'cópia', 'cópias')} em {quantidade(grupos, 'grupo', 'grupos')}"
-            f" · {quantidade(acaso.observados, singular, plural)} "
-            f"(o acaso daria {numero(acaso.esperados)})"
-        ),
-        limiar=(
-            "Repetições além do acaso, p < 0,01 (atenção); "
-            "3 linhas iguais seguidas, improváveis ao acaso (suspeita alta)"
-        ),
-        teste=teste,
-        formula=formula,
-        p_valor=acaso.p_valor,
-        p_em_palavras=p_em_palavras(acaso.p_valor),
-    )
-
-
-def r05_ressalva(n: int, limite: int) -> tuple[str, str]:
-    """(motivo, frase) das quase duplicatas não verificadas em arquivos grandes (D120)."""
-    motivo = f"o arquivo tem {formatar_inteiro(n)} linhas e o limite é {formatar_inteiro(limite)}"
-    return motivo, f"Quase duplicatas não verificadas: {motivo}."
 
 
 # Resumo -------------------------------------------------------------------------------------

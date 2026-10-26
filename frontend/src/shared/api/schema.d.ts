@@ -713,6 +713,8 @@ export interface components {
             valores: string[];
             /** Texto */
             texto: string;
+            /** Total Linhas */
+            total_linhas: number;
         };
         /** Faixa */
         Faixa: {

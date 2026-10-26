@@ -1,7 +1,4 @@
-import { useQuery } from '@tanstack/react-query';
-import { opcoesPrimeiraPagina } from '../../../shared/api/dataset';
 import { baixarArquivo } from '../../../shared/lib/baixarArquivo';
-import { formatarInteiro } from '../../../shared/lib/formatar';
 import BadgeSeveridade from '../../../shared/ui/BadgeSeveridade';
 import Botao from '../../../shared/ui/Botao';
 import Drawer from '../../../shared/ui/Drawer';
@@ -10,7 +7,7 @@ import EstadoErro from '../../../shared/ui/EstadoErro';
 import { exportarLinhas, nomeDoCsv } from '../exportarLinhas';
 import { type EstadoLinhas, useLinhasDoAviso } from '../hooks/useLinhasDoAviso';
 import { TEXTOS_DETECTOR } from '../textos';
-import { descreverLinhas, descreverTrechos } from '../trechos';
+import { descreverLinhas, descreverTrechos, trechosMostrados } from '../trechos';
 import type { Aviso } from '../tipos';
 import estilos from './DrawerLinhas.module.css';
 import TabelaLinhas from './TabelaLinhas';
@@ -76,24 +73,20 @@ interface PropsDrawerLinhas {
 /** "Ver na tabela" (tela 7b): as linhas do exemplo com ±3 de contexto e "Exportar estas linhas". */
 export default function DrawerLinhas({ datasetId, aviso, aoFechar }: Readonly<PropsDrawerLinhas>) {
   const { trechos, destacadas, estado } = useLinhasDoAviso(datasetId, aviso);
-  const total = useQuery(opcoesPrimeiraPagina(datasetId)).data?.resumo.n_linhas;
   if (aviso === null) return null;
+  const total = aviso.exemplo?.total_linhas ?? destacadas.size;
+  const mostrados = estado.status === 'pronto' ? trechosMostrados(estado.trechos) : trechos;
   return (
     <Drawer
       aberto
       aoFechar={aoFechar}
       topo={<BadgeSeveridade severidade={aviso.severidade} tamanho="sm" />}
       titulo={<TituloDrawer aviso={aviso} />}
-      subtitulo={T.drawer.destacadas(destacadas.size)}
+      subtitulo={T.drawer.destacadas(destacadas.size, total)}
       rotuloCorpo={T.drawer.rotuloCorpo}
       rodape={
         <>
-          <span className={estilos.contagem}>
-            {T.drawer.rodape(
-              descreverTrechos(trechos),
-              total === undefined ? null : formatarInteiro(total),
-            )}
-          </span>
+          <span className={estilos.contagem}>{T.drawer.rodape(descreverTrechos(mostrados))}</span>
           <Botao
             variante="secundario"
             tamanho="sm"

@@ -3,6 +3,7 @@ import json
 import numpy as np
 import plotly.graph_objects as go
 
+from app.dominios.graficos import textos
 from app.dominios.graficos.servico import (
     DadosBlocos,
     DadosDigitos,
@@ -81,3 +82,11 @@ def test_ultimo_digito_com_a_linha_de_10_porcento() -> None:
 def test_figuras_do_detector_sao_leves() -> None:
     for figura in (figura_blocos(BLOCOS), figura_benford(DadosDigitos("x", (1,), (1.0,), (1.0,)))):
         assert len(json.dumps(figura.dados, ensure_ascii=False)) < 5_000
+
+
+def test_textos_do_bloco_com_ponto_de_milhar_nas_linhas() -> None:
+    """Os números de linha seguem os do detector ("Linhas 1.181 a 1.200"; T4 do M4.3)."""
+    assert textos.resumo_blocos((1181, 1200), 1.701) == (
+        "A média das linhas 1.181–1.200 fica em cima da média geral (1,701)."
+    )
+    assert textos.nome_bloco_destacado((1181, 1200)) == "Bloco alinhado (linhas 1.181–1.200)"

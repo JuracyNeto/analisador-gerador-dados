@@ -143,6 +143,44 @@ def test_detalhes_dizem_a_assimetria_usada_nas_cercas() -> None:
     )
     assert aviso.detalhes.formula is not None
     assert "MC" in aviso.detalhes.formula
+    assert aviso.detalhes.formula.endswith("; a etapa Limpeza usa as cercas sem o ajuste")
+
+
+def test_exemplo_marcado_so_pelo_z_cita_os_desvios_padrao() -> None:
+    """Com a cauda longa, a cerca vai a 58,46; o 50 só passa de |z| > 3 (achado D-a do M4.3)."""
+    valores = np.minimum(_exponencial(), 50.0)
+
+    (aviso,) = RegraOutliers().executar(tabela_numerica(valores, nome="valor")).avisos
+
+    assert aviso.resumo == (
+        "6 valores de valor estão muito longe dos demais "
+        "(ex.: 50, a mais de 3 desvios padrão da média)."
+    )
+
+
+def test_exemplo_fora_da_cerca_alargada_diz_que_o_limite_foi_ajustado() -> None:
+    """A etapa Limpeza mostra a cerca sem o ajuste (Q3 + 1,5·IQR); o resumo explica a diferença."""
+    valores = _exponencial()
+    valores[[50, 120]] = valores.max() * 10
+
+    (aviso,) = RegraOutliers().executar(tabela_numerica(valores, nome="valor")).avisos
+
+    assert aviso.resumo == (
+        "3 valores de valor estão muito longe dos demais (ex.: 639,7); "
+        "o limite, ajustado à assimetria da coluna, seria 59,62."
+    )
+
+
+def test_o_que_fazer_aponta_acoes_que_existem() -> None:
+    """A Limpeza não corrige valores (D76): corrige-se no arquivo, ou remove-se na Limpeza."""
+    valores = np.concatenate([_normal(), [150.0]])
+
+    (aviso,) = RegraOutliers().executar(tabela_numerica(valores)).avisos
+
+    assert aviso.o_que_fazer == (
+        "Confira esses valores na fonte; se forem erros de digitação, corrija no arquivo e "
+        "envie de novo, ou remova-os na etapa Limpeza."
+    )
 
 
 def test_com_muitos_zeros_as_cercas_saem_dos_valores_acima_de_zero() -> None:
