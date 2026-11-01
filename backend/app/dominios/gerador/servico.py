@@ -21,6 +21,7 @@ from app.dominios.gerador.comparacao import (
     comparar_pares,
 )
 from app.dominios.gerador.estrategias.base import EntradaEstrategia, Modo, ResultadoEstrategia
+from app.dominios.gerador.formulas import FORMULAS
 from app.dominios.gerador.parametros import (
     DescricaoBivariada,
     origem_coluna,
@@ -70,6 +71,7 @@ from app.dominios.graficos.servico import (
 )
 
 __all__ = [
+    "FORMULAS",
     "Adotado",
     "Gerado",
     "Origem",
