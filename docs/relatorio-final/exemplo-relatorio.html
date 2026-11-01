@@ -1,0 +1,414 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Relatório estatístico · pesquisa_saude.txt</title>
+  <style>
+/* Relatório sempre no tema claro (D47); valores de docs/design/tokens.md e telas.md §8. */
+:root { --texto: #161a20; --texto-2: #4b5462; --borda: #dadee4; --borda-forte: #818a97; --fundo-2: #f0f2f5; --zebra: #f7f8fa;
+  --sev-info: #1d5fd1; --sev-info-suave: #e8f0fd; --sev-atencao: #995700; --sev-atencao-suave: #fff3df; --sev-alta: #b42318; --sev-alta-suave: #fdeceb; }
+* { box-sizing: border-box; }
+body { margin: 0 auto; max-width: 820px; padding: 48px 52px; background: #fff; color: var(--texto); font: 11pt/1.55 Inter, system-ui, sans-serif; }
+.mono { font-family: "JetBrains Mono", ui-monospace, monospace; }
+.cabecalho { border-bottom: 1.5px solid var(--texto); padding-bottom: 12px; margin-bottom: 24px; }
+.marca { display: flex; justify-content: space-between; font: 600 8pt/1.4 "JetBrains Mono", monospace; text-transform: uppercase; letter-spacing: .04em; }
+h1 { font-size: 22pt; font-weight: 700; margin: 16px 0 4px; }
+.subtitulo, .nota { color: var(--texto-2); font-size: 9.5pt; margin: 4px 0; }
+h2 { font-size: 13pt; font-weight: 700; margin: 24px 0 8px; }
+h3 { font-size: 11pt; margin: 16px 0 6px; }
+table { width: 100%; border-collapse: collapse; font-size: 10.5pt; margin: 8px 0 16px; }
+th { text-align: left; font-weight: 600; border-bottom: 1px solid var(--borda-forte); padding: 4px 8px; }
+td { border-bottom: 1px solid var(--borda); padding: 4px 8px; }
+tbody tr:nth-child(even) { background: var(--zebra); }
+td.numero { text-align: right; font-variant-numeric: tabular-nums; }
+.medidas { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 0; border: 1px solid var(--borda); margin: 8px 0; }
+.medidas div { padding: 6px 10px; border-right: 1px solid var(--borda); }
+.medidas dt { font-size: 8pt; color: var(--texto-2); }
+.medidas dd { margin: 0; font-size: 12pt; font-weight: 600; }
+.medidas dd.selo { font-size: 8.5pt; font-weight: 500; color: var(--texto-2); }
+figure { margin: 16px 0; break-inside: avoid; }
+figcaption { font-weight: 600; font-size: 10.5pt; margin-bottom: 4px; }
+.grafico { width: 100%; height: 320px; }
+.formulas { font-size: 10pt; padding-left: 18px; }
+.formulas li { margin: 3px 0; break-inside: avoid; }
+.nome-formula { font-weight: 600; }
+.parametros { margin: 8px 0 12px; border-top: 1px solid var(--borda); }
+.parametros div { display: flex; gap: 12px; padding: 3px 0; border-bottom: 1px solid var(--borda); }
+.parametros dt { flex: 0 0 180px; color: var(--texto-2); }
+.parametros dd { margin: 0; }
+.comparacao td:nth-child(3) { font-weight: 600; }
+.frase-resumo { font-size: 13pt; font-weight: 600; margin: 4px 0; }
+.contadores { font-weight: 600; }
+/* Selo com ícone e palavra: a cor reforça, mas não é a única pista (spec 16). */
+.sev-alta { --sev: var(--sev-alta); --sev-suave: var(--sev-alta-suave); }
+.sev-atencao { --sev: var(--sev-atencao); --sev-suave: var(--sev-atencao-suave); }
+.sev-info { --sev: var(--sev-info); --sev-suave: var(--sev-info-suave); }
+.aviso { border: 1px solid var(--borda); border-left: 4px solid var(--sev); border-radius: 4px; padding: 10px 14px; margin: 14px 0; font-size: 10pt; }
+.aviso-texto { break-inside: avoid; }
+.selo-severidade { display: inline-block; margin: 0; padding: 1px 10px; border-radius: 999px; background: var(--sev-suave); color: var(--sev); font-size: 9pt; font-weight: 600; }
+.aviso h3 { font-size: 11pt; margin: 6px 0 4px; }
+.aviso h4 { font-size: 8.5pt; font-weight: 600; text-transform: uppercase; letter-spacing: .03em; color: var(--texto-2); margin: 10px 0 2px; }
+.partes { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.partes p { margin: 0; }
+.exemplo { background: var(--fundo-2); border-radius: 4px; padding: 6px 10px; }
+.exemplo .mono { font-size: 9pt; }
+.exemplo .rotulo { font-size: 8pt; font-weight: 600; text-transform: uppercase; color: var(--texto-2); margin-right: 6px; }
+.detalhes { display: grid; grid-template-columns: max-content 1fr; gap: 2px 12px; font-size: 9pt; margin: 4px 0; }
+.detalhes dt { color: var(--texto-2); }
+.detalhes dd { margin: 0; }
+.nao-verificadas { font-size: 10pt; padding-left: 18px; }
+.rodape { margin-top: 32px; padding-top: 8px; border-top: 1px solid var(--borda); color: var(--texto-2); font: 8pt/1.4 "JetBrains Mono", monospace; }
+@page { size: A4 portrait; margin: 18mm; }
+@media print {
+  body { padding: 0; max-width: none; }
+  section.coluna, section.bivariada, section.gerador, section.detector, section.apendice { break-before: page; }
+  .grafico { width: 100% !important; }
+}  </style>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16/dist/katex.min.js"></script>
+  <script src="https://cdn.plot.ly/plotly-4.1.1.min.js"></script>
+</head>
+<body>
+  <header class="cabecalho">
+    <div class="marca"><span>Analisador e Gerador de Dados</span><span>01/11/2026 10:00</span></div>
+    <h1>Relatório estatístico</h1>
+    <p class="subtitulo">pesquisa_saude.txt · 227 linhas após limpeza × 8 colunas</p>
+  </header>
+
+  <section>
+    <h2>1. Leitura do arquivo</h2>
+    <p>Arquivo de texto separado por ponto e vírgula, decimal com vírgula, codificação UTF-8 e cabeçalho na primeira linha. Lemos 230 linhas e 8 colunas.</p>
+  </section>
+
+  <section>
+    <h2>2. Tipos de variável</h2>
+    <table>
+      <thead><tr><th scope="col">Coluna</th><th scope="col">Tipo</th><th scope="col">Motivo</th></tr></thead>
+      <tbody>
+        <tr><td class="mono">id</td><td>Identificador (ignorado)</td><td>O nome da coluna indica um código (id).</td></tr>
+        <tr><td class="mono">sexo</td><td>Binária</td><td>Tem só dois valores: F e M.</td></tr>
+        <tr><td class="mono">idade</td><td>Quantitativa contínua</td><td>Inteiros com muitos valores diferentes (54); tratada como contínua.</td></tr>
+        <tr><td class="mono">altura_m</td><td>Quantitativa contínua</td><td>Números com casas decimais.</td></tr>
+        <tr><td class="mono">peso_kg</td><td>Quantitativa contínua</td><td>Números com casas decimais.</td></tr>
+        <tr><td class="mono">escolaridade</td><td>Qualitativa ordinal</td><td>Os valores seguem uma escala conhecida: fundamental &lt; médio &lt; superior &lt; pós.</td></tr>
+        <tr><td class="mono">cidade</td><td>Qualitativa nominal</td><td>São categorias sem ordem natural (7 categorias).</td></tr>
+        <tr><td class="mono">satisfacao</td><td>Qualitativa ordinal</td><td>Os valores seguem uma escala conhecida: ruim &lt; regular &lt; bom &lt; ótimo.</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section>
+    <h2>3. Limpeza</h2>
+    <p>Unificamos 8 grafias de cidade. Unificamos 3 grafias de cidade. Removemos 3 linhas duplicadas. Marcamos 1 valor de idade como faltante por estar fora da faixa. Marcamos 1 valor de altura_m como faltante por estar fora da faixa. Marcamos 4 valores de peso_kg como faltantes por estarem fora da faixa. Preenchemos 2 valores faltantes de idade com a mediana (46). Preenchemos 2 valores faltantes de altura_m com a mediana (1,68). Preenchemos 7 valores faltantes de peso_kg com a mediana (68,7). Preenchemos 2 valores faltantes de cidade com a moda (Goiânia).</p>
+  </section>
+
+
+  <section class="coluna">
+    <h2>4. Análise de <span class="mono">sexo</span></h2>
+    <p class="nota">Binária · 227 valores válidos</p>
+    <dl class="medidas">
+<div><dt>Proporção</dt><dd class="mono">0,4978</dd></div><div><dt>Desvio padrão</dt><dd class="mono">0,5</dd></div><div><dt>Moda</dt><dd class="mono">M</dd></div><div><dt>Variância</dt><dd class="mono">0,25</dd></div>    </dl>
+        <table class="frequencias">
+      <thead><tr><th scope="col">Categoria</th><th scope="col">fᵢ</th><th scope="col">fr%</th></tr></thead>
+      <tbody>
+        <tr><td>M</td><td class="numero">114</td><td class="numero">50,2%</td></tr>
+        <tr><td>F</td><td class="numero">113</td><td class="numero">49,8%</td></tr>
+      </tbody>
+    </table>
+
+    <figure>
+      <figcaption>Figura 1 · Distribuição de sexo (n = 227)</figcaption>
+      <div id="figura-1" class="grafico"></div>
+<script>Plotly.newPlot("figura-1", [{"type": "bar", "x": ["M", "F"], "y": [114, 113], "marker": {"opacity": 0.85, "color": "#0b6aa8"}, "meta": "principal", "text": ["114 (50,2%)", "113 (49,8%)"], "textposition": "outside"}], {"font": {"family": "Inter, system-ui, sans-serif", "size": 12, "color": "#4b5462"}, "paper_bgcolor": "#ffffff", "plot_bgcolor": "#ffffff", "colorway": ["#0b6aa8", "#c4520a", "#0b7a5a", "#b0548f", "#8f6400", "#5a4bb5", "#3f8fc4", "#4b5563"], "separators": ",.", "margin": {"l": 60, "r": 16, "t": 32, "b": 48}, "xaxis": {"gridcolor": "#e6e9ee", "linecolor": "#868f9c", "zeroline": false, "ticks": "", "title": {"font": {"size": 13, "color": "#161a20"}, "text": "sexo"}}, "yaxis": {"gridcolor": "#e6e9ee", "linecolor": "#868f9c", "zeroline": false, "ticks": "", "title": {"font": {"size": 13, "color": "#161a20"}, "text": "Frequência (fᵢ)"}}, "bargap": 0.04, "showlegend": false}, {"displaylogo": false, "responsive": true});</script>
+      <p class="nota">A categoria mais comum é M, com 114 valores (50,2%).</p>
+    </figure>
+<p>49,8% dos valores são &#34;F&#34;.</p>    <h3>Forma e distribuição</h3>
+<p>Normal não se aplica a binárias: com dois valores, a distribuição é a Bernoulli.</p><p>p̂ = 0,4978 · Var = p(1 − p) = 0,25. Com p estimado dos próprios dados, a Bernoulli repete as proporções observadas; não há teste de aderência.</p>  </section>
+  <section class="coluna">
+    <h2>5. Análise de <span class="mono">idade</span></h2>
+    <p class="nota">Quantitativa contínua · 227 valores válidos</p>
+    <dl class="medidas">
+<div><dt>Média</dt><dd class="mono">45,28</dd></div><div><dt>Mediana</dt><dd class="mono">46</dd></div><div><dt>Moda</dt><dd class="mono">70</dd></div><div><dt>Moda de Czuber</dt><dd class="mono">59,33</dd></div><div><dt>Desvio padrão</dt><dd class="mono">15,58</dd></div><div><dt>Variância</dt><dd class="mono">242,8</dd></div><div><dt>Coeficiente de variação</dt><dd class="mono">34,41%</dd></div><div><dt>Amplitude interquartil (IQR)</dt><dd class="mono">26,5</dd></div><div><dt>Amplitude</dt><dd class="mono">70</dd></div>    </dl>
+<p class="mono">Q1 = 32,5 · Q2 = 46 · Q3 = 59</p>        <table class="frequencias">
+      <thead><tr><th scope="col">Classe</th><th scope="col">fᵢ</th><th scope="col">fr%</th><th scope="col">Fr%</th></tr></thead>
+      <tbody>
+        <tr><td>0 ⊢ 8</td><td class="numero">1</td><td class="numero">0,4%</td><td class="numero">0,4%</td></tr>
+        <tr><td>8 ⊢ 16</td><td class="numero">0</td><td class="numero">0,0%</td><td class="numero">0,4%</td></tr>
+        <tr><td>16 ⊢ 24</td><td class="numero">25</td><td class="numero">11,0%</td><td class="numero">11,5%</td></tr>
+        <tr><td>24 ⊢ 32</td><td class="numero">29</td><td class="numero">12,8%</td><td class="numero">24,2%</td></tr>
+        <tr><td>32 ⊢ 40</td><td class="numero">33</td><td class="numero">14,5%</td><td class="numero">38,8%</td></tr>
+        <tr><td>40 ⊢ 48</td><td class="numero">34</td><td class="numero">15,0%</td><td class="numero">53,7%</td></tr>
+        <tr><td>48 ⊢ 56</td><td class="numero">34</td><td class="numero">15,0%</td><td class="numero">68,7%</td></tr>
+        <tr><td>56 ⊢ 64</td><td class="numero">39</td><td class="numero">17,2%</td><td class="numero">85,9%</td></tr>
+        <tr><td>64 ⊢ 72</td><td class="numero">32</td><td class="numero">14,1%</td><td class="numero">100,0%</td></tr>
+      </tbody>
+    </table>
+
+    <figure>
+      <figcaption>Figura 2 · Distribuição de idade (n = 227)</figcaption>
+      <div id="figura-2" class="grafico"></div>
+<script>Plotly.newPlot("figura-2", [{"type": "bar", "x": [4.0, 12.0, 20.0, 28.0, 36.0, 44.0, 52.0, 60.0, 68.0], "y": [1, 0, 25, 29, 33, 34, 34, 39, 32], "width": [8.0, 8.0, 8.0, 8.0, 8.0, 8.0, 8.0, 8.0, 8.0], "customdata": ["0 ⊢ 8", "8 ⊢ 16", "16 ⊢ 24", "24 ⊢ 32", "32 ⊢ 40", "40 ⊢ 48", "48 ⊢ 56", "56 ⊢ 64", "64 ⊢ 72"], "hovertemplate": "%{customdata}: %{y}<extra><\/extra>", "marker": {"opacity": 0.85, "color": "#0b6aa8"}, "meta": "principal"}], {"font": {"family": "Inter, system-ui, sans-serif", "size": 12, "color": "#4b5462"}, "paper_bgcolor": "#ffffff", "plot_bgcolor": "#ffffff", "colorway": ["#0b6aa8", "#c4520a", "#0b7a5a", "#b0548f", "#8f6400", "#5a4bb5", "#3f8fc4", "#4b5563"], "separators": ",.", "margin": {"l": 60, "r": 16, "t": 32, "b": 48}, "xaxis": {"gridcolor": "#e6e9ee", "linecolor": "#868f9c", "zeroline": false, "ticks": "", "title": {"font": {"size": 13, "color": "#161a20"}, "text": "idade"}}, "yaxis": {"gridcolor": "#e6e9ee", "linecolor": "#868f9c", "zeroline": false, "ticks": "", "title": {"font": {"size": 13, "color": "#161a20"}, "text": "Frequência (fᵢ)"}}, "bargap": 0, "showlegend": false}, {"displaylogo": false, "responsive": true});</script>
+      <p class="nota">A classe mais comum é 56 ⊢ 64, com 39 valores (17,2%).</p>
+    </figure>
+<p>Média e mediana próximas (diferença de 0,7225): a distribuição parece simétrica.</p><p>Os dados são heterogêneos (muita variação em relação à média).</p>    <h3>Forma e distribuição</h3>
+    <dl class="medidas">
+<div><dt>Assimetria (G₁)</dt><dd class="mono">−0,1408</dd><dd class="selo">Aproximadamente simétrica</dd></div><div><dt>Curtose (G₂)</dt><dd class="mono">−0,9835</dd><dd class="selo">Platicúrtica</dd></div><div><dt>As₁ (Pearson)</dt><dd class="mono">−0,9021</dd></div><div><dt>As₂ (Pearson)</dt><dd class="mono">−0,1391</dd></div><div><dt>K (percentílica)</dt><dd class="mono">0,3053</dd></div>    </dl>
+<p>Shapiro-Wilk: W = 0,9599 · p &lt; 0,001 &lt; 0,05. Os dados se afastam da distribuição Normal.</p><p>Binomial não se aplica a quantitativas contínuas: precisa de contagens de sucessos em n tentativas.</p><p>Distribuição aproximadamente simétrica e platicúrtica; se afasta da Normal (chance de acontecer por acaso: menos de 1 em 1.000).</p>    <figure>
+      <figcaption>Figura 3 · Histograma de idade com curva Normal (n = 227)</figcaption>
+      <div id="forma-2" class="grafico"></div>
+<script>Plotly.newPlot("forma-2", [{"type": "bar", "x": [4.0, 12.0, 20.0, 28.0, 36.0, 44.0, 52.0, 60.0, 68.0], "y": [1, 0, 25, 29, 33, 34, 34, 39, 32], "width": [8.0, 8.0, 8.0, 8.0, 8.0, 8.0, 8.0, 8.0, 8.0], "customdata": ["0 ⊢ 8", "8 ⊢ 16", "16 ⊢ 24", "24 ⊢ 32", "32 ⊢ 40", "40 ⊢ 48", "48 ⊢ 56", "56 ⊢ 64", "64 ⊢ 72"], "hovertemplate": "%{customdata}: %{y}<extra><\/extra>", "marker": {"opacity": 0.85, "color": "#0b6aa8"}, "meta": "principal", "name": "Frequência observada"}, {"type": "scatter", "mode": "lines", "x": [0.0, 0.36180904522613067, 0.7236180904522613, 1.085427135678392, 1.4472361809045227, 1.8090452261306533, 2.170854271356784, 2.532663316582915, 2.8944723618090453, 3.2562814070351758, 3.6180904522613067, 3.9798994974874375, 4.341708542713568, 4.703517587939698, 5.06532663316583, 5.42713567839196, 5.788944723618091, 6.150753768844221, 6.5125628140703515, 6.874371859296483, 7.236180904522613, 7.597989949748744, 7.959798994974875, 8.321608040201005, 8.683417085427136, 9.045226130653267, 9.407035175879397, 9.768844221105528, 10.13065326633166, 10.492462311557789, 10.85427135678392, 11.21608040201005, 11.577889447236181, 11.939698492462313, 12.301507537688442, 12.663316582914574, 13.025125628140703, 13.386934673366834, 13.748743718592966, 14.110552763819095, 14.472361809045227, 14.834170854271358, 15.195979899497488, 15.557788944723619, 15.91959798994975, 16.28140703517588, 16.64321608040201, 17.00502512562814, 17.366834170854272, 17.728643216080403, 18.090452261306535, 18.452261306532662, 18.814070351758794, 19.175879396984925, 19.537688442211056, 19.899497487437188, 20.26130653266332, 20.623115577889447, 20.984924623115578, 21.34673366834171, 21.70854271356784, 22.070351758793972, 22.4321608040201, 22.79396984924623, 23.155778894472363, 23.517587939698494, 23.879396984924625, 24.241206030150753, 24.603015075376884, 24.964824120603016, 25.326633165829147, 25.68844221105528, 26.050251256281406, 26.412060301507537, 26.77386934673367, 27.1356783919598, 27.49748743718593, 27.859296482412063, 28.22110552763819, 28.582914572864322, 28.944723618090453, 29.306532663316585, 29.668341708542716, 30.030150753768844, 30.391959798994975, 30.753768844221106, 31.115577889447238, 31.47738693467337, 31.8391959798995, 32.20100502512563, 32.56281407035176, 32.92462311557789, 33.28643216080402, 33.64824120603015, 34.01005025125628, 34.37185929648241, 34.733668341708544, 35.095477386934675, 35.45728643216081, 35.81909547738694, 36.18090452261307, 36.5427135678392, 36.904522613065325, 37.266331658291456, 37.62814070351759, 37.98994974874372, 38.35175879396985, 38.71356783919598, 39.07537688442211, 39.437185929648244, 39.798994974874375, 40.16080402010051, 40.52261306532664, 40.88442211055276, 41.246231155778894, 41.608040201005025, 41.969849246231156, 42.33165829145729, 42.69346733668342, 43.05527638190955, 43.41708542713568, 43.77889447236181, 44.140703517587944, 44.50251256281407, 44.8643216080402, 45.22613065326633, 45.58793969849246, 45.949748743718594, 46.311557788944725, 46.67336683417086, 47.03517587939699, 47.39698492462312, 47.75879396984925, 48.12060301507538, 48.482412060301506, 48.84422110552764, 49.20603015075377, 49.5678391959799, 49.92964824120603, 50.29145728643216, 50.653266331658294, 51.015075376884425, 51.37688442211056, 51.73869346733669, 52.10050251256281, 52.462311557788944, 52.824120603015075, 53.185929648241206, 53.54773869346734, 53.90954773869347, 54.2713567839196, 54.63316582914573, 54.99497487437186, 55.356783919597994, 55.718592964824126, 56.08040201005025, 56.44221105527638, 56.80402010050251, 57.165829145728644, 57.527638190954775, 57.88944723618091, 58.25125628140704, 58.61306532663317, 58.9748743718593, 59.33668341708543, 59.69849246231156, 60.06030150753769, 60.42211055276382, 60.78391959798995, 61.14572864321608, 61.50753768844221, 61.869346733668344, 62.231155778894475, 62.59296482412061, 62.95477386934674, 63.31658291457287, 63.678391959799, 64.04020100502512, 64.40201005025126, 64.76381909547739, 65.12562814070353, 65.48743718592965, 65.84924623115577, 66.21105527638191, 66.57286432160804, 66.93467336683418, 67.2964824120603, 67.65829145728644, 68.02010050251256, 68.3819095477387, 68.74371859296483, 69.10552763819096, 69.46733668341709, 69.82914572864321, 70.19095477386935, 70.55276381909547, 70.91457286432161, 71.27638190954774, 71.63819095477388, 72.0], "y": [0.6818192797844995, 0.7292210186314436, 0.7794977907067213, 0.8327917408755169, 0.8892497269209817, 0.9490233143622755, 1.0122687578060947, 1.0791469679813115, 1.1498234636047864, 1.224468307228517, 1.3032560242243219, 1.386365504072446, 1.4739798831350495, 1.5662864081146721, 1.6634762794217606, 1.7657444737042027, 1.8732895448259448, 1.9863134026211031, 2.105021068794779, 2.2296204093921914, 2.3603218433136646, 2.497338026414742, 2.6408835107980666, 2.791174378976855, 2.948427852668633, 3.112861876062378, 3.2846946734922895, 3.4641442815468753, 3.6514280557427674, 3.846762151998348, 4.050360983253074, 4.262436651693041, 4.4831983571630305, 4.712851782467959, 4.951598456393315, 5.199635095403494, 5.4571529251087805, 5.72433698272563, 6.00136540188985, 6.288408681318455, 6.585628938951818, 6.8931791533432385, 7.211202394197504, 7.5398310440919705, 7.879186013543531, 8.229375951710754, 8.590496455142269, 8.962629277099191, 9.345841540090213, 9.740184954362057, 10.145695045184544, 10.562390391857983, 10.99027188144947, 11.429321980334175, 11.879504026676274, 12.340761547031285, 12.81301760028695, 13.296174152181894, 13.790111483650831, 14.294687636239626, 14.809737897814868, 15.33507433175784, 15.870485352783788, 16.415735352462114, 16.970564377432098, 17.534687863212323, 18.107796426388447, 18.68955571783529, 19.279606339484012, 19.877563826984122, 20.483018700433867, 21.09553658516076, 21.714658404327654, 22.339900644919272, 22.97075569843015, 23.60669227732786, 24.247155908107032, 24.891569501479587, 25.539333999966846, 26.189829102870885, 26.842414068305413, 27.496428591664422, 28.15119375959803, 28.8060130782536, 29.4601735742259, 30.112946966344982, 30.763590906116143, 31.411350284314278, 32.05545860092627, 32.69513939533258, 33.32960773332281, 33.95807174725287, 34.579734225374445, 35.19379424610148, 35.79944885272687, 36.39589476386497, 36.98233011467423, 37.55795622371097, 38.12197938008056, 38.673612645387635, 39.212077664843555, 39.73660648176877, 40.24644334962914, 40.7408465356722, 41.21909011017965, 41.680465715329206, 42.12428430766042, 42.54987786816726, 42.95660107409489, 43.3438329265981, 43.71097832852606, 44.05746960673065, 44.38276797345355, 44.68636492153092, 44.96778354836196, 45.22657980381817, 45.46234365752475, 45.67470018121972, 45.86331054219255, 46.02787290411784, 46.16812323193226, 46.28383599775039, 46.37482478517777, 46.44094278975474, 46.48208321365047, 46.49817955312165, 46.4892057776533, 46.45517640010565, 46.396146437602944, 46.31221126331152, 46.203506349666114, 46.07020690401211, 45.91252739803539, 45.73072099274886, 45.52507886119356, 45.29592941139066, 45.043637412446905, 44.768603027068366, 44.471260754073874, 44.15207828481942, 43.81155527774533, 43.45022205553953, 43.06863822966956, 42.667391257274105, 42.247094935618684, 41.808387839510615, 41.35193170723372, 40.878409780703045, 40.38852510565438, 39.882998797770874, 39.362568280711514, 38.82798550204099, 38.2800151330705, 37.719432758601954, 37.147023062526806, 36.563578015163046, 35.969895068123556, 35.36677536239421, 34.75502195516263, 34.1354380707807, 33.50882538106394, 32.87598231993331, 32.23770243718805, 31.59477279596593, 30.94797241819876, 30.2980707821092, 29.645826375521438, 28.99198530847304, 28.337279988322262, 27.68242786024327, 27.028130215695505, 26.375071071141583, 25.723916118974614, 25.075311752300504, 24.429884164906603, 23.788238527435038, 23.150958240470054, 22.51860426494423, 21.89171452996973, 21.270803417910386, 20.656361326226993, 20.048854305356972, 19.448723771625716, 18.856386293938375, 18.272233452762116, 17.696631769684203, 17.12992270562221, 16.572422725564778, 16.02442342754265, 15.486191733362375, 14.957970138487378, 14.439977018315652, 13.932406987987465, 13.435431312753462, 12.949198365849448, 12.473834130753804, 12.009442744649629, 11.556107079875991, 11.113889360128017, 10.68283180815785], "line": {"width": 2.5, "color": "#c4520a"}, "name": "Curva Normal (μ = 45,28; σ = 15,58)", "meta": "referencia", "marker": {"color": "#c4520a"}}], {"font": {"family": "Inter, system-ui, sans-serif", "size": 12, "color": "#4b5462"}, "paper_bgcolor": "#ffffff", "plot_bgcolor": "#ffffff", "colorway": ["#0b6aa8", "#c4520a", "#0b7a5a", "#b0548f", "#8f6400", "#5a4bb5", "#3f8fc4", "#4b5563"], "separators": ",.", "margin": {"l": 60, "r": 16, "t": 32, "b": 48}, "xaxis": {"gridcolor": "#e6e9ee", "linecolor": "#868f9c", "zeroline": false, "ticks": "", "title": {"font": {"size": 13, "color": "#161a20"}, "text": "idade"}}, "yaxis": {"gridcolor": "#e6e9ee", "linecolor": "#868f9c", "zeroline": false, "ticks": "", "title": {"font": {"size": 13, "color": "#161a20"}, "text": "Frequência (fᵢ)"}}, "bargap": 0, "showlegend": true}, {"displaylogo": false, "responsive": true});</script>
+      <p class="nota">As barras se afastam da curva em alguns trechos.</p>
+    </figure>
+  </section>
+  <section class="coluna">
+    <h2>6. Análise de <span class="mono">altura_m</span></h2>
+    <p class="nota">Quantitativa contínua · 227 valores válidos</p>
+    <dl class="medidas">
+<div><dt>Média</dt><dd class="mono">1,687</dd></div><div><dt>Mediana</dt><dd class="mono">1,68</dd></div><div><dt>Moda</dt><dd class="mono">1,61</dd></div><div><dt>Moda de Czuber</dt><dd class="mono">1,66</dd></div><div><dt>Desvio padrão</dt><dd class="mono">0,09269</dd></div><div><dt>Variância</dt><dd class="mono">0,008592</dd></div><div><dt>Coeficiente de variação</dt><dd class="mono">5,494%</dd></div><div><dt>Amplitude interquartil (IQR)</dt><dd class="mono">0,14</dd></div><div><dt>Amplitude</dt><dd class="mono">0,46</dd></div>    </dl>
+<p class="mono">Q1 = 1,62 · Q2 = 1,68 · Q3 = 1,76</p>        <table class="frequencias">
+      <thead><tr><th scope="col">Classe</th><th scope="col">fᵢ</th><th scope="col">fr%</th><th scope="col">Fr%</th></tr></thead>
+      <tbody>
+        <tr><td>1,47 ⊢ 1,53</td><td class="numero">6</td><td class="numero">2,6%</td><td class="numero">2,6%</td></tr>
+        <tr><td>1,53 ⊢ 1,59</td><td class="numero">26</td><td class="numero">11,5%</td><td class="numero">14,1%</td></tr>
+        <tr><td>1,59 ⊢ 1,65</td><td class="numero">52</td><td class="numero">22,9%</td><td class="numero">37,0%</td></tr>
+        <tr><td>1,65 ⊢ 1,71</td><td class="numero">56</td><td class="numero">24,7%</td><td class="numero">61,7%</td></tr>
+        <tr><td>1,71 ⊢ 1,77</td><td class="numero">35</td><td class="numero">15,4%</td><td class="numero">77,1%</td></tr>
+        <tr><td>1,77 ⊢ 1,83</td><td class="numero">33</td><td class="numero">14,5%</td><td class="numero">91,6%</td></tr>
+        <tr><td>1,83 ⊢ 1,89</td><td class="numero">15</td><td class="numero">6,6%</td><td class="numero">98,2%</td></tr>
+        <tr><td>1,89 ⊢ 1,95</td><td class="numero">4</td><td class="numero">1,8%</td><td class="numero">100,0%</td></tr>
+        <tr><td>1,95 ⊢ 2,01</td><td class="numero">0</td><td class="numero">0,0%</td><td class="numero">100,0%</td></tr>
+      </tbody>
+    </table>
+
+    <figure>
+      <figcaption>Figura 4 · Distribuição de altura_m (n = 227)</figcaption>
+      <div id="figura-3" class="grafico"></div>
+<script>Plotly.newPlot("figura-3", [{"type": "bar", "x": [1.5, 1.56, 1.62, 1.68, 1.74, 1.8, 1.8599999999999999, 1.92, 1.98], "y": [6, 26, 52, 56, 35, 33, 15, 4, 0], "width": [0.06000000000000005, 0.06000000000000005, 0.05999999999999983, 0.06000000000000005, 0.06000000000000005, 0.06000000000000005, 0.05999999999999983, 0.06000000000000005, 0.05999999999999983], "customdata": ["1,47 ⊢ 1,53", "1,53 ⊢ 1,59", "1,59 ⊢ 1,65", "1,65 ⊢ 1,71", "1,71 ⊢ 1,77", "1,77 ⊢ 1,83", "1,83 ⊢ 1,89", "1,89 ⊢ 1,95", "1,95 ⊢ 2,01"], "hovertemplate": "%{customdata}: %{y}<extra><\/extra>", "marker": {"opacity": 0.85, "color": "#0b6aa8"}, "meta": "principal"}], {"font": {"family": "Inter, system-ui, sans-serif", "size": 12, "color": "#4b5462"}, "paper_bgcolor": "#ffffff", "plot_bgcolor": "#ffffff", "colorway": ["#0b6aa8", "#c4520a", "#0b7a5a", "#b0548f", "#8f6400", "#5a4bb5", "#3f8fc4", "#4b5563"], "separators": ",.", "margin": {"l": 60, "r": 16, "t": 32, "b": 48}, "xaxis": {"gridcolor": "#e6e9ee", "linecolor": "#868f9c", "zeroline": false, "ticks": "", "title": {"font": {"size": 13, "color": "#161a20"}, "text": "altura_m"}}, "yaxis": {"gridcolor": "#e6e9ee", "linecolor": "#868f9c", "zeroline": false, "ticks": "", "title": {"font": {"size": 13, "color": "#161a20"}, "text": "Frequência (fᵢ)"}}, "bargap": 0, "showlegend": false}, {"displaylogo": false, "responsive": true});</script>
+      <p class="nota">A classe mais comum é 1,65 ⊢ 1,71, com 56 valores (24,7%).</p>
+    </figure>
+<p>Média e mediana próximas (diferença de 0,007313): a distribuição parece simétrica.</p><p>Os dados são homogêneos (pouca variação em relação à média).</p>    <h3>Forma e distribuição</h3>
+    <dl class="medidas">
+<div><dt>Assimetria (G₁)</dt><dd class="mono">0,2467</dd><dd class="selo">Aproximadamente simétrica</dd></div><div><dt>Curtose (G₂)</dt><dd class="mono">−0,5749</dd><dd class="selo">Platicúrtica</dd></div><div><dt>As₁ (Pearson)</dt><dd class="mono">0,299</dd></div><div><dt>As₂ (Pearson)</dt><dd class="mono">0,2367</dd></div><div><dt>K (percentílica)</dt><dd class="mono">0,2869</dd></div>    </dl>
+<p>Shapiro-Wilk: W = 0,9839 · p = 0,0111 &lt; 0,05. Os dados se afastam da distribuição Normal.</p><p>Binomial não se aplica a quantitativas contínuas: precisa de contagens de sucessos em n tentativas.</p><p>Distribuição aproximadamente simétrica e platicúrtica; se afasta da Normal (chance de acontecer por acaso: cerca de 1 em 90).</p>    <figure>
+      <figcaption>Figura 5 · Histograma de altura_m com curva Normal (n = 227)</figcaption>
+      <div id="forma-3" class="grafico"></div>
+<script>Plotly.newPlot("forma-3", [{"type": "bar", "x": [1.5, 1.56, 1.62, 1.68, 1.74, 1.8, 1.8599999999999999, 1.92, 1.98], "y": [6, 26, 52, 56, 35, 33, 15, 4, 0], "width": [0.06000000000000005, 0.06000000000000005, 0.05999999999999983, 0.06000000000000005, 0.06000000000000005, 0.06000000000000005, 0.05999999999999983, 0.06000000000000005, 0.05999999999999983], "customdata": ["1,47 ⊢ 1,53", "1,53 ⊢ 1,59", "1,59 ⊢ 1,65", "1,65 ⊢ 1,71", "1,71 ⊢ 1,77", "1,77 ⊢ 1,83", "1,83 ⊢ 1,89", "1,89 ⊢ 1,95", "1,95 ⊢ 2,01"], "hovertemplate": "%{customdata}: %{y}<extra><\/extra>", "marker": {"opacity": 0.85, "color": "#0b6aa8"}, "meta": "principal", "name": "Frequência observada"}, {"type": "scatter", "mode": "lines", "x": [1.47, 1.472713567839196, 1.475427135678392, 1.478140703517588, 1.4808542713567838, 1.48356783919598, 1.4862814070351758, 1.4889949748743718, 1.491708542713568, 1.4944221105527637, 1.4971356783919598, 1.4998492462311557, 1.5025628140703517, 1.5052763819095476, 1.5079899497487437, 1.5107035175879397, 1.5134170854271356, 1.5161306532663317, 1.5188442211055275, 1.5215577889447236, 1.5242713567839195, 1.5269849246231155, 1.5296984924623116, 1.5324120603015075, 1.5351256281407035, 1.5378391959798994, 1.5405527638190954, 1.5432663316582913, 1.5459798994974874, 1.5486934673366834, 1.5514070351758793, 1.5541206030150754, 1.5568341708542712, 1.5595477386934673, 1.5622613065326632, 1.5649748743718592, 1.5676884422110553, 1.5704020100502512, 1.5731155778894472, 1.575829145728643, 1.5785427135678392, 1.581256281407035, 1.583969849246231, 1.5866834170854272, 1.589396984924623, 1.592110552763819, 1.594824120603015, 1.597537688442211, 1.6002512562814069, 1.602964824120603, 1.605678391959799, 1.6083919597989949, 1.611105527638191, 1.6138190954773868, 1.6165326633165829, 1.619246231155779, 1.6219597989949748, 1.6246733668341709, 1.6273869346733667, 1.6301005025125628, 1.6328140703517586, 1.6355276381909547, 1.6382412060301506, 1.6409547738693466, 1.6436683417085427, 1.6463819095477386, 1.6490954773869346, 1.6518090452261305, 1.6545226130653266, 1.6572361809045226, 1.6599497487437185, 1.6626633165829146, 1.6653768844221104, 1.6680904522613065, 1.6708040201005023, 1.6735175879396984, 1.6762311557788943, 1.6789447236180903, 1.6816582914572864, 1.6843718592964823, 1.6870854271356783, 1.6897989949748742, 1.6925125628140703, 1.6952261306532663, 1.6979396984924622, 1.7006532663316583, 1.703366834170854, 1.7060804020100502, 1.708793969849246, 1.711507537688442, 1.714221105527638, 1.716934673366834, 1.71964824120603, 1.722361809045226, 1.725075376884422, 1.7277889447236179, 1.730502512562814, 1.73321608040201, 1.7359296482412059, 1.738643216080402, 1.7413567839195978, 1.7440703517587939, 1.7467839195979897, 1.7494974874371858, 1.7522110552763817, 1.7549246231155777, 1.7576381909547738, 1.7603517587939697, 1.7630653266331657, 1.7657788944723616, 1.7684924623115577, 1.7712060301507537, 1.7739195979899496, 1.7766331658291457, 1.7793467336683415, 1.7820603015075376, 1.7847738693467337, 1.7874874371859295, 1.7902010050251254, 1.7929145728643214, 1.7956281407035175, 1.7983417085427134, 1.8010552763819094, 1.8037688442211053, 1.8064824120603014, 1.8091959798994974, 1.8119095477386933, 1.8146231155778894, 1.8173366834170852, 1.8200502512562813, 1.8227638190954774, 1.8254773869346732, 1.828190954773869, 1.8309045226130651, 1.8336180904522612, 1.836331658291457, 1.8390452261306531, 1.841758793969849, 1.844472361809045, 1.8471859296482411, 1.849899497487437, 1.852613065326633, 1.855326633165829, 1.858040201005025, 1.860753768844221, 1.863467336683417, 1.8661809045226128, 1.8688944723618088, 1.871608040201005, 1.8743216080402008, 1.8770351758793968, 1.8797487437185927, 1.8824623115577888, 1.8851758793969848, 1.8878894472361807, 1.8906030150753768, 1.8933165829145726, 1.8960301507537687, 1.8987437185929648, 1.9014572864321606, 1.9041708542713565, 1.9068844221105525, 1.9095979899497486, 1.9123115577889445, 1.9150251256281405, 1.9177386934673364, 1.9204522613065325, 1.9231658291457285, 1.9258793969849244, 1.9285929648241205, 1.9313065326633163, 1.9340201005025124, 1.9367336683417085, 1.9394472361809043, 1.9421608040201002, 1.9448743718592962, 1.9475879396984923, 1.9503015075376882, 1.9530150753768842, 1.95572864321608, 1.9584422110552762, 1.9611557788944722, 1.963869346733668, 1.9665829145728642, 1.96929648241206, 1.972010050251256, 1.9747236180904522, 1.977437185929648, 1.9801507537688439, 1.98286432160804, 1.985577889447236, 1.988291457286432, 1.991005025125628, 1.9937185929648238, 1.9964321608040199, 1.999145728643216, 2.0018592964824116, 2.0045728643216076, 2.0072864321608037, 2.01], "y": [3.754501283291743, 4.019499261371815, 4.299514982910168, 4.595098207568043, 4.906795361586933, 5.235147373170385, 5.580687384432411, 5.943938343692507, 6.325410482890809, 6.725598685926693, 7.144979754778246, 7.58400958133482, 8.043120233964398, 8.522716968928556, 9.023175177849977, 9.544837283512832, 10.08800959733495, 10.652959152874438, 11.239910530717678, 11.84904269103023, 12.480485830920829, 13.13431828457146, 13.810563484800323, 14.509187005352395, 15.230093703733008, 15.973124984810125, 16.738056205703387, 17.524594242634382, 18.33237524044021, 19.16096256532766, 20.009844981177732, 20.878435069282688, 21.76606791081265, 22.67200005056527, 23.595408759638797, 24.535391613601558, 25.490966401492955, 26.461071379603354, 27.444565882431682, 28.44023130152565, 29.446772441077332, 30.462819257176328, 31.48692898553971, 32.51758866033677, 33.553218024437506, 34.59217282903743, 35.63274851817135, 36.67318429114327, 37.711667533376364, 38.746338603660966, 39.775295963249945, 40.79660162975984, 41.80828693638452, 42.80835857454824, 43.79480489583638, 44.76560244685501, 45.71872270862019, 46.65213901016926, 47.56383358434534, 48.45180473215206, 49.31407406071331, 50.148693758733984, 50.953753872436565, 51.72738954427544, 52.46778817629733, 53.173196479846894, 53.841927373402314, 54.47236669067994, 55.0629796617681, 55.61231713093173, 56.11902147587948, 56.58183219468424, 56.99959112819923, 57.37124728770069, 57.69586125959955, 57.97260916139068, 58.20078612552601, 58.37980929059448, 58.50922028204297, 58.58868716766197, 58.61800587615941, 58.59710107033769, 58.5260264696452, 58.404964620168755, 58.23422611344619, 58.01424825877706, 57.74559321697577, 57.42894560671307, 57.06510959771161, 56.65500550806778, 56.19966592585094, 55.70023137785217, 55.15794557090695, 54.57415023357211, 53.950279588088506, 53.287854484487724, 52.58847623039016, 51.853820151488584, 51.08562891889876, 50.28570568048869, 49.45590703396277, 48.5981358798727, 47.71433419286352, 46.80647574932904, 45.87655884926887, 44.92659906949785, 43.958622084486564, 42.97465659000065, 41.97672736338649, 40.96684849282623, 39.94701680617088, 38.91920552808518, 37.88535819220226, 36.84738283282681, 35.80714647845033, 34.76646996697307, 33.72712310009285, 32.690820151827666, 31.659215743621257, 30.63390109594951, 29.616400663822397, 28.608169161081836, 27.610588975947103, 26.62496797787403, 25.652537713483657, 24.694451987106774, 23.751785819379304, 22.82553477533928, 21.91661465161813, 21.025861510598737, 20.154032047845202, 19.301804277687552, 18.4697785205869, 17.658478674806876, 16.868353753980568, 16.099779671388156, 15.353061251150107, 14.628434446088315, 13.926068741709415, 13.246069725622117, 12.588481801696688, 11.95329102841493, 11.340428061127367, 10.749771178323586, 10.181149372529083, 9.634345487047243, 9.10909938046976, 8.60511110166437, 8.122044058808957, 7.659528166964191, 7.217162959653734, 6.794520650940305, 6.391149135536373, 6.006574915565093, 5.640305943673664, 5.291834373295591, 4.960639207947865, 4.646188842525756, 4.347943490618402, 4.065357492899888, 3.797881502652845, 3.5449645454451977, 3.3060559509026004, 3.08060715539444, 2.868073375277632, 2.6679151511155608, 2.479599764007294, 2.3026025258252933, 2.1364079457630294, 1.9805107761411522, 1.8344169409090316, 1.6976443507088832, 1.5697236087447706, 1.4501986120169312, 1.3386270527477844, 1.2345808250397297, 1.13764634196919, 1.0474247684392166, 0.963532175186637, 0.8855996193722304, 0.8132731571763647, 0.7462137937819524, 0.6840973760531274, 0.6266144331163253, 0.5734699699225075, 0.5243832187185176, 0.4790873531853468, 0.4373291698135426, 0.3988687408847886, 0.3634790432158383, 0.3309455665993782, 0.30106590564832114, 0.2736493385178207, 0.24851639574485154, 0.22549842221065916, 0.2044371349982794, 0.1851841796873918, 0.16760068740332212, 0.15155683471735915, 0.13693140828259504], "line": {"width": 2.5, "color": "#c4520a"}, "name": "Curva Normal (μ = 1,687; σ = 0,09269)", "meta": "referencia", "marker": {"color": "#c4520a"}}], {"font": {"family": "Inter, system-ui, sans-serif", "size": 12, "color": "#4b5462"}, "paper_bgcolor": "#ffffff", "plot_bgcolor": "#ffffff", "colorway": ["#0b6aa8", "#c4520a", "#0b7a5a", "#b0548f", "#8f6400", "#5a4bb5", "#3f8fc4", "#4b5563"], "separators": ",.", "margin": {"l": 60, "r": 16, "t": 32, "b": 48}, "xaxis": {"gridcolor": "#e6e9ee", "linecolor": "#868f9c", "zeroline": false, "ticks": "", "title": {"font": {"size": 13, "color": "#161a20"}, "text": "altura_m"}}, "yaxis": {"gridcolor": "#e6e9ee", "linecolor": "#868f9c", "zeroline": false, "ticks": "", "title": {"font": {"size": 13, "color": "#161a20"}, "text": "Frequência (fᵢ)"}}, "bargap": 0, "showlegend": true}, {"displaylogo": false, "responsive": true});</script>
+      <p class="nota">As barras se afastam da curva em alguns trechos.</p>
+    </figure>
+  </section>
+  <section class="coluna">
+    <h2>7. Análise de <span class="mono">peso_kg</span></h2>
+    <p class="nota">Quantitativa contínua · 227 valores válidos</p>
+    <dl class="medidas">
+<div><dt>Média</dt><dd class="mono">70,11</dd></div><div><dt>Mediana</dt><dd class="mono">68,7</dd></div><div><dt>Moda</dt><dd class="mono">68,7</dd></div><div><dt>Moda de Czuber</dt><dd class="mono">67,5</dd></div><div><dt>Desvio padrão</dt><dd class="mono">11,22</dd></div><div><dt>Variância</dt><dd class="mono">125,9</dd></div><div><dt>Coeficiente de variação</dt><dd class="mono">16,01%</dd></div><div><dt>Amplitude interquartil (IQR)</dt><dd class="mono">15,05</dd></div><div><dt>Amplitude</dt><dd class="mono">55,9</dd></div>    </dl>
+<p class="mono">Q1 = 62,3 · Q2 = 68,7 · Q3 = 77,35</p>        <table class="frequencias">
+      <thead><tr><th scope="col">Classe</th><th scope="col">fᵢ</th><th scope="col">fr%</th><th scope="col">Fr%</th></tr></thead>
+      <tbody>
+        <tr><td>42,3 ⊢ 48,6</td><td class="numero">5</td><td class="numero">2,2%</td><td class="numero">2,2%</td></tr>
+        <tr><td>48,6 ⊢ 54,9</td><td class="numero">12</td><td class="numero">5,3%</td><td class="numero">7,5%</td></tr>
+        <tr><td>54,9 ⊢ 61,2</td><td class="numero">32</td><td class="numero">14,1%</td><td class="numero">21,6%</td></tr>
+        <tr><td>61,2 ⊢ 67,5</td><td class="numero">49</td><td class="numero">21,6%</td><td class="numero">43,2%</td></tr>
+        <tr><td>67,5 ⊢ 73,8</td><td class="numero">49</td><td class="numero">21,6%</td><td class="numero">64,8%</td></tr>
+        <tr><td>73,8 ⊢ 80,1</td><td class="numero">33</td><td class="numero">14,5%</td><td class="numero">79,3%</td></tr>
+        <tr><td>80,1 ⊢ 86,4</td><td class="numero">26</td><td class="numero">11,5%</td><td class="numero">90,7%</td></tr>
+        <tr><td>86,4 ⊢ 92,7</td><td class="numero">16</td><td class="numero">7,0%</td><td class="numero">97,8%</td></tr>
+        <tr><td>92,7 ⊢ 99,0</td><td class="numero">5</td><td class="numero">2,2%</td><td class="numero">100,0%</td></tr>
+      </tbody>
+    </table>
+
+    <figure>
+      <figcaption>Figura 6 · Distribuição de peso_kg (n = 227)</figcaption>
+      <div id="figura-4" class="grafico"></div>
+<script>Plotly.newPlot("figura-4", [{"type": "bar", "x": [45.45, 51.75, 58.05, 64.35, 70.65, 76.94999999999999, 83.25, 89.55000000000001, 95.85], "y": [5, 12, 32, 49, 49, 33, 26, 16, 5], "width": [6.300000000000004, 6.299999999999997, 6.300000000000004, 6.299999999999997, 6.299999999999997, 6.299999999999997, 6.300000000000011, 6.299999999999997, 6.299999999999997], "customdata": ["42,3 ⊢ 48,6", "48,6 ⊢ 54,9", "54,9 ⊢ 61,2", "61,2 ⊢ 67,5", "67,5 ⊢ 73,8", "73,8 ⊢ 80,1", "80,1 ⊢ 86,4", "86,4 ⊢ 92,7", "92,7 ⊢ 99,0"], "hovertemplate": "%{customdata}: %{y}<extra><\/extra>", "marker": {"opacity": 0.85, "color": "#0b6aa8"}, "meta": "principal"}], {"font": {"family": "Inter, system-ui, sans-serif", "size": 12, "color": "#4b5462"}, "paper_bgcolor": "#ffffff", "plot_bgcolor": "#ffffff", "colorway": ["#0b6aa8", "#c4520a", "#0b7a5a", "#b0548f", "#8f6400", "#5a4bb5", "#3f8fc4", "#4b5563"], "separators": ",.", "margin": {"l": 60, "r": 16, "t": 32, "b": 48}, "xaxis": {"gridcolor": "#e6e9ee", "linecolor": "#868f9c", "zeroline": false, "ticks": "", "title": {"font": {"size": 13, "color": "#161a20"}, "text": "peso_kg"}}, "yaxis": {"gridcolor": "#e6e9ee", "linecolor": "#868f9c", "zeroline": false, "ticks": "", "title": {"font": {"size": 13, "color": "#161a20"}, "text": "Frequência (fᵢ)"}}, "bargap": 0, "showlegend": false}, {"displaylogo": false, "responsive": true});</script>
+      <p class="nota">A classe mais comum é 61,2 ⊢ 67,5, com 49 valores (21,6%).</p>
+    </figure>
+<p>Média maior que a mediana: há valores altos puxando a média (assimetria à direita).</p><p>Variação moderada em relação à média.</p>    <h3>Forma e distribuição</h3>
+    <dl class="medidas">
+<div><dt>Assimetria (G₁)</dt><dd class="mono">0,2127</dd><dd class="selo">Aproximadamente simétrica</dd></div><div><dt>Curtose (G₂)</dt><dd class="mono">−0,314</dd><dd class="selo">Mesocúrtica</dd></div><div><dt>As₁ (Pearson)</dt><dd class="mono">0,2327</dd></div><div><dt>As₂ (Pearson)</dt><dd class="mono">0,3773</dd></div><div><dt>K (percentílica)</dt><dd class="mono">0,2568</dd></div>    </dl>
+<p>Shapiro-Wilk: W = 0,9898 · p = 0,111 ≥ 0,05. Os dados são compatíveis com a distribuição Normal.</p><p>Binomial não se aplica a quantitativas contínuas: precisa de contagens de sucessos em n tentativas.</p><p>Distribuição aproximadamente simétrica e mesocúrtica; compatível com a Normal (chance de acontecer por acaso: cerca de 1 em 9).</p>    <figure>
+      <figcaption>Figura 7 · Histograma de peso_kg com curva Normal (n = 227)</figcaption>
+      <div id="forma-4" class="grafico"></div>
+<script>Plotly.newPlot("forma-4", [{"type": "bar", "x": [45.45, 51.75, 58.05, 64.35, 70.65, 76.94999999999999, 83.25, 89.55000000000001, 95.85], "y": [5, 12, 32, 49, 49, 33, 26, 16, 5], "width": [6.300000000000004, 6.299999999999997, 6.300000000000004, 6.299999999999997, 6.299999999999997, 6.299999999999997, 6.300000000000011, 6.299999999999997, 6.299999999999997], "customdata": ["42,3 ⊢ 48,6", "48,6 ⊢ 54,9", "54,9 ⊢ 61,2", "61,2 ⊢ 67,5", "67,5 ⊢ 73,8", "73,8 ⊢ 80,1", "80,1 ⊢ 86,4", "86,4 ⊢ 92,7", "92,7 ⊢ 99,0"], "hovertemplate": "%{customdata}: %{y}<extra><\/extra>", "marker": {"opacity": 0.85, "color": "#0b6aa8"}, "meta": "principal", "name": "Frequência observada"}, {"type": "scatter", "mode": "lines", "x": [42.3, 42.584924623115576, 42.869849246231155, 43.154773869346734, 43.439698492462306, 43.724623115577884, 44.00954773869346, 44.29447236180904, 44.57939698492462, 44.8643216080402, 45.14924623115578, 45.43417085427136, 45.71909547738693, 46.00402010050251, 46.28894472361809, 46.573869346733666, 46.858793969849245, 47.143718592964824, 47.4286432160804, 47.713567839195974, 47.99849246231155, 48.28341708542713, 48.56834170854271, 48.85326633165829, 49.13819095477387, 49.42311557788945, 49.70804020100502, 49.9929648241206, 50.27788944723618, 50.562814070351756, 50.847738693467335, 51.132663316582914, 51.41758793969849, 51.702512562814064, 51.98743718592965, 52.27236180904522, 52.5572864321608, 52.84221105527638, 53.12713567839196, 53.41206030150754, 53.696984924623116, 53.981909547738695, 54.26683417085427, 54.551758793969846, 54.836683417085425, 55.121608040201004, 55.40653266331658, 55.69145728643216, 55.97638190954774, 56.26130653266331, 56.54623115577889, 56.83115577889447, 57.11608040201005, 57.40100502512563, 57.685929648241206, 57.970854271356785, 58.25577889447236, 58.54070351758794, 58.825628140703515, 59.11055276381909, 59.39547738693467, 59.68040201005025, 59.96532663316583, 60.2502512562814, 60.53517587939699, 60.82010050251256, 61.10502512562814, 61.38994974874372, 61.674874371859296, 61.959798994974875, 62.24472361809045, 62.52964824120603, 62.814572864321605, 63.09949748743719, 63.38442211055276, 63.66934673366834, 63.95427135678392, 64.2391959798995, 64.52412060301508, 64.80904522613065, 65.09396984924624, 65.37889447236181, 65.66381909547738, 65.94874371859297, 66.23366834170855, 66.51859296482412, 66.8035175879397, 67.08844221105528, 67.37336683417085, 67.65829145728642, 67.94321608040201, 68.2281407035176, 68.51306532663317, 68.79798994974874, 69.08291457286433, 69.3678391959799, 69.65276381909547, 69.93768844221105, 70.22261306532664, 70.50753768844221, 70.79246231155778, 71.07738693467337, 71.36231155778894, 71.64723618090453, 71.9321608040201, 72.21708542713569, 72.50201005025126, 72.78693467336683, 73.07185929648242, 73.35678391959799, 73.64170854271357, 73.92663316582914, 74.21155778894473, 74.4964824120603, 74.78140703517587, 75.06633165829146, 75.35125628140705, 75.6361809045226, 75.92110552763819, 76.20603015075378, 76.49095477386935, 76.77587939698492, 77.0608040201005, 77.34572864321609, 77.63065326633166, 77.91557788944723, 78.20050251256282, 78.48542713567839, 78.77035175879396, 79.05527638190955, 79.34020100502514, 79.62512562814071, 79.91005025125628, 80.19497487437187, 80.47989949748744, 80.76482412060301, 81.0497487437186, 81.33467336683418, 81.61959798994975, 81.90452261306532, 82.18944723618091, 82.47437185929648, 82.75929648241205, 83.04422110552764, 83.32914572864323, 83.6140703517588, 83.89899497487437, 84.18391959798996, 84.46884422110553, 84.7537688442211, 85.03869346733669, 85.32361809045227, 85.60854271356784, 85.89346733668341, 86.178391959799, 86.46331658291457, 86.74824120603014, 87.03316582914573, 87.31809045226132, 87.60301507537689, 87.88793969849246, 88.17286432160805, 88.45778894472362, 88.74271356783919, 89.02763819095478, 89.31256281407036, 89.59748743718593, 89.8824120603015, 90.16733668341709, 90.45226130653268, 90.73718592964823, 91.02211055276382, 91.3070351758794, 91.59195979899498, 91.87688442211055, 92.16180904522614, 92.44673366834172, 92.73165829145728, 93.01658291457287, 93.30150753768845, 93.58643216080402, 93.8713567839196, 94.15628140703518, 94.44120603015077, 94.72613065326634, 95.01105527638191, 95.2959798994975, 95.58090452261307, 95.86582914572864, 96.15075376884423, 96.43567839195981, 96.72060301507538, 97.00552763819096, 97.29045226130654, 97.57537688442211, 97.86030150753768, 98.14522613065327, 98.43015075376886, 98.71507537688443, 99.0], "y": [2.357265974526743, 2.5095629983196956, 2.6699776753910367, 2.8388155184708372, 3.0163846638306446, 3.202995218067697, 3.398958557272681, 3.6045865783966153, 3.8201909028429073, 4.046082032534372, 4.282568458940886, 4.529955725801029, 4.788545446529495, 5.058634277570834, 5.340512849237405, 5.63446465585506, 5.940764907332124, 6.2596793445644705, 6.591463021390739, 6.936359056114987, 7.294597355918006, 7.666393317780842, 8.051946509843969, 8.451439337419409, 8.865035698160755, 9.29287963117394, 9.73509396511848, 10.191778970602464, 10.663011022411961, 11.148841277336203, 11.649294373549283, 12.164367157687842, 12.694027445917726, 13.238212825410507, 13.796829502750734, 14.369751205863903, 14.956818146094237, 15.557836047065095, 16.17257524692606, 16.800769880524207, 17.44211714793469, 18.096276675644656, 18.762869976505296, 19.441480014348333, 20.131650878905134, 20.83288757637008, 21.544655940613346, 22.266382669674023, 22.99745549175257, 23.73722346447284, 24.4849974107009, 25.240050493690163, 26.001618933774797, 26.768902868255054, 27.54106735551395, 28.317243523776096, 29.09652986426996, 29.877993667887253, 30.660672603750616, 31.44357643740887, 32.225688885677506, 33.005969604440075, 33.7833563050227, 34.556766994056815, 35.32510233105667, 36.087248097262986, 36.84207776864783, 37.58845518533886, 38.32523730911402, 39.05127706003775, 39.76542622276582, 40.46653841254044, 41.1534720904322, 41.825093616968594, 42.480280332917076, 43.11792365567532, 43.73693217945586, 44.33623476724796, 44.914783622391695, 45.471557327513814, 46.00556383855087, 46.51584342162521, 47.001471520643356, 47.46156154365336, 47.89526755623063, 48.30178687045625, 48.68036251840978, 49.0302855995165, 49.35089749156692, 49.64159191576039, 49.90181684671271, 50.13107625900711, 50.32893170255516, 50.49500369976489, 50.628972958284706, 50.73058139389842, 50.79963295898461, 50.83599427281802, 50.83959505087657, 50.81042833121991, 50.74855049691895, 50.654081094435156, 50.52720244876854, 50.36815907710848, 50.17725690362675, 49.954862278942024, 49.70140080865493, 49.41735599619641, 49.1032677060469, 48.75973045416251, 48.38739153318472, 47.98694898070757, 47.559149399525616, 47.10478563938678, 46.624694350319075, 46.119753418091726, 45.590879292802, 45.039024221949795, 44.465173399671755, 43.87034204405274, 43.255572414613184, 42.62193078219, 41.970504363482135, 41.30239823252181, 40.6187322212602, 39.92063782132294, 39.20925509879755, 38.48572963366395, 37.7512094951728, 37.00684226411919, 36.253772112549896, 35.49313695098862, 34.726065652766856, 33.95367536451142, 33.17706891126861, 32.39733230414152, 31.615532357688217, 30.83271442367526, 30.04990024710912, 29.268085949783128, 28.48824014588124, 27.71130219347816, 26.938180585071322, 26.169751479580185, 25.406857377552466, 24.650305940632197, 23.90086895567389, 23.15928144323312, 22.42624090953028, 21.70240674037364, 20.98839973494566, 20.284801776799828, 19.592155638892027, 18.910964918979186, 18.2416941012622, 17.584768739729203, 16.940575758272647, 16.309463862309986, 15.691744056331009, 15.087690261528866, 14.497540027444803, 13.921495331368678, 13.359723459087851, 12.812357960465718, 12.279499673258282, 11.761217808538444, 11.2575510910955, 10.768508948208472, 10.294072740254617, 9.834197026707841, 9.38881086120338, 8.957819109493494, 8.541103784292613, 8.138525391204256, 7.749924280139468, 7.375121996869846, 7.013922629608444, 6.666114145775959, 6.33146971438532, 6.009749009763866, 5.700699492623945, 5.404057664792689, 5.119550294212984, 4.8468956071314615, 4.585804444693043, 4.335981381463263, 4.09712580369795, 3.8689329454731536, 3.651094881075074, 3.443301472329501, 3.2452412698206436, 3.056602367210057, 2.8770732081165784, 2.706343345256813, 2.5441041517719087, 2.3900494848798814, 2.2438763021934682, 2.1052852312297974, 1.9739810928113466, 1.849673379216587], "line": {"width": 2.5, "color": "#c4520a"}, "name": "Curva Normal (μ = 70,11; σ = 11,22)", "meta": "referencia", "marker": {"color": "#c4520a"}}], {"font": {"family": "Inter, system-ui, sans-serif", "size": 12, "color": "#4b5462"}, "paper_bgcolor": "#ffffff", "plot_bgcolor": "#ffffff", "colorway": ["#0b6aa8", "#c4520a", "#0b7a5a", "#b0548f", "#8f6400", "#5a4bb5", "#3f8fc4", "#4b5563"], "separators": ",.", "margin": {"l": 60, "r": 16, "t": 32, "b": 48}, "xaxis": {"gridcolor": "#e6e9ee", "linecolor": "#868f9c", "zeroline": false, "ticks": "", "title": {"font": {"size": 13, "color": "#161a20"}, "text": "peso_kg"}}, "yaxis": {"gridcolor": "#e6e9ee", "linecolor": "#868f9c", "zeroline": false, "ticks": "", "title": {"font": {"size": 13, "color": "#161a20"}, "text": "Frequência (fᵢ)"}}, "bargap": 0, "showlegend": true}, {"displaylogo": false, "responsive": true});</script>
+      <p class="nota">As barras acompanham a curva.</p>
+    </figure>
+  </section>
+  <section class="coluna">
+    <h2>8. Análise de <span class="mono">escolaridade</span></h2>
+    <p class="nota">Qualitativa ordinal · 227 valores válidos</p>
+    <dl class="medidas">
+<div><dt>Mediana</dt><dd class="mono">médio</dd></div><div><dt>Amplitude interquartil (IQR)</dt><dd class="mono">de médio a superior</dd></div><div><dt>Moda</dt><dd class="mono">médio</dd></div><div><dt>Amplitude</dt><dd class="mono">de fundamental a pós</dd></div>    </dl>
+<p class="mono">Q1 = médio · Q2 = médio · Q3 = superior</p>        <table class="frequencias">
+      <thead><tr><th scope="col">Categoria</th><th scope="col">fᵢ</th><th scope="col">fr%</th><th scope="col">Fr%</th></tr></thead>
+      <tbody>
+        <tr><td>fundamental</td><td class="numero">33</td><td class="numero">14,5%</td><td class="numero">14,5%</td></tr>
+        <tr><td>médio</td><td class="numero">91</td><td class="numero">40,1%</td><td class="numero">54,6%</td></tr>
+        <tr><td>superior</td><td class="numero">74</td><td class="numero">32,6%</td><td class="numero">87,2%</td></tr>
+        <tr><td>pós</td><td class="numero">29</td><td class="numero">12,8%</td><td class="numero">100,0%</td></tr>
+      </tbody>
+    </table>
+
+    <figure>
+      <figcaption>Figura 8 · Distribuição de escolaridade (n = 227)</figcaption>
+      <div id="figura-5" class="grafico"></div>
+<script>Plotly.newPlot("figura-5", [{"type": "bar", "x": ["fundamental", "médio", "superior", "pós"], "y": [33, 91, 74, 29], "marker": {"opacity": 0.85, "color": "#0b6aa8"}, "meta": "principal", "text": ["33 (14,5%)", "91 (40,1%)", "74 (32,6%)", "29 (12,8%)"], "textposition": "outside"}], {"font": {"family": "Inter, system-ui, sans-serif", "size": 12, "color": "#4b5462"}, "paper_bgcolor": "#ffffff", "plot_bgcolor": "#ffffff", "colorway": ["#0b6aa8", "#c4520a", "#0b7a5a", "#b0548f", "#8f6400", "#5a4bb5", "#3f8fc4", "#4b5563"], "separators": ",.", "margin": {"l": 60, "r": 16, "t": 32, "b": 48}, "xaxis": {"gridcolor": "#e6e9ee", "linecolor": "#868f9c", "zeroline": false, "ticks": "", "title": {"font": {"size": 13, "color": "#161a20"}, "text": "escolaridade"}}, "yaxis": {"gridcolor": "#e6e9ee", "linecolor": "#868f9c", "zeroline": false, "ticks": "", "title": {"font": {"size": 13, "color": "#161a20"}, "text": "Frequência (fᵢ)"}}, "bargap": 0.04, "showlegend": false}, {"displaylogo": false, "responsive": true});</script>
+      <p class="nota">A categoria mais comum é médio, com 91 valores (40,1%).</p>
+    </figure>
+    <h3>Forma e distribuição</h3>
+<p>Forma e distribuição não se aplica a qualitativas ordinais: as distribuições Normal e Binomial exigem números.</p>  </section>
+  <section class="coluna">
+    <h2>9. Análise de <span class="mono">cidade</span></h2>
+    <p class="nota">Qualitativa nominal · 227 valores válidos</p>
+    <dl class="medidas">
+<div><dt>Moda</dt><dd class="mono">Goiânia</dd></div>    </dl>
+        <table class="frequencias">
+      <thead><tr><th scope="col">Categoria</th><th scope="col">fᵢ</th><th scope="col">fr%</th></tr></thead>
+      <tbody>
+        <tr><td>Goiânia</td><td class="numero">94</td><td class="numero">41,4%</td></tr>
+        <tr><td>Anápolis</td><td class="numero">41</td><td class="numero">18,1%</td></tr>
+        <tr><td>Aparecida de Goiânia</td><td class="numero">34</td><td class="numero">15,0%</td></tr>
+        <tr><td>Rio Verde</td><td class="numero">27</td><td class="numero">11,9%</td></tr>
+        <tr><td>Luziânia</td><td class="numero">17</td><td class="numero">7,5%</td></tr>
+        <tr><td>Catalão</td><td class="numero">11</td><td class="numero">4,8%</td></tr>
+        <tr><td>Trindade</td><td class="numero">3</td><td class="numero">1,3%</td></tr>
+      </tbody>
+    </table>
+
+    <figure>
+      <figcaption>Figura 9 · Frequência de cidade (n = 227), da maior para a menor</figcaption>
+      <div id="figura-6" class="grafico"></div>
+<script>Plotly.newPlot("figura-6", [{"type": "bar", "orientation": "h", "x": [3, 11, 17, 27, 34, 41, 94], "y": ["Trindade", "Catalão", "Luziânia", "Rio Verde", "Aparecida de Goiânia", "Anápolis", "Goiânia"], "marker": {"opacity": 0.85, "color": "#0b6aa8"}, "meta": "principal", "text": ["3 (1,3%)", "11 (4,8%)", "17 (7,5%)", "27 (11,9%)", "34 (15,0%)", "41 (18,1%)", "94 (41,4%)"], "textposition": "outside"}], {"font": {"family": "Inter, system-ui, sans-serif", "size": 12, "color": "#4b5462"}, "paper_bgcolor": "#ffffff", "plot_bgcolor": "#ffffff", "colorway": ["#0b6aa8", "#c4520a", "#0b7a5a", "#b0548f", "#8f6400", "#5a4bb5", "#3f8fc4", "#4b5563"], "separators": ",.", "margin": {"l": 60, "r": 16, "t": 32, "b": 48}, "xaxis": {"gridcolor": "#e6e9ee", "linecolor": "#868f9c", "zeroline": false, "ticks": "", "title": {"font": {"size": 13, "color": "#161a20"}, "text": "Frequência (fᵢ)"}}, "yaxis": {"gridcolor": "#e6e9ee", "linecolor": "#868f9c", "zeroline": false, "ticks": "", "title": {"font": {"size": 13, "color": "#161a20"}, "text": "cidade"}}, "bargap": 0.04, "showlegend": false}, {"displaylogo": false, "responsive": true});</script>
+      <p class="nota">A categoria mais comum é Goiânia, com 94 valores (41,4%).</p>
+    </figure>
+    <h3>Forma e distribuição</h3>
+<p>Forma e distribuição não se aplica a qualitativas nominais: as distribuições Normal e Binomial exigem números.</p>  </section>
+  <section class="coluna">
+    <h2>10. Análise de <span class="mono">satisfacao</span></h2>
+    <p class="nota">Qualitativa ordinal · 227 valores válidos</p>
+    <dl class="medidas">
+<div><dt>Mediana</dt><dd class="mono">bom</dd></div><div><dt>Amplitude interquartil (IQR)</dt><dd class="mono">de regular a bom</dd></div><div><dt>Moda</dt><dd class="mono">bom</dd></div><div><dt>Amplitude</dt><dd class="mono">de ruim a ótimo</dd></div>    </dl>
+<p class="mono">Q1 = regular · Q2 = bom · Q3 = bom</p>        <table class="frequencias">
+      <thead><tr><th scope="col">Categoria</th><th scope="col">fᵢ</th><th scope="col">fr%</th><th scope="col">Fr%</th></tr></thead>
+      <tbody>
+        <tr><td>ruim</td><td class="numero">28</td><td class="numero">12,3%</td><td class="numero">12,3%</td></tr>
+        <tr><td>regular</td><td class="numero">41</td><td class="numero">18,1%</td><td class="numero">30,4%</td></tr>
+        <tr><td>bom</td><td class="numero">106</td><td class="numero">46,7%</td><td class="numero">77,1%</td></tr>
+        <tr><td>ótimo</td><td class="numero">52</td><td class="numero">22,9%</td><td class="numero">100,0%</td></tr>
+      </tbody>
+    </table>
+
+    <figure>
+      <figcaption>Figura 10 · Distribuição de satisfacao (n = 227)</figcaption>
+      <div id="figura-7" class="grafico"></div>
+<script>Plotly.newPlot("figura-7", [{"type": "bar", "x": ["ruim", "regular", "bom", "ótimo"], "y": [28, 41, 106, 52], "marker": {"opacity": 0.85, "color": "#0b6aa8"}, "meta": "principal", "text": ["28 (12,3%)", "41 (18,1%)", "106 (46,7%)", "52 (22,9%)"], "textposition": "outside"}], {"font": {"family": "Inter, system-ui, sans-serif", "size": 12, "color": "#4b5462"}, "paper_bgcolor": "#ffffff", "plot_bgcolor": "#ffffff", "colorway": ["#0b6aa8", "#c4520a", "#0b7a5a", "#b0548f", "#8f6400", "#5a4bb5", "#3f8fc4", "#4b5563"], "separators": ",.", "margin": {"l": 60, "r": 16, "t": 32, "b": 48}, "xaxis": {"gridcolor": "#e6e9ee", "linecolor": "#868f9c", "zeroline": false, "ticks": "", "title": {"font": {"size": 13, "color": "#161a20"}, "text": "satisfacao"}}, "yaxis": {"gridcolor": "#e6e9ee", "linecolor": "#868f9c", "zeroline": false, "ticks": "", "title": {"font": {"size": 13, "color": "#161a20"}, "text": "Frequência (fᵢ)"}}, "bargap": 0.04, "showlegend": false}, {"displaylogo": false, "responsive": true});</script>
+      <p class="nota">A categoria mais comum é bom, com 106 valores (46,7%).</p>
+    </figure>
+    <h3>Forma e distribuição</h3>
+<p>Forma e distribuição não se aplica a qualitativas ordinais: as distribuições Normal e Binomial exigem números.</p>  </section>
+
+  <section class="bivariada">
+    <h2>11. Bivariada</h2>
+    <figure>
+      <figcaption>Figura 11 · Matriz de correlação (Pearson)</figcaption>
+      <div id="matriz" class="grafico"></div>
+<script>Plotly.newPlot("matriz", [{"type": "heatmap", "z": [[1.0, -0.06948733957559529, -0.0639629628823123], [-0.06948733957559529, 1.0, 0.6868842058970077], [-0.0639629628823123, 0.6868842058970077, 1.0]], "x": ["idade", "altura_m", "peso_kg"], "y": ["idade", "altura_m", "peso_kg"], "zmin": -1, "zmax": 1, "opacity": 0.6, "text": [["1", "−0,07", "−0,06"], ["−0,07", "1", "0,69"], ["−0,06", "0,69", "1"]], "texttemplate": "%{text}", "hovertemplate": "%{y} × %{x}: %{text}<extra><\/extra>", "colorbar": {"tickvals": [-1, 0, 1], "ticktext": ["−1", "0", "1"]}, "meta": "divergente", "colorscale": [[0, "#c4520a"], [0.5, "#ffffff"], [1, "#0b6aa8"]], "textfont": {"color": "#161a20"}}], {"font": {"family": "Inter, system-ui, sans-serif", "size": 12, "color": "#4b5462"}, "paper_bgcolor": "#ffffff", "plot_bgcolor": "#ffffff", "colorway": ["#0b6aa8", "#c4520a", "#0b7a5a", "#b0548f", "#8f6400", "#5a4bb5", "#3f8fc4", "#4b5563"], "separators": ",.", "margin": {"l": 60, "r": 16, "t": 32, "b": 48}, "xaxis": {"gridcolor": "#e6e9ee", "linecolor": "#868f9c", "zeroline": false, "ticks": "", "title": {"font": {"size": 13, "color": "#161a20"}, "text": ""}}, "yaxis": {"gridcolor": "#e6e9ee", "linecolor": "#868f9c", "zeroline": false, "ticks": "", "title": {"font": {"size": 13, "color": "#161a20"}, "text": ""}, "autorange": "reversed"}, "bargap": 0.04, "showlegend": false}, {"displaylogo": false, "responsive": true});</script>
+      <p class="nota">O par mais forte é altura_m × peso_kg (0,69). idade quase não se relaciona com as outras.</p>
+    </figure>
+    <h3><span class="mono">peso_kg</span> em função de <span class="mono">altura_m</span></h3>
+        <dl class="medidas">
+<div><dt>Correlação de Pearson (r)</dt><dd class="mono">0,6869</dd><dd class="selo">Correlação positiva moderada</dd></div><div><dt>Teste t</dt><dd class="mono">p &lt; 0,001</dd></div><div><dt>ρ de Spearman</dt><dd class="mono">0,6695</dd></div><div><dt>R²</dt><dd class="mono">47,18%</dd></div><div><dt>Sₑ</dt><dd class="mono">8,174</dd></div><div><dt>Pares (n)</dt><dd class="mono">227</dd></div>    </dl>
+
+    <p class="mono">Ŷ = −70,19 + 83,15·X</p>
+<p>Quando altura_m aumenta, peso_kg tende a aumentar.</p><p>A correlação é significativa (chance de acontecer por acaso: menos de 1 em 1.000).</p><p>47% da variação de peso_kg é explicada por altura_m.</p>    <figure>
+      <figcaption>Figura 12 · peso_kg em função de altura_m (n = 227)</figcaption>
+      <div id="par-1" class="grafico"></div>
+<script>Plotly.newPlot("par-1", [{"type": "scatter", "mode": "markers", "x": [1.62, 1.78, 1.58, 1.66, 1.81, 1.74, 1.6, 1.69, 1.57, 1.83, 1.64, 1.71, 1.59, 1.76, 1.65, 1.79, 1.61, 1.68, 1.72, 1.63, 1.77, 1.77, 1.61, 1.54, 1.73, 1.84, 1.59, 1.71, 1.81, 1.75, 1.59, 1.84, 1.7, 1.58, 1.71, 1.61, 1.66, 1.56, 1.76, 1.59, 1.8, 1.68, 1.56, 1.9, 1.66, 1.56, 1.65, 1.59, 1.58, 1.65, 1.72, 1.64, 1.75, 1.66, 1.75, 1.64, 1.7, 1.71, 1.65, 1.55, 1.68, 1.67, 1.62, 1.76, 1.74, 1.85, 1.63, 1.78, 1.81, 1.72, 1.56, 1.58, 1.74, 1.68, 1.67, 1.55, 1.61, 1.7, 1.64, 1.64, 1.7, 1.62, 1.68, 1.73, 1.85, 1.68, 1.78, 1.61, 1.6, 1.71, 1.55, 1.78, 1.62, 1.63, 1.7, 1.61, 1.51, 1.76, 1.7, 1.63, 1.71, 1.67, 1.85, 1.65, 1.81, 1.78, 1.63, 1.62, 1.77, 1.66, 1.81, 1.73, 1.67, 1.93, 1.68, 1.54, 1.61, 1.5, 1.58, 1.81, 1.52, 1.64, 1.63, 1.61, 1.58, 1.63, 1.61, 1.67, 1.57, 1.71, 1.56, 1.61, 1.64, 1.75, 1.63, 1.79, 1.68, 1.62, 1.61, 1.72, 1.78, 1.89, 1.62, 1.83, 1.66, 1.68, 1.71, 1.56, 1.6, 1.68, 1.64, 1.68, 1.68, 1.69, 1.75, 1.66, 1.69, 1.65, 1.62, 1.73, 1.58, 1.85, 1.82, 1.58, 1.83, 1.87, 1.92, 1.7, 1.5, 1.58, 1.63, 1.78, 1.83, 1.61, 1.84, 1.7, 1.75, 1.52, 1.75, 1.7, 1.81, 1.84, 1.66, 1.84, 1.61, 1.6, 1.82, 1.78, 1.55, 1.7, 1.47, 1.82, 1.55, 1.69, 1.74, 1.7, 1.76, 1.79, 1.76, 1.74, 1.81, 1.67, 1.82, 1.69, 1.66, 1.63, 1.69, 1.66, 1.81, 1.69, 1.61, 1.7, 1.62, 1.82, 1.56, 1.67, 1.82, 1.64, 1.78, 1.73, 1.79, 1.66, 1.56, 1.6, 1.77, 1.85, 1.69], "y": [58.2, 79.6, 63.0, 71.4, 84.1, 68.4, 66.7, 72.0, 55.9, 90.3, 61.8, 68.7, 57.4, 77.2, 62.5, 81.0, 64.3, 69.8, 74.6, 60.1, 57.7, 74.1, 64.8, 54.5, 66.5, 92.0, 66.0, 77.2, 97.2, 72.2, 54.0, 76.5, 91.7, 71.4, 72.2, 56.4, 68.5, 44.4, 75.5, 62.9, 89.2, 75.7, 43.8, 98.2, 73.0, 65.8, 60.8, 62.3, 67.2, 68.7, 79.8, 66.5, 76.6, 68.4, 75.7, 60.6, 64.1, 85.5, 85.2, 64.2, 68.2, 87.9, 69.8, 76.2, 69.4, 84.2, 65.6, 70.7, 83.1, 73.1, 57.5, 53.9, 77.0, 58.9, 57.2, 55.8, 70.4, 86.5, 68.0, 74.8, 63.1, 62.4, 48.8, 78.7, 90.5, 55.3, 82.4, 80.3, 66.7, 80.8, 64.4, 89.6, 80.4, 59.7, 61.7, 68.7, 54.6, 86.5, 74.9, 67.8, 64.7, 72.2, 68.7, 77.7, 85.9, 89.3, 69.6, 76.1, 72.6, 58.6, 90.5, 59.2, 68.8, 93.3, 71.7, 56.0, 60.4, 61.8, 58.3, 75.7, 54.7, 54.5, 75.4, 67.4, 65.5, 68.1, 63.6, 63.8, 59.7, 58.3, 61.9, 49.5, 61.6, 84.9, 63.9, 81.6, 79.5, 68.7, 70.6, 65.2, 65.0, 88.3, 73.4, 85.9, 42.3, 61.9, 69.4, 59.0, 67.2, 79.2, 66.3, 81.2, 74.2, 68.4, 73.5, 72.2, 68.7, 65.4, 56.3, 70.6, 57.1, 90.9, 70.6, 60.6, 81.4, 65.8, 91.4, 68.7, 57.2, 65.6, 77.0, 80.4, 63.5, 61.6, 68.7, 63.2, 68.1, 47.6, 71.0, 76.9, 82.7, 79.2, 54.7, 82.3, 49.6, 80.4, 84.4, 76.8, 62.3, 58.7, 48.2, 97.0, 51.4, 60.1, 82.6, 64.7, 85.1, 66.5, 89.1, 80.9, 66.1, 75.6, 69.5, 68.7, 71.6, 54.7, 79.2, 61.0, 74.6, 59.4, 68.2, 71.2, 62.9, 82.5, 56.2, 70.0, 85.4, 64.6, 78.2, 60.2, 77.5, 66.0, 76.6, 63.2, 87.7, 95.0, 68.1], "marker": {"size": 6, "opacity": 0.7, "color": "#0b6aa8"}, "name": "Pontos (n = 227)", "meta": "principal"}, {"type": "scatter", "mode": "lines", "x": [1.47, 1.93], "y": [52.041083805351334, 90.29180403736457], "line": {"width": 2.5, "color": "#c4520a"}, "name": "Ŷ = −70,19 + 83,15·X", "meta": "referencia", "marker": {"color": "#c4520a"}}], {"font": {"family": "Inter, system-ui, sans-serif", "size": 12, "color": "#4b5462"}, "paper_bgcolor": "#ffffff", "plot_bgcolor": "#ffffff", "colorway": ["#0b6aa8", "#c4520a", "#0b7a5a", "#b0548f", "#8f6400", "#5a4bb5", "#3f8fc4", "#4b5563"], "separators": ",.", "margin": {"l": 60, "r": 16, "t": 32, "b": 48}, "xaxis": {"gridcolor": "#e6e9ee", "linecolor": "#868f9c", "zeroline": false, "ticks": "", "title": {"font": {"size": 13, "color": "#161a20"}, "text": "altura_m (X)"}}, "yaxis": {"gridcolor": "#e6e9ee", "linecolor": "#868f9c", "zeroline": false, "ticks": "", "title": {"font": {"size": 13, "color": "#161a20"}, "text": "peso_kg (Y)"}}, "bargap": 0.04, "showlegend": true}, {"displaylogo": false, "responsive": true});</script>
+      <p class="nota">Os pontos sobem da esquerda para a direita, mas se espalham em volta da reta.</p>
+    </figure>
+  </section>
+
+  <section class="gerador">
+    <h2>12. Gerador de dados</h2>
+    <p class="nota">Univariado · 500 valores · semente 42</p>
+    <dl class="parametros">
+<div><dt>Origem</dt><dd>peso_kg (pesquisa_saude.txt)</dd></div><div><dt>Quantidade</dt><dd>500</dd></div><div><dt>Modo</dt><dd>Preservar estatísticas</dd></div><div><dt>Média</dt><dd>70,11</dd></div><div><dt>Desvio padrão</dt><dd>11,22</dd></div><div><dt>Semente</dt><dd>42</dd></div>      <div><dt>Método</dt><dd>Normal com reescala</dd></div>
+    </dl>
+    <h3>Como geramos</h3>
+    <p>Sorteamos 500 valores de uma curva Normal com a mesma média (70,11) e desvio padrão (11,22) de peso_kg, usando a semente 42. Depois, ajustamos os valores para bater exatamente essas medidas. Arredondamos com 1 casa decimal, como no original.</p>
+    <h3>Original × Gerado</h3>
+        <table class="comparacao">
+      <thead><tr><th scope="col">Medida</th><th scope="col">Original</th><th scope="col">Gerado (500)</th><th scope="col">Diferença</th></tr></thead>
+      <tbody>
+        <tr><td>n</td><td class="numero">227</td><td class="numero">500</td><td class="numero">+273</td></tr>
+        <tr><td>Média</td><td class="numero">70,11</td><td class="numero">70,11</td><td class="numero">0,00</td></tr>
+        <tr><td>Mediana</td><td class="numero">68,7</td><td class="numero">70,3</td><td class="numero">+1,6</td></tr>
+        <tr><td>Desvio padrão</td><td class="numero">11,22</td><td class="numero">11,22</td><td class="numero">0,00</td></tr>
+        <tr><td>Mínimo</td><td class="numero">42,3</td><td class="numero">40,3</td><td class="numero">−2</td></tr>
+        <tr><td>Máximo</td><td class="numero">98,2</td><td class="numero">104,3</td><td class="numero">+6,1</td></tr>
+        <tr><td>Assimetria</td><td class="numero">0,2127</td><td class="numero">0,09373</td><td class="numero">−0,119</td></tr>
+        <tr><td>Curtose</td><td class="numero">−0,314</td><td class="numero">−0,04217</td><td class="numero">+0,2718</td></tr>
+      </tbody>
+    </table>
+
+    <figure>
+      <figcaption>Figura 13 · peso_kg: original e gerado sobrepostos</figcaption>
+      <div id="gerador" class="grafico"></div>
+<script>Plotly.newPlot("gerador", [{"type": "bar", "x": [43.855555555555554, 50.96666666666667, 58.07777777777777, 65.18888888888888, 72.3, 79.41111111111111, 86.52222222222221, 93.63333333333333, 100.74444444444444], "y": [1.3215859030837005, 4.405286343612335, 16.740088105726873, 29.515418502202646, 18.06167400881057, 15.859030837004406, 8.81057268722467, 4.405286343612335, 0.881057268722467], "name": "Original (n = 227)", "meta": "principal", "marker": {"opacity": 0.55, "color": "#0b6aa8"}, "width": [7.111111111111114, 7.111111111111107, 7.111111111111107, 7.111111111111114, 7.111111111111114, 7.111111111111114, 7.1111111111111, 7.111111111111114, 7.111111111111114]}, {"type": "bar", "x": [43.855555555555554, 50.96666666666667, 58.07777777777777, 65.18888888888888, 72.3, 79.41111111111111, 86.52222222222221, 93.63333333333333, 100.74444444444444], "y": [2.4, 6.2, 14.399999999999999, 22.8, 26.400000000000002, 15.4, 7.8, 3.5999999999999996, 1.0], "name": "Gerado (n = 500)", "meta": "referencia", "marker": {"opacity": 0.55, "color": "#c4520a"}, "width": [7.111111111111114, 7.111111111111107, 7.111111111111107, 7.111111111111114, 7.111111111111114, 7.111111111111114, 7.1111111111111, 7.111111111111114, 7.111111111111114]}], {"font": {"family": "Inter, system-ui, sans-serif", "size": 12, "color": "#4b5462"}, "paper_bgcolor": "#ffffff", "plot_bgcolor": "#ffffff", "colorway": ["#0b6aa8", "#c4520a", "#0b7a5a", "#b0548f", "#8f6400", "#5a4bb5", "#3f8fc4", "#4b5563"], "separators": ",.", "margin": {"l": 60, "r": 16, "t": 32, "b": 48}, "xaxis": {"gridcolor": "#e6e9ee", "linecolor": "#868f9c", "zeroline": false, "ticks": "", "title": {"font": {"size": 13, "color": "#161a20"}, "text": "peso_kg"}}, "yaxis": {"gridcolor": "#e6e9ee", "linecolor": "#868f9c", "zeroline": false, "ticks": "", "title": {"font": {"size": 13, "color": "#161a20"}, "text": "Frequência relativa (%)"}}, "bargap": 0, "showlegend": true, "barmode": "overlay"}, {"displaylogo": false, "responsive": true});</script>
+      <p class="nota">As distribuições diferem em alguns trechos.</p>
+    </figure>
+  </section>
+
+  <section class="detector">
+    <h2>13. Detector de dados artificiais</h2>
+    <p class="frase-resumo">Encontramos 1 alerta em 1 coluna</p>
+    <p class="nota">altura_m · 9 regras verificadas, 2 não se aplicam a este arquivo</p>
+<p class="contadores">0 suspeitas altas · 1 de atenção · 0 informativos</p>    <article class="aviso sev-atencao">
+      <div class="aviso-texto">
+        <p class="selo-severidade">⚠️ Atenção</p>
+        <h3>R11 · Ordem dos valores segue um padrão em altura_m</h3>
+        <p>A ordem dos valores de altura_m segue um padrão (valores alternam acima e abaixo do meio com regularidade).</p>
+        <div class="partes">
+          <div><h4>Por que chama atenção</h4><p>Em dados reais, a sequência costuma parecer aleatória.</p></div>
+          <div><h4>Pode ser normal se…</h4><p>…os dados estão ordenados por tempo ou por outra coluna.</p></div>
+        </div>
+<p class="exemplo"><span class="rotulo">Exemplo</span> <span class="mono">Linhas 1 a 20: 1,62; 1,78; 1,58; 1,66; 1,81; 1,74; 1,6; 1,69…</span></p>        <p><strong>O que fazer:</strong> Confira se o arquivo foi ordenado ou se esses valores foram digitados em sequência.</p>
+        <h4>Detalhes técnicos</h4>
+        <dl class="detalhes">
+<dt>Medida</dt><dd>Ordem dos valores: sequências acima e abaixo da mediana (runs), progressões aritméticas e autocorrelação</dd><dt>Valor</dt><dd>128 sequências (z = 2,666) · ρ₁ = −0,04988 · 0 progressões</dd><dt>Limiar</dt><dd>Runs com p &lt; 0,01, progressão de 6 valores ou mais improvável ao acaso (p &lt; 0,01) ou |ρ₁| &gt; 0,8</dd><dt>Teste</dt><dd>Runs de Wald-Wolfowitz</dd><dt>p-valor</dt><dd>p = 0,00767 <span class="nota">· chance de acontecer por acaso: cerca de 1 em 130</span></dd><dt>Fórmula</dt><dd>Z = (R − μ_R) / σ_R · ρ₁ = Σ(xₜ − x̄)(xₜ₊₁ − x̄) / Σ(xₜ − x̄)²</dd>        </dl>
+      </div>
+    </article>
+    <h3>Regras não verificadas</h3>
+    <ul class="nao-verificadas">
+<li>Comparação temporal não verificada: o arquivo não tem uma coluna de data.</li><li>Lei de Benford não verificada em idade: precisa de valores que variem em várias ordens de grandeza.</li><li>Lei de Benford não verificada em altura_m: precisa de valores que variem em várias ordens de grandeza.</li><li>Lei de Benford não verificada em peso_kg: precisa de valores que variem em várias ordens de grandeza.</li>    </ul>
+  </section>
+
+  <section class="apendice">
+    <h2>14. Fórmulas usadas</h2>
+    <h3>Análise por coluna</h3>
+    <ul class="formulas">
+<li><span class="nome-formula">Frequência relativa</span>: <span class="formula" data-latex="fr_i = \frac{f_i}{n}">frᵢ = fᵢ / n</span> <span class="nota">· em todas as colunas</span></li><li><span class="nome-formula">Frequência acumulada</span>: <span class="formula" data-latex="F_i = \sum_{j \le i} f_j">Fᵢ = Σⱼ≤ᵢ fⱼ</span> <span class="nota">· em idade, altura_m, peso_kg, escolaridade e satisfacao</span></li><li><span class="nome-formula">Número de classes (Sturges)</span>: <span class="formula" data-latex="k = \lceil 1 + 3{,}322 \log_{10} n \rceil">k = ⌈1 + 3,322 · log₁₀ n⌉</span> <span class="nota">· em idade, altura_m e peso_kg</span></li><li><span class="nome-formula">Amplitude da classe</span>: <span class="formula" data-latex="h = \frac{x_{max} - x_{min}}{k}">h = (xₘₐₓ − xₘᵢₙ) / k</span> <span class="nota">· em idade, altura_m e peso_kg</span></li><li><span class="nome-formula">Ponto médio</span>: <span class="formula" data-latex="x_i = \frac{L_i + L_{i+1}}{2}">xᵢ = (Lᵢ + Lᵢ₊₁) / 2</span> <span class="nota">· em idade, altura_m e peso_kg</span></li><li><span class="nome-formula">Média</span>: <span class="formula" data-latex="\bar{x} = \frac{\sum x_i}{n}">x̄ = Σxᵢ / n</span> <span class="nota">· em idade, altura_m e peso_kg</span></li><li><span class="nome-formula">Mediana</span>: <span class="formula" data-latex="Md = x_{\left(\frac{n+1}{2}\right)}">Md = valor central dos dados ordenados</span> <span class="nota">· em idade, altura_m, peso_kg, escolaridade e satisfacao</span></li><li><span class="nome-formula">Moda</span>: <span class="formula" data-latex="Mo = \text{valor de maior } f_i">Mo = valor mais frequente</span> <span class="nota">· em todas as colunas</span></li><li><span class="nome-formula">Moda de Czuber</span>: <span class="formula" data-latex="Mo = L_i + \frac{\Delta_1}{\Delta_1 + \Delta_2} \cdot h">Mo = Lᵢ + [Δ₁ / (Δ₁ + Δ₂)] · h</span> <span class="nota">· em idade, altura_m e peso_kg</span></li><li><span class="nome-formula">Proporção</span>: <span class="formula" data-latex="p = \frac{\text{sucessos}}{n}">p = nº de sucessos / n</span> <span class="nota">· em sexo</span></li><li><span class="nome-formula">Separatriz (interpolação linear)</span>: <span class="formula" data-latex="Q_p = x_{(\lfloor h \rfloor)} + (h - \lfloor h \rfloor)(x_{(\lfloor h \rfloor + 1)} - x_{(\lfloor h \rfloor)}),\ h = (n-1)p">Qp = x₍⌊h⌋₎ + (h − ⌊h⌋)·(x₍⌊h⌋+1₎ − x₍⌊h⌋₎), h = (n − 1)·p</span> <span class="nota">· em idade, altura_m e peso_kg</span></li><li><span class="nome-formula">Posição percentil</span>: <span class="formula" data-latex="PR = 100 \cdot \frac{\#(x_i &lt; v) + 0{,}5 \cdot \#(x_i = v)}{n}">PR = 100 · (nº de xᵢ &lt; v + 0,5 · nº de xᵢ = v) / n</span> <span class="nota">· em idade, altura_m e peso_kg</span></li><li><span class="nome-formula">Amplitude</span>: <span class="formula" data-latex="A = x_{max} - x_{min}">A = xₘₐₓ − xₘᵢₙ</span> <span class="nota">· em idade, altura_m e peso_kg</span></li><li><span class="nome-formula">Variância amostral</span>: <span class="formula" data-latex="s^2 = \frac{\sum (x_i - \bar{x})^2}{n - 1}">s² = Σ(xᵢ − x̄)² / (n − 1)</span> <span class="nota">· em idade, altura_m e peso_kg</span></li><li><span class="nome-formula">Variância populacional</span>: <span class="formula" data-latex="\sigma^2 = \frac{\sum (x_i - \mu)^2}{n}">σ² = Σ(xᵢ − μ)² / n</span> <span class="nota">· em idade, altura_m e peso_kg</span></li><li><span class="nome-formula">Desvio padrão</span>: <span class="formula" data-latex="s = \sqrt{s^2}">s = √s²</span> <span class="nota">· em sexo, idade, altura_m e peso_kg</span></li><li><span class="nome-formula">Amplitude interquartil</span>: <span class="formula" data-latex="IQR = Q_3 - Q_1">IQR = Q3 − Q1</span> <span class="nota">· em idade, altura_m e peso_kg</span></li><li><span class="nome-formula">Coeficiente de variação</span>: <span class="formula" data-latex="CV = \frac{s}{\bar{x}} \cdot 100\%">CV = (s / x̄) · 100%</span> <span class="nota">· em idade, altura_m e peso_kg</span></li><li><span class="nome-formula">Variância (binária)</span>: <span class="formula" data-latex="Var = p(1 - p)">Var = p(1 − p)</span> <span class="nota">· em sexo</span></li>    </ul>
+    <h3>Forma e distribuição</h3>
+    <ul class="formulas">
+<li><span class="nome-formula">Assimetria (Fisher)</span>: <span class="formula" data-latex="G_1 = \frac{\sqrt{n(n-1)}}{n-2} \cdot \frac{m_3}{m_2^{3/2}},\ m_k = \frac{\sum (x_i - \bar{x})^k}{n}">G₁ = [√(n(n−1)) / (n−2)] · m₃ / m₂^(3/2), mₖ = Σ(xᵢ − x̄)ᵏ / n</span> <span class="nota">· em idade, altura_m e peso_kg</span></li><li><span class="nome-formula">1º coeficiente de Pearson</span>: <span class="formula" data-latex="As_1 = \frac{\bar{x} - Mo}{s}">As₁ = (x̄ − Mo) / s</span> <span class="nota">· em idade, altura_m e peso_kg</span></li><li><span class="nome-formula">2º coeficiente de Pearson</span>: <span class="formula" data-latex="As_2 = \frac{3(\bar{x} - Md)}{s}">As₂ = 3(x̄ − Md) / s</span> <span class="nota">· em idade, altura_m e peso_kg</span></li><li><span class="nome-formula">Curtose (excesso)</span>: <span class="formula" data-latex="G_2 = \frac{(n+1)n(n-1)}{(n-2)(n-3)} \cdot \frac{\sum (x_i-\bar{x})^4}{(\sum (x_i-\bar{x})^2)^2} - \frac{3(n-1)^2}{(n-2)(n-3)}">G₂ = curtose amostral − 3 (Normal = 0)</span> <span class="nota">· em idade, altura_m e peso_kg</span></li><li><span class="nome-formula">Curtose percentílica</span>: <span class="formula" data-latex="K = \frac{Q_3 - Q_1}{2(P_{90} - P_{10})}">K = (Q3 − Q1) / [2(P90 − P10)] (Normal ≈ 0,263)</span> <span class="nota">· em idade, altura_m e peso_kg</span></li><li><span class="nome-formula">Distribuição Normal</span>: <span class="formula" data-latex="f(x) = \frac{1}{\sigma\sqrt{2\pi}} e^{-\frac{(x-\mu)^2}{2\sigma^2}}">f(x) = (1 / (σ√(2π))) · e^(−(x−μ)² / (2σ²))</span> <span class="nota">· em idade, altura_m e peso_kg</span></li><li><span class="nome-formula">Distribuição de Bernoulli</span>: <span class="formula" data-latex="P(X = 1) = p,\ E[X] = p,\ Var = p(1-p)">P(X = 1) = p · E[X] = p · Var = p(1 − p)</span> <span class="nota">· em sexo</span></li><li><span class="nome-formula">Qui-quadrado de aderência</span>: <span class="formula" data-latex="\chi^2 = \sum \frac{(O_i - E_i)^2}{E_i}">χ² = Σ (Oᵢ − Eᵢ)² / Eᵢ</span> <span class="nota">· em idade, altura_m e peso_kg</span></li>    </ul>
+    <h3>Bivariada</h3>
+    <ul class="formulas">
+<li><span class="nome-formula">Correlação de Pearson</span>: <span class="formula" data-latex="r = \frac{\sum (x_i - \bar{x})(y_i - \bar{y})}{\sqrt{\sum (x_i - \bar{x})^2 \cdot \sum (y_i - \bar{y})^2}}">r = Σ(xᵢ − x̄)(yᵢ − ȳ) / √[Σ(xᵢ − x̄)² · Σ(yᵢ − ȳ)²]</span></li><li><span class="nome-formula">Teste de significância de r</span>: <span class="formula" data-latex="t = \frac{r\sqrt{n-2}}{\sqrt{1-r^2}},\ gl = n - 2">t = r√(n − 2) / √(1 − r²), gl = n − 2</span></li><li><span class="nome-formula">Correlação de Spearman</span>: <span class="formula" data-latex="\rho = r(\text{postos de } X, \text{postos de } Y)">ρ = Pearson dos postos de X e de Y</span></li><li><span class="nome-formula">Reta de regressão</span>: <span class="formula" data-latex="\hat{Y} = a + bX,\ b = \frac{\sum (x_i - \bar{x})(y_i - \bar{y})}{\sum (x_i - \bar{x})^2},\ a = \bar{y} - b\bar{x}">Ŷ = a + bX · b = Σ(xᵢ − x̄)(yᵢ − ȳ) / Σ(xᵢ − x̄)² · a = ȳ − b·x̄</span></li><li><span class="nome-formula">Coeficiente de determinação</span>: <span class="formula" data-latex="R^2 = r^2">R² = r²</span></li><li><span class="nome-formula">Erro padrão da estimativa</span>: <span class="formula" data-latex="S_e = \sqrt{\frac{\sum (y_i - \hat{y}_i)^2}{n - 2}}">Sₑ = √[Σ(yᵢ − ŷᵢ)² / (n − 2)]</span></li><li><span class="nome-formula">Resíduo</span>: <span class="formula" data-latex="e_i = y_i - \hat{y}_i">eᵢ = yᵢ − ŷᵢ</span></li>    </ul>
+    <h3>Gerador</h3>
+    <ul class="formulas">
+<li><span class="nome-formula">Sorteio da Normal</span>: <span class="formula" data-latex="g_i \sim \mathcal{N}(\mu, \sigma^2)">gᵢ ~ Normal(μ, σ²)</span></li><li><span class="nome-formula">Reescala exata</span>: <span class="formula" data-latex="z_i = \frac{g_i - \bar{g}}{s_g},\ x_i&#39; = \bar{x} + s \cdot z_i">zᵢ = (gᵢ − ḡ) / s_g → xᵢ&#39; = x̄ + s·zᵢ</span></li>    </ul>
+    <h3>Detector</h3>
+    <ul class="formulas">
+<li><span class="nome-formula">R11 · Sequência</span>: <span class="formula-texto">Z = (R − μ_R) / σ_R · ρ₁ = Σ(xₜ − x̄)(xₜ₊₁ − x̄) / Σ(xₜ − x̄)²</span> <span class="nota">· em altura_m</span></li>    </ul>
+  </section>
+
+  <footer class="rodape">Disciplina de Estatística · gerado pelo Analisador e Gerador de Dados</footer>
+  <script>
+    window.addEventListener("load", function () {
+      if (!window.katex) return;
+      document.querySelectorAll(".formula[data-latex]").forEach(function (el) {
+        try { window.katex.render(el.dataset.latex, el, { throwOnError: false }); } catch (e) { /* mantém o texto */ }
+      });
+    });
+  </script>
+</body>
+</html>
