@@ -10,6 +10,8 @@ Formato baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e
 - Testes automáticos de acessibilidade (axe) nas 8 telas, no layout e nos componentes, e de contraste das cores nos dois temas.
 - Script de medição de desempenho (`backend/scripts/medir_desempenho.py`): leitura, análise de cada coluna, bivariada, detector e relatório com 10 mil e 100 mil linhas.
 - API do detector: o exemplo de cada alerta diz quantas linhas o alerta tem (`total_linhas`).
+- Relatório final do trabalho em `docs/relatorio-final/`, com prints das telas, fórmulas, explicação do gerador e do detector e roteiro de apresentação.
+- Scripts para refazer o material do relatório final: os prints das telas (`npm run prints`, com o Edge instalado), as fórmulas tiradas dos catálogos do app e o exemplo do relatório HTML.
 
 ### Alterado
 - As fórmulas saem do fim de cada coluna e da seção Bivariada do relatório e passam para o apêndice.

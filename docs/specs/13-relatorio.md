@@ -27,4 +27,9 @@ Parâmetros: `secoes` (leitura, tipos, limpeza, analises, distribuicoes, bivaria
 - Sem seção sobre uso de IA
 
 ## Relatório final do trabalho (documento do grupo)
-Gerado à parte (fora do app) a partir deste HTML + prints das telas + explicação do gerador e do detector. Template em `docs/relatorio-final/` (criado no M4).
+Fica em `docs/relatorio-final/` (M4.4, D168–D169), fora do app; o guia da pasta é o `README.md` dela:
+- `relatorio-final.md` — o relatório pedido no objetivo 7 da versão final (prints das telas e gráficos, fórmulas, explicação do gerador e do detector, documentação do trabalho), em Markdown com as fórmulas em `$$…$$`; rascunho completo para o grupo revisar, com nomes e matrículas a preencher e sem seção sobre uso de IA. Os números citados são os de `pesquisa_saude.txt` com a limpeza sugerida (a 1ª opção de cada linha da tela 3) e dos outros exemplos.
+- `formulas.md` — todas as fórmulas, gerada por `backend/scripts/exportar_formulas.py` a partir dos catálogos da análise, do gerador e do detector (`detector/formulas.py`, as fórmulas das regras em texto, com símbolos no lugar dos valores do alerta); um teste confere que o arquivo versionado é o que o script gera.
+- `exemplo-relatorio.html` — este relatório com as 9 seções para `pesquisa_saude.txt` (limpeza sugerida, 500 valores de `peso_kg` com a semente 42), gerado por `backend/scripts/exportar_relatorio_exemplo.py --data "…"` com o Plotly e o KaTeX pelo CDN; a mesma data gera o mesmo arquivo.
+- `prints/` — as 19 telas com os nomes de `docs/design/telas/prints/`, por `npm run prints` em `frontend/` (`frontend/scripts/prints.ts`, `playwright-core` com o Edge instalado, fora do CI; precisa do backend e do frontend rodando).
+- `roteiro-apresentacao.md` — a demonstração de ~10 minutos, quem fala o quê e as perguntas prováveis.
