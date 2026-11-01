@@ -11,7 +11,7 @@ from app.compartilhado.numeros import (
     formatar_numero,
 )
 from app.compartilhado.textos import p_valor_em_palavras, pluralizar, quantidade
-from app.dominios.detector import textos
+from app.dominios.detector import formulas, textos
 from app.dominios.detector.resultados import DetalhesAviso, TextosAviso
 
 MENOR_PERCENTUAL = 0.01
@@ -85,7 +85,7 @@ def r01_detalhes(
         valor=f"dᵤ = {distancia(distancias[0])} · dₛ = {distancia(distancias[1])}",
         limiar="dᵤ e dₛ < 0,01 e menos de 1% dos embaralhamentos com uma janela tão parecida",
         teste=f"Simulação: {embaralhamentos} da coluna (semente fixa)",
-        formula="dᵤ = |x̄_bloco − x̄_resto| / s_resto · dₛ = |s_bloco − s_resto| / s_resto",
+        formula=formulas.juntar(formulas.DISTANCIA_MEDIAS, formulas.DISTANCIA_DESVIOS),
         p_valor=p,
         p_em_palavras=textos.p_em_palavras(p),
     )
@@ -161,7 +161,7 @@ def r02_detalhes(
             "|r| passa |média dos blocos| em mais de 0,3, ou tirar um bloco baixa |r| "
             "em mais de 0,3"
         ),
-        formula="r = Σ(x − x̄)(y − ȳ) / √[Σ(x − x̄)² · Σ(y − ȳ)²]",
+        formula=formulas.PEARSON,
     )
 
 
@@ -219,7 +219,7 @@ def r06_detalhes_variacao(
         ),
         limiar="DP depois < 0,5 × DP antes, improvável ao acaso (p < 0,01)",
         teste="F de Snedecor (unilateral)",
-        formula="F = s²_depois / s²_antes",
+        formula=formulas.RAZAO_DAS_VARIANCIAS,
         p_valor=p,
         p_em_palavras=textos.p_em_palavras(p),
     )
@@ -268,7 +268,7 @@ def r06_detalhes_copias(
         ),
         limiar="≥ 10% das linhas novas e acima do que as antigas repetem entre si (p < 0,01)",
         teste="Binomial unilateral",
-        formula="P(X ≥ k), X ~ Binomial(linhas novas; fração das antigas que se repetem)",
+        formula=formulas.BINOMIAL_COPIAS,
         p_valor=p,
         p_em_palavras=textos.p_em_palavras(p),
     )
@@ -311,7 +311,7 @@ def r10_detalhes(assimetria: float, curtose: float, teste: str, p: float) -> Det
         ),
         limiar="|G₁| < 0,05, |G₂| < 0,1 e p > 0,99",
         teste=teste,
-        formula="G₁ e G₂ amostrais, como na aba Forma; p do teste de aderência à Normal",
+        formula=formulas.FORMA_NORMAL,
         p_valor=p,
         p_em_palavras=(
             "chance de dados Normais de verdade ficarem tão perto da curva: "
@@ -382,7 +382,7 @@ def r11_detalhes(
             "(p < 0,01) ou |ρ₁| > 0,8"
         ),
         teste=R11_TESTES.get(padrao),
-        formula="Z = (R − μ_R) / σ_R · ρ₁ = Σ(xₜ − x̄)(xₜ₊₁ − x̄) / Σ(xₜ − x̄)²",
+        formula=formulas.juntar(formulas.RUNS, formulas.AUTOCORRELACAO),
         p_valor=p,
         p_em_palavras=None if p is None else textos.p_em_palavras(p),
     )

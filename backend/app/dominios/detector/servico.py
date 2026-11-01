@@ -10,9 +10,11 @@ from app.compartilhado.datas import reconhecer_datas
 from app.compartilhado.tipos import TipoVariavel
 from app.dominios.analise.servico import ServicoAnalise
 from app.dominios.datasets.servico import ColunaAnalise, ServicoDatasets
-from app.dominios.detector.registro import regras_pedidas
+from app.dominios.detector import formulas
+from app.dominios.detector.registro import REGRAS, regras_pedidas
 from app.dominios.detector.resultados import (
     Aviso,
+    FormulasRegra,
     Grafico,
     GraficoBlocos,
     GraficoDigitos,
@@ -35,7 +37,14 @@ from app.dominios.graficos.servico import (
     figura_ultimo_digito,
 )
 
-__all__ = ["Aviso", "ResultadoDetector", "ServicoDetector", "forma_da_coluna"]
+__all__ = [
+    "Aviso",
+    "FormulasRegra",
+    "ResultadoDetector",
+    "ServicoDetector",
+    "forma_da_coluna",
+    "formulas_das_regras",
+]
 
 MINIMO_FORMA = 4
 """A curtose (G₂) precisa de 4 valores."""
@@ -97,6 +106,11 @@ def _figura(grafico: Grafico) -> FiguraPronta:
 
 def _com_figura(aviso: Aviso) -> Aviso:
     return aviso if aviso.grafico is None else replace(aviso, figura=_figura(aviso.grafico))
+
+
+def formulas_das_regras() -> tuple[FormulasRegra, ...]:
+    """As fórmulas de cada regra, na ordem do registro (catálogo de `formulas.py`; D169)."""
+    return tuple(FormulasRegra(r.codigo, r.nome, formulas.genericas(r.codigo)) for r in REGRAS)
 
 
 class ServicoDetector:
