@@ -1,7 +1,8 @@
 """Exporta as fórmulas dos catálogos do app para o relatório final (D169: fonte única).
 
 As mesmas fórmulas da tela, do apêndice do relatório HTML e dos detalhes do detector, em
-Markdown com `$$…$$` (o GitHub e o VS Code mostram a fórmula) e o texto de reserva.
+Markdown com blocos ```math (o GitHub desenha a fórmula; com `$$…$$`, o Markdown dele tiraria
+a barra de `\\#`, `\\,` e `\\%`) e o texto de reserva.
 
 Uso (em backend/): python scripts/exportar_formulas.py [--saida ../docs/relatorio-final/formulas.md]
 """
@@ -56,7 +57,7 @@ def grupos_da_analise() -> list[tuple[str, list[Formula]]]:
 
 
 def _formula(formula: Formula) -> str:
-    return f"### {formula.nome}\n\n$$\n{formula.latex}\n$$\n\nEm texto: `{formula.texto}`\n"
+    return f"### {formula.nome}\n\n```math\n{formula.latex}\n```\n\nEm texto: `{formula.texto}`\n"
 
 
 def _grupo(titulo: str, formulas: Iterable[Formula]) -> str:

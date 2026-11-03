@@ -23,9 +23,9 @@ O script usa o Microsoft Edge instalado (nada a baixar), janela de 1440 px de la
 
 ## Como gerar o PDF
 
-O relatório usa Markdown com fórmulas em `$$…$$`, que o GitHub e o VS Code mostram:
+O relatório usa Markdown com as fórmulas em blocos ` ```math `, que o GitHub desenha (com `$$…$$`, o Markdown do GitHub tiraria a barra de `\#`, `\,` e `\%` e estragaria algumas fórmulas):
 
 - **Pelo GitHub:** abra `relatorio-final.md` no repositório e use "Imprimir" do navegador (Ctrl+P) → "Salvar como PDF".
-- **Pelo VS Code:** a prévia do Markdown (Ctrl+Shift+V) serve para revisar o texto com as fórmulas e as figuras; para o PDF, use uma extensão que exporte Markdown com fórmulas ou imprima pelo GitHub.
+- **Pelo VS Code:** a prévia do Markdown (Ctrl+Shift+V) serve para revisar o texto e as figuras; as fórmulas aparecem como código LaTeX, a menos que uma extensão de prévia desenhe os blocos `math`. Para o PDF, imprima pelo GitHub.
 
 Confira as fórmulas e as figuras na prévia antes de imprimir. Para entregar o exemplo do relatório HTML junto, abra `exemplo-relatorio.html` no navegador e imprima (Ctrl+P → "Salvar como PDF"); o arquivo já vem com o estilo de impressão (uma seção por página).

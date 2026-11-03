@@ -211,9 +211,9 @@ A tela mostra uma coluna por vez. As abas que não se aplicam ao tipo ficam desa
 
 Para variáveis contínuas, os valores são agrupados em classes de mesma amplitude. O número de classes vem da regra de Sturges e a amplitude da classe divide a amplitude total:
 
-$$
+```math
 k = \lceil 1 + 3{,}322 \log_{10} n \rceil \qquad h = \frac{x_{max} - x_{min}}{k}
-$$
+```
 
 Com n = 227, k = 9 classes de amplitude 6,3 (de 42,3 a 99,0). A tabela traz a frequência absoluta fᵢ, a relativa frᵢ = fᵢ/n e a acumulada Fᵢ:
 
@@ -243,9 +243,9 @@ Em `cidade`, depois de unificar as grafias, ficam 7 categorias; a moda é Goiân
 
 *Figura 6 — Tendência central de `peso_kg`, com o cálculo de cada medida.*
 
-$$
+```math
 \bar{x} = \frac{\sum x_i}{n} \qquad Md = x_{\left(\frac{n+1}{2}\right)} \qquad Mo = L_i + \frac{\Delta_1}{\Delta_1 + \Delta_2} \cdot h \ \text{(Czuber)}
-$$
+```
 
 Em `peso_kg`: **média 70,11** (Σxᵢ / n = 15.915 / 227), **mediana 68,7** (posição 114), **moda 68,7** (9 vezes) e moda de Czuber 67,5 (pela classe modal 61,2 ⊢ 67,5). Média maior que a mediana indica valores altos puxando a média (cauda à direita). A moda de Czuber estima a moda de dados agrupados; para binárias, a tela mostra a proporção (em `sexo`, p̂ = 0,4978 para "F"); para ordinais, mediana e moda pela escala (em `satisfacao`, mediana e moda "bom").
 
@@ -257,17 +257,17 @@ Em `peso_kg`: **média 70,11** (Σxᵢ / n = 15.915 / 227), **mediana 68,7** (po
 
 As separatrizes usam interpolação linear entre os valores ordenados (o método `linear` do numpy):
 
-$$
+```math
 Q_p = x_{(\lfloor h \rfloor)} + (h - \lfloor h \rfloor)\left(x_{(\lfloor h \rfloor + 1)} - x_{(\lfloor h \rfloor)}\right),\quad h = (n - 1)\,p
-$$
+```
 
 Em `peso_kg`: Q1 = 62,3 · Q2 = 68,7 · Q3 = 77,35; D1 = 56,36 · D9 = 85,66; P5 = 54,5 · P95 = 90,09. A tabela mostra os 9 decis e os percentis principais, e "Ver os 99 percentis" abre todos.
 
 **"Onde está meu valor?"** O usuário digita um valor e escolhe quartil, decil ou percentil. O programa diz a região e a posição percentil:
 
-$$
+```math
 PR = 100 \cdot \frac{\#(x_i < v) + 0{,}5 \cdot \#(x_i = v)}{n}
-$$
+```
 
 Com v = 80: "O valor 80 está no 4º quartil (acima de Q3 = 77,35). Cerca de 79% dos dados são menores que ele." Valores fora da faixa dos dados recebem um aviso.
 
@@ -277,9 +277,9 @@ Com v = 80: "O valor 80 está no 4º quartil (acima de Q3 = 77,35). Cerca de 79%
 
 *Figura 8 — Medidas de dispersão de `peso_kg`.*
 
-$$
+```math
 A = x_{max} - x_{min} \qquad s^2 = \frac{\sum (x_i - \bar{x})^2}{n - 1} \qquad s = \sqrt{s^2} \qquad IQR = Q_3 - Q_1 \qquad CV = \frac{s}{\bar{x}} \cdot 100\%
-$$
+```
 
 Em `peso_kg`: amplitude 55,9 (98,2 − 42,3), variância 125,9 (amostral; a populacional, 125,4, aparece ao lado), **desvio padrão 11,22**, amplitude interquartil (IQR) 15,05 e **coeficiente de variação 16,01%** ("Variação moderada em relação à média"). Para comparar: `altura_m` tem CV 5,49% (homogênea) e `idade`, 34,41% (heterogênea). Em ordinais, a amplitude e o IQR saem em categorias (em `satisfacao`, IQR "de regular a bom").
 
@@ -291,25 +291,25 @@ Em `peso_kg`: amplitude 55,9 (98,2 − 42,3), variância 125,9 (amostral; a popu
 
 **Assimetria e curtose.** Usamos os coeficientes amostrais de Fisher (G₁ e G₂, os mesmos de Excel e SAS), com os de Pearson e a curtose percentílica ao lado:
 
-$$
+```math
 G_1 = \frac{\sqrt{n(n-1)}}{n-2} \cdot \frac{m_3}{m_2^{3/2}},\quad m_k = \frac{\sum (x_i - \bar{x})^k}{n} \qquad As_1 = \frac{\bar{x} - Mo}{s} \qquad As_2 = \frac{3(\bar{x} - Md)}{s} \qquad K = \frac{Q_3 - Q_1}{2(P_{90} - P_{10})}
-$$
+```
 
 G₂ é o excesso de curtose (na Normal, G₂ = 0). A classificação segue faixas: |G₁| < 0,5 é aproximadamente simétrica, de 0,5 a 1 é moderada e acima de 1 é forte (sinal positivo: cauda à direita); |G₂| < 0,5 é mesocúrtica, abaixo de −0,5 é platicúrtica (achatada) e acima de 0,5 é leptocúrtica (pico alto, caudas pesadas). Em `peso_kg`: G₁ = 0,2127 (aproximadamente simétrica, cauda direita um pouco mais longa), G₂ = −0,314 (mesocúrtica), As₁ = 0,2327, As₂ = 0,3773 e K = 0,2568 (na Normal, K ≈ 0,263).
 
 **Normal.** A curva usa a média e o desvio da coluna:
 
-$$
+```math
 f(x) = \frac{1}{\sigma\sqrt{2\pi}}\, e^{-\frac{(x-\mu)^2}{2\sigma^2}}
-$$
+```
 
 A aderência é testada com Shapiro-Wilk (até 5.000 valores; acima, D'Agostino-Pearson) e conferida com o qui-quadrado nas classes. Em `peso_kg`: "Shapiro-Wilk: W = 0,9898 · p = 0,111 ≥ 0,05. Os dados são compatíveis com a distribuição Normal." (qui-quadrado: χ² = 4,94, gl = 6, p = 0,551). Em `idade`, p < 0,001: os dados se afastam da Normal (distribuição platicúrtica, G₂ = −0,98). O QQ-plot mostra o mesmo em figura: pontos perto da reta indicam Normal.
 
 **Binomial e Bernoulli.** Para variáveis discretas de contagem (inteiros ≥ 0), o programa ajusta a Binomial com n tentativas (padrão: o maior valor observado, que o usuário pode mudar) e p̂ = x̄ / n, e compara observado × esperado com o qui-quadrado:
 
-$$
+```math
 P(X = k) = \binom{n}{k} p^k (1-p)^{n-k}
-$$
+```
 
 Para binárias, a distribuição é a Bernoulli (em `sexo`, p̂ = 0,4978 e Var = p(1 − p) = 0,25). Contínuas e qualitativas mostram o motivo de não se aplicar ("Binomial não se aplica a quantitativas contínuas: precisa de contagens de sucessos em n tentativas.").
 
@@ -343,17 +343,17 @@ A tela abre no par de colunas numéricas com a correlação mais forte. Em `pesq
 
 **Correlação de Pearson**, com o teste t de significância, e **Spearman** (Pearson dos postos, útil com valores extremos ou relação que não é uma reta):
 
-$$
+```math
 r = \frac{\sum (x_i - \bar{x})(y_i - \bar{y})}{\sqrt{\sum (x_i - \bar{x})^2 \sum (y_i - \bar{y})^2}} \qquad t = \frac{r\sqrt{n-2}}{\sqrt{1 - r^2}},\ gl = n - 2
-$$
+```
 
 Em altura_m × peso_kg: **r = 0,6869** (correlação positiva moderada), t = 14,18 com gl = 225 (p < 0,001: "A correlação é significativa (chance de acontecer por acaso: menos de 1 em 1.000)") e ρ de Spearman = 0,6695.
 
 **Regressão linear simples** por mínimos quadrados:
 
-$$
+```math
 \hat{Y} = a + bX,\quad b = \frac{\sum (x_i - \bar{x})(y_i - \bar{y})}{\sum (x_i - \bar{x})^2},\quad a = \bar{y} - b\bar{x} \qquad R^2 = r^2 \qquad S_e = \sqrt{\frac{\sum (y_i - \hat{y}_i)^2}{n - 2}}
-$$
+```
 
 Resultado: **Ŷ = −70,19 + 83,15·X** ("A cada 1 a mais em altura_m, o valor previsto de peso_kg sobe cerca de 83,15"), **R² = 47%** ("47% da variação de peso_kg é explicada por altura_m") e Sₑ = 8,174 kg. O gráfico de resíduos (eᵢ = yᵢ − ŷᵢ) mostra pontos espalhados em volta do zero, sem formar curva: a reta é um bom resumo da relação.
 
@@ -380,9 +380,9 @@ O método depende do tipo da coluna:
 
 **Reescala exata.** Os valores sorteados têm média e desvio parecidos, mas não iguais aos pedidos. A reescala os padroniza e os leva exatamente para a média x̄ e o desvio s alvo; depois, arredonda nas casas decimais do original:
 
-$$
+```math
 z_i = \frac{g_i - \bar{g}}{s_g},\quad x_i' = \bar{x} + s \cdot z_i
-$$
+```
 
 **Limitar à faixa** (opcional): valores fora do mínimo e do máximo do original são sorteados de novo e a reescala é refeita, até 20 rodadas; o que sobrar é cortado no limite.
 
@@ -408,15 +408,15 @@ Média e desvio ficam iguais (a reescala garante); mediana, extremos e forma var
 
 O bivariado gera pares com médias, desvios e correlação alvo pelo **método de Cholesky**: a matriz de covariância alvo Σ = [[σx², ρσxσy], [ρσxσy, σy²]] é decomposta em L·Lᵀ, e duas Normais padrão independentes Z₁ e Z₂ viram:
 
-$$
+```math
 X = \mu_x + \sigma_x Z_1 \qquad Y = \mu_y + \sigma_y\left(\rho Z_1 + \sqrt{1 - \rho^2}\, Z_2\right)
-$$
+```
 
 Com o **ajuste exato** (padrão), Z₁ e Z₂ são antes centradas e ortonormalizadas (Gram-Schmidt), para que a correlação amostral entre elas seja 0 e os desvios sejam 1; assim a correlação dos pares gerados sai exatamente igual a ρ:
 
-$$
+```math
 Z_2' = Z_2 - \frac{Z_2 \cdot Z_1}{Z_1 \cdot Z_1}\, Z_1
-$$
+```
 
 Exemplo (Figura 14): com as médias e os desvios de altura_m e peso_kg e ρ = 0,8, os 500 pares têm média 1,687 e 70,11, desvios 0,09269 e 11,22 e **r = 0,8000** (o original tem 0,6869). Com o ajuste exato, os valores não são arredondados (arredondar desfaria a exatidão); sem ele, r fica perto de ρ (variação amostral).
 
@@ -458,9 +458,9 @@ As 6 ideias do enunciado são as regras R1, R2, R3, R4, R5 e R6; a R7 informa os
 
 Fórmulas principais (todas no Apêndice A):
 
-$$
+```math
 d_\mu = \frac{|\bar{x}_{bloco} - \bar{x}_{resto}|}{s_{resto}} \qquad d_s = \frac{|s_{bloco} - s_{resto}|}{s_{resto}} \qquad P(d) = \log_{10}\left(1 + \frac{1}{d}\right) \qquad \chi^2 = \sum \frac{(O_i - E_i)^2}{E_i}
-$$
+```
 
 **Por que a R1 compara com o restante, e não com o conjunto todo.** O caso a pegar é exatamente o do Gerador: gerar k valores com a média e o desvio de uma coluna e anexá-los a ela. O bloco tem as estatísticas do restante, mas não as do conjunto (o desvio do conjunto cai um pouco quando o bloco entra). Comparando com o restante, o bloco fica a distância zero e a regra dispara em 20 de 20 sementes; comparando com o conjunto, disparava em só 8 de 20.
 
