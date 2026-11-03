@@ -317,7 +317,7 @@ Em texto: `f̂(x) = (1 / nh) · Σ K((x − xᵢ) / h), K = Normal(0, 1), h = s 
 ### Normal arredondada
 
 ```math
-x_i' = \operatorname{arred}(\mu + \sigma \cdot z_i)
+x_i' = \text{arred}(\mu + \sigma \cdot z_i)
 ```
 
 Em texto: `xᵢ' = arredondar(μ + σ·zᵢ), sem negativos se o original não tinha`

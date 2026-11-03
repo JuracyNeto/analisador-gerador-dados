@@ -6,6 +6,7 @@ from app.dominios.gerador import servico as gerador
 from tests.scripts.apoio import RAIZ, carregar_script
 
 VERSIONADO = RAIZ / "docs" / "relatorio-final" / "formulas.md"
+MACROS_QUE_O_GITHUB_RECUSA = ("\\operatorname",)
 
 
 def test_script_gera_o_arquivo_versionado(tmp_path: Path) -> None:
@@ -25,6 +26,14 @@ def test_todas_as_formulas_dos_catalogos_aparecem() -> None:
     for regra in detector.formulas_das_regras():
         assert f"### {regra.codigo} · {regra.nome}" in texto
         assert all(f"- `{formula}`" in texto for formula in regra.formulas), regra.codigo
+
+
+def test_nenhuma_formula_usa_macro_que_o_github_recusa() -> None:
+    """No lugar da fórmula, o GitHub mostra "The following macros are not allowed"."""
+    texto = carregar_script("exportar_formulas").texto_das_formulas()
+
+    for macro in MACROS_QUE_O_GITHUB_RECUSA:
+        assert macro not in texto, macro
 
 
 def test_grupos_da_analise_na_ordem_das_specs() -> None:
