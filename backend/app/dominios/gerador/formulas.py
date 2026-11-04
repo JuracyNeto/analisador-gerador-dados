@@ -24,7 +24,7 @@ FORMULAS: dict[str, Formula] = catalogo_de_formulas(
     Formula(
         "normal_inteira",
         "Normal arredondada",
-        r"x_i' = \operatorname{arred}(\mu + \sigma \cdot z_i)",
+        r"x_i' = \text{arred}(\mu + \sigma \cdot z_i)",
         "xᵢ' = arredondar(μ + σ·zᵢ), sem negativos se o original não tinha",
     ),
     Formula(

@@ -7,6 +7,7 @@ from collections.abc import Sequence
 
 from app.compartilhado.numeros import formatar_inteiro
 from app.compartilhado.textos import pluralizar, quantidade
+from app.dominios.detector import formulas
 from app.dominios.detector.duplicatas import ContraOAcaso
 from app.dominios.detector.resultados import DetalhesAviso, TextosAviso
 from app.dominios.detector.textos import faixa_de_linhas, linha, numero, p_em_palavras
@@ -60,15 +61,10 @@ def r05_textos(copias: int, grupos_quase: int, seguidas: tuple[int, int] | None)
 
 
 def r05_formula_quase(numericas: int) -> str:
-    return (
-        "Quase iguais: distância entre as linhas padronizadas < 0,01·√p "
-        f"(p = {numericas} colunas numéricas, fora as vazias nas duas linhas) e as demais "
-        "colunas iguais; contam quando passam do acaso, estimado pelos pares vizinhos na "
-        "precisão de cada coluna"
-    )
+    return formulas.QUASE_IGUAIS.format(numericas=numericas)
 
 
-R05_FORMULA_IDENTICAS = "Só linhas idênticas"
+R05_FORMULA_IDENTICAS = formulas.SO_IDENTICAS
 
 
 R05_TESTES = {

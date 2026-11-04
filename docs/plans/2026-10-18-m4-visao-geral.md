@@ -121,8 +121,8 @@ Escolhas do usuário em 18/10/2026, ao aprovar o plano: fórmulas só no apêndi
 | D154 ✓ | Foco no título da etapa ao trocar de rota e no primeiro campo com erro ao enviar (o `prefers-reduced-motion` já existia em `base.css`) | M4.2 |
 | D155 | Estrutura para leitor de tela (títulos, áreas laterais, drawer, tooltip, aviso do Detector, rolagem da tabela) — achados da auditoria | M4.2 ✓ |
 | D156–D167 ✓ | Achados do teste de UX (M4.3): sinal de menos e milhar na API, casas por coluna, p traduzido na Forma, nomes únicos, última geração, aba na URL, par mais forte, confirmar a troca de arquivo, prévia do relatório, Gerador sem par, motivo da aba do XLSX, desempenho medido | M4.3 |
-| D168 | Prints reproduzíveis com `playwright-core` usando o Edge instalado (sem baixar navegador), por `npm run prints`, fora do CI | M4.4 |
-| D169 | Relatório final do grupo em Markdown (`docs/relatorio-final/relatorio-final.md`, fórmulas com `$$…$$`, que o GitHub renderiza); fórmulas exportadas do catálogo por `backend/scripts/exportar_formulas.py` (fonte única) | M4.4 |
+| D168 | Prints reproduzíveis com `playwright-core` usando o Edge instalado (sem baixar navegador), por `npm run prints`, fora do CI | M4.4 ✓ |
+| D169 | Relatório final do grupo em Markdown (`docs/relatorio-final/relatorio-final.md`, fórmulas em blocos ` ```math `, que o GitHub renderiza; com `$$…$$` ele tirava a barra de `\#`, `\,` e `\%`); fórmulas exportadas do catálogo por `backend/scripts/exportar_formulas.py` (fonte única) | M4.4 ✓ |
 | D170–D173 ✓ | Bloco `fix/` do detector: R7 cita o critério do exemplo; R5 compara só as colunas preenchidas e deixa de fora as linhas com uma célula (medido); exemplo do bloco inteiro e `total_linhas`; R11 sem mudança | `fix/` detector |
 | D174+ | Achados do teste manual do release (M4.5) | M4.5 |
 

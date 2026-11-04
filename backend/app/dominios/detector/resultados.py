@@ -145,3 +145,12 @@ class ResultadoDetector:
     resumo: ResumoDetector
     avisos: tuple[Aviso, ...]
     nao_aplicadas: tuple[RegraNaoAplicada, ...]
+
+
+@dataclass(frozen=True, slots=True)
+class FormulasRegra:
+    """As fórmulas de uma regra, com os símbolos no lugar dos valores (relatório final)."""
+
+    codigo: str
+    nome: str
+    formulas: tuple[str, ...]

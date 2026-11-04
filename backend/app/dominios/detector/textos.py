@@ -19,6 +19,7 @@ from app.compartilhado.textos import (
     pluralizar,
     quantidade,
 )
+from app.dominios.detector import formulas
 from app.dominios.detector.resultados import DetalhesAviso, TextosAviso
 from app.dominios.detector.tabela import ColunaDetector
 
@@ -204,10 +205,10 @@ def r07_detalhes(
             f"Moderado: fora de {baixo} a {alto} (1,5·IQR) ou |z| > 3 · "
             f"extremo: fora de {baixo_extremo} a {alto_extremo} (3·IQR)"
         ),
-        formula=(
-            f"IQR = Q3 − Q1 · z = (x − x̄) / s · MC = {numero(mc)} (medcouple); "
-            "com MC > 0 a cerca de cima vai a Q3 + k·e^(3·MC)·IQR, nunca abaixo de Q3 + k·IQR; "
-            "a etapa Limpeza usa as cercas sem o ajuste"
+        formula=formulas.juntar(
+            formulas.TUKEY,
+            formulas.ESCORE_Z,
+            formulas.BOXPLOT_AJUSTADO.format(medcouple=f"{numero(mc)} (medcouple)"),
         ),
     )
 
@@ -242,8 +243,8 @@ def r04_detalhes(multiplo: int, k: int, n: int, esperado: float, p: float) -> De
         valor=f"{percentual(k / n)} ({formatar_inteiro(k)} de {formatar_inteiro(n)})",
         limiar=f"p < 0,01 e pelo menos 1,5× o esperado ({percentual(esperado)})",
         teste="Binomial unilateral",
-        formula=(
-            f"P(X ≥ {formatar_inteiro(k)}), X ~ Binomial({formatar_inteiro(n)}; {numero(esperado)})"
+        formula=formulas.BINOMIAL_REDONDOS.format(
+            k=formatar_inteiro(k), n=formatar_inteiro(n), esperado=numero(esperado)
         ),
         p_valor=p,
         p_em_palavras=p_em_palavras(p),
@@ -276,7 +277,7 @@ def r09_detalhes(digito: int, proporcao: float, p: float) -> DetalhesAviso:
         valor=f"o {digito} em {percentual(proporcao)} (esperado 10%)",
         limiar="p < 0,01 e o dígito mais comum com pelo menos 1,5× o esperado (15%)",
         teste="Qui-quadrado de uniformidade (gl = 9)",
-        formula="χ² = Σ (Oᵢ − Eᵢ)² / Eᵢ, com Eᵢ = n / 10",
+        formula=formulas.QUI_QUADRADO_DIGITOS,
         p_valor=p,
         p_em_palavras=p_em_palavras(p),
     )
@@ -331,7 +332,7 @@ def r08_detalhes(mad: float, p: float, pequenos: int, limite: float) -> Detalhes
         valor=f"MAD = {numero(mad)}",
         limiar="p < 0,01 e MAD > 0,015 (Nigrini: não conformidade)",
         teste="Qui-quadrado (gl = 8)",
-        formula="P(d) = log₁₀(1 + 1/d) · MAD = média de |observado − esperado|",
+        formula=formulas.juntar(formulas.BENFORD, formulas.MAD),
         p_valor=p,
         p_em_palavras=p_em_palavras(p),
     )
@@ -373,7 +374,7 @@ def r03_detalhes(proporcao: float, k: int, passo: int, p: float) -> DetalhesAvis
             "(4 repetições ou mais), improváveis ao acaso (p < 0,01)"
         ),
         teste="Poisson: padrão × inteiros espalhados ao acaso",
-        formula="Esperados = nº de inteiros · P(intervalo = passo)^repetições",
+        formula=formulas.INTEIROS_A_PASSO,
         p_valor=p,
         p_em_palavras=p_em_palavras(p),
     )
